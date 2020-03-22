@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -10,9 +10,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
-namespace VSDiagnostics.Diagnostics.General.SwitchIsMissingDefaultLabel
+namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
 {
     [ExportCodeFixProvider(DiagnosticId.SwitchIsMissingDefaultLabel + "CF", LanguageNames.CSharp), Shared]
     internal class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
@@ -30,7 +30,7 @@ namespace VSDiagnostics.Diagnostics.General.SwitchIsMissingDefaultLabel
 
             var statement = root.FindNode(diagnosticSpan).Parent;
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.SwitchIsMissingDefaultSectionCodeFixTitle,
+                CodeAction.Create(Resources.SwitchIsMissingDefaultSectionCodeFixTitle,
                     x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, (SwitchStatementSyntax)statement),
                     SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
         }

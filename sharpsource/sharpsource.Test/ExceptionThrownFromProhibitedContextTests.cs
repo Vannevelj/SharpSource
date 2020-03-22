@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
-using SharpSource.Diagnostics.Exceptions.ExceptionThrownFromProhibitedContext;
 using SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext;
 
 namespace VSDiagnostics.Test.Tests.Exceptions

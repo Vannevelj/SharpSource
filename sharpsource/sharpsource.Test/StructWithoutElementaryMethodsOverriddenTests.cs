@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
-using SharpSource.Diagnostics.Structs.StructWithoutElementaryMethodsOverridden;
 
 namespace VSDiagnostics.Test.Tests.Structs
 {

@@ -5,9 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
 {
@@ -16,9 +14,9 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.StringsCategory;
-        private static readonly string Message = VSDiagnosticsResources.StringPlaceholdersInWrongOrderMessage;
-        private static readonly string Title = VSDiagnosticsResources.StringPlaceholdersInWrongOrderTitle;
+        private static readonly string Category = Resources.StringsCategory;
+        private static readonly string Message = Resources.StringPlaceholdersInWrongOrderMessage;
+        private static readonly string Title = Resources.StringPlaceholdersInWrongOrderTitle;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Category, Severity, true);
@@ -29,7 +27,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var invocation = (InvocationExpressionSyntax) context.Node;
+            var invocation = (InvocationExpressionSyntax)context.Node;
 
             // Verify we're dealing with a string.Format() call
             if (!invocation.IsAnInvocationOf(typeof(string), nameof(string.Format), context.SemanticModel))
@@ -48,15 +46,15 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
             var secondArgument = invocation.ArgumentList.Arguments[1];
 
             var firstArgumentSymbol = context.SemanticModel.GetSymbolInfo(firstArgument.Expression);
-            if (!(firstArgument.Expression is LiteralExpressionSyntax) &&
-                (firstArgumentSymbol.Symbol?.MetadataName == typeof(CultureInfo).Name &&
-                 !(secondArgument?.Expression is LiteralExpressionSyntax)))
+            if (!( firstArgument.Expression is LiteralExpressionSyntax ) &&
+                ( firstArgumentSymbol.Symbol?.MetadataName == typeof(CultureInfo).Name &&
+                 !( secondArgument?.Expression is LiteralExpressionSyntax ) ))
             {
                 return;
             }
 
-            if (!(firstArgument.Expression is LiteralExpressionSyntax) &&
-                !(secondArgument.Expression is LiteralExpressionSyntax))
+            if (!( firstArgument.Expression is LiteralExpressionSyntax ) &&
+                !( secondArgument.Expression is LiteralExpressionSyntax ))
             {
                 return;
             }
@@ -64,8 +62,8 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
             // Get the formatted string from the correct position
             var firstArgumentIsLiteral = firstArgument.Expression is LiteralExpressionSyntax;
             var formatString = firstArgumentIsLiteral
-                ? ((LiteralExpressionSyntax) firstArgument.Expression).GetText().ToString()
-                : ((LiteralExpressionSyntax) secondArgument.Expression).GetText().ToString();
+                ? ( (LiteralExpressionSyntax)firstArgument.Expression ).GetText().ToString()
+                : ( (LiteralExpressionSyntax)secondArgument.Expression ).GetText().ToString();
 
             // Verify that all placeholders are counting from low to high.
             // Not all placeholders have to be used necessarily, we only re-order the ones that are actually used in the format string.
@@ -81,9 +79,8 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
 
             for (var index = 1; index < placeholders.Count; index++)
             {
-                int firstValue, secondValue;
-                if (!int.TryParse(placeholders[index - 1].Groups["index"].Value, out firstValue) ||
-                    !int.TryParse(placeholders[index].Groups["index"].Value, out secondValue))
+                if (!int.TryParse(placeholders[index - 1].Groups["index"].Value, out var firstValue) ||
+                    !int.TryParse(placeholders[index].Groups["index"].Value, out var secondValue))
                 {
                     // Parsing failed
                     return;
@@ -105,8 +102,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
                 {
                     for (var counter = 0; counter < currentIndex; counter++)
                     {
-                        int intValue;
-                        if (int.TryParse(placeholders[counter].Groups["index"].Value, out intValue) && intValue == value)
+                        if (int.TryParse(placeholders[counter].Groups["index"].Value, out var intValue) && intValue == value)
                         {
                             return true;
                         }

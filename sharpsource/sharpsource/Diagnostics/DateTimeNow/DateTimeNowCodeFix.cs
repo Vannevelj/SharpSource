@@ -8,8 +8,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
+using VSDiagnostics.Diagnostics.General.DateTimeNow;
 
 namespace SharpSource.Diagnostics.DateTimeNow
 {
@@ -29,7 +29,7 @@ namespace SharpSource.Diagnostics.DateTimeNow
             var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.NewGuidUseNewGuidCodeFixTitle,
+                CodeAction.Create(Resources.NewGuidUseNewGuidCodeFixTitle,
                     x => UseUtc(context.Document, root, statement), DateTimeNowAnalyzer.Rule.Id), diagnostic);
         }
 

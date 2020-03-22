@@ -9,8 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
 {
@@ -31,7 +30,7 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
                 root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.AsyncMethodWithVoidReturnTypeCodeFixTitle,
+                CodeAction.Create(Resources.AsyncMethodWithVoidReturnTypeCodeFixTitle,
                     x => ChangeReturnTypeAsync(context.Document, methodDeclaration, root, x),
                     AsyncMethodWithVoidReturnTypeAnalyzer.Rule.Id),
                 diagnostic);
@@ -42,7 +41,7 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
             var newMethod = methodDeclaration.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation));
             var newRoot = root.ReplaceNode(methodDeclaration, newMethod);
             var newDocument = document.WithSyntaxRoot(newRoot);
-            
+
             return Task.FromResult(newDocument);
         }
     }

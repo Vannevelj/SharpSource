@@ -4,20 +4,19 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
 using SharpSource;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
-namespace VSDiagnostics.Diagnostics.General.SwitchDoesNotHandleAllEnumOptions
+namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     internal class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.SwitchDoesNotHandleAllEnumOptionsAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.SwitchDoesNotHandleAllEnumOptionsAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.SwitchDoesNotHandleAllEnumOptionsAnalyzerMessage;
+        private static readonly string Title = Resources.SwitchDoesNotHandleAllEnumOptionsAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Category, Severity, true);
@@ -43,7 +42,7 @@ namespace VSDiagnostics.Diagnostics.General.SwitchDoesNotHandleAllEnumOptions
                 {
                     if (label.IsKind(SyntaxKind.CaseSwitchLabel))
                     {
-                        var switchLabel = (CaseSwitchLabelSyntax) label;
+                        var switchLabel = (CaseSwitchLabelSyntax)label;
                         var symbol = context.SemanticModel.GetSymbolInfo(switchLabel.Value).Symbol;
                         if (symbol == null)
                         {

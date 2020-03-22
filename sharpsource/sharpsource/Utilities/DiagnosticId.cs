@@ -1,4 +1,4 @@
-namespace sharpsource.Utilities
+namespace SharpSource.Utilities
 {
     public static class DiagnosticId
     {

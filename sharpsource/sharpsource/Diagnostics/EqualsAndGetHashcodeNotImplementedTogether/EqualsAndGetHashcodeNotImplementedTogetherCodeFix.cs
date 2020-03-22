@@ -9,8 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
 {
@@ -32,7 +31,7 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
             if (bool.Parse(diagnostic.Properties["IsEqualsImplemented"]))
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create(string.Format(VSDiagnosticsResources.EqualsAndGetHashcodeNotImplementedTogetherCodeFixTitle, "GetHashCode()"),
+                    CodeAction.Create(string.Format(Resources.EqualsAndGetHashcodeNotImplementedTogetherCodeFixTitle, "GetHashCode()"),
                         x => ImplementGetHashCodeAsync(context.Document, root, statement),
                         EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id),
                     diagnostic);
@@ -40,7 +39,7 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
             else
             {
                 context.RegisterCodeFix(
-                    CodeAction.Create(string.Format(VSDiagnosticsResources.EqualsAndGetHashcodeNotImplementedTogetherCodeFixTitle, "Equals(object obj)"),
+                    CodeAction.Create(string.Format(Resources.EqualsAndGetHashcodeNotImplementedTogetherCodeFixTitle, "Equals(object obj)"),
                         x => ImplementEqualsAsync(context.Document, root, statement),
                         EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id),
                     diagnostic);
@@ -49,7 +48,7 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
 
         private async Task<Solution> ImplementEqualsAsync(Document document, SyntaxNode root, SyntaxNode statement)
         {
-            var classDeclaration = (ClassDeclarationSyntax) statement;
+            var classDeclaration = (ClassDeclarationSyntax)statement;
 
             var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetEqualsMethod()));
             var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));

@@ -7,9 +7,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
 {
@@ -29,7 +27,7 @@ namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
             var throwStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.RethrowExceptionWithoutLosingStacktraceCodeFixTitle,
+                CodeAction.Create(Resources.RethrowExceptionWithoutLosingStacktraceCodeFixTitle,
                     x => RemoveRethrowAsync(context.Document, root, throwStatement),
                     RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.Id), diagnostic);
         }

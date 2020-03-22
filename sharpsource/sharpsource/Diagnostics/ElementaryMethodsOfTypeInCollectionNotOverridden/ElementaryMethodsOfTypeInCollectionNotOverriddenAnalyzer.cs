@@ -5,8 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridden
 {
@@ -14,9 +13,9 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
     public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = Categories.General;
-        private static readonly string Message = VSDiagnosticsResources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage;
+        private static readonly string Title = Resources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Category, Severity, true);
 
@@ -32,7 +31,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
             {
                 return;
             }
-            
+
             var ienumerableIsImplemented = objectTypeInfo.ImplementsInterface(typeof(IEnumerable)) ||
                                            objectTypeInfo.ImplementsInterface(typeof(IEnumerable<>));
 
@@ -41,7 +40,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
                 return;
             }
 
-            var objectType = ((ObjectCreationExpressionSyntax) context.Node).Type as GenericNameSyntax;
+            var objectType = ( (ObjectCreationExpressionSyntax)context.Node ).Type as GenericNameSyntax;
             if (objectType == null)
             {
                 return;

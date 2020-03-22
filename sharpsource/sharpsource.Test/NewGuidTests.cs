@@ -1,8 +1,7 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
-using SharpSource.Diagnostics.General.NewGuid;
 
 namespace VSDiagnostics.Test.Tests.General
 {

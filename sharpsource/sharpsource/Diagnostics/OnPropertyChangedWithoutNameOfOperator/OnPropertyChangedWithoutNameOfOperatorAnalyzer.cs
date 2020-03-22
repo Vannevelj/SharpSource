@@ -7,8 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
 {
@@ -16,9 +15,9 @@ namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
     public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.OnPropertyChangedWithoutNameOfOperatorAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.OnPropertyChangedWithoutNameOfOperatorAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.OnPropertyChangedWithoutNameOfOperatorAnalyzerMessage;
+        private static readonly string Title = Resources.OnPropertyChangedWithoutNameOfOperatorAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.OnPropertyChangedWithoutNameofOperator, Title, Message, Category, Severity, true);
 
@@ -28,7 +27,7 @@ namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
-            var invocation = (InvocationExpressionSyntax) context.Node;
+            var invocation = (InvocationExpressionSyntax)context.Node;
 
             var identifierExpression = invocation.Expression as IdentifierNameSyntax;
             if (identifierExpression == null)
@@ -84,7 +83,7 @@ namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
 
             foreach (var property in classSymbol.GetMembers().OfType<IPropertySymbol>())
             {
-                if (string.Equals(property.Name, (string) invocationArgument.Value, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(property.Name, (string)invocationArgument.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     // The original Linq was `Last()`.  I used `LastOrDefault()` just because I didn't feel the need to implement a
                     // version to throw an `InvalidOperationException()` rather than a `NullReferenceException()` in this case.

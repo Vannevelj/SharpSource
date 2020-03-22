@@ -1,12 +1,10 @@
+using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using System.Collections.Immutable;
-using System.Linq;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
 {
@@ -15,9 +13,9 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
 
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.RecursiveEqualityOperatorOverloadMessage;
-        private static readonly string Title = VSDiagnosticsResources.RecursiveEqualityOperatorOverloadMessage;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.RecursiveEqualityOperatorOverloadMessage;
+        private static readonly string Title = Resources.RecursiveEqualityOperatorOverloadMessage;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.RecursiveEqualityOperatorOverload, Title, Message, Category, Severity, isEnabledByDefault: true);
@@ -33,9 +31,10 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
             var hasBody = operatorDeclaration.Body != null;
             var hasExpression = operatorDeclaration.ExpressionBody != null;
 
-            if (!hasBody && !hasExpression) {
+            if (!hasBody && !hasExpression)
+            {
                 return;
-            }                      
+            }
 
             var operatorUsages = hasBody ? operatorDeclaration.Body.DescendantTokens().Where(x => x.IsKind(definedToken.Kind())).ToArray()
                                          : operatorDeclaration.ExpressionBody.DescendantTokens().Where(x => x.IsKind(definedToken.Kind())).ToArray();
@@ -78,7 +77,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                     continue;
                 }
 
-                switch(expression)
+                switch (expression)
                 {
                     case BinaryExpressionSyntax binaryExpression:
                         var hasWarned = CheckOperatorToken(binaryExpression.OperatorToken, binaryExpression.Left);
@@ -86,7 +85,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                         {
                             CheckOperatorToken(binaryExpression.OperatorToken, binaryExpression.Right);
                         }
-                        
+
                         break;
 
                     case PrefixUnaryExpressionSyntax prefixUnaryExpression:
@@ -101,7 +100,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                         continue;
                 }
             }
-            
+
             bool CheckOperatorToken(SyntaxToken token, ExpressionSyntax expression)
             {
                 if (!token.IsKind(definedToken.Kind()))
@@ -116,7 +115,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                 }
 
                 if (!usedType.Equals(enclosingSymbol))
-                {                    
+                {
                     return false;
                 }
 

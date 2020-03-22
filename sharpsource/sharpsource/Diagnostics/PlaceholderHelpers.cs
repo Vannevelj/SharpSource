@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace SharpSource.Diagnostics.Strings
 {
@@ -30,19 +30,14 @@ namespace SharpSource.Diagnostics.Strings
         /// </summary>
         /// <param name="input">The format string with placeholders.</param>
         /// <returns>Returns a collection of matches according to the regex.</returns>
-        internal static MatchCollection GetPlaceholders(string input)
-        {
+        internal static MatchCollection GetPlaceholders(string input) =>
             // This regex uses a named group so we can easily access the actual value
-            return Regex.Matches(input, @"(?<!\{)\{(?:\{\{)*((?<index>\d+)(?::.*?)?)\}(?:\}\})*(?!\})");
-        }
+            Regex.Matches(input, @"(?<!\{)\{(?:\{\{)*((?<index>\d+)(?::.*?)?)\}(?:\}\})*(?!\})");
 
         /// <summary>
         ///     Returns all elements from the input - split on the placeholders - and includes the placeholders themselves as well.
         ///     This method is useful if you want to make use of the rest of the string as well.
         /// </summary>
-        internal static string[] GetPlaceholdersSplit(string input)
-        {
-            return Regex.Split(input, @"(?<!\{)\{(?:\{\{)*(\d+(?::.*?)?)\}(?:\}\})*(?!\})");
-        }
+        internal static string[] GetPlaceholdersSplit(string input) => Regex.Split(input, @"(?<!\{)\{(?:\{\{)*(\d+(?::.*?)?)\}(?:\}\})*(?!\})");
     }
 }

@@ -4,8 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.LoopedRandomInstantiation
 {
@@ -13,9 +12,9 @@ namespace SharpSource.Diagnostics.LoopedRandomInstantiation
     public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.LoopedRandomInstantiationAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.LoopedRandomInstantiationAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.LoopedRandomInstantiationAnalyzerMessage;
+        private static readonly string Title = Resources.LoopedRandomInstantiationAnalyzerTitle;
 
         private readonly SyntaxKind[] _loopTypes = { SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement };
 
@@ -28,7 +27,7 @@ namespace SharpSource.Diagnostics.LoopedRandomInstantiation
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
-            var variableDeclaration = (VariableDeclarationSyntax) context.Node;
+            var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
             var type = variableDeclaration.Type;
             if (type == null)

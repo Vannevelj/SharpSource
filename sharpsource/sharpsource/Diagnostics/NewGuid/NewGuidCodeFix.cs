@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -8,11 +7,8 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.NewGuid
 {
@@ -32,11 +28,11 @@ namespace SharpSource.Diagnostics.NewGuid
             var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.NewGuidUseNewGuidCodeFixTitle,
+                CodeAction.Create(Resources.NewGuidUseNewGuidCodeFixTitle,
                     x => UseNewGuid(context.Document, root, statement), $"{NewGuidAnalyzer.Rule.Id}A"), diagnostic);
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.NewGuidUseEmptyGuidCodeFixTitle,
+                CodeAction.Create(Resources.NewGuidUseEmptyGuidCodeFixTitle,
                     x => UseEmptyGuid(context.Document, root, statement), $"{NewGuidAnalyzer.Rule.Id}B"), diagnostic);
         }
 

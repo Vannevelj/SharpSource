@@ -10,8 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
 {
@@ -29,14 +28,11 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-            string implementEqualsString;
-            string implementGetHashCodeString;
-            string implementToStringString;
 
-            diagnostic.Properties.TryGetValue("IsEqualsImplemented", out implementEqualsString);
-            diagnostic.Properties.TryGetValue("IsGetHashCodeImplemented", out implementGetHashCodeString);
-            diagnostic.Properties.TryGetValue("IsToStringImplemented", out implementToStringString);
-            
+            diagnostic.Properties.TryGetValue("IsEqualsImplemented", out var implementEqualsString);
+            diagnostic.Properties.TryGetValue("IsGetHashCodeImplemented", out var implementGetHashCodeString);
+            diagnostic.Properties.TryGetValue("IsToStringImplemented", out var implementToStringString);
+
             var implementEquals = bool.Parse(implementEqualsString);
             var implementGetHashCode = bool.Parse(implementGetHashCodeString);
             var implementToString = bool.Parse(implementToStringString);
@@ -51,8 +47,8 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
             var statement = root.FindNode(diagnosticSpan);
 
             context.RegisterCodeFix(CodeAction.Create(
-                string.Format(VSDiagnosticsResources.StructWithoutElementaryMethodsOverriddenCodeFixTitle, FormatMissingMembers(dict)),
-                    x => AddMissingMethodsAsync(context.Document, root, (StructDeclarationSyntax) statement,
+                string.Format(Resources.StructWithoutElementaryMethodsOverriddenCodeFixTitle, FormatMissingMembers(dict)),
+                    x => AddMissingMethodsAsync(context.Document, root, (StructDeclarationSyntax)statement,
                             implementEquals, implementGetHashCode, implementToString),
                     StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.Id), diagnostic);
         }
@@ -154,7 +150,7 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
                 }
 
                 value += members.ElementAt(i).Key;
-                
+
                 if (missingMemberCount == 3 && i == 0)
                 {
                     value += ", ";

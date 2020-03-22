@@ -6,9 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
 {
@@ -17,16 +15,16 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
 
-        private static readonly string Category = VSDiagnosticsResources.AttributesCategory;
-        private static readonly string Message = VSDiagnosticsResources.FlagsEnumValuesAreNotPowersOfTwoAnalyzerMessage;
+        private static readonly string Category = Resources.AttributesCategory;
+        private static readonly string Message = Resources.FlagsEnumValuesAreNotPowersOfTwoAnalyzerMessage;
 
         private static readonly string ValuesDontFitMessage =
-            VSDiagnosticsResources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerMessage;
+            Resources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerMessage;
 
-        private static readonly string Title = VSDiagnosticsResources.FlagsEnumValuesAreNotPowersOfTwoAnalyzerTitle;
+        private static readonly string Title = Resources.FlagsEnumValuesAreNotPowersOfTwoAnalyzerTitle;
 
         private static readonly string ValuesDontFitTitle =
-            VSDiagnosticsResources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerTitle;
+            Resources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerTitle;
 
         internal static DiagnosticDescriptor DefaultRule
             => new DiagnosticDescriptor(
@@ -52,7 +50,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
-            var declarationExpression = (EnumDeclarationSyntax) context.Node;
+            var declarationExpression = (EnumDeclarationSyntax)context.Node;
 
             AttributeListSyntax flagsAttribute = null;
 
@@ -61,7 +59,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                 foreach (var attribute in list.Attributes)
                 {
                     var symbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol;
-                    if (symbol == null || symbol.ContainingType.MetadataName == typeof (FlagsAttribute).Name)
+                    if (symbol == null || symbol.ContainingType.MetadataName == typeof(FlagsAttribute).Name)
                     {
                         flagsAttribute = list;
                         break;
@@ -70,7 +68,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
 
                 if (flagsAttribute != null)
                 {
-                    break; 
+                    break;
                 }
             }
 
@@ -160,7 +158,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                     var all = true;
                     foreach (var node in descendantNodes)
                     {
-                        if (!node.IsKind(SyntaxKind.IdentifierName) && !(node is BinaryExpressionSyntax))
+                        if (!node.IsKind(SyntaxKind.IdentifierName) && !( node is BinaryExpressionSyntax ))
                         {
                             all = false;
                             break;
@@ -185,7 +183,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                  * will allow us to avoid a huge `switch` statement
                  * and allow us to just pass the value to `IsPowerOfTwo()`
                  */
-                if (!IsPowerOfTwo((dynamic) value))
+                if (!IsPowerOfTwo((dynamic)value))
                 {
                     createDiagnostic = true;
                 }
@@ -230,8 +228,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                 { "ulong", 65 }
             };
 
-            int amountAllowed;
-            if (rangeMapping.TryGetValue(keyword, out amountAllowed))
+            if (rangeMapping.TryGetValue(keyword, out var amountAllowed))
             {
                 return amountOfMembers > amountAllowed;
             }

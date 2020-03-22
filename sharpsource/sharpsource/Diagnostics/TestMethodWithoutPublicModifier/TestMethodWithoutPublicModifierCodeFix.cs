@@ -7,8 +7,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.TestMethodWithoutPublicModifier
 {
@@ -31,7 +30,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutPublicModifier
                 root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.TestMethodWithoutPublicModifierCodeFixTitle,
+                CodeAction.Create(Resources.TestMethodWithoutPublicModifierCodeFixTitle,
                     x => MakePublicAsync(context.Document, root, methodDeclaration),
                     TestMethodWithoutPublicModifierAnalyzer.Rule.Id), diagnostic);
         }

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.DivideIntegerByInteger
 {
@@ -18,9 +18,9 @@ namespace SharpSource.Diagnostics.DivideIntegerByInteger
         };
 
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = VSDiagnosticsResources.ArithmeticCategory;
-        private static readonly string Message = VSDiagnosticsResources.DivideIntegerByIntegerAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.DivideIntegerByIntegerAnalyzerTitle;
+        private static readonly string Category = Resources.ArithmeticCategory;
+        private static readonly string Message = Resources.DivideIntegerByIntegerAnalyzerMessage;
+        private static readonly string Title = Resources.DivideIntegerByIntegerAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule =>
                 new DiagnosticDescriptor(DiagnosticId.DivideIntegerByInteger, Title, Message, Category, Severity, isEnabledByDefault: true);

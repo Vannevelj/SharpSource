@@ -3,9 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.NewGuid
 {
@@ -14,9 +12,9 @@ namespace SharpSource.Diagnostics.NewGuid
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
 
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.NewGuidAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.NewGuidAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.NewGuidAnalyzerMessage;
+        private static readonly string Title = Resources.NewGuidAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.NewGuid, Title, Message, Category, Severity, true);
 
@@ -29,9 +27,9 @@ namespace SharpSource.Diagnostics.NewGuid
             var expression = (ObjectCreationExpressionSyntax)context.Node;
             var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
 
-            if (symbol != null && 
-                symbol.Name == "Guid" && 
-                (symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Runtime"))
+            if (symbol != null &&
+                symbol.Name == "Guid" &&
+                ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Runtime" ))
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
             }

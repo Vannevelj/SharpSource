@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using VSDiagnostics.Utilities;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using sharpsource.Utilities;
+using Microsoft.CodeAnalysis.Diagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 {
@@ -14,15 +13,15 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.GetHashCodeRefersToMutableFieldAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.GetHashCodeRefersToMutableFieldAnalyzerMessage;
+        private static readonly string Title = Resources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule =>
             new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-        
+
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
 
@@ -32,7 +31,8 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
             var semanticModel = context.Compilation.GetSemanticModel(context.Symbol.Locations[0].SourceTree);
 
             var getHashCode = GetHashCodeSymbol(namedType);
-            if (getHashCode == null) { return; }
+            if (getHashCode == null)
+            { return; }
 
             var getHashCodeLocation = getHashCode.Locations[0];
             var root = getHashCodeLocation?.SourceTree.GetRoot(context.CancellationToken);
@@ -55,7 +55,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 
                 if (symbol.Kind == SymbolKind.Field)
                 {
-                    var fieldIsMutableOrStatic = FieldIsMutableOrStatic((IFieldSymbol) symbol);
+                    var fieldIsMutableOrStatic = FieldIsMutableOrStatic((IFieldSymbol)symbol);
                     if (fieldIsMutableOrStatic.Item1)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(Rule, getHashCode.Locations[0],
@@ -64,7 +64,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                 }
                 else if (symbol.Kind == SymbolKind.Property)
                 {
-                    var propertyIsMutable = PropertyIsMutable((IPropertySymbol) symbol, root);
+                    var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol, root);
                     if (propertyIsMutable.Item1)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(Rule, getHashCode.Locations[0],
@@ -78,7 +78,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
         {
             foreach (var member in symbol.GetMembers())
             {
-                if (!(member is IMethodSymbol))
+                if (!( member is IMethodSymbol ))
                 {
                     continue;
                 }
@@ -92,7 +92,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 
             return null;
         }
-        
+
         private Tuple<bool, string> FieldIsMutableOrStatic(IFieldSymbol field)
         {
             var description = string.Empty;
@@ -110,7 +110,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                 description += "static ";
                 returnResult = true;
             }
-            
+
             // constant fields are marked non-readonly
             if (!field.IsReadOnly && !field.IsConst)
             {
@@ -151,7 +151,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
             }
 
             var propertyLocation = property.Locations[0];
-            var propertyNode = (PropertyDeclarationSyntax) root.FindNode(propertyLocation.SourceSpan);
+            var propertyNode = (PropertyDeclarationSyntax)root.FindNode(propertyLocation.SourceSpan);
 
             // ensure getter does not have body
             // the property has to have at least one of {get, set}, and it doesn't have a set (see above)

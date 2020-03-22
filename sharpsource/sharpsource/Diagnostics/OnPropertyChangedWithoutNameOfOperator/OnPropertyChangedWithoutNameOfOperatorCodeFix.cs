@@ -6,14 +6,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
+namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameofOperator
 {
     [ExportCodeFixProvider(DiagnosticId.OnPropertyChangedWithoutNameofOperator + "CF", LanguageNames.CSharp), Shared]
-    public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
+    public class OnPropertyChangedWithoutNameofOperatorCodeFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds
             => ImmutableArray.Create(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.Id);
@@ -26,7 +24,7 @@ namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
             var diagnostic = context.Diagnostics.First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.OnPropertyChangedWithoutNameOfOperatorCodeFixTitle,
+                CodeAction.Create(Resources.OnPropertyChangedWithoutNameOfOperatorCodeFixTitle,
                     x => UseNameOfAsync(context.Document, root, diagnostic),
                     OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.Id), diagnostic);
         }

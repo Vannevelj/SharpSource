@@ -6,9 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
 {
@@ -16,9 +14,9 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
     public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
-        private static readonly string Category = VSDiagnosticsResources.StringsCategory;
-        private static readonly string Message = VSDiagnosticsResources.StringDotFormatWithDifferentAmountOfArgumentsMessage;
-        private static readonly string Title = VSDiagnosticsResources.StringDotFormatWithDifferentAmountOfArgumentsTitle;
+        private static readonly string Category = Resources.StringsCategory;
+        private static readonly string Message = Resources.StringDotFormatWithDifferentAmountOfArgumentsMessage;
+        private static readonly string Title = Resources.StringDotFormatWithDifferentAmountOfArgumentsTitle;
 
         internal static DiagnosticDescriptor Rule =>
             new DiagnosticDescriptor(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Category, Severity, true);
@@ -29,7 +27,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var invocation = (InvocationExpressionSyntax) context.Node;
+            var invocation = (InvocationExpressionSyntax)context.Node;
             if (invocation.ArgumentList == null)
             {
                 return;
@@ -77,7 +75,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
             var symbolsAreNotArraysOrObjects = true;
             foreach (var symbol in formatParameters)
             {
-                if (symbol.Type.Kind != SymbolKind.ArrayType || ((IArrayTypeSymbol) symbol.Type).ElementType.SpecialType != SpecialType.System_Object)
+                if (symbol.Type.Kind != SymbolKind.ArrayType || ( (IArrayTypeSymbol)symbol.Type ).ElementType.SpecialType != SpecialType.System_Object)
                 {
                     symbolsAreNotArraysOrObjects = false;
                     break;
@@ -95,7 +93,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
                 }
             }
 
-            if (!(hasObject || hasObjectArray))
+            if (!( hasObject || hasObjectArray ))
             {
                 return;
             }
@@ -181,7 +179,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
             // and verify that this value + 1 (to account for 0-based indexing) is not greater than the amount of placeholder arguments
             var placeholders = new List<int>();
 
-            foreach (Match placeholder in PlaceholderHelpers.GetPlaceholders((string) formatString.Value))
+            foreach (Match placeholder in PlaceholderHelpers.GetPlaceholders((string)formatString.Value))
             {
                 placeholders.Add(int.Parse(PlaceholderHelpers.GetPlaceholderIndex(placeholder.Value)));
             }

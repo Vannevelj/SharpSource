@@ -54,9 +54,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\sharpsource\sharpsource.csproj">
+    <ProjectReference Include="..\sharpsource\SharpSource.csproj">
       <Project>{6F7FB78B-395A-439F-83B0-3226A836944E}</Project>
-      <Name>sharpsource</Name>
+      <Name>SharpSource</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

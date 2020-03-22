@@ -5,8 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
 {
@@ -14,15 +13,15 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
     public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = Categories.General;
-        private static readonly string Message = VSDiagnosticsResources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerMessage;
+        private static readonly string Title = Resources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterCompilationStartAction((compilationContext) => 
+        public override void Initialize(AnalysisContext context) => context.RegisterCompilationStartAction((compilationContext) =>
         {
             var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
             IMethodSymbol objectEquals = null;
@@ -30,7 +29,7 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
 
             foreach (var symbol in objectSymbol.GetMembers())
             {
-                if (!(symbol is IMethodSymbol))
+                if (!( symbol is IMethodSymbol ))
                 {
                     continue;
                 }
@@ -47,9 +46,9 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
                 }
             }
 
-            compilationContext.RegisterSyntaxNodeAction((syntaxNodeContext) => 
+            compilationContext.RegisterSyntaxNodeAction((syntaxNodeContext) =>
             {
-                var classDeclaration = (ClassDeclarationSyntax) syntaxNodeContext.Node;
+                var classDeclaration = (ClassDeclarationSyntax)syntaxNodeContext.Node;
 
                 var equalsImplemented = false;
                 var getHashcodeImplemented = false;
@@ -68,7 +67,7 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
                     }
 
                     var methodSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(methodDeclaration).OverriddenMethod;
-                    
+
                     // this will happen if the base class is deleted and there is still a derived class
                     if (methodSymbol == null)
                     {
@@ -97,6 +96,6 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
                         ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString()) })));
                 }
             }, SyntaxKind.ClassDeclaration);
-        });            
+        });
     }
 }

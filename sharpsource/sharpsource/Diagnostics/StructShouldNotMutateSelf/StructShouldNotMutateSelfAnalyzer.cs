@@ -3,9 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.StructShouldNotMutateSelf
 {
@@ -14,9 +12,9 @@ namespace SharpSource.Diagnostics.StructShouldNotMutateSelf
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.StructsCategory;
-        private static readonly string Message = VSDiagnosticsResources.StructsShouldNotMutateSelfAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.StructsShouldNotMutateSelfAnalyzerTitle;
+        private static readonly string Category = Resources.StructsCategory;
+        private static readonly string Message = Resources.StructsShouldNotMutateSelfAnalyzerMessage;
+        private static readonly string Title = Resources.StructsShouldNotMutateSelfAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.StructShouldNotMutateSelf, Title, Message, Category, Severity, true);
@@ -29,9 +27,9 @@ namespace SharpSource.Diagnostics.StructShouldNotMutateSelf
         {
             // Looking for
             // this = someValueType;
-            var assignmentExpression = (AssignmentExpressionSyntax) context.Node;
-            
-            if (!(assignmentExpression.Left is ThisExpressionSyntax))
+            var assignmentExpression = (AssignmentExpressionSyntax)context.Node;
+
+            if (!( assignmentExpression.Left is ThisExpressionSyntax ))
             {
                 return;
             }

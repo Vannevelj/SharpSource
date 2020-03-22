@@ -4,8 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.TestMethodWithoutPublicModifier
 {
@@ -14,9 +13,9 @@ namespace SharpSource.Diagnostics.TestMethodWithoutPublicModifier
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.TestsCategory;
-        private static readonly string Message = VSDiagnosticsResources.TestMethodWithoutPublicModifierAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.TestMethodWithoutPublicModifierAnalyzerTitle;
+        private static readonly string Category = Resources.TestsCategory;
+        private static readonly string Message = Resources.TestMethodWithoutPublicModifierAnalyzerMessage;
+        private static readonly string Title = Resources.TestMethodWithoutPublicModifierAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.TestMethodWithoutPublicModifier, Title, Message, Category, Severity, true);
@@ -27,7 +26,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutPublicModifier
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var method = (MethodDeclarationSyntax) context.Node;
+            var method = (MethodDeclarationSyntax)context.Node;
 
             if (method.HasTestAttribute() && !method.Modifiers.Any(SyntaxKind.PublicKeyword))
             {

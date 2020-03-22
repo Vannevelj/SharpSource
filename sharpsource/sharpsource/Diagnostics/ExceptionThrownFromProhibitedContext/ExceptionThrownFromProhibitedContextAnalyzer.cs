@@ -4,8 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
 {
@@ -14,52 +13,52 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.ExceptionsCategory;
+        private static readonly string Category = Resources.ExceptionsCategory;
 
         private static DiagnosticDescriptor ImplicitOperatorRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromImplicitOperator,
-                VSDiagnosticsResources.ExceptionThrownFromImplicitOperatorAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromImplicitOperatorAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromImplicitOperatorAnalyzerTitle,
+                Resources.ExceptionThrownFromImplicitOperatorAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor PropertyGetterRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromPropertyGetter,
-                VSDiagnosticsResources.ExceptionThrownFromPropertyGetterAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromPropertyGetterAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromPropertyGetterAnalyzerTitle,
+                Resources.ExceptionThrownFromPropertyGetterAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor StaticConstructorRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromStaticConstructor,
-                VSDiagnosticsResources.ExceptionThrownFromStaticConstructorAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromStaticConstructorAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromStaticConstructorAnalyzerTitle,
+                Resources.ExceptionThrownFromStaticConstructorAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor FinallyBlockRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromFinallyBlock,
-                VSDiagnosticsResources.ExceptionThrownFromFinallyBlockAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromFinallyBlockAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromFinallyBlockAnalyzerTitle,
+                Resources.ExceptionThrownFromFinallyBlockAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor EqualityOperatorRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromEqualityOperator,
-                VSDiagnosticsResources.ExceptionThrownFromEqualityOperatorAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromEqualityOperatorAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromEqualityOperatorAnalyzerTitle,
+                Resources.ExceptionThrownFromEqualityOperatorAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor DisposeRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromDispose,
-                VSDiagnosticsResources.ExceptionThrownFromDisposeAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromDisposeAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromDisposeAnalyzerTitle,
+                Resources.ExceptionThrownFromDisposeAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor FinalizerRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromFinalizer,
-                VSDiagnosticsResources.ExceptionThrownFromFinalizerAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromFinalizerAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromFinalizerAnalyzerTitle,
+                Resources.ExceptionThrownFromFinalizerAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor GetHashCodeRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromGetHashCode,
-                VSDiagnosticsResources.ExceptionThrownFromGetHashCodeAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromGetHashCodeAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromGetHashCodeAnalyzerTitle,
+                Resources.ExceptionThrownFromGetHashCodeAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor EqualsRule
             => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromEquals,
-                VSDiagnosticsResources.ExceptionThrownFromEqualsAnalyzerTitle,
-                VSDiagnosticsResources.ExceptionThrownFromEqualsAnalyzerMessage, Category, Severity, true);
+                Resources.ExceptionThrownFromEqualsAnalyzerTitle,
+                Resources.ExceptionThrownFromEqualsAnalyzerMessage, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
             => ImmutableArray.Create(
@@ -86,7 +85,7 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
             {
                 if (ancestor.IsKind(SyntaxKind.MethodDeclaration))
                 {
-                    var method = (MethodDeclarationSyntax) ancestor;
+                    var method = (MethodDeclarationSyntax)ancestor;
                     var methodName = method.Identifier.ValueText;
 
                     if (methodName == "Dispose")
@@ -142,7 +141,7 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
                 }
                 else if (ancestor.IsKind(SyntaxKind.OperatorDeclaration))
                 {
-                    var operatorDeclaration = (OperatorDeclarationSyntax) ancestor;
+                    var operatorDeclaration = (OperatorDeclarationSyntax)ancestor;
                     if (operatorDeclaration.OperatorToken.IsKind(SyntaxKind.EqualsEqualsToken) || operatorDeclaration.OperatorToken.IsKind(SyntaxKind.ExclamationEqualsToken))
                     {
                         var operatorToken = operatorDeclaration.OperatorToken.ValueText;
@@ -154,7 +153,7 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
                 }
                 else if (ancestor.IsKind(SyntaxKind.ConversionOperatorDeclaration))
                 {
-                    var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax) ancestor;
+                    var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax)ancestor;
                     if (conversionOperatorDeclaration.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ImplicitKeyword))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(ImplicitOperatorRule, warningLocation, conversionOperatorDeclaration.Type.ToString(), containingType.Name));
@@ -163,7 +162,7 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
                 }
                 else if (ancestor.IsKind(SyntaxKind.ConstructorDeclaration))
                 {
-                    var constructor = (ConstructorDeclarationSyntax) ancestor;
+                    var constructor = (ConstructorDeclarationSyntax)ancestor;
                     if (constructor.Modifiers.Any(SyntaxKind.StaticKeyword))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(StaticConstructorRule, warningLocation, containingType.Name));

@@ -4,8 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
 {
@@ -14,9 +13,9 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.TestsCategory;
-        private static readonly string Message = VSDiagnosticsResources.TestMethodWithoutTestAttributeAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.TestMethodWithoutTestAttributeAnalyzerTitle;
+        private static readonly string Category = Resources.TestsCategory;
+        private static readonly string Message = Resources.TestMethodWithoutTestAttributeAnalyzerMessage;
+        private static readonly string Title = Resources.TestMethodWithoutTestAttributeAnalyzerTitle;
         private static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.TestMethodWithoutTestAttribute, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
@@ -25,8 +24,8 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var method = (MethodDeclarationSyntax) context.Node;
-            
+            var method = (MethodDeclarationSyntax)context.Node;
+
             // Check if we're in a unit-test context
             // For NUnit and MSTest we can see if the enclosing class/struct has a [TestClass] or [TestFixture] attribute
             // For xUnit.NET we will have to see if there are other methods in the current class that contain a [Fact] attribute
@@ -89,7 +88,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
             var voidType = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Void);
             var taskType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
             var taskTType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
-            if (!(returnType.Equals(voidType) || returnType.Equals(taskType) || returnType.OriginalDefinition.Equals(taskTType)))
+            if (!( returnType.Equals(voidType) || returnType.Equals(taskType) || returnType.OriginalDefinition.Equals(taskTType) ))
             {
                 return;
             }

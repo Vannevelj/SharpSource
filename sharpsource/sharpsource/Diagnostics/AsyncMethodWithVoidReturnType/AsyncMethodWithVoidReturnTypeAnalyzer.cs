@@ -4,8 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
 {
@@ -14,9 +13,9 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.AsyncCategory;
-        private static readonly string Message = VSDiagnosticsResources.AsyncMethodWithVoidReturnTypeMessage;
-        private static readonly string Title = VSDiagnosticsResources.AsyncMethodWithVoidReturnTypeTitle;
+        private static readonly string Category = Resources.AsyncCategory;
+        private static readonly string Message = Resources.AsyncMethodWithVoidReturnTypeMessage;
+        private static readonly string Title = Resources.AsyncMethodWithVoidReturnTypeTitle;
 
         internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.AsyncMethodWithVoidReturnType, Title, Message, Category, Severity, isEnabledByDefault: true);
 
@@ -26,7 +25,7 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
 
         private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
         {
-            var method = (MethodDeclarationSyntax) context.Node;
+            var method = (MethodDeclarationSyntax)context.Node;
 
             // Method has to return void
             var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType);
@@ -34,7 +33,7 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
             {
                 return;
             }
-            
+
             var isAsync = false;
             foreach (var modifier in method.Modifiers)
             {

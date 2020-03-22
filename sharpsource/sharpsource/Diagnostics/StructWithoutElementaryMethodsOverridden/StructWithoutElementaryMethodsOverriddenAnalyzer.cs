@@ -5,9 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
 {
@@ -16,9 +14,9 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.StructsCategory;
-        private static readonly string Message = VSDiagnosticsResources.StructWithoutElementaryMethodsOverriddenAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.StructWithoutElementaryMethodsOverriddenAnalyzerTitle;
+        private static readonly string Category = Resources.StructsCategory;
+        private static readonly string Message = Resources.StructWithoutElementaryMethodsOverriddenAnalyzerMessage;
+        private static readonly string Title = Resources.StructWithoutElementaryMethodsOverriddenAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.StructWithoutElementaryMethodsOverridden, Title, Message, Category, Severity, true);
@@ -36,7 +34,7 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
 
             foreach (var symbol in objectSymbol.GetMembers())
             {
-                if (!(symbol is IMethodSymbol))
+                if (!( symbol is IMethodSymbol ))
                 {
                     continue;
                 }

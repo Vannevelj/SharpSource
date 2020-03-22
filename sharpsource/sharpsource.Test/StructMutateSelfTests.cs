@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
-using SharpSource.Diagnostics.Structs.StructShouldNotMutateSelf;
 
 namespace VSDiagnostics.Test.Tests.Structs
 {
@@ -55,7 +54,7 @@ struct Rectangle
 
             VerifyDiagnostic(original, string.Format(StructShouldNotMutateSelfAnalyzer.Rule.MessageFormat.ToString(), "Rectangle"));
         }
- 
+
         [TestMethod]
         public void StructShouldNotMutateSelf_AssigningToAVariableVar()
         {

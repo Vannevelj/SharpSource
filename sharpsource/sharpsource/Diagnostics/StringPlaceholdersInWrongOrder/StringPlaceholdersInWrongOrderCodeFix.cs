@@ -10,8 +10,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
 {
@@ -35,7 +34,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
                     .OfType<InvocationExpressionSyntax>()
                     .First();
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.StringPlaceholdersInWrongOrderCodeFixTitle,
+                CodeAction.Create(Resources.StringPlaceholdersInWrongOrderCodeFixTitle,
                     x => ReOrderPlaceholdersAsync(context.Document, root, stringFormatInvocation),
                     StringPlaceholdersInWrongOrderAnalyzer.Rule.Id),
                 diagnostic);
@@ -47,8 +46,8 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
             var firstArgumentIsLiteral =
                 stringFormatInvocation.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax;
             var formatString =
-                ((LiteralExpressionSyntax)
-                    stringFormatInvocation.ArgumentList.Arguments[firstArgumentIsLiteral ? 0 : 1].Expression).GetText()
+                ( (LiteralExpressionSyntax)
+                    stringFormatInvocation.ArgumentList.Arguments[firstArgumentIsLiteral ? 0 : 1].Expression ).GetText()
                                                                                                              .ToString();
             var elements = PlaceholderHelpers.GetPlaceholdersSplit(formatString);
             var matches = PlaceholderHelpers.GetPlaceholders(formatString);
@@ -72,8 +71,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
             {
                 // If it's a numerical value, it means we're dealing with a placeholder
                 // Use GetPlaceholderIndex() to account for formatted placeholders
-                int placeholderValue;
-                if (int.TryParse(PlaceholderHelpers.GetPlaceholderIndex(elements[index]), out placeholderValue))
+                if (int.TryParse(PlaceholderHelpers.GetPlaceholderIndex(elements[index]), out var placeholderValue))
                 {
                     // If we already have a new value associated with this placeholder, retrieve it and add it to our result
                     if (placeholderMapping.ContainsKey(placeholderValue))

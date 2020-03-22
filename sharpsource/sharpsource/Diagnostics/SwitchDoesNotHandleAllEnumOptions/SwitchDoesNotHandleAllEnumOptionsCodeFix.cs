@@ -10,8 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 {
@@ -31,8 +30,8 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 
             var statement = root.FindNode(diagnosticSpan);
             context.RegisterCodeFix(
-                CodeAction.Create(VSDiagnosticsResources.SwitchDoesNotHandleAllEnumOptionsCodeFixTitle,
-                    x => AddMissingCaseAsync(context.Document, (CompilationUnitSyntax) root, statement),
+                CodeAction.Create(Resources.SwitchDoesNotHandleAllEnumOptionsCodeFixTitle,
+                    x => AddMissingCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
                     SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
         }
 
@@ -40,9 +39,9 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
         {
             var semanticModel = await document.GetSemanticModelAsync();
 
-            var switchBlock = (SwitchStatementSyntax) statement.Parent;
+            var switchBlock = (SwitchStatementSyntax)statement.Parent;
 
-            var enumType = (INamedTypeSymbol) semanticModel.GetTypeInfo(switchBlock.Expression).Type;
+            var enumType = (INamedTypeSymbol)semanticModel.GetTypeInfo(switchBlock.Expression).Type;
             var caseLabels = switchBlock.Sections.SelectMany(l => l.Labels)
                                         .OfType<CaseSwitchLabelSyntax>()
                                         .Select(l => l.Value)
@@ -52,7 +51,7 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 
             // use simplified form if there are any in simplified form or if there are not any labels at all
             var hasSimplifiedLabel = caseLabels.OfType<IdentifierNameSyntax>().Any();
-            var useSimplifiedForm = (hasSimplifiedLabel || !caseLabels.OfType<MemberAccessExpressionSyntax>().Any()) && caseLabels.Any();
+            var useSimplifiedForm = ( hasSimplifiedLabel || !caseLabels.OfType<MemberAccessExpressionSyntax>().Any() ) && caseLabels.Any();
 
             var qualifier = GetQualifierForException(root);
 
@@ -109,7 +108,7 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
             var qualifier = "System.";
             var usingSystemDirective =
                 root.Usings.Where(u => u.Name is IdentifierNameSyntax)
-                    .FirstOrDefault(u => ((IdentifierNameSyntax) u.Name).Identifier.ValueText == nameof(System));
+                    .FirstOrDefault(u => ( (IdentifierNameSyntax)u.Name ).Identifier.ValueText == nameof(System));
 
             if (usingSystemDirective != null)
             {

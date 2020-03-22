@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.ThrowNull
 {
@@ -12,9 +12,9 @@ namespace SharpSource.Diagnostics.ThrowNull
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
 
-        private static readonly string Category = VSDiagnosticsResources.ExceptionsCategory;
-        private static readonly string Message = VSDiagnosticsResources.ThrowNullMessage;
-        private static readonly string Title = VSDiagnosticsResources.ThrowNullMessage;
+        private static readonly string Category = Resources.ExceptionsCategory;
+        private static readonly string Message = Resources.ThrowNullMessage;
+        private static readonly string Title = Resources.ThrowNullMessage;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.ThrowNull, Title, Message, Category, Severity, isEnabledByDefault: true);
@@ -25,7 +25,7 @@ namespace SharpSource.Diagnostics.ThrowNull
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var throwStatement = (ThrowStatementSyntax) context.Node;
+            var throwStatement = (ThrowStatementSyntax)context.Node;
 
             var throwValue = context.SemanticModel.GetConstantValue(throwStatement.Expression);
             if (throwValue.HasValue && throwValue.Value == null)

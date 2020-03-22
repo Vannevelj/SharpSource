@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
 {
@@ -15,9 +12,9 @@ namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
     public class RethrowExceptionWithoutLosingStacktraceAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = VSDiagnosticsResources.ExceptionsCategory;
-        private static readonly string Message = VSDiagnosticsResources.RethrowExceptionWithoutLosingStacktraceAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.RethrowExceptionWithoutLosingStacktraceAnalyzerTitle;
+        private static readonly string Category = Resources.ExceptionsCategory;
+        private static readonly string Message = Resources.RethrowExceptionWithoutLosingStacktraceAnalyzerMessage;
+        private static readonly string Title = Resources.RethrowExceptionWithoutLosingStacktraceAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.RethrowExceptionWithoutLosingStacktrace, Title, Message, Category, Severity, true);
 
@@ -27,7 +24,7 @@ namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var throwStatement = (ThrowStatementSyntax) context.Node;
+            var throwStatement = (ThrowStatementSyntax)context.Node;
 
             var throwIdentifierSyntax = throwStatement.Expression as IdentifierNameSyntax;
             if (throwIdentifierSyntax == null)

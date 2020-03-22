@@ -3,8 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using sharpsource.Utilities;
-using VSDiagnostics.Utilities;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
 {
@@ -13,9 +12,9 @@ namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
-        private static readonly string Category = VSDiagnosticsResources.GeneralCategory;
-        private static readonly string Message = VSDiagnosticsResources.SwitchIsMissingDefaultSectionAnalyzerMessage;
-        private static readonly string Title = VSDiagnosticsResources.SwitchIsMissingDefaultSectionAnalyzerTitle;
+        private static readonly string Category = Resources.GeneralCategory;
+        private static readonly string Message = Resources.SwitchIsMissingDefaultSectionAnalyzerMessage;
+        private static readonly string Title = Resources.SwitchIsMissingDefaultSectionAnalyzerTitle;
 
         internal static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.SwitchIsMissingDefaultLabel, Title, Message, Category, Severity, true);
