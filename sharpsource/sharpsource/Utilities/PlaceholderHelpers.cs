@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace SharpSource.Diagnostics.Strings
+namespace SharpSource.Utilities
 {
     //TODO: tests
     internal static class PlaceholderHelpers

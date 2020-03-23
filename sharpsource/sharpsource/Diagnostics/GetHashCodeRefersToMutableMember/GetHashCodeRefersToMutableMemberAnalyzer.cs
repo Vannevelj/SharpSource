@@ -12,7 +12,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
     public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-
+        
         private static readonly string Category = Resources.GeneralCategory;
         private static readonly string Message = Resources.GetHashCodeRefersToMutableFieldAnalyzerMessage;
         private static readonly string Title = Resources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
@@ -24,7 +24,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
-
+        
         private void AnalyzeSymbol(SymbolAnalysisContext context)
         {
             var namedType = (INamedTypeSymbol)context.Symbol;

@@ -9,10 +9,10 @@ namespace SharpSource.Utilities
         public const string EqualsAndGetHashcodeNotImplementedTogether = "SS005";
         public const string ThrowNull = "SS006";
         public const string FlagsEnumValuesAreNotPowersOfTwo = "SS007";
-        public const string GetHashcodeRefersToMutableMember = "SS008";
+        public const string GetHashCodeRefersToMutableMember = "SS008";
         public const string LoopedRandomInstantiation = "SS009";
         public const string NewGuid = "SS010";
-        public const string OnPropertyChangedWithoutNameOfOperator = "SS011";
+        public const string OnPropertyChangedWithoutNameofOperator = "SS011";
         public const string RecursiveEqualityOperatorOverload = "SS012";
         public const string RethrowExceptionWithoutLosingStacktrace = "SS013";
         public const string StringDotFormatWithDifferentAmountOfArguments = "SS014";
@@ -32,5 +32,6 @@ namespace SharpSource.Utilities
         public const string ExceptionThrownFromFinalizer = "SS028";
         public const string ExceptionThrownFromGetHashCode = "SS029";
         public const string ExceptionThrownFromEquals = "SS030";
+        public const string FlagsEnumValuesDontFit = "SS031";
     }
 }

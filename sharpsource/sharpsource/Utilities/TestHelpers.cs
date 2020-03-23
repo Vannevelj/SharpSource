@@ -1,7 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SharpSource.Diagnostics.Tests
+namespace SharpSource.Utilities
 {
     internal static class TestHelpers
     {
