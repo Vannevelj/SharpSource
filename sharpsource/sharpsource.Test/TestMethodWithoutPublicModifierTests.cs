@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.TestMethodWithoutPublicModifier;
 
-namespace SharpSource.Tests
+namespace VSDiagnostics.Test.Tests.Tests
 {
     [TestClass]
     public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
@@ -82,7 +82,7 @@ namespace SharpSource.Tests
         }
 
         [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithpublicModifierAndTestAttribute()
+        public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttribute()
         {
             var original = @"
 using System;
@@ -94,7 +94,7 @@ namespace ConsoleApplication1
     public class MyClass
     {   
         [Test]
-        public void Method()
+        internal void Method()
         {
                 
         }
@@ -123,7 +123,7 @@ namespace ConsoleApplication1
         }
 
         [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithpublicModifierAndTestMethodAttribute()
+        public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttribute()
         {
             var original = @"
 using System;
@@ -135,7 +135,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [TestMethod]
-        public void Method()
+        internal void Method()
         {
 
         }
@@ -164,7 +164,7 @@ namespace ConsoleApplication1
         }
 
         [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithpublicModifierAndFactAttribute()
+        public void TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
         {
             var original = @"
 using System;
@@ -175,7 +175,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [Fact]
-        public void Method()
+        internal void Method()
         {
                 
         }
@@ -227,7 +227,7 @@ namespace ConsoleApplication1
         }
 
         [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithProtectedpublicModifierAndTestMethodAttribute()
+        public void TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttribute()
         {
             var original = @"
 using System;
@@ -239,7 +239,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [TestMethod]
-        protected public virtual void Method()
+        protected internal virtual void Method()
         {
 
         }
@@ -280,7 +280,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [TestMethod]
-        public virtual void Method()
+        internal virtual void Method()
         {
 
         }

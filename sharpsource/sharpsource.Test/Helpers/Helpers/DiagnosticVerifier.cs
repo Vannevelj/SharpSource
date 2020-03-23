@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualBasic.CompilerServices;
 using RoslynTester.DiagnosticResults;
 using RoslynTester.Helpers.Testing;
 
@@ -18,16 +17,17 @@ namespace RoslynTester.Helpers
     /// </summary>
     public abstract class DiagnosticVerifier
     {
-        private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
-        private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
         private const string CSharpFileExtension = ".cs";
+
+        private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
+        private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
+        private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
         private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 
         private const string FileName = "Test";
         private const string FileNameTemplate = FileName + "{0}{1}";
         private const string ProjectName = "TestProject";
         private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
-        private const string VisualBasicFileExtension = ".vb";
         private readonly string _languageName;
 
         public DiagnosticVerifier(string languageName)
@@ -405,16 +405,17 @@ namespace RoslynTester.Helpers
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         private static Project CreateProject(IEnumerable<string> sources, string language = LanguageNames.CSharp)
         {
-            var extension = language == LanguageNames.CSharp ? CSharpFileExtension : VisualBasicFileExtension;
+            var extension = CSharpFileExtension;
             var projectId = ProjectId.CreateNewId(ProjectName);
 
             var csharpReferences = new[]
-                    {
-                        CorlibReference,
-                        SystemCoreReference,
-                        CSharpSymbolsReference,
-                        CodeAnalysisReference
-                    };
+            {
+                CorlibReference,
+                SystemCoreReference,
+                CSharpSymbolsReference,
+                CodeAnalysisReference,
+                SystemRuntime,
+            };
 
             var solution = new AdhocWorkspace()
                 .CurrentSolution
