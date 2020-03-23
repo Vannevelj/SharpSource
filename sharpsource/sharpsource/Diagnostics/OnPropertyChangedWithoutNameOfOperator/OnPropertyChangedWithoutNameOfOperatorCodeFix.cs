@@ -9,10 +9,10 @@ using Microsoft.CodeAnalysis.CSharp;
 using SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator;
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameofOperator
+namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
 {
     [ExportCodeFixProvider(DiagnosticId.OnPropertyChangedWithoutNameofOperator + "CF", LanguageNames.CSharp), Shared]
-    public class OnPropertyChangedWithoutNameofOperatorCodeFix : CodeFixProvider
+    public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds
             => ImmutableArray.Create(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.Id);

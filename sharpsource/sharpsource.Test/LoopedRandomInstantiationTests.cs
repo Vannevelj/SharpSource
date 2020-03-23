@@ -1,8 +1,9 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.LoopedRandomInstantiation;
 
-namespace VSDiagnostics.Test.Tests.General
+namespace SharpSource.Tests
 {
     [TestClass]
     public class LoopedRandomInstantiationTests : CSharpDiagnosticVerifier

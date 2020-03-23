@@ -15,7 +15,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 {
     [ExportCodeFixProvider(DiagnosticId.SwitchDoesNotHandleAllEnumOptions + "CF", LanguageNames.CSharp), Shared]
-    internal class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
+    public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds
             => ImmutableArray.Create(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id);

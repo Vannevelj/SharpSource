@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
         private static readonly string Message = Resources.StringPlaceholdersInWrongOrderMessage;
         private static readonly string Title = Resources.StringPlaceholdersInWrongOrderTitle;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

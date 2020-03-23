@@ -1,9 +1,10 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden;
 
-namespace VSDiagnostics.Test.Tests.Structs
+namespace SharpSource.Tests
 {
     [TestClass]
     public class StructWithoutElementaryMethodsOverriddenTests : CSharpCodeFixVerifier

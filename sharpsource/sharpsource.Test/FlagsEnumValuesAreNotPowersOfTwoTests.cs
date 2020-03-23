@@ -2,8 +2,9 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo;
 
-namespace VSDiagnostics.Test.Tests.Attributes
+namespace SharpSource.Tests
 {
     [TestClass]
     public class FlagsEnumValuesAreNotPowersOfTwoTests : CSharpCodeFixVerifier
@@ -1103,7 +1104,7 @@ using System;
 namespace ConsoleApplication1
 {
     [Flags]
-    internal enum CalendarType { Camp, Activity }
+    public enum CalendarType { Camp, Activity }
 }";
 
             var result = @"
@@ -1112,7 +1113,7 @@ using System;
 namespace ConsoleApplication1
 {
     [Flags]
-    internal enum CalendarType
+    public enum CalendarType
     {
         Camp = 0,
         Activity = 1

@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
         private static readonly string Message = Resources.StructWithoutElementaryMethodsOverriddenAnalyzerMessage;
         private static readonly string Title = Resources.StructWithoutElementaryMethodsOverriddenAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.StructWithoutElementaryMethodsOverridden, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

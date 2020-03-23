@@ -19,7 +19,7 @@ namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
         private static readonly string Message = Resources.OnPropertyChangedWithoutNameOfOperatorAnalyzerMessage;
         private static readonly string Title = Resources.OnPropertyChangedWithoutNameOfOperatorAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.OnPropertyChangedWithoutNameofOperator, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.OnPropertyChangedWithoutNameofOperator, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

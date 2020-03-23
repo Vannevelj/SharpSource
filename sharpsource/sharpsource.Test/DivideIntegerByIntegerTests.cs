@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.DivideIntegerByInteger;
 
-namespace VSDiagnostics.Test.Tests.Arithmetic
+namespace SharpSource.Tests
 {
     [TestClass]
     public class DivideIntegerByIntegerTests : CSharpDiagnosticVerifier

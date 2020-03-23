@@ -16,7 +16,7 @@ namespace SharpSource.Diagnostics.StructShouldNotMutateSelf
         private static readonly string Message = Resources.StructsShouldNotMutateSelfAnalyzerMessage;
         private static readonly string Title = Resources.StructsShouldNotMutateSelfAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.StructShouldNotMutateSelf, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

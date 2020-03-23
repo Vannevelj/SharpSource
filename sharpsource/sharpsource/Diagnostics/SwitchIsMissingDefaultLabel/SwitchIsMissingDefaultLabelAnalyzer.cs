@@ -8,7 +8,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    internal class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
+    public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
@@ -16,7 +16,7 @@ namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
         private static readonly string Message = Resources.SwitchIsMissingDefaultSectionAnalyzerMessage;
         private static readonly string Title = Resources.SwitchIsMissingDefaultSectionAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.SwitchIsMissingDefaultLabel, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

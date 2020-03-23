@@ -472,7 +472,7 @@
     <comment>{0} - Field name</comment>
   </data>
   <data name="NonEncapsulatedOrMutableFieldAnalyzerTitle" xml:space="preserve">
-    <value>Internal or public fields should be immutable or a property.</value>
+    <value>public or public fields should be immutable or a property.</value>
   </data>
   <data name="NonEncapsulatedOrMutableFieldCodeFixTitle" xml:space="preserve">
     <value>Implement as property</value>

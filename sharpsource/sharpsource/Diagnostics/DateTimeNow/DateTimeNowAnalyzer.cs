@@ -17,7 +17,7 @@ namespace VSDiagnostics.Diagnostics.General.DateTimeNow
         private static readonly string Message = Resources.DateTimeNowAnalyzerMessage;
         private static readonly string Title = Resources.DateTimeNowAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.DateTimeNow, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.DateTimeNow, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

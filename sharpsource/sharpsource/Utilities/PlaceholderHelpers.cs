@@ -3,14 +3,14 @@ using System.Text.RegularExpressions;
 namespace SharpSource.Utilities
 {
     //TODO: tests
-    internal static class PlaceholderHelpers
+    public static class PlaceholderHelpers
     {
         /// <summary>
         ///     Removes all curly braces and formatting definitions from the placeholder
         /// </summary>
         /// <param name="input">The placeholder entry to parse.</param>
         /// <returns>Returns the placeholder index.</returns>
-        internal static string GetPlaceholderIndex(string input)
+        public static string GetPlaceholderIndex(string input)
         {
             var temp = input.Trim('{', '}');
             var colonIndex = temp.IndexOf(':');
@@ -30,7 +30,7 @@ namespace SharpSource.Utilities
         /// </summary>
         /// <param name="input">The format string with placeholders.</param>
         /// <returns>Returns a collection of matches according to the regex.</returns>
-        internal static MatchCollection GetPlaceholders(string input) =>
+        public static MatchCollection GetPlaceholders(string input) =>
             // This regex uses a named group so we can easily access the actual value
             Regex.Matches(input, @"(?<!\{)\{(?:\{\{)*((?<index>\d+)(?::.*?)?)\}(?:\}\})*(?!\})");
 
@@ -38,6 +38,6 @@ namespace SharpSource.Utilities
         ///     Returns all elements from the input - split on the placeholders - and includes the placeholders themselves as well.
         ///     This method is useful if you want to make use of the rest of the string as well.
         /// </summary>
-        internal static string[] GetPlaceholdersSplit(string input) => Regex.Split(input, @"(?<!\{)\{(?:\{\{)*(\d+(?::.*?)?)\}(?:\}\})*(?!\})");
+        public static string[] GetPlaceholdersSplit(string input) => Regex.Split(input, @"(?<!\{)\{(?:\{\{)*(\d+(?::.*?)?)\}(?:\}\})*(?!\})");
     }
 }

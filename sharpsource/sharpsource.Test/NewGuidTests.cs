@@ -2,8 +2,9 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.NewGuid;
 
-namespace VSDiagnostics.Test.Tests.General
+namespace SharpSource.Tests
 {
     [TestClass]
     public class NewGuidTests : CSharpCodeFixVerifier

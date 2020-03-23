@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
         private static readonly string Message = Resources.RecursiveEqualityOperatorOverloadMessage;
         private static readonly string Title = Resources.RecursiveEqualityOperatorOverloadMessage;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.RecursiveEqualityOperatorOverload, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

@@ -22,7 +22,7 @@ namespace SharpSource.Diagnostics.DivideIntegerByInteger
         private static readonly string Message = Resources.DivideIntegerByIntegerAnalyzerMessage;
         private static readonly string Title = Resources.DivideIntegerByIntegerAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule =>
+        public static DiagnosticDescriptor Rule =>
                 new DiagnosticDescriptor(DiagnosticId.DivideIntegerByInteger, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

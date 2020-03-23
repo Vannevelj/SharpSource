@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.LoopedRandomInstantiation
 
         private readonly SyntaxKind[] _loopTypes = { SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement };
 
-        internal static DiagnosticDescriptor Rule =>
+        public static DiagnosticDescriptor Rule =>
                 new DiagnosticDescriptor(DiagnosticId.LoopedRandomInstantiation, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

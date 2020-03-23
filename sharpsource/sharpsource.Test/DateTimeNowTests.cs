@@ -5,7 +5,7 @@ using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.DateTimeNow;
 using VSDiagnostics.Diagnostics.General.DateTimeNow;
 
-namespace VSDiagnostics.Test.Tests.General
+namespace SharpSource.Tests
 {
     [TestClass]
     public class DateTimeNowTests : CSharpCodeFixVerifier

@@ -16,7 +16,7 @@ namespace SharpSource.Diagnostics.ThrowNull
         private static readonly string Message = Resources.ThrowNullMessage;
         private static readonly string Title = Resources.ThrowNullMessage;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.ThrowNull, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

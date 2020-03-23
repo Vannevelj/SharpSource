@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.AsyncMethodWithVoidReturnType;
 
-namespace VSDiagnostics.Test.Tests.Async
+namespace SharpSource.Tests
 {
     [TestClass]
     public class AsyncMethodWithVoidReturnTypeTests : CSharpCodeFixVerifier

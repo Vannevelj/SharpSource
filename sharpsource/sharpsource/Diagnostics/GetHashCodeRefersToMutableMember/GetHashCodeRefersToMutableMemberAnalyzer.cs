@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
         private static readonly string Message = Resources.GetHashCodeRefersToMutableFieldAnalyzerMessage;
         private static readonly string Title = Resources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule =>
+        public static DiagnosticDescriptor Rule =>
             new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

@@ -1,8 +1,9 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.ThrowNull;
 
-namespace VSDiagnostics.Test.Tests.Exceptions
+namespace SharpSource.Tests
 {
     [TestClass]
     public class ThrowNullTests : CSharpDiagnosticVerifier

@@ -26,7 +26,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
         private static readonly string ValuesDontFitTitle =
             Resources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerTitle;
 
-        internal static DiagnosticDescriptor DefaultRule
+        public static DiagnosticDescriptor DefaultRule
             => new DiagnosticDescriptor(
                 DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo,
                 Title,
@@ -35,7 +35,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                 Severity,
                 true);
 
-        internal static DiagnosticDescriptor ValuesDontFitRule
+        public static DiagnosticDescriptor ValuesDontFitRule
             => new DiagnosticDescriptor(
                 DiagnosticId.FlagsEnumValuesDontFit,
                 ValuesDontFitTitle,

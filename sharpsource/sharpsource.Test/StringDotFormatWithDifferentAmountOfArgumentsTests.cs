@@ -1,8 +1,9 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments;
 
-namespace VSDiagnostics.Test.Tests.Strings
+namespace SharpSource.Tests
 {
     [TestClass]
     public class StringDotFormatWithDifferentAmountOfArgumentsTests : CSharpDiagnosticVerifier

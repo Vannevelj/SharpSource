@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
         private static readonly string Message = Resources.StringDotFormatWithDifferentAmountOfArgumentsMessage;
         private static readonly string Title = Resources.StringDotFormatWithDifferentAmountOfArgumentsTitle;
 
-        internal static DiagnosticDescriptor Rule =>
+        public static DiagnosticDescriptor Rule =>
             new DiagnosticDescriptor(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

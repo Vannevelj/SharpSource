@@ -10,7 +10,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    internal class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
+    public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
         private static readonly string Message = Resources.SwitchDoesNotHandleAllEnumOptionsAnalyzerMessage;
         private static readonly string Title = Resources.SwitchDoesNotHandleAllEnumOptionsAnalyzerTitle;
 
-        internal static DiagnosticDescriptor Rule
+        public static DiagnosticDescriptor Rule
             => new DiagnosticDescriptor(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

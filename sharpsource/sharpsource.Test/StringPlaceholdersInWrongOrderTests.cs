@@ -1,9 +1,10 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.StringPlaceholdersInWrongOrder;
 
-namespace VSDiagnostics.Test.Tests.Strings
+namespace SharpSource.Tests
 {
     [TestClass]
     public class StringPlaceholdersInWrongOrderTests : CSharpCodeFixVerifier

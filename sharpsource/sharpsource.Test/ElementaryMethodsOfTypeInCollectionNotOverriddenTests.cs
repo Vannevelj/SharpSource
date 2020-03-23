@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridden;
 
-namespace VSDiagnostics.Test.Tests.General
+namespace SharpSource.Tests
 {
     [TestClass]
     public class ElementaryMethodsOfTypeInCollectionNotOverriddenTests : CSharpDiagnosticVerifier
@@ -318,7 +318,7 @@ namespace ConsoleApplication1
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
-    internal class MyClass<T>
+    public class MyClass<T>
     {
         public static List<T> Method()
         {
@@ -338,7 +338,7 @@ namespace ConsoleApplication1
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
-    internal class MyClass
+    public class MyClass
     {
         public static List<T1> Method<T1>()
         {

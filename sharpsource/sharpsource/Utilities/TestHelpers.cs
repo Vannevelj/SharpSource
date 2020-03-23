@@ -3,11 +3,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSource.Utilities
 {
-    internal static class TestHelpers
+    public static class TestHelpers
     {
         private static readonly string[] MethodAttributes = { "Test", "TestMethod", "Fact" };
 
-        internal static bool HasTestAttribute(this MethodDeclarationSyntax method)
+        public static bool HasTestAttribute(this MethodDeclarationSyntax method)
         {
             var attributes = method.AttributeLists.FirstOrDefault()?.Attributes;
 

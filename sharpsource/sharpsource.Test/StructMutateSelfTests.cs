@@ -1,8 +1,9 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics.StructShouldNotMutateSelf;
 
-namespace VSDiagnostics.Test.Tests.Structs
+namespace SharpSource.Tests
 {
     [TestClass]
     public class StructMutateSelfTest : CSharpDiagnosticVerifier
