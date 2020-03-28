@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -124,18 +124,19 @@ namespace RoslynTester.Helpers
                 analyzerDiagnostics = DiagnosticVerifier.GetSortedDiagnosticsFromDocuments(analyzer, document);
 
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
+                var interestingDiagnostics = newCompilerDiagnostics.Where(x => x.Id != "CS8019");
 
                 //check if applying the code fix introduced any new compiler diagnostics
-                if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
+                if (!allowNewCompilerDiagnostics && interestingDiagnostics.Any())
                 {
                     // Format and get the compiler diagnostics again so that the locations make sense in the output
                     document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace));
-                    newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
+                    interestingDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
 
                     Assert.Fail(
                         "Fix introduced new compiler diagnostics. " +
                         $"\r\n{document.GetSyntaxRootAsync().Result.ToFullString()}" +
-                        $"\r\n\r\n{string.Join(Environment.NewLine, newCompilerDiagnostics.Select(d => d.ToString()))}");
+                        $"\r\n\r\n{string.Join(Environment.NewLine, interestingDiagnostics.Select(d => d.ToString()))}");
                 }
 
                 //check if there are analyzer diagnostics left after the code fix

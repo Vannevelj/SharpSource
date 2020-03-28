@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.TestMethodWithoutPublicModifier;
 
-namespace VSDiagnostics.Test.Tests.Tests
+namespace SharpSource.Tests
 {
     [TestClass]
     public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier

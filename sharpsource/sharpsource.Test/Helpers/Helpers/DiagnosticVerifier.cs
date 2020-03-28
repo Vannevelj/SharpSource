@@ -335,7 +335,7 @@ namespace RoslynTester.Helpers
                     throw new InvalidCodeException(
                         $"Unable to compile program: \"{firstError.GetMessage()}\"\n" +
                         $"Error at line {firstError.Location.GetLineSpan().StartLinePosition.Line} and column {firstError.Location.GetLineSpan().StartLinePosition.Character}." +
-                        $"{string.Join(Environment.NewLine, project.Documents.Select(x => x.GetTextAsync().Result))}");
+                        $"{firstError.Location.SourceTree.GetTextAsync().Result}");
                 }
 
                 var diags = compilation.WithAnalyzers(ImmutableArray.Create(analyzer)).GetAnalyzerDiagnosticsAsync().Result;

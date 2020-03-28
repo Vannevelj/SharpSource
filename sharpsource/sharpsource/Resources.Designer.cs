@@ -1592,6 +1592,33 @@ namespace SharpSource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use Task.Delay.
+        /// </summary>
+        internal static string ThreadSleepInAsyncMethodCodeFixTitle {
+            get {
+                return ResourceManager.GetString("ThreadSleepInAsyncMethodCodeFixTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronously sleeping thread in an async method.
+        /// </summary>
+        internal static string ThreadSleepInAsyncMethodMessage {
+            get {
+                return ResourceManager.GetString("ThreadSleepInAsyncMethodMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronously sleeping a thread in an async method.
+        /// </summary>
+        internal static string ThreadSleepInAsyncMethodTitle {
+            get {
+                return ResourceManager.GetString("ThreadSleepInAsyncMethodTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Throwing null will always result in a runtime exception.
         /// </summary>
         internal static string ThrowNullMessage {

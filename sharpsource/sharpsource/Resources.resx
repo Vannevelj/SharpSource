@@ -665,6 +665,15 @@
   <data name="TestsCategory" xml:space="preserve">
     <value>Tests</value>
   </data>
+  <data name="ThreadSleepInAsyncMethodCodeFixTitle" xml:space="preserve">
+    <value>Use Task.Delay</value>
+  </data>
+  <data name="ThreadSleepInAsyncMethodMessage" xml:space="preserve">
+    <value>Synchronously sleeping thread in an async method</value>
+  </data>
+  <data name="ThreadSleepInAsyncMethodTitle" xml:space="preserve">
+    <value>Synchronously sleeping a thread in an async method</value>
+  </data>
   <data name="ThrowNullMessage" xml:space="preserve">
     <value>Throwing null will always result in a runtime exception</value>
   </data>
