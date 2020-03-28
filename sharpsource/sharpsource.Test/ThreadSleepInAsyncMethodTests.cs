@@ -267,5 +267,86 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void ThreadSleepInAsyncMethod_Alias()
+        {
+            var original = @"
+using System;
+using System.Text;
+using MyThread = System.Threading.Thread;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            MyThread.Sleep(5000);
+        }
+    }
+}";
+
+            var result = @"
+using System;
+using System.Text;
+using MyThread = System.Threading.Thread;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            await Task.Delay(5000);
+        }
+    }
+}";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
+
+        [TestMethod]
+        public void ThreadSleepInAsyncMethod_AddsUsing()
+        {
+            var original = @"
+using System;
+using System.Text;
+using System.Threading;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async void MyMethod()
+        {
+            Thread.Sleep(5000);
+        }
+    }
+}";
+
+            var result = @"
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async void MyMethod()
+        {
+            await Task.Delay(5000);
+        }
+    }
+}";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
     }
 }

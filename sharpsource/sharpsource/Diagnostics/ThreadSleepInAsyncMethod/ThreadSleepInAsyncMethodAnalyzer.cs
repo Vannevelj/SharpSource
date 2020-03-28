@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -31,7 +30,7 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
             var isAsync = method.Modifiers.Contains(SyntaxKind.AsyncKeyword);
             if (isAsync)
             {
-                AnalyzeMembers(method, context);
+                AnalyzeMembers(method, context, isAsync);
                 return;
             }
 
@@ -39,36 +38,45 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
             var hasTaskReturnType = returnType.Type?.Name == "Task";
             if (hasTaskReturnType)
             {
-                AnalyzeMembers(method, context);
+                AnalyzeMembers(method, context, isAsync);
                 return;
             }
         }
 
-        private void AnalyzeMembers(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context)
+        private void AnalyzeMembers(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context, bool isAsync)
         {
-            foreach (var memberAccess in method.Body.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>())
+            foreach (var invocation in method.Body.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
             {
-                AnalyzeMember(memberAccess, context);
+                if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+                {
+                    IsAccessingThreadDotSleep(memberAccess.Name as IdentifierNameSyntax, context, isAsync);
+                }
+                else if (invocation.Expression is IdentifierNameSyntax identifierName)
+                {
+                    IsAccessingThreadDotSleep(identifierName, context, isAsync);
+                }
             }
         }
 
-        private void AnalyzeMember(MemberAccessExpressionSyntax node, SyntaxNodeAnalysisContext context)
+        private void IsAccessingThreadDotSleep(IdentifierNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, bool isAsync)
         {
-            var invokingSymbolIdentifier = node.Expression as IdentifierNameSyntax;
-            var invokingSymbolIdentifierName = invokingSymbolIdentifier?.Identifier.ValueText;
-            if (invokingSymbolIdentifierName != "Thread")
+            var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
+            if (invokedSymbol == null)
             {
                 return;
             }
 
-            var invokedSymbol = node.Name as IdentifierNameSyntax;
-            var invokedSymbolName = invokedSymbol?.Identifier.ValueText;
-            if (invokedSymbolName != "Sleep")
-            {
-                return;
-            }
+            var isAccessedFunctionCorrect = invokedSymbol.Name == "Sleep";
+            var isAccessedTypeCorrect = invokedSymbol.ContainingType?.Name == "Thread";
 
-            context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+            if (isAccessedFunctionCorrect && isAccessedTypeCorrect)
+            {
+                var dic = ImmutableDictionary.CreateBuilder<string, string>();
+                dic.Add("isAsync", isAsync.ToString());
+
+                var invocationNode = invokedFunction.FirstAncestorOrSelf<InvocationExpressionSyntax>();
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocationNode.GetLocation(), dic.ToImmutable(), null));
+            }
         }
     }
 }
