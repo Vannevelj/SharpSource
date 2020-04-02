@@ -80,7 +80,6 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
             if (field.IsConst)
             {
                 description += "const ";
-                returnResult = true;
             }
 
             // constant fields are marked static

@@ -28,7 +28,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to const field Boo");
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]
