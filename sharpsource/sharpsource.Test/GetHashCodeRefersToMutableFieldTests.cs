@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.GetHashCodeRefersToMutableMember;
+using SharpSource.Tests.Helpers;
 
 namespace SharpSource.Tests
 {
@@ -354,6 +355,29 @@ namespace ConsoleApplication1
         public override int GetHashCode() => _bar.Fizz.GetHashCode();
     }
 }";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/3")]
+        public void GetHashCodeRefersToMutableMember_CallsExternalProperty()
+        {
+            var original = @"
+using System.Text;
+
+namespace ConsoleApplication1
+{
+    class Test
+    {
+        private int Temp { get; set; }
+
+        public override int GetHashCode()
+        {
+            return ASCIIEncoding.ASCII.GetHashCode();
+        }
+    }
+}
+";
 
             VerifyDiagnostic(original);
         }

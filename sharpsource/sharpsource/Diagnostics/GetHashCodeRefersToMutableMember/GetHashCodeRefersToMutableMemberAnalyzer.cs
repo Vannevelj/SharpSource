@@ -12,7 +12,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
     public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
     {
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        
+
         private static readonly string Category = Resources.GeneralCategory;
         private static readonly string Message = Resources.GetHashCodeRefersToMutableFieldAnalyzerMessage;
         private static readonly string Title = Resources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
@@ -22,32 +22,27 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) =>
-            context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
-        
-        private void AnalyzeSymbol(SymbolAnalysisContext context)
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+
+        private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
-            var namedType = (INamedTypeSymbol)context.Symbol;
-            var semanticModel = context.Compilation.GetSemanticModel(context.Symbol.Locations[0].SourceTree);
-
-            var getHashCode = GetHashCodeSymbol(namedType);
-            if (getHashCode == null)
-            { return; }
-
-            var getHashCodeLocation = getHashCode.Locations[0];
-            var root = getHashCodeLocation?.SourceTree.GetRoot(context.CancellationToken);
-            if (root == null)
+            var declaration = (MethodDeclarationSyntax)context.Node;
+            if (declaration == null || declaration.Identifier == null || declaration.ParameterList == null)
             {
                 return;
             }
 
-            var getHashCodeNode = (MethodDeclarationSyntax)root.FindNode(getHashCodeLocation.SourceSpan);
-            var nodes = getHashCodeNode.DescendantNodes(descendIntoChildren: target => true);
+            if (declaration.Identifier.ValueText != "GetHashCode" || declaration.ParameterList.Parameters.Any())
+            {
+                return;
+            }
+
+            var nodes = declaration.DescendantNodes(descendIntoChildren: target => true);
 
             var identifierNameNodes = nodes.OfType<IdentifierNameSyntax>(SyntaxKind.IdentifierName);
             foreach (var node in identifierNameNodes)
             {
-                var symbol = semanticModel.GetSymbolInfo(node).Symbol;
+                var symbol = context.SemanticModel.GetSymbolInfo(node).Symbol;
                 if (symbol == null)
                 {
                     continue;
@@ -58,39 +53,23 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                     var fieldIsMutableOrStatic = FieldIsMutableOrStatic((IFieldSymbol)symbol);
                     if (fieldIsMutableOrStatic.Item1)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(Rule, getHashCode.Locations[0],
-                            fieldIsMutableOrStatic.Item2));
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, declaration.Identifier.GetLocation(), fieldIsMutableOrStatic.Item2));
                     }
                 }
                 else if (symbol.Kind == SymbolKind.Property)
                 {
-                    var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol, root);
-                    if (propertyIsMutable.Item1)
+                    var root = context.Node.SyntaxTree.GetRoot();
+                    var propertyNode = root.FindNode(symbol.Locations[0].SourceSpan);
+                    if (propertyNode is PropertyDeclarationSyntax propertyDeclaration)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(Rule, getHashCode.Locations[0],
-                            propertyIsMutable.Item2));
+                        var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol, propertyDeclaration);
+                        if (propertyIsMutable.Item1)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(Rule, declaration.Identifier.GetLocation(), propertyIsMutable.Item2));
+                        }
                     }
                 }
             }
-        }
-
-        private IMethodSymbol GetHashCodeSymbol(INamedTypeSymbol symbol)
-        {
-            foreach (var member in symbol.GetMembers())
-            {
-                if (!( member is IMethodSymbol ))
-                {
-                    continue;
-                }
-
-                var method = (IMethodSymbol)member;
-                if (method.MetadataName == nameof(GetHashCode) && method.Parameters.Length == 0)
-                {
-                    return method;
-                }
-            }
-
-            return null;
         }
 
         private Tuple<bool, string> FieldIsMutableOrStatic(IFieldSymbol field)
@@ -127,7 +106,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
             return Tuple.Create(returnResult, description + "field " + field.Name);
         }
 
-        private Tuple<bool, string> PropertyIsMutable(IPropertySymbol property, SyntaxNode root)
+        private Tuple<bool, string> PropertyIsMutable(IPropertySymbol property, PropertyDeclarationSyntax node)
         {
             var description = string.Empty;
             var returnResult = false;
@@ -150,15 +129,12 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                 returnResult = true;
             }
 
-            var propertyLocation = property.Locations[0];
-            var propertyNode = (PropertyDeclarationSyntax)root.FindNode(propertyLocation.SourceSpan);
-
             // ensure getter does not have body
             // the property has to have at least one of {get, set}, and it doesn't have a set (see above)
             // this will not have an NRE in First()
             // the accessor list might be null if it uses the arrow operator `=>`
-            if (propertyNode.AccessorList == null ||
-                propertyNode.AccessorList.Accessors[0].Body != null)
+            if (node.AccessorList == null ||
+                node.AccessorList.Accessors[0].Body != null)
             {
                 description += "property with bodied getter ";
                 returnResult = true;

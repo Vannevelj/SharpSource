@@ -16,8 +16,4 @@
     <ProjectReference Include="..\sharpsource\SharpSource.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
 </Project>
