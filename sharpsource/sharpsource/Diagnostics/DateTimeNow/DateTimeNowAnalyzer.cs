@@ -3,10 +3,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using SharpSource;
 using SharpSource.Utilities;
 
-namespace VSDiagnostics.Diagnostics.General.DateTimeNow
+namespace SharpSource.Diagnostics.DateTimeNow
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DateTimeNowAnalyzer : DiagnosticAnalyzer
@@ -26,9 +25,8 @@ namespace VSDiagnostics.Diagnostics.General.DateTimeNow
         private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
             var expression = (MemberAccessExpressionSyntax)context.Node;
-            var symbol = context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol as INamedTypeSymbol;
 
-            if (symbol != null &&
+            if (context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol is INamedTypeSymbol symbol &&
                 symbol.SpecialType == SpecialType.System_DateTime &&
                 expression.Name.Identifier.ValueText == "Now")
             {

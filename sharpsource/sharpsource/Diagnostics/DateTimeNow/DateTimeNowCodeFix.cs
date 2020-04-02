@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
-using VSDiagnostics.Diagnostics.General.DateTimeNow;
 
 namespace SharpSource.Diagnostics.DateTimeNow
 {

@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.DateTimeNow;
-using VSDiagnostics.Diagnostics.General.DateTimeNow;
 
 namespace SharpSource.Tests
 {
