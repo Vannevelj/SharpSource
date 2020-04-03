@@ -162,6 +162,16 @@
   <data name="AsyncMethodWithVoidReturnTypeTitle" xml:space="preserve">
     <value>Async methods should return a Task to make them awaitable</value>
   </data>
+  <data name="AsyncOverloadsAvailableCodeFixTitle" xml:space="preserve">
+    <value>Use Async overload</value>
+  </data>
+  <data name="AsyncOverloadsAvailableMessage" xml:space="preserve">
+    <value>Async overload available for {0}</value>
+    <comment>{0} - Method name</comment>
+  </data>
+  <data name="AsyncOverloadsAvailableTitle" xml:space="preserve">
+    <value>An async overload is available</value>
+  </data>
   <data name="AttributesCategory" xml:space="preserve">
     <value>Attributes</value>
   </data>

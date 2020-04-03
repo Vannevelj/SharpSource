@@ -16,8 +16,7 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
     [ExportCodeFixProvider(DiagnosticId.ThreadSleepInAsyncMethod + "CF", LanguageNames.CSharp), Shared]
     public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
     {
-        public override ImmutableArray<string> FixableDiagnosticIds
-            => ImmutableArray.Create(ThreadSleepInAsyncMethodAnalyzer.Rule.Id);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ThreadSleepInAsyncMethodAnalyzer.Rule.Id);
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

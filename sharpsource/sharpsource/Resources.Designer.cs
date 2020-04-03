@@ -188,6 +188,33 @@ namespace SharpSource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use Async overload.
+        /// </summary>
+        internal static string AsyncOverloadsAvailableCodeFixTitle {
+            get {
+                return ResourceManager.GetString("AsyncOverloadsAvailableCodeFixTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Async overload available for {0}.
+        /// </summary>
+        internal static string AsyncOverloadsAvailableMessage {
+            get {
+                return ResourceManager.GetString("AsyncOverloadsAvailableMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An async overload is available.
+        /// </summary>
+        internal static string AsyncOverloadsAvailableTitle {
+            get {
+                return ResourceManager.GetString("AsyncOverloadsAvailableTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attributes.
         /// </summary>
         internal static string AttributesCategory {
