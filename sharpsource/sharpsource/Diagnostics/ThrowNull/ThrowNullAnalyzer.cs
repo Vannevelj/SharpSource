@@ -26,6 +26,10 @@ namespace SharpSource.Diagnostics.ThrowNull
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             var throwStatement = (ThrowStatementSyntax)context.Node;
+            if (throwStatement.Expression == null)
+            {
+                return;
+            }
 
             var throwValue = context.SemanticModel.GetConstantValue(throwStatement.Expression);
             if (throwValue.HasValue && throwValue.Value == null)

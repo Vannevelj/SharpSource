@@ -51,5 +51,30 @@ namespace SharpSource.Tests
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void ThrowNull_Rethrow()
+        {
+            var original = @"
+    using System;
+    using System.Text;
+
+    namespace ConsoleApplication1
+    {
+        class MyClass
+        {   
+            void Method(string input)
+            {
+                try {
+
+                } catch (Exception) {
+                    throw;
+                }
+            }
+        }
+    }";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
