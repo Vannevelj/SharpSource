@@ -45,7 +45,7 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
 
         private void AnalyzeMembers(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context, bool isAsync)
         {
-            foreach (var invocation in method.Body.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
+            foreach (var invocation in method.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
             {
                 if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
                 {

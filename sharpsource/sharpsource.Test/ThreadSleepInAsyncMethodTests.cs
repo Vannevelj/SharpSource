@@ -348,5 +348,40 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
             VerifyFix(original, result);
         }
+
+        [TestMethod]
+        public void ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_ArrowSyntax()
+        {
+            var original = @"
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod() => Thread.Sleep(5000);
+    }
+}";
+
+            var result = @"
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod() => await Task.Delay(5000);
+    }
+}";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
     }
 }
