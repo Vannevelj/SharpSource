@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SharpSource.Diagnostics.AsyncMethodWithVoidReturnType;
 
 namespace SharpSource.Utilities
 {
@@ -343,6 +344,30 @@ namespace SharpSource.Utilities
 
             wrappedType = null;
             return false;
+        }
+
+        public static SyntaxNode AddUsingStatementIfMissing(this CompilationUnitSyntax compilation, string import)
+        {
+            if (!compilation.Usings.Any(x => x.Name.GetText().ToString().Contains(import)))
+            {
+                var parts = import.Split('.').Select(x => SyntaxFactory.IdentifierName(x)).ToList();
+                if (parts.Count == 1)
+                {
+                    return parts[0];
+                }
+
+                var counter = 0;
+                NameSyntax currentName = parts[0];
+                while (counter < parts.Count - 1)
+                {
+                    currentName = SyntaxFactory.QualifiedName(currentName, parts[counter + 1]);
+                    counter++;
+                }
+
+                return compilation.AddUsings(SyntaxFactory.UsingDirective(currentName));
+            }
+
+            return compilation;
         }
     }
 }

@@ -64,16 +64,7 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
             var newRoot = root.ReplaceNode(invocation, awaitExpression);
 
             var compilationUnit = (CompilationUnitSyntax)newRoot;
-            if (!compilationUnit.Usings.Any(x => x.Name.GetText().ToString().Contains("System.Threading.Tasks")))
-            {
-                var name =
-                    SyntaxFactory.QualifiedName(
-                        SyntaxFactory.QualifiedName(
-                            SyntaxFactory.IdentifierName("System"),
-                            SyntaxFactory.IdentifierName("Threading")),
-                SyntaxFactory.IdentifierName("Tasks"));
-                newRoot = compilationUnit.AddUsings(SyntaxFactory.UsingDirective(name));
-            }
+            newRoot = compilationUnit.AddUsingStatementIfMissing("System.Threading.Tasks");
 
             var newDocument = document.WithSyntaxRoot(newRoot);
 

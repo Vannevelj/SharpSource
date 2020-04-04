@@ -40,8 +40,10 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
         {
             var newMethod = methodDeclaration.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation));
             var newRoot = root.ReplaceNode(methodDeclaration, newMethod);
-            var newDocument = document.WithSyntaxRoot(newRoot);
+            var compilation = (CompilationUnitSyntax)newRoot;
+            newRoot = compilation.AddUsingStatementIfMissing("System.Threading.Tasks");
 
+            var newDocument = document.WithSyntaxRoot(newRoot);
             return Task.FromResult(newDocument);
         }
     }
