@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.TestMethodWithoutTestAttribute;
+using SharpSource.Tests.Helpers;
 
 namespace SharpSource.Tests
 {
@@ -177,6 +178,27 @@ namespace ConsoleApplication1
         public int MyMethod()
         {
             return 5;
+        }
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/22")]
+        public void TestMethodWithoutTestAttribute_PrivateMethod()
+        {
+            var original = @"
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    [TestClass]
+    class MyClass
+    {
+        private void MyMethod()
+        {
+            
         }
     }
 }";

@@ -26,6 +26,11 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
         {
             var method = (MethodDeclarationSyntax)context.Node;
 
+            if (!method.Modifiers.Any(SyntaxKind.PublicKeyword))
+            {
+                return;
+            }
+
             // Check if we're in a unit-test context
             // For NUnit and MSTest we can see if the enclosing class/struct has a [TestClass] or [TestFixture] attribute
             // For xUnit.NET we will have to see if there are other methods in the current class that contain a [Fact] attribute
