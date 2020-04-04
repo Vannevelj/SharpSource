@@ -39,7 +39,11 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
             ExpressionSyntax newExpression;
             if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
             {
-                newExpression = memberAccess.WithName(SyntaxFactory.IdentifierName($"{memberAccess.Name}Async"));
+                newExpression = memberAccess.WithName(GetIdentifier(memberAccess.Name));
+            }
+            else if (invocation.Expression is IdentifierNameSyntax identifierName)
+            {
+                newExpression = GetIdentifier(identifierName);
             }
             else
             {
@@ -54,5 +58,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
 
             return Task.FromResult(newDocument);
         }
+
+        private IdentifierNameSyntax GetIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
     }
 }

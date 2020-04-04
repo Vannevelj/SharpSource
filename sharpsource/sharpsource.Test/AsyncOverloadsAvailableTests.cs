@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext;
+using SharpSource.Tests.Helpers;
 
 namespace SharpSource.Tests
 {
@@ -111,6 +112,76 @@ namespace ConsoleApplication1
 }";
 
             VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
+        public void AsyncOverloadsAvailable_DifferentReturnType()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get();
+        }
+
+        string Get() => null;
+
+        async Task<int> GetAsync() => 5;
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        public void AsyncOverloadsAvailable_InCurrentType()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get();
+        }
+
+        string Get() => null;
+
+        async Task<string> GetAsync() => null;
+    }
+}";
+
+            var result = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            await GetAsync();
+        }
+
+        string Get() => null;
+
+        async Task<string> GetAsync() => null;
+    }
+}";
+
+            VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+            VerifyFix(original, result);
         }
     }
 }

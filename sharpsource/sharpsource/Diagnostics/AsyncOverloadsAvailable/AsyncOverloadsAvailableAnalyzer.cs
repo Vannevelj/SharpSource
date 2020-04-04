@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -38,6 +37,10 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                 if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
                 {
                     CheckIfOverloadAvailable(memberAccess.Name as IdentifierNameSyntax, context);
+                }
+                else if (invocation.Expression is IdentifierNameSyntax identifierName)
+                {
+                    CheckIfOverloadAvailable(identifierName, context);
                 }
             }
         }
