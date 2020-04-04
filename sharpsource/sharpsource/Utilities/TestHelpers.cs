@@ -5,7 +5,7 @@ namespace SharpSource.Utilities
 {
     public static class TestHelpers
     {
-        private static readonly string[] MethodAttributes = { "Test", "TestMethod", "Fact" };
+        private static readonly string[] MethodAttributes = { "Test", "TestMethod", "Fact", "Theory" };
 
         public static bool HasTestAttribute(this MethodDeclarationSyntax method)
         {
