@@ -228,5 +228,77 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original, "Async overload available for MyClass.Do");
             VerifyFix(original, result);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/25")]
+        public void AsyncOverloadsAvailable_DifferentParameters()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get();
+        }
+
+        string Get() => null;
+
+        async Task<string> GetAsync(int a) => null;
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        public void AsyncOverloadsAvailable_DifferentParameters_OptionalCancellationToken()
+        {
+            var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get();
+        }
+
+        string Get() => null;
+
+        async Task<string> GetAsync(CancellationToken? token = null) => null;
+    }
+}";
+
+            var result = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            await GetAsync();
+        }
+
+        string Get() => null;
+
+        async Task<string> GetAsync(CancellationToken? token = null) => null;
+    }
+}";
+
+            VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+            VerifyFix(original, result);
+        }
     }
 }

@@ -68,13 +68,36 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
 
             foreach (var overload in relevantOverloads)
             {
-                var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
-                var isGenericOverload = returnType.SpecialType != SpecialType.System_Void && overload.ReturnType.IsGenericTaskType(out var wrappedType) && wrappedType.Equals(returnType);
-
-                if (isVoidOverload || isGenericOverload)
+                var hasSameParameters = true;
+                if (overload.Parameters.Length != invokedMethod.Parameters.Length)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
-                    return;
+                    // We allow overloads to differ by providing a cancellationtoken
+                    var lastParameter = overload.Parameters.Last();
+                    hasSameParameters =
+                        overload.Parameters.Length - 1 == invokedMethod.Parameters.Length &&
+                        lastParameter.Type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken &&
+                        ctoken.TypeArguments.Single().Name == "CancellationToken";
+                }
+
+                for (var i = 0; i < invokedMethod.Parameters.Length; i++)
+                {
+                    if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type))
+                    {
+                        hasSameParameters = false;
+                        break;
+                    }
+                }
+
+                if (hasSameParameters)
+                {
+                    var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
+                    var isGenericOverload = returnType.SpecialType != SpecialType.System_Void && overload.ReturnType.IsGenericTaskType(out var wrappedType) && wrappedType.Equals(returnType);
+
+                    if (isVoidOverload || isGenericOverload)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
+                        return;
+                    }
                 }
             }
         }
