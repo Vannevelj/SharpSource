@@ -330,5 +330,27 @@ namespace SharpSource.Utilities
 
             return false;
         }
+
+        internal static bool IsNonGenericTaskType(this ITypeSymbol type)
+        {
+            if (type is INamedTypeSymbol { Arity: 0 } namedType)
+            {
+                return namedType.MetadataName == "Task";
+            }
+
+            return false;
+        }
+
+        internal static bool IsGenericTaskType(this ITypeSymbol type, out ITypeSymbol wrappedType)
+        {
+            if (type is INamedTypeSymbol { Arity: 1, MetadataName: "Task`1" } namedType)
+            {
+                wrappedType = namedType.TypeArguments.Single();
+                return true;
+            }
+
+            wrappedType = null;
+            return false;
+        }
     }
 }

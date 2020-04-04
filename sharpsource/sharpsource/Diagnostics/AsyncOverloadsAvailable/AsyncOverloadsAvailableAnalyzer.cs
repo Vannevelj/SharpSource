@@ -53,14 +53,29 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                 return;
             }
 
-            var invokedMethod = invokedSymbol.Name;
-            var invokedType = invokedSymbol.ContainingType?.Name;
+            var invokedMethodName = invokedSymbol.Name;
+            var invokedTypeName = invokedSymbol.ContainingType?.Name;
 
-            var hasOverload = invokedSymbol.ContainingType.MemberNames.Any(x => x == $"{invokedMethod}Async");
+            var methodsInInvokedType = invokedSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>();
+            var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
 
-            if (hasOverload)
+            if (!( invokedSymbol is IMethodSymbol invokedMethod ))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedType}.{invokedMethod}"));
+                return;
+            }
+
+            var returnType = invokedMethod.ReturnType;
+
+            foreach (var overload in relevantOverloads)
+            {
+                var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
+                var isGenericOverload = returnType.SpecialType != SpecialType.System_Void && overload.ReturnType.IsGenericTaskType(out var wrappedType) && wrappedType.Equals(returnType);
+
+                if (isVoidOverload || isGenericOverload)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
+                    return;
+                }
             }
         }
     }

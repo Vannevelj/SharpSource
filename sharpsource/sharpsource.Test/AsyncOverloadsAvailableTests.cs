@@ -139,7 +139,7 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original);
         }
 
-        [TestMethod]
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
         public void AsyncOverloadsAvailable_InCurrentType()
         {
             var original = @"
@@ -181,6 +181,51 @@ namespace ConsoleApplication1
 }";
 
             VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+            VerifyFix(original, result);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
+        public void AsyncOverloadsAvailable_Void()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Do();
+        }
+
+        void Do() { }
+
+        async Task DoAsync() { }
+    }
+}";
+
+            var result = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            await DoAsync();
+        }
+
+        void Do() { }
+
+        async Task DoAsync() { }
+    }
+}";
+
+            VerifyDiagnostic(original, "Async overload available for MyClass.Do");
             VerifyFix(original, result);
         }
     }
