@@ -73,7 +73,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
             foreach (var overload in relevantOverloads)
             {
                 var hasSameParameters = true;
-                if (overload.Parameters.Length != invokedMethod.Parameters.Length)
+                if (overload.Parameters.Length != invokedMethod.Parameters.Length && overload.Parameters.Any())
                 {
                     // We allow overloads to differ by providing a cancellationtoken
                     var lastParameter = overload.Parameters.Last();
@@ -83,12 +83,15 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                         ctoken.TypeArguments.Single().Name == "CancellationToken";
                 }
 
-                for (var i = 0; i < invokedMethod.Parameters.Length; i++)
+                if (invokedMethod.Parameters.Length <= overload.Parameters.Length)
                 {
-                    if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type))
+                    for (var i = 0; i < invokedMethod.Parameters.Length; i++)
                     {
-                        hasSameParameters = false;
-                        break;
+                        if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type))
+                        {
+                            hasSameParameters = false;
+                            break;
+                        }
                     }
                 }
 

@@ -368,5 +368,29 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original, "Async overload available for MyClass.Get");
             VerifyFix(original, result);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/26")]
+        public void AsyncOverloadsAvailable_OverloadWithLessParameters()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async void Method()
+        {
+            Other(32);
+        }
+
+        void Other(int a) { }
+        void OtherAsync() { }
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
