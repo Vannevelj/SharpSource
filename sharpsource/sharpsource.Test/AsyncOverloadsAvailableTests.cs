@@ -323,5 +323,50 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void AsyncOverloadsAvailable_GenericOverload()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get<string>();
+        }
+
+        T Get<T>() => default(T);
+
+        async Task<T> GetAsync<T>() => default(T);
+    }
+}";
+
+            var result = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            await GetAsync<string>();
+        }
+
+        T Get<T>() => default(T);
+
+        async Task<T> GetAsync<T>() => default(T);
+    }
+}";
+
+            VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+            VerifyFix(original, result);
+        }
     }
 }

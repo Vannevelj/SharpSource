@@ -34,13 +34,17 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
 
             foreach (var invocation in methodDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>())
             {
-                if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+                switch (invocation.Expression)
                 {
-                    CheckIfOverloadAvailable(memberAccess.Name, context);
-                }
-                else if (invocation.Expression is IdentifierNameSyntax identifierName)
-                {
-                    CheckIfOverloadAvailable(identifierName, context);
+                    case MemberAccessExpressionSyntax memberAccess:
+                        CheckIfOverloadAvailable(memberAccess.Name, context);
+                        break;
+                    case IdentifierNameSyntax identifierName:
+                        CheckIfOverloadAvailable(identifierName, context);
+                        break;
+                    case GenericNameSyntax genericName:
+                        CheckIfOverloadAvailable(genericName, context);
+                        break;
                 }
             }
         }
@@ -91,7 +95,10 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                 if (hasSameParameters)
                 {
                     var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
-                    var isGenericOverload = returnType.SpecialType != SpecialType.System_Void && overload.ReturnType.IsGenericTaskType(out var wrappedType) && wrappedType.Equals(returnType);
+                    var isGenericOverload =
+                        returnType.SpecialType != SpecialType.System_Void &&
+                        overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
+                        (wrappedType.Equals(returnType) || wrappedType.TypeKind == TypeKind.TypeParameter);
 
                     if (isVoidOverload || isGenericOverload)
                     {

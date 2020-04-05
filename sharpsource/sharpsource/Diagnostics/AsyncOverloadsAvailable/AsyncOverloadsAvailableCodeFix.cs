@@ -45,6 +45,10 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
             {
                 newExpression = GetIdentifier(identifierName);
             }
+            else if (invocation.Expression is GenericNameSyntax genericName)
+            {
+                newExpression = genericName.WithIdentifier(GetIdentifier(genericName).Identifier);
+            }
             else
             {
                 return Task.FromResult(document);
