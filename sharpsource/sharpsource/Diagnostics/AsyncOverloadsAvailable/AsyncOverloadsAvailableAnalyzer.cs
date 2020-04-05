@@ -36,7 +36,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
             {
                 if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
                 {
-                    CheckIfOverloadAvailable(memberAccess.Name as IdentifierNameSyntax, context);
+                    CheckIfOverloadAvailable(memberAccess.Name, context);
                 }
                 else if (invocation.Expression is IdentifierNameSyntax identifierName)
                 {
@@ -45,7 +45,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
             }
         }
 
-        private void CheckIfOverloadAvailable(IdentifierNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
+        private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
         {
             var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
             if (invokedSymbol == null)
