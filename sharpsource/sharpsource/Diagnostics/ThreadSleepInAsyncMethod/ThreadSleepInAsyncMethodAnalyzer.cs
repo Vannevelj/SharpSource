@@ -47,18 +47,19 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
         {
             foreach (var invocation in method.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
             {
-                if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+                switch (invocation.Expression)
                 {
-                    IsAccessingThreadDotSleep(memberAccess.Name as IdentifierNameSyntax, context, isAsync);
-                }
-                else if (invocation.Expression is IdentifierNameSyntax identifierName)
-                {
-                    IsAccessingThreadDotSleep(identifierName, context, isAsync);
+                    case MemberAccessExpressionSyntax memberAccess:
+                        IsAccessingThreadDotSleep(memberAccess.Name, context, isAsync);
+                        break;
+                    case IdentifierNameSyntax identifierName:
+                        IsAccessingThreadDotSleep(identifierName, context, isAsync);
+                        break;
                 }
             }
         }
 
-        private void IsAccessingThreadDotSleep(IdentifierNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, bool isAsync)
+        private void IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, bool isAsync)
         {
             var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
             if (invokedSymbol == null)

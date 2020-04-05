@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.ThreadSleepInAsyncMethod;
+using SharpSource.Tests.Helpers;
 
 namespace SharpSource.Tests
 {
@@ -382,6 +383,31 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
             VerifyFix(original, result);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/23")]
+        public void ThreadSleepInAsyncMethod_GenericMethod()
+        {
+            var original = @"
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async void Method()
+        {
+            this.Other<string>();
+        }
+
+        void Other<T>() { }
+    }
+}";
+
+            VerifyDiagnostic(original);
         }
     }
 }
