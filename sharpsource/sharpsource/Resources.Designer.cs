@@ -62,6 +62,33 @@ namespace SharpSource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use await to get the result of a Task..
+        /// </summary>
+        internal static string AccessingTaskResultWithoutAwaitAnalyzerMessage {
+            get {
+                return ResourceManager.GetString("AccessingTaskResultWithoutAwaitAnalyzerMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use await to get the result of an asynchronous operation.
+        /// </summary>
+        internal static string AccessingTaskResultWithoutAwaitAnalyzerTitle {
+            get {
+                return ResourceManager.GetString("AccessingTaskResultWithoutAwaitAnalyzerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use await.
+        /// </summary>
+        internal static string AccessingTaskResultWithoutAwaitCodeFixTitle {
+            get {
+                return ResourceManager.GetString("AccessingTaskResultWithoutAwaitCodeFixTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The variable {0} is used in an ArgumentException as string. Consider using the nameof operator instead..
         /// </summary>
         internal static string ArgumentExceptionWithoutNameofOperatorAnalyzerMessage {

@@ -35,5 +35,6 @@ namespace SharpSource.Utilities
         public const string FlagsEnumValuesDontFit = "SS031";
         public const string ThreadSleepInAsyncMethod = "SS032";
         public const string AsyncOverloadsAvailable = "SS033";
+        public const string AccessingTaskResultWithoutAwait = "SS034";
     }
 }

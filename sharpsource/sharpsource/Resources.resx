@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessingTaskResultWithoutAwaitAnalyzerMessage" xml:space="preserve">
+    <value>Use await to get the result of a Task.</value>
+  </data>
+  <data name="AccessingTaskResultWithoutAwaitAnalyzerTitle" xml:space="preserve">
+    <value>Use await to get the result of an asynchronous operation</value>
+  </data>
+  <data name="AccessingTaskResultWithoutAwaitCodeFixTitle" xml:space="preserve">
+    <value>Use await</value>
+  </data>
   <data name="ArgumentExceptionWithoutNameofOperatorAnalyzerMessage" xml:space="preserve">
     <value>The variable {0} is used in an ArgumentException as string. Consider using the nameof operator instead.</value>
     <comment>{0} - Field name</comment>
