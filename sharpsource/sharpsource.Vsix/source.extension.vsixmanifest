@@ -2,8 +2,11 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="sharpsource.c9f83ea1-9eb1-4eba-8d68-c876c28b92ca" Version="0.1" Language="en-US" Publisher="jeroen.vannevel"/>
-        <DisplayName>sharpsource</DisplayName>
-        <Description xml:space="preserve">This is a sample diagnostic extension for the .NET Compiler Platform ("Roslyn").</Description>
+        <DisplayName>SharpSource</DisplayName>
+        <Description xml:space="preserve">Protect your code from runtime issues through static analysis.Pro</Descripti
+        <MoreInfo>https://github.com/vannevelj/sharpsource</MoreInfo>
+        <Tags>static, analysis, </Tags>
+        <Preview>true</Preview>on>
     </Metadata>
     <Installation>
         <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Enterprise" />
