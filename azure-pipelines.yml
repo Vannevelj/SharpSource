@@ -9,7 +9,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-name: '3.9.3'
+name: '0.1.0'
 
 steps:
 - task: NuGetCommand@2
