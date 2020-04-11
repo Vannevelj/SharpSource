@@ -28,7 +28,7 @@ steps:
 
 - task: VsixToolsUpdateVersion@2
   inputs:
-    FileName: '$(Build.SourcesDirectory)\sharpsource.Vsix\source.extension.vsixmanifest'
+    FileName: '$(Build.SourcesDirectory)\sharpsource\sharpsource.Vsix\source.extension.vsixmanifest'
     VersionNumber: '$(Build.BuildNumber)'
 
 - task: VSBuild@1
