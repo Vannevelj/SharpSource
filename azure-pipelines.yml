@@ -35,6 +35,12 @@ steps:
   inputs:
     solution: '**\*.sln'
 
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\sharpsource.Test.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+
 - task: CopyFiles@2
   inputs:
     Contents: '**\?(*.vsix|publishManifest.json|README.md)'
