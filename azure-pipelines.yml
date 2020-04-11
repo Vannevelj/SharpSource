@@ -4,6 +4,13 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+name: '3.9.3'
+
 steps:
 - task: NuGetCommand@2
   inputs:
