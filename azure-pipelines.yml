@@ -5,14 +5,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: DotNetCoreCLI@2
+- task: VSBuild@1
   inputs:
-    command: 'build'
-    projects: '**/sharpsource.sln'
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
+    solution: '**\*.sln'
 
 - task: PublishBuildArtifacts@1
   inputs:
