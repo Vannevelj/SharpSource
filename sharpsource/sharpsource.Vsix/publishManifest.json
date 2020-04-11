@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": ["Coding", "Performance", "programming languages" ],
+  "identity": {
+      "internalName": "SharpSource"
+  },
+  "overview": "readme.md",
+  "priceCategory": "free",
+  "publisher": "Jeroen Vannevel",
+  "private": false,
+  "qna": true,
+  "repo": "https://github.com/vannevelj/sharpsource"
+}
