@@ -18,9 +18,27 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
 
+- task: Assembly-Info-NetCore@2
+  inputs:
+    PackageId: 'SharpSource'
+    Authors: 'Jeroen Vannevel'
+    VersionNumber: '$(Build.BuildNumber)'
+    FileVersionNumber: '$(Build.BuildNumber)'
+    InformationalVersion: '$(Build.BuildNumber)'
+
+- task: VsixToolsUpdateVersion@2
+  inputs:
+    FileName: '$(Build.SourcesDirectory)\sharpsource.Vsix\source.extension.vsixmanifest'
+    VersionNumber: '$(Build.BuildNumber)'
+
 - task: VSBuild@1
   inputs:
     solution: '**\*.sln'
+
+- task: CopyFiles@2
+  inputs:
+    Contents: '**\?(*.vsix|publishManifest.json|README.md)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
   inputs:
