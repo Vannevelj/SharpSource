@@ -4,7 +4,7 @@
   "identity": {
       "internalName": "SharpSource"
   },
-  "overview": "readme.md",
+  "overview": "../../README.md",
   "priceCategory": "free",
   "publisher": "JeroenVannevel",
   "private": false,
