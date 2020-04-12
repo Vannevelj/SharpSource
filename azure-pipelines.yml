@@ -15,7 +15,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
-    restoreSolution: '**/*.sln'
+    restoreSolution: '$(solution)'
     feedsToUse: 'select'
 
 - task: Assembly-Info-NetCore@2
@@ -46,7 +46,9 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    solution: '**\*.sln'
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
   inputs:
