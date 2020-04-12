@@ -25,7 +25,6 @@ steps:
     InsertAttributes: false
     FileEncoding: 'auto'
     WriteBOM: false
-    GeneratePackageOnBuild: true
     PackageId: 'SharpSource'
     Authors: 'Jeroen Vannevel'
     Description: 'Protect your code from runtime issues through static analysis.'
@@ -38,6 +37,13 @@ steps:
     LogLevel: 'verbose'
     FailOnWarning: false
     DisableTelemetry: false
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/SharpSource.csproj'
+    versioningScheme: 'byBuildNumber'
+    includeSymbols: true
 
 - task: VsixToolsUpdateVersion@2
   inputs:
