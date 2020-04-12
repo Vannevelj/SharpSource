@@ -8,7 +8,7 @@
     <owners>Jeroen Vannevel</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/Vannevelj/SharpSource</projectUrl>
-    <repositoryUrl>https://github.com/Vannevelj/SharpSource</repositoryUrl>
+    <repository type="git">https://github.com/vannevelj/sharpsource</repository>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Protect your code from runtime issues through static analysis</description>
     <releaseNotes>For a full overview of the changes, visit https://github.com/vannevelj/sharpsource/releases</releaseNotes>
