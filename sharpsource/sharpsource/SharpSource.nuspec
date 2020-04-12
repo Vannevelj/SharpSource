@@ -5,7 +5,7 @@
     <version>$version$</version>
     <title>SharpSource $version$</title>
     <authors>Jeroen Vannevel</authors>
-    <owners>Jeroen Vannevel</owners>
+    <owners>vannevelj</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/Vannevelj/SharpSource</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
