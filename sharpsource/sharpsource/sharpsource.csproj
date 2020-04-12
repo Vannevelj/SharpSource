@@ -4,9 +4,6 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <LangVersion>8.0</LangVersion>
-
-    <PackageId>SharpSource</PackageId>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 
