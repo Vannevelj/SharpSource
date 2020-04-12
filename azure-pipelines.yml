@@ -20,11 +20,24 @@ steps:
 
 - task: Assembly-Info-NetCore@2
   inputs:
+    Path: '$(Build.SourcesDirectory)'
+    FileNames: '**/*.csproj'
+    InsertAttributes: false
+    FileEncoding: 'auto'
+    WriteBOM: false
+    GeneratePackageOnBuild: true
     PackageId: 'SharpSource'
     Authors: 'Jeroen Vannevel'
+    Description: 'Protect your code from runtime issues through static analysis.'
+    PackageProjectUrl: 'https://github.com/vannevelj/SharpSource'
+    RepositoryUrl: 'https://github.com/vannevelj/SharpSource'
     VersionNumber: '$(Build.BuildNumber)'
     FileVersionNumber: '$(Build.BuildNumber)'
     InformationalVersion: '$(Build.BuildNumber)'
+    PackageVersion: '$(Build.BuildNumber)'
+    LogLevel: 'verbose'
+    FailOnWarning: false
+    DisableTelemetry: false
 
 - task: VsixToolsUpdateVersion@2
   inputs:
@@ -38,12 +51,12 @@ steps:
 - task: VSTest@2
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\sharpsource.Test.dll'
+    testAssemblyVer2: '**\SharpSource.Tests.dll'
     searchFolder: '$(System.DefaultWorkingDirectory)'
 
 - task: CopyFiles@2
   inputs:
-    Contents: '**\?(*.vsix|publishManifest.json|README.md)'
+    Contents: '**\?(*.vsix|publishManifest.json|README.md|*.nupkg)'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
