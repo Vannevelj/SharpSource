@@ -38,13 +38,6 @@ steps:
     FailOnWarning: false
     DisableTelemetry: false
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/SharpSource.csproj'
-    versioningScheme: 'byBuildNumber'
-    includeSymbols: true
-
 - task: VsixToolsUpdateVersion@2
   inputs:
     FileName: '$(Build.SourcesDirectory)\sharpsource\sharpsource.Vsix\source.extension.vsixmanifest'
@@ -61,6 +54,12 @@ steps:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\SharpSource.Tests.dll'
     searchFolder: '$(System.DefaultWorkingDirectory)'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj'
+    versioningScheme: 'byBuildNumber'
 
 - task: CopyFiles@2
   inputs:
