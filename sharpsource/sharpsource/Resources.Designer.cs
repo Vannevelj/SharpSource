@@ -89,33 +89,6 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The variable {0} is used in an ArgumentException as string. Consider using the nameof operator instead..
-        /// </summary>
-        internal static string ArgumentExceptionWithoutNameofOperatorAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("ArgumentExceptionWithoutNameofOperatorAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An ArgumentException should use nameof() to refer to a variable..
-        /// </summary>
-        internal static string ArgumentExceptionWithoutNameofOperatorAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("ArgumentExceptionWithoutNameofOperatorAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use nameof().
-        /// </summary>
-        internal static string ArgumentExceptionWithoutNameofOperatorCodeFixTitle {
-            get {
-                return ResourceManager.GetString("ArgumentExceptionWithoutNameofOperatorCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Arithmetic.
         /// </summary>
         internal static string ArithmeticCategory {
@@ -125,65 +98,11 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use cast instead of as..
-        /// </summary>
-        internal static string AsToCastAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("AsToCastAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Changes an &apos;as&apos; expression to a cast..
-        /// </summary>
-        internal static string AsToCastAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AsToCastAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use cast instead of as.
-        /// </summary>
-        internal static string AsToCastCodeFixTitle {
-            get {
-                return ResourceManager.GetString("AsToCastCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Async.
         /// </summary>
         internal static string AsyncCategory {
             get {
                 return ResourceManager.GetString("AsyncCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Asynchronous method &quot;{0}&quot; does not end with &apos;Async&apos;..
-        /// </summary>
-        internal static string AsyncMethodWithoutAsyncSuffixAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("AsyncMethodWithoutAsyncSuffixAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Asynchronous methods should end with the -Async suffix..
-        /// </summary>
-        internal static string AsyncMethodWithoutAsyncSuffixAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AsyncMethodWithoutAsyncSuffixAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add -Async suffix.
-        /// </summary>
-        internal static string AsyncMethodWithoutAsyncSuffixCodeFixTitle {
-            get {
-                return ResourceManager.GetString("AsyncMethodWithoutAsyncSuffixCodeFixTitle", resourceCulture);
             }
         }
         
@@ -251,60 +170,6 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attribute &quot;{0}&quot; has an empty argument list..
-        /// </summary>
-        internal static string AttributeWithEmptyArgumentListAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("AttributeWithEmptyArgumentListAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An attribute should not have an empty argument list..
-        /// </summary>
-        internal static string AttributeWithEmptyArgumentListAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AttributeWithEmptyArgumentListAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove parentheses from argument list.
-        /// </summary>
-        internal static string AttributeWithEmptyArgumentListCodeFixTitle {
-            get {
-                return ResourceManager.GetString("AttributeWithEmptyArgumentListCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use as instead of a cast..
-        /// </summary>
-        internal static string CastToAsAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("CastToAsAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Changes a cast expression to &apos;as&apos;..
-        /// </summary>
-        internal static string CastToAsAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("CastToAsAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use as instead of cast.
-        /// </summary>
-        internal static string CastToAsCodeFixTitle {
-            get {
-                return ResourceManager.GetString("CastToAsCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A catch clause catches NullReferenceException. Consider using != null or null propagation instead..
         /// </summary>
         internal static string CatchNullReferenceExceptionAnalyzerMessage {
@@ -319,114 +184,6 @@ namespace SharpSource {
         internal static string CatchNullReferenceExceptionAnalyzerTitle {
             get {
                 return ResourceManager.GetString("CatchNullReferenceExceptionAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A boolean expression can be simplified..
-        /// </summary>
-        internal static string CompareBooleanToFalseLiteralAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("CompareBooleanToFalseLiteralAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A boolean expression comparing to false can be simplified..
-        /// </summary>
-        internal static string CompareBooleanToFalseLiteralAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("CompareBooleanToFalseLiteralAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Simplify expression.
-        /// </summary>
-        internal static string CompareBooleanToFalseLiteralCodeFixTitle {
-            get {
-                return ResourceManager.GetString("CompareBooleanToFalseLiteralCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A boolean expression can be simplified..
-        /// </summary>
-        internal static string CompareBooleanToTrueLiteralAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("CompareBooleanToTrueLiteralAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A boolean expression comparing to true can be simplified..
-        /// </summary>
-        internal static string CompareBooleanToTrueLiteralAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("CompareBooleanToTrueLiteralAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Simplify expression.
-        /// </summary>
-        internal static string CompareBooleanToTrueLiteralCodeFixTitle {
-            get {
-                return ResourceManager.GetString("CompareBooleanToTrueLiteralCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A conditional operator can be omitted..
-        /// </summary>
-        internal static string ConditionalOperatorReturnsDefaultOptionsAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("ConditionalOperatorReturnsDefaultOptionsAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The conditional operator shouldn&apos;t return redundant default options..
-        /// </summary>
-        internal static string ConditionalOperatorReturnsDefaultOptionsAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("ConditionalOperatorReturnsDefaultOptionsAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove conditional operator.
-        /// </summary>
-        internal static string ConditionalOperatorReturnsDefaultOptionsCodeFixTitle {
-            get {
-                return ResourceManager.GetString("ConditionalOperatorReturnsDefaultOptionsCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A conditional operator can be omitted..
-        /// </summary>
-        internal static string ConditionalOperatorReturnsInvertedDefaultOptionsAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("ConditionalOperatorReturnsInvertedDefaultOptionsAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The conditional operator shouldn&apos;t return redundant inverted default options..
-        /// </summary>
-        internal static string ConditionalOperatorReturnsInvertedDefaultOptionsAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("ConditionalOperatorReturnsInvertedDefaultOptionsAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove conditional operator.
-        /// </summary>
-        internal static string ConditionalOperatorReturnsInvertedDefaultOptionsCodeFixTitle {
-            get {
-                return ResourceManager.GetString("ConditionalOperatorReturnsInvertedDefaultOptionsCodeFixTitle", resourceCulture);
             }
         }
         
@@ -517,42 +274,6 @@ namespace SharpSource {
         internal static string ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle {
             get {
                 return ResourceManager.GetString("ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An ArgumentException is thrown without a message..
-        /// </summary>
-        internal static string EmptyArgumentExceptionAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("EmptyArgumentExceptionAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Verifies whether an ArgumentException is thrown with a message..
-        /// </summary>
-        internal static string EmptyArgumentExceptionAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("EmptyArgumentExceptionAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Empty catch block detected. Consider adding a comment or a logging statement..
-        /// </summary>
-        internal static string EmptyCatchClauseAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("EmptyCatchClauseAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warns when an exception catch block is empty..
-        /// </summary>
-        internal static string EmptyCatchClauseAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("EmptyCatchClauseAnalyzerTitle", resourceCulture);
             }
         }
         
@@ -881,51 +602,6 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use of &quot;goto&quot; detected.  Consider using a method or loop instead..
-        /// </summary>
-        internal static string GotoDetectionAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("GotoDetectionAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use of &quot;goto&quot; detected..
-        /// </summary>
-        internal static string GotoDetectionAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("GotoDetectionAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An if-statement should be written using braces..
-        /// </summary>
-        internal static string IfStatementWithoutBracesAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("IfStatementWithoutBracesAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to If blocks should use braces to denote start and end..
-        /// </summary>
-        internal static string IfStatementWithoutBracesAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("IfStatementWithoutBracesAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use braces.
-        /// </summary>
-        internal static string IfStatementWithoutBracesCodeFixTitle {
-            get {
-                return ResourceManager.GetString("IfStatementWithoutBracesCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0} {1} does not implement Equals() and GetHashCode()..
         /// </summary>
         internal static string ImplementEqualsAndGetHashCodeAnalyzerMessage {
@@ -967,87 +643,6 @@ namespace SharpSource {
         internal static string LoopedRandomInstantiationAnalyzerTitle {
             get {
                 return ResourceManager.GetString("LoopedRandomInstantiationAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A loop is not delimited with braces..
-        /// </summary>
-        internal static string LoopStatementWithoutBracesAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("LoopStatementWithoutBracesAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loop blocks should use braces to denote start and end..
-        /// </summary>
-        internal static string LoopStatementWithoutBracesAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("LoopStatementWithoutBracesAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use braces.
-        /// </summary>
-        internal static string LoopStatementWithoutBracesCodeFixTitle {
-            get {
-                return ResourceManager.GetString("LoopStatementWithoutBracesCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} {1} statement should be written with braces.
-        /// </summary>
-        internal static string MissingBracesAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("MissingBracesAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} blocks should use braces to denote start and end..
-        /// </summary>
-        internal static string MissingBracesAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("MissingBracesAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use braces.
-        /// </summary>
-        internal static string MissingBracesCodeFixTitle {
-            get {
-                return ResourceManager.GetString("MissingBracesCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} {1} does not follow naming conventions. Should be {2}..
-        /// </summary>
-        internal static string NamingConventionsAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("NamingConventionsAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Implements the most common configuration of naming conventions..
-        /// </summary>
-        internal static string NamingConventionsAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("NamingConventionsAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rename.
-        /// </summary>
-        internal static string NamingConventionsCodeFixTitle {
-            get {
-                return ResourceManager.GetString("NamingConventionsCodeFixTitle", resourceCulture);
             }
         }
         
@@ -1115,77 +710,6 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} can be written using the shorthand nullable notation..
-        /// </summary>
-        internal static string NullableToShorthandAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("NullableToShorthandAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use the shorthand T? notation for a nullable type..
-        /// </summary>
-        internal static string NullableToShorthandAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("NullableToShorthandAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use shorthand notation.
-        /// </summary>
-        internal static string NullableToShorthandCodeFixTitle {
-            get {
-                return ResourceManager.GetString("NullableToShorthandCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Give a reason for the [Obsolete] attribute..
-        /// </summary>
-        internal static string ObsoleteAttributeWithoutReasonAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("ObsoleteAttributeWithoutReasonAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The [Obsolete] attribute doesn&apos;t have a reason..
-        /// </summary>
-        internal static string ObsoleteAttributeWithoutReasonAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("ObsoleteAttributeWithoutReasonAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OnPropertyChanged() can use the [CallerMemberName] attribute..
-        /// </summary>
-        internal static string OnPropertyChangedWithoutCallerMemberNameAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("OnPropertyChangedWithoutCallerMemberNameAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OnPropertyChanged() can use the [CallerMemberName] attribute to automatically pass the property name..
-        /// </summary>
-        internal static string OnPropertyChangedWithoutCallerMemberNameAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("OnPropertyChangedWithoutCallerMemberNameAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add attribute.
-        /// </summary>
-        internal static string OnPropertyChangedWithoutCallerMemberNameCodeFixTitle {
-            get {
-                return ResourceManager.GetString("OnPropertyChangedWithoutCallerMemberNameCodeFixTitle", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to OnPropertyChanged({0}) can use the nameof() operator..
         /// </summary>
@@ -1219,87 +743,6 @@ namespace SharpSource {
         internal static string RecursiveEqualityOperatorOverloadMessage {
             get {
                 return ResourceManager.GetString("RecursiveEqualityOperatorOverloadMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Property {0} its private setter can be omitted..
-        /// </summary>
-        internal static string RedundantPrivateSetterAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("RedundantPrivateSetterAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A property with a private setter can become a read-only property instead..
-        /// </summary>
-        internal static string RedundantPrivateSetterAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("RedundantPrivateSetterAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Turn into a read-only property.
-        /// </summary>
-        internal static string RedundantPrivateSetterCodeFixTitle {
-            get {
-                return ResourceManager.GetString("RedundantPrivateSetterCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Test method &quot;{0}&quot; should not end with &quot;-Test&quot;.
-        /// </summary>
-        internal static string RemoveTestSuffixAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("RemoveTestSuffixAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A test method should not end with -Test..
-        /// </summary>
-        internal static string RemoveTestSuffixAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("RemoveTestSuffixAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove &quot;-Test&quot; suffix.
-        /// </summary>
-        internal static string RemoveTestSuffixCodeFixTitle {
-            get {
-                return ResourceManager.GetString("RemoveTestSuffixCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Empty string literal detected..
-        /// </summary>
-        internal static string ReplaceEmptyStringWithStringDotEmptyAnalyzerMessage {
-            get {
-                return ResourceManager.GetString("ReplaceEmptyStringWithStringDotEmptyAnalyzerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Replaces an empty string literal with the more expressive string.Empty..
-        /// </summary>
-        internal static string ReplaceEmptyStringWithStringDotEmptyAnalyzerTitle {
-            get {
-                return ResourceManager.GetString("ReplaceEmptyStringWithStringDotEmptyAnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use string.Empty.
-        /// </summary>
-        internal static string ReplaceEmptyStringWithStringDotEmptyCodeFixTitle {
-            get {
-                return ResourceManager.GetString("ReplaceEmptyStringWithStringDotEmptyCodeFixTitle", resourceCulture);
             }
         }
         

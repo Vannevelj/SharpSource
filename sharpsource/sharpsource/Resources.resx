@@ -126,40 +126,11 @@
   <data name="AccessingTaskResultWithoutAwaitCodeFixTitle" xml:space="preserve">
     <value>Use await</value>
   </data>
-  <data name="ArgumentExceptionWithoutNameofOperatorAnalyzerMessage" xml:space="preserve">
-    <value>The variable {0} is used in an ArgumentException as string. Consider using the nameof operator instead.</value>
-    <comment>{0} - Field name</comment>
-  </data>
-  <data name="ArgumentExceptionWithoutNameofOperatorAnalyzerTitle" xml:space="preserve">
-    <value>An ArgumentException should use nameof() to refer to a variable.</value>
-  </data>
-  <data name="ArgumentExceptionWithoutNameofOperatorCodeFixTitle" xml:space="preserve">
-    <value>Use nameof()</value>
-  </data>
   <data name="ArithmeticCategory" xml:space="preserve">
     <value>Arithmetic</value>
   </data>
-  <data name="AsToCastAnalyzerMessage" xml:space="preserve">
-    <value>Use cast instead of as.</value>
-  </data>
-  <data name="AsToCastAnalyzerTitle" xml:space="preserve">
-    <value>Changes an 'as' expression to a cast.</value>
-  </data>
-  <data name="AsToCastCodeFixTitle" xml:space="preserve">
-    <value>Use cast instead of as</value>
-  </data>
   <data name="AsyncCategory" xml:space="preserve">
     <value>Async</value>
-  </data>
-  <data name="AsyncMethodWithoutAsyncSuffixAnalyzerMessage" xml:space="preserve">
-    <value>Asynchronous method "{0}" does not end with 'Async'.</value>
-    <comment>{0} - Method name</comment>
-  </data>
-  <data name="AsyncMethodWithoutAsyncSuffixAnalyzerTitle" xml:space="preserve">
-    <value>Asynchronous methods should end with the -Async suffix.</value>
-  </data>
-  <data name="AsyncMethodWithoutAsyncSuffixCodeFixTitle" xml:space="preserve">
-    <value>Add -Async suffix</value>
   </data>
   <data name="AsyncMethodWithVoidReturnTypeCodeFixTitle" xml:space="preserve">
     <value>Use Task as return type</value>
@@ -184,66 +155,11 @@
   <data name="AttributesCategory" xml:space="preserve">
     <value>Attributes</value>
   </data>
-  <data name="AttributeWithEmptyArgumentListAnalyzerMessage" xml:space="preserve">
-    <value>Attribute "{0}" has an empty argument list.</value>
-    <comment>{0} - Attribute name</comment>
-  </data>
-  <data name="AttributeWithEmptyArgumentListAnalyzerTitle" xml:space="preserve">
-    <value>An attribute should not have an empty argument list.</value>
-  </data>
-  <data name="AttributeWithEmptyArgumentListCodeFixTitle" xml:space="preserve">
-    <value>Remove parentheses from argument list</value>
-  </data>
-  <data name="CastToAsAnalyzerMessage" xml:space="preserve">
-    <value>Use as instead of a cast.</value>
-  </data>
-  <data name="CastToAsAnalyzerTitle" xml:space="preserve">
-    <value>Changes a cast expression to 'as'.</value>
-  </data>
-  <data name="CastToAsCodeFixTitle" xml:space="preserve">
-    <value>Use as instead of cast</value>
-  </data>
   <data name="CatchNullReferenceExceptionAnalyzerMessage" xml:space="preserve">
     <value>A catch clause catches NullReferenceException. Consider using != null or null propagation instead.</value>
   </data>
   <data name="CatchNullReferenceExceptionAnalyzerTitle" xml:space="preserve">
     <value>Verifies no NullReferenceException is caught.</value>
-  </data>
-  <data name="CompareBooleanToFalseLiteralAnalyzerMessage" xml:space="preserve">
-    <value>A boolean expression can be simplified.</value>
-  </data>
-  <data name="CompareBooleanToFalseLiteralAnalyzerTitle" xml:space="preserve">
-    <value>A boolean expression comparing to false can be simplified.</value>
-  </data>
-  <data name="CompareBooleanToFalseLiteralCodeFixTitle" xml:space="preserve">
-    <value>Simplify expression</value>
-  </data>
-  <data name="CompareBooleanToTrueLiteralAnalyzerMessage" xml:space="preserve">
-    <value>A boolean expression can be simplified.</value>
-  </data>
-  <data name="CompareBooleanToTrueLiteralAnalyzerTitle" xml:space="preserve">
-    <value>A boolean expression comparing to true can be simplified.</value>
-  </data>
-  <data name="CompareBooleanToTrueLiteralCodeFixTitle" xml:space="preserve">
-    <value>Simplify expression</value>
-  </data>
-  <data name="ConditionalOperatorReturnsDefaultOptionsAnalyzerMessage" xml:space="preserve">
-    <value>A conditional operator can be omitted.</value>
-  </data>
-  <data name="ConditionalOperatorReturnsDefaultOptionsAnalyzerTitle" xml:space="preserve">
-    <value>The conditional operator shouldn't return redundant default options.</value>
-  </data>
-  <data name="ConditionalOperatorReturnsDefaultOptionsCodeFixTitle" xml:space="preserve">
-    <value>Remove conditional operator</value>
-  </data>
-  <data name="ConditionalOperatorReturnsInvertedDefaultOptionsAnalyzerMessage" xml:space="preserve">
-    <value>A conditional operator can be omitted.</value>
-  </data>
-  <data name="ConditionalOperatorReturnsInvertedDefaultOptionsAnalyzerTitle" xml:space="preserve">
-    <value>The conditional operator shouldn't return redundant inverted default options.</value>
-  </data>
-  <data name="ConditionalOperatorReturnsInvertedDefaultOptionsCodeFixTitle" xml:space="preserve">
-    <value>Remove conditional operator</value>
   </data>
   <data name="ConditionIsConstantAnalyzerMessage" xml:space="preserve">
     <value>Condition is always {0}.</value>
@@ -275,18 +191,6 @@
   </data>
   <data name="ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle" xml:space="preserve">
     <value>Implement elementary methods for a type used in a collection.</value>
-  </data>
-  <data name="EmptyArgumentExceptionAnalyzerMessage" xml:space="preserve">
-    <value>An ArgumentException is thrown without a message.</value>
-  </data>
-  <data name="EmptyArgumentExceptionAnalyzerTitle" xml:space="preserve">
-    <value>Verifies whether an ArgumentException is thrown with a message.</value>
-  </data>
-  <data name="EmptyCatchClauseAnalyzerMessage" xml:space="preserve">
-    <value>Empty catch block detected. Consider adding a comment or a logging statement.</value>
-  </data>
-  <data name="EmptyCatchClauseAnalyzerTitle" xml:space="preserve">
-    <value>Warns when an exception catch block is empty.</value>
   </data>
   <data name="EnumCanHaveFlagsAttributeAnalyzerMessage" xml:space="preserve">
     <value>Enum can have [Flags] attribute.</value>
@@ -413,21 +317,6 @@
   <data name="GetHashCodeRefersToMutableFieldAnalyzerTitle" xml:space="preserve">
     <value>GetHashCode() refers to mutable, static, or constant member</value>
   </data>
-  <data name="GotoDetectionAnalyzerMessage" xml:space="preserve">
-    <value>Use of "goto" detected.  Consider using a method or loop instead.</value>
-  </data>
-  <data name="GotoDetectionAnalyzerTitle" xml:space="preserve">
-    <value>Use of "goto" detected.</value>
-  </data>
-  <data name="IfStatementWithoutBracesAnalyzerMessage" xml:space="preserve">
-    <value>An if-statement should be written using braces.</value>
-  </data>
-  <data name="IfStatementWithoutBracesAnalyzerTitle" xml:space="preserve">
-    <value>If blocks should use braces to denote start and end.</value>
-  </data>
-  <data name="IfStatementWithoutBracesCodeFixTitle" xml:space="preserve">
-    <value>Use braces</value>
-  </data>
   <data name="ImplementEqualsAndGetHashCodeAnalyzerMessage" xml:space="preserve">
     <value>{0} {1} does not implement Equals() and GetHashCode().</value>
   </data>
@@ -442,37 +331,6 @@
   </data>
   <data name="LoopedRandomInstantiationAnalyzerTitle" xml:space="preserve">
     <value>An instance of type System.Random is created in a loop.</value>
-  </data>
-  <data name="LoopStatementWithoutBracesAnalyzerMessage" xml:space="preserve">
-    <value>A loop is not delimited with braces.</value>
-  </data>
-  <data name="LoopStatementWithoutBracesAnalyzerTitle" xml:space="preserve">
-    <value>Loop blocks should use braces to denote start and end.</value>
-  </data>
-  <data name="LoopStatementWithoutBracesCodeFixTitle" xml:space="preserve">
-    <value>Use braces</value>
-  </data>
-  <data name="MissingBracesAnalyzerMessage" xml:space="preserve">
-    <value>{0} {1} statement should be written with braces</value>
-    <comment>{0} - A/An</comment>
-  </data>
-  <data name="MissingBracesAnalyzerTitle" xml:space="preserve">
-    <value>{0} blocks should use braces to denote start and end.</value>
-  </data>
-  <data name="MissingBracesCodeFixTitle" xml:space="preserve">
-    <value>Use braces</value>
-  </data>
-  <data name="NamingConventionsAnalyzerMessage" xml:space="preserve">
-    <value>The {0} {1} does not follow naming conventions. Should be {2}.</value>
-    <comment>{0} - Member type
-{1} - Member name
-{2} - Modified member name</comment>
-  </data>
-  <data name="NamingConventionsAnalyzerTitle" xml:space="preserve">
-    <value>Implements the most common configuration of naming conventions.</value>
-  </data>
-  <data name="NamingConventionsCodeFixTitle" xml:space="preserve">
-    <value>Rename</value>
   </data>
   <data name="NewGuidAnalyzerMessage" xml:space="preserve">
     <value>An empty guid was created in an ambiguous manner</value>
@@ -496,31 +354,6 @@
   <data name="NonEncapsulatedOrMutableFieldCodeFixTitle" xml:space="preserve">
     <value>Implement as property</value>
   </data>
-  <data name="NullableToShorthandAnalyzerMessage" xml:space="preserve">
-    <value>{0} can be written using the shorthand nullable notation.</value>
-    <comment>{0} - Identifier name</comment>
-  </data>
-  <data name="NullableToShorthandAnalyzerTitle" xml:space="preserve">
-    <value>Use the shorthand T? notation for a nullable type.</value>
-  </data>
-  <data name="NullableToShorthandCodeFixTitle" xml:space="preserve">
-    <value>Use shorthand notation</value>
-  </data>
-  <data name="ObsoleteAttributeWithoutReasonAnalyzerMessage" xml:space="preserve">
-    <value>Give a reason for the [Obsolete] attribute.</value>
-  </data>
-  <data name="ObsoleteAttributeWithoutReasonAnalyzerTitle" xml:space="preserve">
-    <value>The [Obsolete] attribute doesn't have a reason.</value>
-  </data>
-  <data name="OnPropertyChangedWithoutCallerMemberNameAnalyzerMessage" xml:space="preserve">
-    <value>OnPropertyChanged() can use the [CallerMemberName] attribute.</value>
-  </data>
-  <data name="OnPropertyChangedWithoutCallerMemberNameAnalyzerTitle" xml:space="preserve">
-    <value>OnPropertyChanged() can use the [CallerMemberName] attribute to automatically pass the property name.</value>
-  </data>
-  <data name="OnPropertyChangedWithoutCallerMemberNameCodeFixTitle" xml:space="preserve">
-    <value>Add attribute</value>
-  </data>
   <data name="OnPropertyChangedWithoutNameOfOperatorAnalyzerMessage" xml:space="preserve">
     <value>OnPropertyChanged({0}) can use the nameof() operator.</value>
     <comment>{0} - Property name</comment>
@@ -533,35 +366,6 @@
   </data>
   <data name="RecursiveEqualityOperatorOverloadMessage" xml:space="preserve">
     <value>Recursively using overloaded operator</value>
-  </data>
-  <data name="RedundantPrivateSetterAnalyzerMessage" xml:space="preserve">
-    <value>Property {0} its private setter can be omitted.</value>
-    <comment>{0} - Property name</comment>
-  </data>
-  <data name="RedundantPrivateSetterAnalyzerTitle" xml:space="preserve">
-    <value>A property with a private setter can become a read-only property instead.</value>
-  </data>
-  <data name="RedundantPrivateSetterCodeFixTitle" xml:space="preserve">
-    <value>Turn into a read-only property</value>
-  </data>
-  <data name="RemoveTestSuffixAnalyzerMessage" xml:space="preserve">
-    <value>Test method "{0}" should not end with "-Test"</value>
-    <comment>{0} - Method name</comment>
-  </data>
-  <data name="RemoveTestSuffixAnalyzerTitle" xml:space="preserve">
-    <value>A test method should not end with -Test.</value>
-  </data>
-  <data name="RemoveTestSuffixCodeFixTitle" xml:space="preserve">
-    <value>Remove "-Test" suffix</value>
-  </data>
-  <data name="ReplaceEmptyStringWithStringDotEmptyAnalyzerMessage" xml:space="preserve">
-    <value>Empty string literal detected.</value>
-  </data>
-  <data name="ReplaceEmptyStringWithStringDotEmptyAnalyzerTitle" xml:space="preserve">
-    <value>Replaces an empty string literal with the more expressive string.Empty.</value>
-  </data>
-  <data name="ReplaceEmptyStringWithStringDotEmptyCodeFixTitle" xml:space="preserve">
-    <value>Use string.Empty</value>
   </data>
   <data name="RethrowExceptionWithoutLosingStacktraceAnalyzerMessage" xml:space="preserve">
     <value>Rethrown exception loses the stacktrace.</value>
