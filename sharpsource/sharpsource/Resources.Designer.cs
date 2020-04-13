@@ -926,7 +926,7 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Implement elementary methods on struct {0}..
+        ///   Looks up a localized string similar to Implement Equals(), GetHashCode() and ToString() methods on struct {0}..
         /// </summary>
         internal static string StructWithoutElementaryMethodsOverriddenAnalyzerMessage {
             get {
