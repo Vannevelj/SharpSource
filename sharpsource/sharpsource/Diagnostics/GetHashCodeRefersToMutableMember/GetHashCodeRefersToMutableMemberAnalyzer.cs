@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,20 +13,21 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
         private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
 
         private static readonly string Category = Resources.GeneralCategory;
-        private static readonly string Message = Resources.GetHashCodeRefersToMutableFieldAnalyzerMessage;
+        private static readonly string FieldMessage = Resources.GetHashCodeRefersToMutableFieldAnalyzerFieldMessage;
+        private static readonly string PropertyMessage = Resources.GetHashCodeRefersToMutableFieldAnalyzerPropertyMessage;
         private static readonly string Title = Resources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
 
-        public static DiagnosticDescriptor Rule =>
-            new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor FieldRule => new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Category, Severity, true);
+        public static DiagnosticDescriptor PropertyRule => new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Category, Severity, true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(PropertyRule);
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
 
         private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
             var declaration = (MethodDeclarationSyntax)context.Node;
-            if (declaration == null || declaration.Identifier == null || declaration.ParameterList == null)
+            if (declaration?.Identifier == null || declaration.ParameterList == null)
             {
                 return;
             }
@@ -50,10 +50,10 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 
                 if (symbol.Kind == SymbolKind.Field)
                 {
-                    var fieldIsMutableOrStatic = FieldIsMutableOrStatic((IFieldSymbol)symbol);
-                    if (fieldIsMutableOrStatic.Item1)
+                    var fieldIsMutableOrStatic = FieldIsMutable((IFieldSymbol)symbol);
+                    if (fieldIsMutableOrStatic)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(Rule, declaration.Identifier.GetLocation(), fieldIsMutableOrStatic.Item2));
+                        context.ReportDiagnostic(Diagnostic.Create(FieldRule, node.GetLocation(), symbol.Name));
                     }
                 }
                 else if (symbol.Kind == SymbolKind.Property)
@@ -63,87 +63,38 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                     if (propertyNode is PropertyDeclarationSyntax propertyDeclaration)
                     {
                         var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol, propertyDeclaration);
-                        if (propertyIsMutable.Item1)
+                        if (propertyIsMutable)
                         {
-                            context.ReportDiagnostic(Diagnostic.Create(Rule, declaration.Identifier.GetLocation(), propertyIsMutable.Item2));
+                            context.ReportDiagnostic(Diagnostic.Create(PropertyRule, node.GetLocation(), symbol.Name));
                         }
                     }
                 }
             }
         }
 
-        private Tuple<bool, string> FieldIsMutableOrStatic(IFieldSymbol field)
+        private bool FieldIsMutable(IFieldSymbol field)
         {
-            var description = string.Empty;
-            var returnResult = false;
-
             if (field.IsConst)
             {
-                description += "const ";
+                return false;
             }
 
-            // constant fields are marked static
-            if (field.IsStatic && !field.IsConst)
+            if (field.IsReadOnly && (field.Type.IsValueType || field.Type.SpecialType == SpecialType.System_String) && !field.IsStatic)
             {
-                description += "static ";
-                returnResult = true;
+                return false;
             }
 
-            // constant fields are marked non-readonly
-            if (!field.IsReadOnly && !field.IsConst)
-            {
-                description += "non-readonly ";
-                returnResult = true;
-            }
-
-            if (!field.Type.IsValueType && field.Type.SpecialType != SpecialType.System_String)
-            {
-                description += "non-value type, non-string ";
-                returnResult = true;
-            }
-
-            return Tuple.Create(returnResult, description + "field " + field.Name);
+            return true;
         }
 
-        private Tuple<bool, string> PropertyIsMutable(IPropertySymbol property, PropertyDeclarationSyntax node)
+        private bool PropertyIsMutable(IPropertySymbol property, PropertyDeclarationSyntax node)
         {
-            var description = string.Empty;
-            var returnResult = false;
-
-            if (property.IsStatic)
-            {
-                description += "static ";
-                returnResult = true;
-            }
-
-            if (!property.Type.IsValueType && property.Type.SpecialType != SpecialType.System_String)
-            {
-                description += "non-value type, non-string ";
-                returnResult = true;
-            }
-
             if (property.SetMethod != null)
             {
-                description += "settable ";
-                returnResult = true;
+                return true;
             }
 
-            // ensure getter does not have body
-            // the property has to have at least one of {get, set}, and it doesn't have a set (see above)
-            // this will not have an NRE in First()
-            // the accessor list might be null if it uses the arrow operator `=>`
-            if (node.AccessorList == null ||
-                node.AccessorList.Accessors[0].Body != null)
-            {
-                description += "property with bodied getter ";
-                returnResult = true;
-            }
-            else
-            {
-                description += "property ";
-            }
-
-            return Tuple.Create(returnResult, description + property.Name);
+            return false;
         }
     }
 }
