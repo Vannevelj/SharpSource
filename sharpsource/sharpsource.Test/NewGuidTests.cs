@@ -230,5 +230,24 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void NewGuid_OverloadedConstructor()
+        {
+            var original = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            Guid g = new Guid(string.Empty);
+        }
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }

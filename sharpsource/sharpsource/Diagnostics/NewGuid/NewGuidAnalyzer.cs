@@ -29,6 +29,7 @@ namespace SharpSource.Diagnostics.NewGuid
 
             if (symbol != null &&
                 symbol.Name == "Guid" &&
+                expression.ArgumentList?.Arguments.Any() != true &&
                 ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Runtime" ))
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
