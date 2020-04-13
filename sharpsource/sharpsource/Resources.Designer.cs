@@ -584,16 +584,25 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GetHashCode() refers to {0}.
+        ///   Looks up a localized string similar to GetHashCode() refers to mutable field {0}.
         /// </summary>
-        internal static string GetHashCodeRefersToMutableFieldAnalyzerMessage {
+        internal static string GetHashCodeRefersToMutableFieldAnalyzerFieldMessage {
             get {
-                return ResourceManager.GetString("GetHashCodeRefersToMutableFieldAnalyzerMessage", resourceCulture);
+                return ResourceManager.GetString("GetHashCodeRefersToMutableFieldAnalyzerFieldMessage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GetHashCode() refers to mutable, static, or constant member.
+        ///   Looks up a localized string similar to GetHashCode() refers to mutable property {0}.
+        /// </summary>
+        internal static string GetHashCodeRefersToMutableFieldAnalyzerPropertyMessage {
+            get {
+                return ResourceManager.GetString("GetHashCodeRefersToMutableFieldAnalyzerPropertyMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GetHashCode() refers to mutable or static member.
         /// </summary>
         internal static string GetHashCodeRefersToMutableFieldAnalyzerTitle {
             get {

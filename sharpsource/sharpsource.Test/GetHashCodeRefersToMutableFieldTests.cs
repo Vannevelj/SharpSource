@@ -48,7 +48,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to non-readonly field _boo");
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to static field _boo");
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to static non-readonly non-value type, non-string field _boo");
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to non-value type, non-string field _boo");
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
         }
 
         [TestMethod]
@@ -156,7 +156,7 @@ namespace ConsoleApplication1
         }
 
         [TestMethod]
-        public void GetHashCodeRefersToMutableMember_StaticProperty()
+        public void GetHashCodeRefersToMutableMember_StaticReadonlyProperty()
         {
             var original = @"
 namespace ConsoleApplication1
@@ -172,7 +172,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to static property Boo");
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to non-value type, non-string property Boo");
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]
@@ -213,7 +213,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to settable property Boo");
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
         }
 
         [TestMethod]
@@ -233,7 +233,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to property with bodied getter Boo");
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]
@@ -254,7 +254,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to static non-value type, non-string settable property with bodied getter Boo");
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
         }
 
         [TestMethod]
@@ -274,7 +274,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to property with bodied getter Boo");
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]
@@ -335,7 +335,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "GetHashCode() refers to property with bodied getter Fuzz");
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]

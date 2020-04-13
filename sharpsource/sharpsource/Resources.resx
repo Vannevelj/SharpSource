@@ -311,11 +311,16 @@
   <data name="GeneralCategory" xml:space="preserve">
     <value>General</value>
   </data>
-  <data name="GetHashCodeRefersToMutableFieldAnalyzerMessage" xml:space="preserve">
-    <value>GetHashCode() refers to {0}</value>
+  <data name="GetHashCodeRefersToMutableFieldAnalyzerFieldMessage" xml:space="preserve">
+    <value>GetHashCode() refers to mutable field {0}</value>
+    <comment>{0} - Field name</comment>
+  </data>
+  <data name="GetHashCodeRefersToMutableFieldAnalyzerPropertyMessage" xml:space="preserve">
+    <value>GetHashCode() refers to mutable property {0}</value>
+    <comment>{0} - Property name</comment>
   </data>
   <data name="GetHashCodeRefersToMutableFieldAnalyzerTitle" xml:space="preserve">
-    <value>GetHashCode() refers to mutable, static, or constant member</value>
+    <value>GetHashCode() refers to mutable or static member</value>
   </data>
   <data name="ImplementEqualsAndGetHashCodeAnalyzerMessage" xml:space="preserve">
     <value>{0} {1} does not implement Equals() and GetHashCode().</value>
