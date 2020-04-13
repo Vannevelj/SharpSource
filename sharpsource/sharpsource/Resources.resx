@@ -447,7 +447,7 @@
     <value>Add cases for missing enum member.</value>
   </data>
   <data name="SwitchDoesNotHandleAllEnumOptionsCodeFixTitle" xml:space="preserve">
-    <value>Add cases.</value>
+    <value>Add cases</value>
   </data>
   <data name="SwitchIsMissingDefaultSectionAnalyzerMessage" xml:space="preserve">
     <value>Switch should have default label.</value>
