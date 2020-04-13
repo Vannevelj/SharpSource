@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
 {
@@ -37,16 +38,17 @@ namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
                 diagnostic);
         }
 
-        private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
+        private async Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
         {
             if (memberAccessExpression == null)
             {
-                return Task.FromResult(document);
+                return document;
             }
-            var newExpression = SyntaxFactory.AwaitExpression(memberAccessExpression.Expression);
+
+            var newExpression = ParenthesizedExpression(AwaitExpression(memberAccessExpression.Expression)).WithAdditionalAnnotations(Simplifier.Annotation);
             var newRoot = root.ReplaceNode(memberAccessExpression, newExpression);
-            var newDocument = document.WithSyntaxRoot(newRoot);
-            return Task.FromResult(newDocument);
+            var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
+            return newDocument;
         }
     }
 }

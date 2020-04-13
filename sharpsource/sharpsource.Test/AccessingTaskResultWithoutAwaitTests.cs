@@ -281,5 +281,52 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void AccessingTaskResultWithoutAwait_ChainedPropertyAccess()
+        {
+            var original = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        public int SomeField;
+
+        async Task MyMethod()
+        {
+            var number = Other().Result.SomeField;
+        }
+
+        async Task<MyClass> Other() => this;
+    }
+}";
+
+            var result = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        public int SomeField;
+
+        async Task MyMethod()
+        {
+            var number = (await Other()).SomeField;
+        }
+
+        async Task<MyClass> Other() => this;
+    }
+}";
+
+            VerifyDiagnostic(original, "Use await to get the result of a Task.");
+            VerifyFix(original, result);
+        }
     }
 }
