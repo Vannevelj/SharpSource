@@ -710,7 +710,6 @@ namespace SharpSource {
         }
         
         /// <summary>
-        /// <summary>
         ///   Looks up a localized string similar to OnPropertyChanged({0}) can use the nameof() operator..
         /// </summary>
         internal static string OnPropertyChangedWithoutNameOfOperatorAnalyzerMessage {
@@ -927,7 +926,7 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Implement elementary methods on struct {0}..
+        ///   Looks up a localized string similar to Implement Equals(), GetHashCode() and ToString() methods on struct {0}..
         /// </summary>
         internal static string StructWithoutElementaryMethodsOverriddenAnalyzerMessage {
             get {
@@ -972,7 +971,7 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add cases..
+        ///   Looks up a localized string similar to Add cases.
         /// </summary>
         internal static string SwitchDoesNotHandleAllEnumOptionsCodeFixTitle {
             get {

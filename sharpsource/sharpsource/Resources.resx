@@ -432,7 +432,7 @@
     <value>Warns when a struct replaces 'this' with a new instance.</value>
   </data>
   <data name="StructWithoutElementaryMethodsOverriddenAnalyzerMessage" xml:space="preserve">
-    <value>Implement elementary methods on struct {0}.</value>
+    <value>Implement Equals(), GetHashCode() and ToString() methods on struct {0}.</value>
   </data>
   <data name="StructWithoutElementaryMethodsOverriddenAnalyzerTitle" xml:space="preserve">
     <value>Structs should implement Equals(), GetHashCode(), and ToString().</value>
@@ -447,7 +447,7 @@
     <value>Add cases for missing enum member.</value>
   </data>
   <data name="SwitchDoesNotHandleAllEnumOptionsCodeFixTitle" xml:space="preserve">
-    <value>Add cases.</value>
+    <value>Add cases</value>
   </data>
   <data name="SwitchIsMissingDefaultSectionAnalyzerMessage" xml:space="preserve">
     <value>Switch should have default label.</value>
