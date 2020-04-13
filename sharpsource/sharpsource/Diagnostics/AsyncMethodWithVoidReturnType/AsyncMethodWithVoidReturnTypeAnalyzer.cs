@@ -74,7 +74,7 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
                 }
             }
 
-            context.ReportDiagnostic(Diagnostic.Create(Rule, method.GetLocation(), method.Identifier.ValueText));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, method.ReturnType.GetLocation(), method.Identifier.ValueText));
         }
     }
 }
