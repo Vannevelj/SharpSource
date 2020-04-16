@@ -260,7 +260,7 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Implement elementary methods of type used in collection..
+        ///   Looks up a localized string similar to Implement Equals() and GetHashCode() methods of type {0} for use in a collection..
         /// </summary>
         internal static string ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage {
             get {
@@ -269,7 +269,7 @@ namespace SharpSource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Implement elementary methods for a type used in a collection..
+        ///   Looks up a localized string similar to Implement Equals() and GetHashcode() methods for a type used in a collection..
         /// </summary>
         internal static string ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle {
             get {

@@ -28,7 +28,7 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original, ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ namespace ConsoleApplication1
     struct MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original, ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -97,7 +97,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -178,7 +178,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -264,8 +264,8 @@ namespace ConsoleApplication1
 }";
 
             VerifyDiagnostic(original,
-                ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString(),
-                ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+                "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.",
+                "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
@@ -286,8 +286,7 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original,
-                ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type MyCollectionItem for use in a collection.");
         }
 
         [TestMethod]
