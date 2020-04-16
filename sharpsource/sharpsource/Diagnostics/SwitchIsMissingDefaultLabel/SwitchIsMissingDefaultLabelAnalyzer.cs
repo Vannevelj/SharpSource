@@ -41,7 +41,7 @@ namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
 
             if (!hasDefaultLabel)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, switchBlock.Expression.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, switchBlock.SwitchKeyword.GetLocation()));
             }
         }
     }

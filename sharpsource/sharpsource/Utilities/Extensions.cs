@@ -346,14 +346,14 @@ namespace SharpSource.Utilities
             return false;
         }
 
-        public static SyntaxNode AddUsingStatementIfMissing(this CompilationUnitSyntax compilation, string import)
+        public static CompilationUnitSyntax AddUsingStatementIfMissing(this CompilationUnitSyntax compilation, string import)
         {
             if (!compilation.Usings.Any(x => x.Name.GetText().ToString().Contains(import)))
             {
                 var parts = import.Split('.').Select(x => SyntaxFactory.IdentifierName(x)).ToList();
                 if (parts.Count == 1)
                 {
-                    return parts[0];
+                    return compilation.AddUsings(SyntaxFactory.UsingDirective(parts[0]));
                 }
 
                 var counter = 0;

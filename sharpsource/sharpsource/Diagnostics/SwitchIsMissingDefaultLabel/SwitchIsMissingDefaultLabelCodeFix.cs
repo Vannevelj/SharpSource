@@ -28,43 +28,27 @@ namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-            var statement = root.FindNode(diagnosticSpan).Parent;
+            var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is SwitchStatementSyntax);
             context.RegisterCodeFix(
                 CodeAction.Create(Resources.SwitchIsMissingDefaultSectionCodeFixTitle,
-                    x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, (SwitchStatementSyntax)statement),
+                    x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
                     SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
         }
 
-        private async Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
+        private Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
         {
-            var model = await document.GetSemanticModelAsync();
-
-            var symbol = model.GetSymbolInfo(switchBlock.Expression).Symbol;
-            string expression;
-            if (symbol != null)
-            {
-                expression = $"nameof({symbol.Name})";
-            }
-            else if (switchBlock.Expression.IsKind(SyntaxKind.StringLiteralExpression))
-            {
-                expression = $"{switchBlock.Expression}";
-            }
-            else
-            {
-                expression = $"{switchBlock.Expression}.ToString()";
-            }
-
             var argumentException =
-                SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($"new System.ArgumentException({expression})"))
-                             .WithAdditionalAnnotations(Simplifier.Annotation, Formatter.Annotation);
+                SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($"new ArgumentException(\"Unsupported value\")"))
+                             .WithAdditionalAnnotations(Formatter.Annotation);
             var statements = SyntaxFactory.List(new List<StatementSyntax> { argumentException });
-
             var defaultCase = SyntaxFactory.SwitchSection(SyntaxFactory.List<SwitchLabelSyntax>(new[] { SyntaxFactory.DefaultSwitchLabel() }), statements);
 
             var newNode = switchBlock.AddSections(defaultCase.WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation));
-
             var newRoot = root.ReplaceNode(switchBlock, newNode);
-            return await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
+
+            newRoot = newRoot.AddUsingStatementIfMissing("System");
+
+            return Task.FromResult(document.WithSyntaxRoot(newRoot));
         }
     }
 }
