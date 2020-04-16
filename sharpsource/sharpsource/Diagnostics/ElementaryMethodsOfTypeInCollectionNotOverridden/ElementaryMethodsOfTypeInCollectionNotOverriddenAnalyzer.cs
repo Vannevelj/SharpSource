@@ -25,9 +25,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
-            var objectTypeInfo = context.SemanticModel.GetTypeInfo(context.Node).Type as INamedTypeSymbol;
-
-            if (objectTypeInfo == null)
+            if (!( context.SemanticModel.GetTypeInfo(context.Node).Type is INamedTypeSymbol objectTypeInfo ))
             {
                 return;
             }
@@ -40,8 +38,8 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
                 return;
             }
 
-            var objectType = ( (ObjectCreationExpressionSyntax)context.Node ).Type as GenericNameSyntax;
-            if (objectType == null)
+            var node = ( (ObjectCreationExpressionSyntax)context.Node );
+            if (!( node.Type is GenericNameSyntax objectType ))
             {
                 return;
             }
@@ -78,7 +76,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
 
                 if (!implementsEquals || !implementsGetHashCode)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, genericType.GetLocation()));
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, genericType.GetLocation(), genericTypeInfo.Name));
                 }
             }
         }

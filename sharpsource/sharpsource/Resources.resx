@@ -187,10 +187,11 @@
     <value>The operands of a divisive expression are both integers and result in an implicit rounding.</value>
   </data>
   <data name="ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage" xml:space="preserve">
-    <value>Implement elementary methods of type used in collection.</value>
+    <value>Implement Equals() and GetHashCode() methods of type {0} for use in a collection.</value>
+    <comment>{0} - Type name</comment>
   </data>
   <data name="ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle" xml:space="preserve">
-    <value>Implement elementary methods for a type used in a collection.</value>
+    <value>Implement Equals() and GetHashcode() methods for a type used in a collection.</value>
   </data>
   <data name="EnumCanHaveFlagsAttributeAnalyzerMessage" xml:space="preserve">
     <value>Enum can have [Flags] attribute.</value>
