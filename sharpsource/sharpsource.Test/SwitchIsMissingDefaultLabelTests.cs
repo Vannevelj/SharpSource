@@ -16,6 +16,8 @@ namespace SharpSource.Tests
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnum()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     enum MyEnum
@@ -39,6 +41,8 @@ namespace ConsoleApplication1
 }";
 
             var result = @"
+using System;
+
 namespace ConsoleApplication1
 {
     enum MyEnum
@@ -57,13 +61,13 @@ namespace ConsoleApplication1
                 case MyEnum.Buzz:
                     break;
                 default:
-                    throw new System.ArgumentException(nameof(e));
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
 
@@ -71,6 +75,8 @@ namespace ConsoleApplication1
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnString()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -89,6 +95,8 @@ namespace ConsoleApplication1
 }";
 
             var result = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -102,13 +110,13 @@ namespace ConsoleApplication1
                 case ""test1"":
                     break;
                 default:
-                    throw new System.ArgumentException(nameof(e));
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
 
@@ -116,6 +124,8 @@ namespace ConsoleApplication1
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteral()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -133,6 +143,8 @@ namespace ConsoleApplication1
 }";
 
             var result = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -145,13 +157,13 @@ namespace ConsoleApplication1
                 case ""test1"":
                     break;
                 default:
-                    throw new System.ArgumentException(""test"");
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
 
@@ -159,6 +171,8 @@ namespace ConsoleApplication1
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteral()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -176,6 +190,8 @@ namespace ConsoleApplication1
 }";
 
             var result = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -188,13 +204,13 @@ namespace ConsoleApplication1
                 case 1:
                     break;
                 default:
-                    throw new System.ArgumentException(0.ToString());
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
 
@@ -202,6 +218,8 @@ namespace ConsoleApplication1
         public void SwitchIsMissingDefaultLabel_HasDefaultStatement()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -227,6 +245,8 @@ namespace ConsoleApplication1
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatement()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -245,6 +265,8 @@ namespace ConsoleApplication1
 }";
 
             var result = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -258,13 +280,13 @@ namespace ConsoleApplication1
                 case 6:
                     break;
                 default:
-                    throw new System.ArgumentException(nameof(x));
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
 
@@ -272,6 +294,8 @@ namespace ConsoleApplication1
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteral()
         {
             var original = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -289,6 +313,8 @@ namespace ConsoleApplication1
 }";
 
             var result = @"
+using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -301,18 +327,65 @@ namespace ConsoleApplication1
                 case ""test1"":
                     break;
                 default:
-                    throw new System.ArgumentException((""test"").ToString());
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
 
         [TestMethod]
         public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteral()
+        {
+            var original = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            switch ((0))
+            {
+                case 0:
+                case 1:
+                    break;
+            }
+        }
+    }
+}";
+
+            var result = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            switch ((0))
+            {
+                case 0:
+                case 1:
+                    break;
+                default:
+                    throw new ArgumentException(""Unsupported value"");
+            }
+        }
+    }
+}";
+
+            VerifyDiagnostic(original, "Switch should have default label.");
+            VerifyFix(original, result);
+        }
+
+        [TestMethod]
+        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatement()
         {
             var original = @"
 namespace ConsoleApplication1
@@ -321,7 +394,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            switch ((0))
+            switch (0)
             {
                 case 0:
                 case 1:
@@ -331,26 +404,27 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+            var result = @"using System;
+
 namespace ConsoleApplication1
 {
     class MyClass
     {
         void Method()
         {
-            switch ((0))
+            switch (0)
             {
                 case 0:
                 case 1:
                     break;
                 default:
-                    throw new System.ArgumentException((0).ToString());
+                    throw new ArgumentException(""Unsupported value"");
             }
         }
     }
 }";
 
-            VerifyDiagnostic(original, SwitchIsMissingDefaultLabelAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Switch should have default label.");
             VerifyFix(original, result);
         }
     }
