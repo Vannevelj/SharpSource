@@ -50,7 +50,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously await tasks instead of blocking them");
+            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
             VerifyFix(original, result);
         }
 
@@ -111,7 +111,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously await tasks instead of blocking them");
+            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
             VerifyFix(original, result);
         }
 
@@ -144,7 +144,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously await tasks instead of blocking them");
+            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
             VerifyFix(original, result);
         }
 
@@ -177,7 +177,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously await tasks instead of blocking them");
+            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
             VerifyFix(original, result);
         }
 
