@@ -328,5 +328,52 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original, "Use await to get the result of a Task.");
             VerifyFix(original, result);
         }
+
+        [TestMethod]
+        public void AccessingTaskResultWithoutAwait_ObjectInitializer()
+        {
+            var original = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+	    async Task MyMethod()
+	    {
+		    Console.Write(new {
+			    Prop = Get().Result
+		    });
+	    }
+	
+	    async Task<int> Get() => 5;
+    }
+}";
+
+            var result = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+	    async Task MyMethod()
+	    {
+		    Console.Write(new {
+			    Prop = await Get()
+            });
+	    }
+	
+	    async Task<int> Get() => 5;
+    }
+}";
+
+            VerifyDiagnostic(original, "Use await to get the result of a Task.");
+            VerifyFix(original, result);
+        }
     }
 }
