@@ -6,7 +6,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-name: '0.2.0'
+name: '0.3.0'
 
 steps:
 - task: NuGetCommand@2
