@@ -2,8 +2,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
-using SharpSource.Diagnostics.AccessingTaskResultWithoutAwait;
 using SharpSource.Diagnostics.AsyncMethodWithVoidReturnType;
+using SharpSource.Diagnostics.SynchronousTaskWait;
 using SharpSource.Tests.Helpers;
 
 namespace SharpSource.Tests
@@ -54,7 +54,7 @@ namespace ConsoleApplication1
             VerifyFix(original, result);
         }
 
-                [TestMethod]
+        [TestMethod]
         public void SynchronousTaskWait_SyncContext()
         {
             var original = @"
@@ -214,7 +214,7 @@ namespace ConsoleApplication1
     {   
         MyClass()
         {
-            var number = Other().Wait();
+            Other().Wait();
         }
 
         async Task<int> Other() => 5;
@@ -222,6 +222,49 @@ namespace ConsoleApplication1
 }";
 
             VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        public void SynchronousTaskWait_ChainedExpression()
+        {
+            var original = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get.Wait();
+        }
+
+        Task Get => Task.CompletedTask;
+    }
+}";
+
+            var result = @"
+using System;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            await Get;
+        }
+
+        Task Get => Task.CompletedTask;
+    }
+}";
+
+            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+            VerifyFix(original, result);
         }
     }
 }

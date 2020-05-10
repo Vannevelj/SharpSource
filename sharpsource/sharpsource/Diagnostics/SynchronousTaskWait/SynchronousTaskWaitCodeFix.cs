@@ -11,12 +11,12 @@ using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
+namespace SharpSource.Diagnostics.SynchronousTaskWait
 {
     [ExportCodeFixProvider(DiagnosticId.SynchronousTaskWait + "CF", LanguageNames.CSharp), Shared]
-    public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
+    public class SynchronousTaskWaitCodeFix : CodeFixProvider
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(AccessingTaskResultWithoutAwaitAnalyzer.Rule.Id);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SynchronousTaskWaitAnalyzer.Rule.Id);
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -45,10 +45,12 @@ namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
                 return document;
             }
 
-            var newExpression = ParenthesizedExpression(AwaitExpression(memberAccessExpression.Expression)).WithAdditionalAnnotations(Simplifier.Annotation);
-            var newRoot = root.ReplaceNode(memberAccessExpression, newExpression);
-            var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
-            return newDocument;
+            var newExpression = AwaitExpression(memberAccessExpression.Expression);
+            var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
+
+
+            var newRoot = root.ReplaceNode(originalInvocation, newExpression);
+            return document.WithSyntaxRoot(newRoot);
         }
     }
 }
