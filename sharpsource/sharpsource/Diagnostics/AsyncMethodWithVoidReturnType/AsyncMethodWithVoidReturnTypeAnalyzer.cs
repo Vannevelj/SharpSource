@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -34,23 +35,12 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
                 return;
             }
 
-            var isAsync = false;
-            foreach (var modifier in method.Modifiers)
+            if (method.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
             {
-                // Method has to be marked async
-                if (modifier.IsKind(SyntaxKind.AsyncKeyword))
-                {
-                    isAsync = true;
-                }
-
-                // Partial methods can only have a void return type
-                if (modifier.IsKind(SyntaxKind.PartialKeyword))
-                {
-                    return;
-                }
+                return;
             }
 
-            if (!isAsync)
+            if (!method.Modifiers.Any(m => m.IsKind(SyntaxKind.AsyncKeyword)))
             {
                 return;
             }
