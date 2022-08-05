@@ -370,5 +370,45 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_Object()
+        {
+            var original = @"
+using System.Collections.Generic;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var list = new List<object>();
+        }
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithArrayOfReferenceType_NotOverridden()
+        {
+            var original = @"
+using System.Collections.Generic;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var list = new List<SomeClass[]>();
+        }
+    }
+
+    class SomeClass {}
+}";
+
+            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type SomeClass for use in a collection.");
+        }
     }
 }
