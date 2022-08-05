@@ -1,0 +1,26 @@
+name: build
+
+on:
+  push: master
+
+concurrency:
+  group: ${{ github.head_ref }}-build
+  cancel-in-progress: true
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.300
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Check format
+        run: dotnet format --no-restore --verify-no-changes --exclude .marvel/
