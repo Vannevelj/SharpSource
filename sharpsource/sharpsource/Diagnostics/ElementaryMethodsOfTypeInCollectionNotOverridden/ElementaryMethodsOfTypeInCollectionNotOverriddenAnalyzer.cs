@@ -38,7 +38,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
                 return;
             }
 
-            var node = ( (ObjectCreationExpressionSyntax)context.Node );
+            var node = (ObjectCreationExpressionSyntax)context.Node;
             if (!( node.Type is GenericNameSyntax objectType ))
             {
                 return;
@@ -54,7 +54,8 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
                 var genericTypeInfo = context.SemanticModel.GetTypeInfo(genericType).Type;
                 if (genericTypeInfo == null ||
                     genericTypeInfo.TypeKind == TypeKind.Interface ||
-                    genericTypeInfo.TypeKind == TypeKind.TypeParameter)
+                    genericTypeInfo.TypeKind == TypeKind.TypeParameter ||
+                    genericTypeInfo.TypeKind == TypeKind.Enum)
                 {
                     return;
                 }

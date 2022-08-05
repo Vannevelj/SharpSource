@@ -349,5 +349,26 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithEnum()
+        {
+            var original = @"
+using System.Collections.Generic;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var list = new List<SomeEnum>();
+        }
+    }
+
+    enum SomeEnum {}
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
