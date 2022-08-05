@@ -16,13 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.300
+      - name: Setup MSBuild Path
+        uses: warrenbuckley/Setup-MSBuild@v1
+        
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
 
-      - name: Install dependencies
-        run: dotnet restore
+      - name: Restore NuGet Packages
+        run: nuget restore sharpsource.sln
 
       - name: Check format
-        run: dotnet format --no-restore --verify-no-changes --exclude .marvel/
+        run: dotnet format --no-restore --verify-no-changes
