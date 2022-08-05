@@ -1,7 +1,9 @@
 name: build
 
 on:
-  push: master
+  push:
+    branches:
+      - "*"
 
 concurrency:
   group: ${{ github.head_ref }}-build
