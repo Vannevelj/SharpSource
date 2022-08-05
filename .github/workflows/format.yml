@@ -23,7 +23,7 @@ jobs:
         run: nuget restore sharpsource.sln
 
       - name: Build app for release
-        run: msbuild sharpsource.sln -t:rebuild -verbosity:diag -property:Configuration=Release
+        run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
 
       - name: Check format
         run: dotnet format --no-restore --verify-no-changes
