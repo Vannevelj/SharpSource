@@ -6,6 +6,8 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using RoslynTester.DiagnosticResults;
 using RoslynTester.Helpers.Testing;
@@ -421,6 +423,10 @@ namespace RoslynTester.Helpers
                 .CurrentSolution
                 .AddProject(projectId, ProjectName, ProjectName, language)
                 .AddMetadataReferences(projectId, csharpReferences);
+
+            var key = new OptionKey(FormattingOptions.NewLine, LanguageNames.CSharp);
+            var options = solution.Options.WithChangedOption(key, "\n");
+            solution = solution.WithOptions(options);
 
             var count = 0;
             foreach (var source in sources)
