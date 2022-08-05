@@ -16,8 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup MSBuild Path
-        uses: warrenbuckley/Setup-MSBuild@v1
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build app for release
+        run: msbuild sharpsource.sln -t:rebuild -verbosity:diag -property:Configuration=Release
         
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.2
