@@ -19,14 +19,14 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Build app for release
-        run: msbuild sharpsource.sln -t:rebuild -verbosity:diag -property:Configuration=Release
-        
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.2
 
       - name: Restore NuGet Packages
         run: nuget restore sharpsource.sln
+
+      - name: Build app for release
+        run: msbuild sharpsource.sln -t:rebuild -verbosity:diag -property:Configuration=Release
 
       - name: Check format
         run: dotnet format --no-restore --verify-no-changes
