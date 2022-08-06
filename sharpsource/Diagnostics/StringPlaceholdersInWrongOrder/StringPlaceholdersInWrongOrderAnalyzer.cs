@@ -53,7 +53,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
             var firstArgumentSymbol = context.SemanticModel.GetSymbolInfo(firstArgument.Expression);
             if (!( firstArgument.Expression is LiteralExpressionSyntax ) &&
                  firstArgumentSymbol.Symbol?.MetadataName == typeof(CultureInfo).Name &&
-                 !( secondArgument?.Expression is LiteralExpressionSyntax ) )
+                 !( secondArgument?.Expression is LiteralExpressionSyntax ))
             {
                 return;
             }

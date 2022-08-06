@@ -3,8 +3,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics.AccessingTaskResultWithoutAwait;
-using SharpSource.Diagnostics.AsyncMethodWithVoidReturnType;
-using SharpSource.Tests.Helpers;
 
 namespace SharpSource.Tests
 {
