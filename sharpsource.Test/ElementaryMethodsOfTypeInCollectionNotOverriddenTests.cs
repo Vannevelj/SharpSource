@@ -391,7 +391,7 @@ namespace ConsoleApplication1
         }
 
         [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithArrayOfReferenceType_NotOverridden()
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithArray()
         {
             var original = @"
 using System.Collections.Generic;
@@ -408,7 +408,7 @@ namespace ConsoleApplication1
     class SomeClass {}
 }";
 
-            VerifyDiagnostic(original, "Implement Equals() and GetHashCode() methods of type SomeClass for use in a collection.");
+            VerifyDiagnostic(original);
         }
     }
 }

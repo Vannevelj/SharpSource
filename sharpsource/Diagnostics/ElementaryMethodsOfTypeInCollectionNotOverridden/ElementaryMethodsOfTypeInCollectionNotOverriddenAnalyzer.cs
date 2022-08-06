@@ -60,7 +60,8 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
                 if (genericTypeInfo == null ||
                     genericTypeInfo.TypeKind == TypeKind.Interface ||
                     genericTypeInfo.TypeKind == TypeKind.TypeParameter ||
-                    genericTypeInfo.TypeKind == TypeKind.Enum)
+                    genericTypeInfo.TypeKind == TypeKind.Enum ||
+                    genericTypeInfo.TypeKind == TypeKind.Array)
                 {
                     return;
                 }
