@@ -16,9 +16,6 @@ namespace RoslynTester.Helpers.Testing
             }
         }
 
-        public static void Fail(string message)
-        {
-            throw new AssertionException(message);
-        }
+        public static void Fail(string message) => throw new AssertionException(message);
     }
 }

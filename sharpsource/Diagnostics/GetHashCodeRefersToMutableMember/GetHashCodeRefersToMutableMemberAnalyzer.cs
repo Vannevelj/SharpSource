@@ -22,7 +22,12 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(PropertyRule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+        }
 
         private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
@@ -79,7 +84,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                 return false;
             }
 
-            if (field.IsReadOnly && (field.Type.IsValueType || field.Type.SpecialType == SpecialType.System_String) && !field.IsStatic)
+            if (field.IsReadOnly && ( field.Type.IsValueType || field.Type.SpecialType == SpecialType.System_String ) && !field.IsStatic)
             {
                 return false;
             }

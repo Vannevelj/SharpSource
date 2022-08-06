@@ -23,7 +23,12 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
@@ -35,8 +40,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
 
             // Get the format string
             // This corresponds to the argument passed to the parameter with name 'format'
-            var methodSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
-            if (methodSymbol == null)
+            if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is not IMethodSymbol methodSymbol)
             {
                 return;
             }

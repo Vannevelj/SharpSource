@@ -46,7 +46,12 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
             => ImmutableArray.Create(DefaultRule, ValuesDontFitRule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.EnumDeclaration);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.EnumDeclaration);
+        }
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
@@ -119,8 +124,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
             }
             else
             {
-                var typeSyntax = enumType as PredefinedTypeSyntax;
-                if (typeSyntax != null)
+                if (enumType is PredefinedTypeSyntax typeSyntax)
                 {
                     keyword = typeSyntax.Keyword.ValueText;
                 }

@@ -23,14 +23,18 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SwitchStatement);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SwitchStatement);
+        }
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
             var switchBlock = (SwitchStatementSyntax)context.Node;
 
-            var enumType = context.SemanticModel.GetTypeInfo(switchBlock.Expression).Type as INamedTypeSymbol;
-            if (enumType == null || enumType.TypeKind != TypeKind.Enum)
+            if (context.SemanticModel.GetTypeInfo(switchBlock.Expression).Type is not INamedTypeSymbol enumType || enumType.TypeKind != TypeKind.Enum)
             {
                 return;
             }

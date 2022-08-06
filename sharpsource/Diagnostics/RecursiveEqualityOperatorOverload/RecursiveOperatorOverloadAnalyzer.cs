@@ -22,7 +22,12 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.OperatorDeclaration);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.OperatorDeclaration);
+        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
@@ -71,8 +76,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                     continue;
                 }
 
-                var expression = surroundingNode as ExpressionSyntax;
-                if (expression == null)
+                if (surroundingNode is not ExpressionSyntax expression)
                 {
                     continue;
                 }

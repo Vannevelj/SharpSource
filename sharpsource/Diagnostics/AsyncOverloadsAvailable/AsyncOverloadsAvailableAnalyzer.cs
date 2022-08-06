@@ -21,7 +21,12 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+        }
 
         private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
         {
@@ -101,7 +106,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                     var isGenericOverload =
                         returnType.SpecialType != SpecialType.System_Void &&
                         overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
-                        (wrappedType.Equals(returnType) || wrappedType.TypeKind == TypeKind.TypeParameter);
+                        ( wrappedType.Equals(returnType) || wrappedType.TypeKind == TypeKind.TypeParameter );
 
                     if (isVoidOverload || isGenericOverload)
                     {

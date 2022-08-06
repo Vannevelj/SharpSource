@@ -21,7 +21,11 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterCompilationStartAction((compilationContext) =>
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterCompilationStartAction((compilationContext) =>
         {
             var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
             IMethodSymbol objectEquals = null;
@@ -97,5 +101,6 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
                 }
             }, SyntaxKind.ClassDeclaration);
         });
+        }
     }
 }

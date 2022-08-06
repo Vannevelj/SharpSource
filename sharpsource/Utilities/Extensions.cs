@@ -131,8 +131,7 @@ namespace SharpSource.Utilities
                 throw new ArgumentNullException(nameof(type));
             }
 
-            string foundValue;
-            if (AliasMapping.TryGetValue(type, out foundValue))
+            if (AliasMapping.TryGetValue(type, out var foundValue))
             {
                 return foundValue;
             }
@@ -155,12 +154,9 @@ namespace SharpSource.Utilities
         ///     can be a method declared as async (e.g. returning <see cref="Task" /> or <see cref="Task{TResult}" />), or a method
         ///     with an async implementation (using the <code>async</code> keyword).
         /// </summary>
-        public static bool IsAsync(this IMethodSymbol methodSymbol)
-        {
-            return methodSymbol.IsAsync ||
+        public static bool IsAsync(this IMethodSymbol methodSymbol) => methodSymbol.IsAsync ||
                    methodSymbol.ReturnType.MetadataName == typeof(Task).Name ||
                    methodSymbol.ReturnType.MetadataName == typeof(Task<>).Name;
-        }
 
         public static bool IsDefinedInAncestor(this IMethodSymbol methodSymbol)
         {
@@ -284,7 +280,7 @@ namespace SharpSource.Utilities
         {
             foreach (var item in list)
             {
-                if (item.Kind() == kind)
+                if (item.IsKind(kind))
                 {
                     return true;
                 }

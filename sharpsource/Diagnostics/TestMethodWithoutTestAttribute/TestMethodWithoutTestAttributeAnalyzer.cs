@@ -20,7 +20,12 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
+        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
@@ -41,8 +46,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
                 return;
             }
 
-            var symbol = context.SemanticModel.GetDeclaredSymbol(enclosingType) as INamedTypeSymbol;
-            if (symbol == null)
+            if (context.SemanticModel.GetDeclaredSymbol(enclosingType) is not INamedTypeSymbol symbol)
             {
                 return;
             }

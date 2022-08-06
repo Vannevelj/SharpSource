@@ -104,10 +104,7 @@ namespace RoslynTester.Helpers
         /// </summary>
         /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-        protected void VerifyDiagnostic(string[] sources, params DiagnosticResult[] expected)
-        {
-            VerifyDiagnostics(sources, _languageName, expected);
-        }
+        protected void VerifyDiagnostic(string[] sources, params DiagnosticResult[] expected) => VerifyDiagnostics(sources, _languageName, expected);
 
         /// <summary>
         ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
@@ -115,10 +112,7 @@ namespace RoslynTester.Helpers
         /// </summary>
         /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         /// <param name="expected">Diagnostic messages that should appear after the analyzer is run on the sources</param>
-        protected void VerifyDiagnostic(string[] sources, params string[] expected)
-        {
-            VerifyDiagnostics(sources, _languageName, expected);
-        }
+        protected void VerifyDiagnostic(string[] sources, params string[] expected) => VerifyDiagnostics(sources, _languageName, expected);
 
         /// <summary>
         ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
@@ -126,10 +120,7 @@ namespace RoslynTester.Helpers
         /// </summary>
         /// <param name="source">A string representing the document to run the analyzer on</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-        protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected)
-        {
-            VerifyDiagnostics(new[] { source }, _languageName, expected);
-        }
+        protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected) => VerifyDiagnostics(new[] { source }, _languageName, expected);
 
         /// <summary>
         ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
@@ -137,28 +128,19 @@ namespace RoslynTester.Helpers
         /// </summary>
         /// <param name="source">A string representing the document to run the analyzer on</param>
         /// <param name="expected">Diagnostic messages that should appear after the analyzer is run on the sources</param>
-        protected void VerifyDiagnostic(string source, params string[] expected)
-        {
-            VerifyDiagnostics(new[] { source }, _languageName, expected);
-        }
+        protected void VerifyDiagnostic(string source, params string[] expected) => VerifyDiagnostics(new[] { source }, _languageName, expected);
 
         /// <summary>
         ///     Verifies that no diagnostic is triggered.
         /// </summary>
         /// <param name="source">A string representing the document to run the analyzer on</param>
-        protected void VerifyDiagnostic(string source)
-        {
-            VerifyDiagnostics(new[] { source }, _languageName, new string[] { });
-        }
+        protected void VerifyDiagnostic(string source) => VerifyDiagnostics(new[] { source }, _languageName, new string[] { });
 
         /// <summary>
         ///     Verifies that no diagnostic is triggered.
         /// </summary>
         /// <param name="sources">An array of strings representing the documents</param>
-        protected void VerifyDiagnostic(string[] sources)
-        {
-            VerifyDiagnostics(sources, _languageName, new string[] { });
-        }
+        protected void VerifyDiagnostic(string[] sources) => VerifyDiagnostics(sources, _languageName, new string[] { });
 
         /// <summary>
         ///     General method that gets a collection of actual diagnostics found in the source after the analyzer is run,

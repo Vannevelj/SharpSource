@@ -20,14 +20,18 @@ namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ThrowStatement);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ThrowStatement);
+        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             var throwStatement = (ThrowStatementSyntax)context.Node;
 
-            var throwIdentifierSyntax = throwStatement.Expression as IdentifierNameSyntax;
-            if (throwIdentifierSyntax == null)
+            if (throwStatement.Expression is not IdentifierNameSyntax throwIdentifierSyntax)
             {
                 return;
             }

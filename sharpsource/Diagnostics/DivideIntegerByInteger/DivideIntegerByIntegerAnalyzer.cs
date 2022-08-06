@@ -27,7 +27,12 @@ namespace SharpSource.Diagnostics.DivideIntegerByInteger
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.DivideExpression);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.DivideExpression);
+        }
 
         private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
         {

@@ -23,14 +23,18 @@ namespace SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperator
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression);
+        }
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
             var invocation = (InvocationExpressionSyntax)context.Node;
 
-            var identifierExpression = invocation.Expression as IdentifierNameSyntax;
-            if (identifierExpression == null)
+            if (invocation.Expression is not IdentifierNameSyntax identifierExpression)
             {
                 return;
             }

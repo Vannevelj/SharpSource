@@ -76,7 +76,7 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original);
         }
 
-                [TestMethod]
+        [TestMethod]
         public void SynchronousTaskWait_AsyncContext_Void()
         {
             var original = @"
