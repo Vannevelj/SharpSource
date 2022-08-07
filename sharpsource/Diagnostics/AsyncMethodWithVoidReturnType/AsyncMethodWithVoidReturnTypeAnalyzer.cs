@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.AsyncMethodWithVoidReturnType
         private static readonly string Message = Resources.AsyncMethodWithVoidReturnTypeMessage;
         private static readonly string Title = Resources.AsyncMethodWithVoidReturnTypeTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.AsyncMethodWithVoidReturnType, Title, Message, Category, Severity, isEnabledByDefault: true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.AsyncMethodWithVoidReturnType, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

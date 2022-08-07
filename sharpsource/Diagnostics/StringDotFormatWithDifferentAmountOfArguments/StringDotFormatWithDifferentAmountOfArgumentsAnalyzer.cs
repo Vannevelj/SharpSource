@@ -19,7 +19,7 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
         private static readonly string Title = Resources.StringDotFormatWithDifferentAmountOfArgumentsTitle;
 
         public static DiagnosticDescriptor Rule =>
-            new DiagnosticDescriptor(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Category, Severity, true);
+            new(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -154,9 +154,9 @@ namespace SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArguments
                     InitializerExpressionSyntax inlineArrayCreation = null;
                     foreach (var argument in formatArguments[0].DescendantNodes())
                     {
-                        if (argument is InitializerExpressionSyntax)
+                        if (argument is InitializerExpressionSyntax syntax)
                         {
-                            inlineArrayCreation = (InitializerExpressionSyntax)argument;
+                            inlineArrayCreation = syntax;
                         }
                     }
 

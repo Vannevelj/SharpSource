@@ -27,7 +27,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
             Resources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerTitle;
 
         public static DiagnosticDescriptor DefaultRule
-            => new DiagnosticDescriptor(
+            => new(
                 DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo,
                 Title,
                 Message,
@@ -36,7 +36,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                 true);
 
         public static DiagnosticDescriptor ValuesDontFitRule
-            => new DiagnosticDescriptor(
+            => new(
                 DiagnosticId.FlagsEnumValuesDontFit,
                 ValuesDontFitTitle,
                 ValuesDontFitMessage,
@@ -162,7 +162,7 @@ namespace SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwo
                     var all = true;
                     foreach (var node in descendantNodes)
                     {
-                        if (!node.IsKind(SyntaxKind.IdentifierName) && !( node is BinaryExpressionSyntax ))
+                        if (!node.IsKind(SyntaxKind.IdentifierName) && node is not BinaryExpressionSyntax)
                         {
                             all = false;
                             break;

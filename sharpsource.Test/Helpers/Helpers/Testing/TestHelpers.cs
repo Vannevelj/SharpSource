@@ -8,11 +8,11 @@ namespace SharpSource.Tests.Helpers.Helpers.Testing
 {
     public static class TestHelpers
     {
-        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue) => ShouldEqualWithDiff(actualValue, expectedValue, DiffStyle.Full, Console.Out);
+        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message) => ShouldEqualWithDiff(actualValue, expectedValue, message, DiffStyle.Full, Console.Out);
 
-        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, DiffStyle diffStyle) => ShouldEqualWithDiff(actualValue, expectedValue, diffStyle, Console.Out);
+        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message, DiffStyle diffStyle) => ShouldEqualWithDiff(actualValue, expectedValue, message, diffStyle, Console.Out);
 
-        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, DiffStyle diffStyle, TextWriter output)
+        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message, DiffStyle diffStyle, TextWriter output)
         {
             if (actualValue == null || expectedValue == null)
             {
@@ -47,7 +47,7 @@ namespace SharpSource.Tests.Helpers.Helpers.Testing
 
             if (expectedValue != actualValue)
             {
-                throw new AssertionException($"{Environment.NewLine}" +
+                throw new AssertionException($"{Environment.NewLine}{message}{Environment.NewLine}" +
                                              $"Expected: {expectedValue}{Environment.NewLine}" +
                                              $"  Actual: {actualValue}{Environment.NewLine}");
             }

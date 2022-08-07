@@ -28,7 +28,7 @@ namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-            var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is SwitchStatementSyntax);
+            var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
             context.RegisterCodeFix(
                 CodeAction.Create(Resources.SwitchIsMissingDefaultSectionCodeFixTitle,
                     x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),

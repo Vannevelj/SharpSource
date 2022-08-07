@@ -17,8 +17,8 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
         private static readonly string PropertyMessage = Resources.GetHashCodeRefersToMutableFieldAnalyzerPropertyMessage;
         private static readonly string Title = Resources.GetHashCodeRefersToMutableFieldAnalyzerTitle;
 
-        public static DiagnosticDescriptor FieldRule => new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Category, Severity, true);
-        public static DiagnosticDescriptor PropertyRule => new DiagnosticDescriptor(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Category, Severity, true);
+        public static DiagnosticDescriptor FieldRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Category, Severity, true);
+        public static DiagnosticDescriptor PropertyRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(PropertyRule);
 
@@ -67,7 +67,7 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
                     var propertyNode = root.FindNode(symbol.Locations[0].SourceSpan);
                     if (propertyNode is PropertyDeclarationSyntax propertyDeclaration)
                     {
-                        var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol, propertyDeclaration);
+                        var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol);
                         if (propertyIsMutable)
                         {
                             context.ReportDiagnostic(Diagnostic.Create(PropertyRule, node.GetLocation(), symbol.Name));
@@ -92,14 +92,6 @@ namespace SharpSource.Diagnostics.GetHashCodeRefersToMutableMember
             return true;
         }
 
-        private bool PropertyIsMutable(IPropertySymbol property, PropertyDeclarationSyntax node)
-        {
-            if (property.SetMethod != null)
-            {
-                return true;
-            }
-
-            return false;
-        }
+        private bool PropertyIsMutable(IPropertySymbol property) => property.SetMethod != null;
     }
 }

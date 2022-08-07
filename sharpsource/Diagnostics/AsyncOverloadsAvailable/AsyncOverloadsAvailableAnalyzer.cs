@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
         private static readonly string Message = Resources.AsyncOverloadsAvailableMessage;
         private static readonly string Title = Resources.AsyncOverloadsAvailableTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.AsyncOverloadsAvailable, Title, Message, Category, Severity, isEnabledByDefault: true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.AsyncOverloadsAvailable, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

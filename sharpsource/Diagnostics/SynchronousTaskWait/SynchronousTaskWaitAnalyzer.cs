@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.SynchronousTaskWait
         private static readonly string Message = "Asynchronously wait for task completion using await instead";
         private static readonly string Title = "Asynchronously await tasks instead of blocking them";
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.SynchronousTaskWait, Title, Message, Category, Severity, isEnabledByDefault: true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.SynchronousTaskWait, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

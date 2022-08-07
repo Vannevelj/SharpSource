@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
         private static readonly string Message = Resources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerMessage;
         private static readonly string Title = Resources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

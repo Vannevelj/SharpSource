@@ -10,7 +10,7 @@ namespace SharpSource.Utilities
 {
     public static class Extensions
     {
-        private static readonly Dictionary<string, string> AliasMapping = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> AliasMapping = new()
         {
             { nameof(Int16), "short" },
             { nameof(Int32), "int" },

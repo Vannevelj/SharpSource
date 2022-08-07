@@ -38,7 +38,7 @@ namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
                 diagnostic);
         }
 
-        private async Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
+        private async Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken cancellationToken)
         {
             if (memberAccessExpression == null)
             {
@@ -47,7 +47,7 @@ namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
 
             var newExpression = ParenthesizedExpression(AwaitExpression(memberAccessExpression.Expression)).WithAdditionalAnnotations(Simplifier.Annotation);
             var newRoot = root.ReplaceNode(memberAccessExpression, newExpression);
-            var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
+            var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot), cancellationToken: cancellationToken);
             return newDocument;
         }
     }

@@ -16,7 +16,7 @@ namespace SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktrace
         private static readonly string Message = Resources.RethrowExceptionWithoutLosingStacktraceAnalyzerMessage;
         private static readonly string Title = Resources.RethrowExceptionWithoutLosingStacktraceAnalyzerTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.RethrowExceptionWithoutLosingStacktrace, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.RethrowExceptionWithoutLosingStacktrace, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

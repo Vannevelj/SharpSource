@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.StructShouldNotMutateSelf
         private static readonly string Title = Resources.StructsShouldNotMutateSelfAnalyzerTitle;
 
         public static DiagnosticDescriptor Rule
-            => new DiagnosticDescriptor(DiagnosticId.StructShouldNotMutateSelf, Title, Message, Category, Severity, true);
+            => new(DiagnosticId.StructShouldNotMutateSelf, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -34,7 +34,7 @@ namespace SharpSource.Diagnostics.StructShouldNotMutateSelf
             // this = someValueType;
             var assignmentExpression = (AssignmentExpressionSyntax)context.Node;
 
-            if (!( assignmentExpression.Left is ThisExpressionSyntax ))
+            if (assignmentExpression.Left is not ThisExpressionSyntax)
             {
                 return;
             }

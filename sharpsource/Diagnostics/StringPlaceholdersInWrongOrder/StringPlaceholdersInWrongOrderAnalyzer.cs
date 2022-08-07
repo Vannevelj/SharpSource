@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Globalization;
 using Microsoft.CodeAnalysis;
@@ -19,7 +18,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
         private static readonly string Title = Resources.StringPlaceholdersInWrongOrderTitle;
 
         public static DiagnosticDescriptor Rule
-            => new DiagnosticDescriptor(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Category, Severity, true);
+            => new(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -51,15 +50,15 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
             var secondArgument = invocation.ArgumentList.Arguments[1];
 
             var firstArgumentSymbol = context.SemanticModel.GetSymbolInfo(firstArgument.Expression);
-            if (!( firstArgument.Expression is LiteralExpressionSyntax ) &&
+            if (firstArgument.Expression is not LiteralExpressionSyntax &&
                  firstArgumentSymbol.Symbol?.MetadataName == typeof(CultureInfo).Name &&
-                 !( secondArgument?.Expression is LiteralExpressionSyntax ))
+                 secondArgument?.Expression is not LiteralExpressionSyntax)
             {
                 return;
             }
 
-            if (!( firstArgument.Expression is LiteralExpressionSyntax ) &&
-                !( secondArgument.Expression is LiteralExpressionSyntax ))
+            if (firstArgument.Expression is not LiteralExpressionSyntax &&
+                secondArgument.Expression is not LiteralExpressionSyntax)
             {
                 return;
             }
@@ -103,7 +102,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
 
                 // Given a scenario {0} {1} {0} we have to make sure that this doesn't trigger a warning when we're simply re-using an index. 
                 // Those are exempt from the "always be ascending or equal" rule.
-                Func<int, int, bool> hasBeenUsedBefore = (value, currentIndex) =>
+                bool hasBeenUsedBefore(int value, int currentIndex)
                 {
                     for (var counter = 0; counter < currentIndex; counter++)
                     {
@@ -114,7 +113,7 @@ namespace SharpSource.Diagnostics.StringPlaceholdersInWrongOrder
                     }
 
                     return false;
-                };
+                }
 
                 // They should be in ascending or equal order
                 if (firstValue > secondValue && !hasBeenUsedBefore(secondValue, index))

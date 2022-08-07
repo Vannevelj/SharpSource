@@ -16,47 +16,47 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
         private static readonly string Category = Resources.ExceptionsCategory;
 
         private static DiagnosticDescriptor ImplicitOperatorRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromImplicitOperator,
+            => new(DiagnosticId.ExceptionThrownFromImplicitOperator,
                 Resources.ExceptionThrownFromImplicitOperatorAnalyzerTitle,
                 Resources.ExceptionThrownFromImplicitOperatorAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor PropertyGetterRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromPropertyGetter,
+            => new(DiagnosticId.ExceptionThrownFromPropertyGetter,
                 Resources.ExceptionThrownFromPropertyGetterAnalyzerTitle,
                 Resources.ExceptionThrownFromPropertyGetterAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor StaticConstructorRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromStaticConstructor,
+            => new(DiagnosticId.ExceptionThrownFromStaticConstructor,
                 Resources.ExceptionThrownFromStaticConstructorAnalyzerTitle,
                 Resources.ExceptionThrownFromStaticConstructorAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor FinallyBlockRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromFinallyBlock,
+            => new(DiagnosticId.ExceptionThrownFromFinallyBlock,
                 Resources.ExceptionThrownFromFinallyBlockAnalyzerTitle,
                 Resources.ExceptionThrownFromFinallyBlockAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor EqualityOperatorRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromEqualityOperator,
+            => new(DiagnosticId.ExceptionThrownFromEqualityOperator,
                 Resources.ExceptionThrownFromEqualityOperatorAnalyzerTitle,
                 Resources.ExceptionThrownFromEqualityOperatorAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor DisposeRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromDispose,
+            => new(DiagnosticId.ExceptionThrownFromDispose,
                 Resources.ExceptionThrownFromDisposeAnalyzerTitle,
                 Resources.ExceptionThrownFromDisposeAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor FinalizerRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromFinalizer,
+            => new(DiagnosticId.ExceptionThrownFromFinalizer,
                 Resources.ExceptionThrownFromFinalizerAnalyzerTitle,
                 Resources.ExceptionThrownFromFinalizerAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor GetHashCodeRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromGetHashCode,
+            => new(DiagnosticId.ExceptionThrownFromGetHashCode,
                 Resources.ExceptionThrownFromGetHashCodeAnalyzerTitle,
                 Resources.ExceptionThrownFromGetHashCodeAnalyzerMessage, Category, Severity, true);
 
         private static DiagnosticDescriptor EqualsRule
-            => new DiagnosticDescriptor(DiagnosticId.ExceptionThrownFromEquals,
+            => new(DiagnosticId.ExceptionThrownFromEquals,
                 Resources.ExceptionThrownFromEqualsAnalyzerTitle,
                 Resources.ExceptionThrownFromEqualsAnalyzerMessage, Category, Severity, true);
 

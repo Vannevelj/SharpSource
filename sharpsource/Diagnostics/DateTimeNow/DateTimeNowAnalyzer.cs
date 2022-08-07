@@ -16,7 +16,7 @@ namespace SharpSource.Diagnostics.DateTimeNow
         private static readonly string Message = Resources.DateTimeNowAnalyzerMessage;
         private static readonly string Title = Resources.DateTimeNowAnalyzerTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.DateTimeNow, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
         private static readonly string Message = Resources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage;
         private static readonly string Title = Resources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Category, Severity, true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -30,7 +30,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
 
         private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
-            if (!( context.SemanticModel.GetTypeInfo(context.Node).Type is INamedTypeSymbol objectTypeInfo ))
+            if (context.SemanticModel.GetTypeInfo(context.Node).Type is not INamedTypeSymbol objectTypeInfo)
             {
                 return;
             }
@@ -44,7 +44,7 @@ namespace SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverridd
             }
 
             var node = (ObjectCreationExpressionSyntax)context.Node;
-            if (!( node.Type is GenericNameSyntax objectType ))
+            if (node.Type is not GenericNameSyntax objectType)
             {
                 return;
             }

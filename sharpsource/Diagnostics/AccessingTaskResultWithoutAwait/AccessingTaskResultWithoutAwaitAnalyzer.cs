@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.AccessingTaskResultWithoutAwait
         private static readonly string Message = Resources.AccessingTaskResultWithoutAwaitAnalyzerMessage;
         private static readonly string Title = Resources.AccessingTaskResultWithoutAwaitAnalyzerTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.AccessingTaskResultWithoutAwait, Title, Message, Category, Severity, isEnabledByDefault: true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.AccessingTaskResultWithoutAwait, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

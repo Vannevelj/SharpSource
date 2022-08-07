@@ -16,7 +16,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
         private static readonly string Category = Resources.TestsCategory;
         private static readonly string Message = Resources.TestMethodWithoutTestAttributeAnalyzerMessage;
         private static readonly string Title = Resources.TestMethodWithoutTestAttributeAnalyzerTitle;
-        private static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.TestMethodWithoutTestAttribute, Title, Message, Category, Severity, true);
+        private static DiagnosticDescriptor Rule => new(DiagnosticId.TestMethodWithoutTestAttribute, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

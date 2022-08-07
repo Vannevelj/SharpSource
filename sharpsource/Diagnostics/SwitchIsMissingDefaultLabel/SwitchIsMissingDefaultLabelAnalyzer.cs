@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.SwitchIsMissingDefaultLabel
         private static readonly string Title = Resources.SwitchIsMissingDefaultSectionAnalyzerTitle;
 
         public static DiagnosticDescriptor Rule
-            => new DiagnosticDescriptor(DiagnosticId.SwitchIsMissingDefaultLabel, Title, Message, Category, Severity, true);
+            => new(DiagnosticId.SwitchIsMissingDefaultLabel, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

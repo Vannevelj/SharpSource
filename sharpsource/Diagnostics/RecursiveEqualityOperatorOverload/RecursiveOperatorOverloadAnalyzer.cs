@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
         private static readonly string Title = Resources.RecursiveEqualityOperatorOverloadMessage;
 
         public static DiagnosticDescriptor Rule
-            => new DiagnosticDescriptor(DiagnosticId.RecursiveEqualityOperatorOverload, Title, Message, Category, Severity, isEnabledByDefault: true);
+            => new(DiagnosticId.RecursiveEqualityOperatorOverload, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -63,7 +63,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
 
             if (definedToken.IsKind(SyntaxKind.TrueKeyword) || definedToken.IsKind(SyntaxKind.FalseKeyword))
             {
-                CheckForTrueOrFalseKeyword();
+                checkForTrueOrFalseKeyword();
                 return;
             }
 
@@ -84,20 +84,20 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                 switch (expression)
                 {
                     case BinaryExpressionSyntax binaryExpression:
-                        var hasWarned = CheckOperatorToken(binaryExpression.OperatorToken, binaryExpression.Left);
+                        var hasWarned = checkOperatorToken(binaryExpression.OperatorToken, binaryExpression.Left);
                         if (!hasWarned)
                         {
-                            CheckOperatorToken(binaryExpression.OperatorToken, binaryExpression.Right);
+                            checkOperatorToken(binaryExpression.OperatorToken, binaryExpression.Right);
                         }
 
                         break;
 
                     case PrefixUnaryExpressionSyntax prefixUnaryExpression:
-                        CheckOperatorToken(prefixUnaryExpression.OperatorToken, prefixUnaryExpression.Operand);
+                        checkOperatorToken(prefixUnaryExpression.OperatorToken, prefixUnaryExpression.Operand);
                         break;
 
                     case PostfixUnaryExpressionSyntax postfixUnaryExpression:
-                        CheckOperatorToken(postfixUnaryExpression.OperatorToken, postfixUnaryExpression.Operand);
+                        checkOperatorToken(postfixUnaryExpression.OperatorToken, postfixUnaryExpression.Operand);
                         break;
 
                     default:
@@ -105,7 +105,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                 }
             }
 
-            bool CheckOperatorToken(SyntaxToken token, ExpressionSyntax expression)
+            bool checkOperatorToken(SyntaxToken token, ExpressionSyntax expression)
             {
                 if (!token.IsKind(definedToken.Kind()))
                 {
@@ -127,14 +127,14 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                 return true;
             }
 
-            void CheckForTrueOrFalseKeyword()
+            void checkForTrueOrFalseKeyword()
             {
                 if (hasBody)
                 {
                     var ifConditions = operatorDeclaration.Body.DescendantNodes().OfType<IfStatementSyntax>().ToArray();
                     foreach (var ifCondition in ifConditions)
                     {
-                        CheckOperatorToken(definedToken, ifCondition.Condition);
+                        checkOperatorToken(definedToken, ifCondition.Condition);
                     }
                 }
                 else if (hasExpression)
@@ -142,7 +142,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                     var conditionalExpressions = operatorDeclaration.ExpressionBody.Expression.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().ToArray();
                     foreach (var conditionalExpression in conditionalExpressions)
                     {
-                        CheckOperatorToken(definedToken, conditionalExpression.Condition);
+                        checkOperatorToken(definedToken, conditionalExpression.Condition);
                     }
                 }
             }

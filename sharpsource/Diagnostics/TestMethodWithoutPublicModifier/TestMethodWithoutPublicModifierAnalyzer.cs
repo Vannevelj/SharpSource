@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutPublicModifier
         private static readonly string Title = Resources.TestMethodWithoutPublicModifierAnalyzerTitle;
 
         public static DiagnosticDescriptor Rule
-            => new DiagnosticDescriptor(DiagnosticId.TestMethodWithoutPublicModifier, Title, Message, Category, Severity, true);
+            => new(DiagnosticId.TestMethodWithoutPublicModifier, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

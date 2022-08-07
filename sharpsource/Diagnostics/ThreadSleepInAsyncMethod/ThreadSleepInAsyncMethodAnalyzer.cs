@@ -17,7 +17,7 @@ namespace SharpSource.Diagnostics.ThreadSleepInAsyncMethod
         private static readonly string Message = Resources.ThreadSleepInAsyncMethodMessage;
         private static readonly string Title = Resources.ThreadSleepInAsyncMethodTitle;
 
-        public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Category, Severity, isEnabledByDefault: true);
+        public static DiagnosticDescriptor Rule => new(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Category, Severity, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

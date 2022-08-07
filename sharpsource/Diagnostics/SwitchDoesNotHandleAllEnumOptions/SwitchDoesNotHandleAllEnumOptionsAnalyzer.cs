@@ -18,7 +18,7 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
         private static readonly string Title = Resources.SwitchDoesNotHandleAllEnumOptionsAnalyzerTitle;
 
         public static DiagnosticDescriptor Rule
-            => new DiagnosticDescriptor(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Category, Severity, true);
+            => new(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Category, Severity, true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
