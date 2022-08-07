@@ -22,8 +22,8 @@ jobs:
       - name: Restore NuGet Packages
         run: nuget restore sharpsource.sln
 
-      - name: Build
-        run: dotnet build
+      - name: Build app for release
+        run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
 
       - name: Run tests
         run: dotnet test
