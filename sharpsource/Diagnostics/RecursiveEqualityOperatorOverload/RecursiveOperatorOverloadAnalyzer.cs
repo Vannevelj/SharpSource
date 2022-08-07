@@ -118,7 +118,7 @@ namespace SharpSource.Diagnostics.RecursiveEqualityOperatorOverload
                     return false;
                 }
 
-                if (!usedType.Equals(enclosingSymbol))
+                if (!usedType.Equals(enclosingSymbol, SymbolEqualityComparer.Default))
                 {
                     return false;
                 }

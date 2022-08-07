@@ -38,7 +38,7 @@ namespace SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptions
                 return;
             }
 
-            var labelSymbols = new HashSet<ISymbol>();
+            var labelSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
             foreach (var section in switchBlock.Sections)
             {
                 foreach (var label in section.Labels)

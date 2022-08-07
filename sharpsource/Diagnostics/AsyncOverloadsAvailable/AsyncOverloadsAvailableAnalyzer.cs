@@ -92,7 +92,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                 {
                     for (var i = 0; i < invokedMethod.Parameters.Length; i++)
                     {
-                        if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type))
+                        if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type, SymbolEqualityComparer.Default))
                         {
                             hasSameParameters = false;
                             break;
@@ -106,7 +106,7 @@ namespace SharpSource.Diagnostics.CorrectTPLMethodsInAsyncContext
                     var isGenericOverload =
                         returnType.SpecialType != SpecialType.System_Void &&
                         overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
-                        ( wrappedType.Equals(returnType) || wrappedType.TypeKind == TypeKind.TypeParameter );
+                        ( wrappedType.Equals(returnType, SymbolEqualityComparer.Default) || wrappedType.TypeKind == TypeKind.TypeParameter );
 
                     if (isVoidOverload || isGenericOverload)
                     {

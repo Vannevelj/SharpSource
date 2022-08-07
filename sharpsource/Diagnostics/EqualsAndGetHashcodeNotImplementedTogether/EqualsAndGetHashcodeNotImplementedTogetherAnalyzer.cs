@@ -83,12 +83,12 @@ namespace SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogether
                         methodSymbol = methodSymbol.OverriddenMethod;
                     }
 
-                    if (methodSymbol == objectEquals)
+                    if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default))
                     {
                         equalsImplemented = true;
                     }
 
-                    if (methodSymbol == objectGetHashCode)
+                    if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
                     {
                         getHashcodeImplemented = true;
                     }

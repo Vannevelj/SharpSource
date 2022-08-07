@@ -97,7 +97,7 @@ namespace SharpSource.Diagnostics.TestMethodWithoutTestAttribute
             var voidType = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Void);
             var taskType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
             var taskTType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
-            if (!( returnType.Equals(voidType) || returnType.Equals(taskType) || returnType.OriginalDefinition.Equals(taskTType) ))
+            if (!( returnType.Equals(voidType, SymbolEqualityComparer.Default) || returnType.Equals(taskType, SymbolEqualityComparer.Default) || returnType.OriginalDefinition.Equals(taskTType, SymbolEqualityComparer.Default) ))
             {
                 return;
             }

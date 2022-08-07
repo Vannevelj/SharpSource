@@ -113,7 +113,7 @@ namespace SharpSource.Diagnostics.ExceptionThrownFromProhibitedContext
                             currentMethodSymbol = currentMethodSymbol.OverriddenMethod;
                         }
 
-                        if (currentMethodSymbol.Equals(objectGetHashCodeSymbol))
+                        if (currentMethodSymbol.Equals(objectGetHashCodeSymbol, SymbolEqualityComparer.Default))
                         {
                             context.ReportDiagnostic(Diagnostic.Create(GetHashCodeRule, warningLocation, containingType.Name));
                             return;

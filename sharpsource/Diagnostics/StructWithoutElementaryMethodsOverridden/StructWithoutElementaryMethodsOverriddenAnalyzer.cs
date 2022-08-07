@@ -93,17 +93,17 @@ namespace SharpSource.Diagnostics.StructWithoutElementaryMethodsOverridden
                     methodSymbol = methodSymbol.OverriddenMethod;
                 }
 
-                if (methodSymbol == objectEquals)
+                if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default))
                 {
                     equalsImplemented = true;
                 }
 
-                if (methodSymbol == objectGetHashCode)
+                if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
                 {
                     getHashCodeImplemented = true;
                 }
 
-                if (methodSymbol == objectToString)
+                if (methodSymbol.Equals(objectToString, SymbolEqualityComparer.Default))
                 {
                     toStringImplemented = true;
                 }

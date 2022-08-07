@@ -37,19 +37,18 @@ namespace SharpSource.Diagnostics.SynchronousTaskWait
                 diagnostic);
         }
 
-        private async Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
+        private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
         {
             if (memberAccessExpression == null)
             {
-                return document;
+                return Task.FromResult(document);
             }
 
             var newExpression = AwaitExpression(memberAccessExpression.Expression);
             var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
 
-
             var newRoot = root.ReplaceNode(originalInvocation, newExpression);
-            return document.WithSyntaxRoot(newRoot);
+            return Task.FromResult(document.WithSyntaxRoot(newRoot));
         }
     }
 }

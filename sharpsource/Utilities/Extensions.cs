@@ -171,7 +171,7 @@ namespace SharpSource.Utilities
 
                 foreach (var method in interfaceMethods)
                 {
-                    if (method != null && method.Equals(methodSymbol))
+                    if (method != null && method.Equals(methodSymbol, SymbolEqualityComparer.Default))
                     {
                         return true;
                     }
@@ -185,7 +185,7 @@ namespace SharpSource.Utilities
 
                 foreach (var method in baseMethods)
                 {
-                    if (method.Equals(methodSymbol.OverriddenMethod))
+                    if (method.Equals(methodSymbol.OverriddenMethod, SymbolEqualityComparer.Default))
                     {
                         return true;
                     }
