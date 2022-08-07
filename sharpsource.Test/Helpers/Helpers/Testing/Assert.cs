@@ -11,8 +11,10 @@ namespace RoslynTester.Helpers.Testing
                 var expectedEscaped = expected.Replace("\n", "\\n").Replace("\r\n", "\\r\\n");
                 var actualEscaped = actual.Replace("\n", "\\n").Replace("\r\n", "\\r\\n");
                 throw new AssertionException($"{Environment.NewLine}{message}{Environment.NewLine}" +
-                                             $"Expected: {expectedEscaped}{Environment.NewLine}" +
-                                             $"  Actual: {actualEscaped}");
+                                             $"Expected: {expected}{Environment.NewLine}" +
+                                             $"  Actual: {actual}{Environment.NewLine}" +
+                                             $"Expected (escaped): {expectedEscaped}{Environment.NewLine}" +
+                                             $"  Actual (escaped): {actualEscaped}");
             }
         }
 
