@@ -40,7 +40,7 @@ jobs:
         retention-days: 1
         if-no-files-found: error
   
-  release-github:
+  release_github:
     name: Release to Github
     needs: pack
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
         asset_name: sharpsource-pkg
         asset_content_type: application/binary
 
-  release-nuget:
+  release_nuget:
     name: Release to Nuget
     needs: pack
     runs-on: ubuntu-latest
