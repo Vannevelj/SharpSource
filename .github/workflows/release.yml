@@ -39,11 +39,11 @@ jobs:
         path: ./CHANGELOG.md
         retention-days: 1
         if-no-files-found: error
-  
-  release-github:
+  github:
     name: Release to Github
     needs: pack
     runs-on: ubuntu-latest
+    steps:
     - name: Download CHANGELOG
       uses: actions/download-artifact@v2
       with:
@@ -81,11 +81,11 @@ jobs:
         asset_path: ./sharpsource-pkg
         asset_name: sharpsource-pkg
         asset_content_type: application/binary
-
-  release-nuget:
+  nuget:
     name: Release to Nuget
     needs: pack
     runs-on: ubuntu-latest
+    steps:
     - name: Download a single artifact
       uses: actions/download-artifact@v3
       with:
