@@ -28,7 +28,6 @@ jobs:
         vsix-manifest-file: './sharpsource.Vsix/source.extension.vsixmanifest'
     - name: Build app for release
       run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
-    
     - name: Pack Nuget
       run: dotnet pack -c Release -p:PackageVersion=${{ steps.changelog_reader.outputs.version }} --no-build --output .
     - name: Archive Nuget package
@@ -43,6 +42,13 @@ jobs:
       with:
         name: CHANGELOG.md
         path: ./CHANGELOG.md
+        retention-days: 1
+        if-no-files-found: error
+    - name: Archive VSIX artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: sharpsource-vsix
+        path: ./sharpsource.Vsix/bin/Release/SharpSource.vsix
         retention-days: 1
         if-no-files-found: error
   github:
@@ -86,6 +92,16 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./sharpsource-pkg
         asset_name: sharpsource-pkg
+        asset_content_type: application/binary
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./sharpsource-vsix
+        asset_name: sharpsource-vsix
         asset_content_type: application/binary
   nuget:
     name: Release to Nuget
