@@ -39,8 +39,7 @@ jobs:
         path: ./CHANGELOG.md
         retention-days: 1
         if-no-files-found: error
-  
-  release_github:
+  github:
     name: Release to Github
     needs: pack
     runs-on: ubuntu-latest
@@ -81,8 +80,7 @@ jobs:
         asset_path: ./sharpsource-pkg
         asset_name: sharpsource-pkg
         asset_content_type: application/binary
-
-  release_nuget:
+  nuget:
     name: Release to Nuget
     needs: pack
     runs-on: ubuntu-latest
