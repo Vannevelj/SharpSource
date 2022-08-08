@@ -12,17 +12,23 @@ jobs:
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v3
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
-    - name: Restore NuGet Packages
-      run: nuget restore sharpsource.sln
-    - name: Build app for release
-      run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
     - name: Get version from CHANGELOG.md
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
         path: ./CHANGELOG.md
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Restore NuGet Packages
+      run: nuget restore sharpsource.sln
+    - name: Set version for Visual Studio Extension
+      uses: cezarypiatek/VsixVersionAction@1.0
+      with:
+        version: ${{ steps.changelog_reader.outputs.version }}
+        vsix-manifest-file: './sharpsource.Vsix/source.extension.vsixmanifest'
+    - name: Build app for release
+      run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
+    
     - name: Pack Nuget
       run: dotnet pack -c Release -p:PackageVersion=${{ steps.changelog_reader.outputs.version }} --no-build --output .
     - name: Archive Nuget package
