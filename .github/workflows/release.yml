@@ -43,6 +43,7 @@ jobs:
     name: Release to Github
     needs: pack
     runs-on: ubuntu-latest
+    steps:
     - name: Download CHANGELOG
       uses: actions/download-artifact@v2
       with:
@@ -84,6 +85,7 @@ jobs:
     name: Release to Nuget
     needs: pack
     runs-on: ubuntu-latest
+    steps:
     - name: Download a single artifact
       uses: actions/download-artifact@v3
       with:
