@@ -4,8 +4,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>Sharpsource.Vsix</RootNamespace>
-    <AssemblyName>Sharpsource</AssemblyName>
+    <RootNamespace>sharpsource.Vsix</RootNamespace>
+    <AssemblyName>sharpsource</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
