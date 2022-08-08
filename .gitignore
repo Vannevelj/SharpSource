@@ -223,3 +223,6 @@ tools/*
 
 # Marvel Upgrader 
 .marvel_old/dev/locks/*.lock
+
+# Nuget packages
+*.nupkg

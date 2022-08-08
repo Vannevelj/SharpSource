@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+    
+jobs:
+  pack:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Restore NuGet Packages
+      run: nuget restore sharpsource.sln
+    - name: Build app for release
+      run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
+    - name: Get version from CHANGELOG.md
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        path: ./CHANGELOG.md
+    - name: Pack Nuget
+      run: dotnet pack -c Release -p:PackageVersion=${{ steps.changelog_reader.outputs.version }} --no-build --output .
+    - name: Archive Nuget package
+      uses: actions/upload-artifact@v3
+      with:
+        name: sharpsource-pkg
+        path: SharpSource.*.nupkg
+        retention-days: 1
+        if-no-files-found: error
+    - name: Archive changelog artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: CHANGELOG.md
+        path: ./CHANGELOG.md
+        retention-days: 1
+        if-no-files-found: error
+  
+  release-github:
+    name: Release to Github
+    needs: pack
+    runs-on: ubuntu-latest
+    - name: Download CHANGELOG
+      uses: actions/download-artifact@v2
+      with:
+        name: CHANGELOG.md
+        path: artifacts/
+    - name: Get version from CHANGELOG.md
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        path: artifacts/CHANGELOG.md
+    - name: Push a tag
+      id: push_tag
+      uses: mathieudutour/github-tag-action@v4.6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ steps.changelog_reader.outputs.version }}
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.1.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.changelog_reader.outputs.version }}
+        release_name: ${{ steps.changelog_reader.outputs.version }}
+        body: ${{ steps.changelog_reader.outputs.changes }}
+        prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+        draft: false
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./sharpsource-pkg
+        asset_name: sharpsource-pkg
+        asset_content_type: application/binary
+
+  release-nuget:
+    name: Release to Nuget
+    needs: pack
+    runs-on: ubuntu-latest
+    - name: Download a single artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: sharpsource-pkg
+    - name: Push to NuGet
+      run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json

@@ -6,7 +6,7 @@ on:
       - "*"
 
 concurrency:
-  group: ${{ github.head_ref }}-build
+  group: ${{ github.head_ref }}-format
   cancel-in-progress: true
 
 jobs:
