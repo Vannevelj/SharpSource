@@ -28,7 +28,7 @@ namespace SharpSource.Diagnostics.DateTimeNow
             var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().First();
 
             context.RegisterCodeFix(
-                CodeAction.Create(Resources.NewGuidUseNewGuidCodeFixTitle,
+                CodeAction.Create(Resources.DateTimeNowCodeFixTitle,
                     x => UseUtc(context.Document, root, statement), DateTimeNowAnalyzer.Rule.Id), diagnostic);
         }
 
