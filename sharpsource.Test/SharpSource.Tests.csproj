@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\sharpsource\SharpSource.csproj" />
+    <ProjectReference Include="..\sharpsource.Package\SharpSource.Package.csproj" />
   </ItemGroup>
 
 </Project>

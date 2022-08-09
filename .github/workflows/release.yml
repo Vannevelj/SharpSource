@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: sharpsource-pkg
-        path: SharpSource.*.nupkg
+        path: SharpSource.Package.*.nupkg
         retention-days: 1
         if-no-files-found: error
     - name: Archive changelog artifact

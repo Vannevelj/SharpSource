@@ -4,8 +4,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>sharpsource.Vsix</RootNamespace>
-    <AssemblyName>sharpsource</AssemblyName>
+    <RootNamespace>SharpSource.Vsix</RootNamespace>
+    <AssemblyName>SharpSource</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,7 +33,7 @@
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
 
   <ItemGroup>
-    <ProjectReference Include="..\sharpsource\SharpSource.csproj" />
+    <ProjectReference Include="..\sharpsource.Package\SharpSource.Package.csproj" />
   </ItemGroup>
 
   <ItemGroup>
