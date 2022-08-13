@@ -29,7 +29,7 @@ jobs:
           DeployExtension: False
 
       - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --verbosity normal
 
       - name: Collect artifacts - VSIX
         uses: actions/upload-artifact@v2
