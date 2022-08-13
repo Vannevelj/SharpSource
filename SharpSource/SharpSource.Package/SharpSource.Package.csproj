@@ -9,17 +9,16 @@
 
   <PropertyGroup>
     <PackageId>SharpSource</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Authors>jer_v</Authors>
-    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
-    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
-    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
-    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
+    <PackageVersion>0.4.0</PackageVersion>
+    <Authors>Jeroen Vannevel</Authors>
+    <PackageLicenseUrl>https://github.com/Vannevelj/SharpSource/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Vannevelj/SharpSource</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Vannevelj/SharpSource</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>SharpSource</Description>
-    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <Description>Protect your code from runtime issues through static analysis</Description>
+    <PackageReleaseNotes>For a full overview of the changes, visit https://github.com/vannevelj/sharpsource/releases</PackageReleaseNotes>
     <Copyright>Copyright</Copyright>
-    <PackageTags>SharpSource, analyzers</PackageTags>
+    <PackageTags>SharpSource, Analyzers, Static Analysis, Performance, Code Quality, Diagnostics, Roslyn</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
 
