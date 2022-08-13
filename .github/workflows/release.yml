@@ -42,7 +42,6 @@ jobs:
         path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.Vsix.vsix
         if-no-files-found: error
         retention-days: 30
-
     - name: Collect artifacts - nugets
       uses: actions/upload-artifact@v2
       with:

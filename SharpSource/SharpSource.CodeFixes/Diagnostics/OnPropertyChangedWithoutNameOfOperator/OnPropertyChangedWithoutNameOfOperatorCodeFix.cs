@@ -9,7 +9,8 @@ using Microsoft.CodeAnalysis.CSharp;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.OnPropertyChangedWithoutNameofOperator + "CF", LanguageNames.CSharp), Shared]
     public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
     {

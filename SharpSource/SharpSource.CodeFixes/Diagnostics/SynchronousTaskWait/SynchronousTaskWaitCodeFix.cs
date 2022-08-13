@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.SynchronousTaskWait + "CF", LanguageNames.CSharp), Shared]
     public class SynchronousTaskWaitCodeFix : CodeFixProvider
     {

@@ -6,7 +6,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class NewGuidAnalyzer : DiagnosticAnalyzer
     {

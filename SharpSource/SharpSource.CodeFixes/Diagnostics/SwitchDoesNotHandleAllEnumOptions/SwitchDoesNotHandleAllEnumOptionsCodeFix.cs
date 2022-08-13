@@ -13,7 +13,8 @@ using Microsoft.CodeAnalysis.Simplification;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.SwitchDoesNotHandleAllEnumOptions + "CF", LanguageNames.CSharp), Shared]
     public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
     {

@@ -11,7 +11,8 @@ using Microsoft.CodeAnalysis.Simplification;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.DateTimeNow + "CF", LanguageNames.CSharp), Shared]
     public class DateTimeNowCodeFix : CodeFixProvider
     {

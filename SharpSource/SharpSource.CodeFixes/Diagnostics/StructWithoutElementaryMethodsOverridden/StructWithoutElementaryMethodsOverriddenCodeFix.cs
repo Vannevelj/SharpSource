@@ -13,7 +13,8 @@ using Microsoft.CodeAnalysis.Simplification;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.StructWithoutElementaryMethodsOverridden + "CF", LanguageNames.CSharp), Shared]
     public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
     {

@@ -13,7 +13,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.StringPlaceholdersInWrongOrder + "CF", LanguageNames.CSharp), Shared]
     public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
     {

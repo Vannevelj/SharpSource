@@ -12,7 +12,8 @@ using Microsoft.CodeAnalysis.Formatting;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo + "CF", LanguageNames.CSharp), Shared]
     public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
     {

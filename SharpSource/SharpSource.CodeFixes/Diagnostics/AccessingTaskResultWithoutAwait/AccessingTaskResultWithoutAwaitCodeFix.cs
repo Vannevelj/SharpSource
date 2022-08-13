@@ -12,7 +12,8 @@ using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.AccessingTaskResultWithoutAwait + "CF", LanguageNames.CSharp), Shared]
     public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
     {

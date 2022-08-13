@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.RethrowExceptionWithoutLosingStacktrace + "CF", LanguageNames.CSharp), Shared]
     public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
     {

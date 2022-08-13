@@ -12,7 +12,8 @@ using Microsoft.CodeAnalysis.Formatting;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.AsyncOverloadsAvailable + "CF", LanguageNames.CSharp), Shared]
     public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
     {

@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.Editing;
 
 using SharpSource.Utilities;
 
-namespace SharpSource{
+namespace SharpSource
+{
     [ExportCodeFixProvider(DiagnosticId.TestMethodWithoutPublicModifier + "CF", LanguageNames.CSharp), Shared]
     public class TestMethodWithoutPublicModifierCodeFix : CodeFixProvider
     {
