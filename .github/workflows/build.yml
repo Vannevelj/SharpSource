@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: MappingGenerator-VSIX
-          path: SharpSource\SharpSource.Vsix\bin\Release\SharpSource.vsix
+          path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.Vsix.vsix
 
       - name: Collect artifacts - nugets
         uses: actions/upload-artifact@v2
