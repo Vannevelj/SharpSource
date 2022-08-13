@@ -1,0 +1,464 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccessingTaskResultWithoutAwaitAnalyzerMessage" xml:space="preserve">
+    <value>Use await to get the result of a Task.</value>
+  </data>
+  <data name="AccessingTaskResultWithoutAwaitAnalyzerTitle" xml:space="preserve">
+    <value>Use await to get the result of an asynchronous operation</value>
+  </data>
+  <data name="ArithmeticCategory" xml:space="preserve">
+    <value>Arithmetic</value>
+  </data>
+  <data name="AsyncCategory" xml:space="preserve">
+    <value>Async</value>
+  </data>
+  <data name="AsyncMethodWithVoidReturnTypeMessage" xml:space="preserve">
+    <value>Method {0} is marked as async but has a void return type</value>
+    <comment>{0} - Method name</comment>
+  </data>
+  <data name="AsyncMethodWithVoidReturnTypeTitle" xml:space="preserve">
+    <value>Async methods should return a Task to make them awaitable</value>
+  </data>
+  <data name="AsyncOverloadsAvailableMessage" xml:space="preserve">
+    <value>Async overload available for {0}</value>
+    <comment>{0} - Method name</comment>
+  </data>
+  <data name="AsyncOverloadsAvailableTitle" xml:space="preserve">
+    <value>An async overload is available</value>
+  </data>
+  <data name="AttributesCategory" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="CatchNullReferenceExceptionAnalyzerMessage" xml:space="preserve">
+    <value>A catch clause catches NullReferenceException. Consider using != null or null propagation instead.</value>
+  </data>
+  <data name="CatchNullReferenceExceptionAnalyzerTitle" xml:space="preserve">
+    <value>Verifies no NullReferenceException is caught.</value>
+  </data>
+  <data name="ConditionIsConstantAnalyzerMessage" xml:space="preserve">
+    <value>Condition is always {0}.</value>
+  </data>
+  <data name="ConditionIsConstantAnalyzerTitle" xml:space="preserve">
+    <value>The condition is a constant and thus unnecessary.</value>
+  </data>
+  <data name="DateTimeNowAnalyzerMessage" xml:space="preserve">
+    <value>Use DateTime.UtcNow to get a consistent value</value>
+  </data>
+  <data name="DateTimeNowAnalyzerTitle" xml:space="preserve">
+    <value>DateTime.Now was referenced</value>
+  </data>
+  <data name="DivideIntegerByIntegerAnalyzerMessage" xml:space="preserve">
+    <value>The operands in the divisive expression {0} are both integers and result in an implicit rounding.</value>
+    <comment>{0} - The expression</comment>
+  </data>
+  <data name="DivideIntegerByIntegerAnalyzerTitle" xml:space="preserve">
+    <value>The operands of a divisive expression are both integers and result in an implicit rounding.</value>
+  </data>
+  <data name="ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage" xml:space="preserve">
+    <value>Implement Equals() and GetHashCode() methods of type {0} for use in a collection.</value>
+    <comment>{0} - Type name</comment>
+  </data>
+  <data name="ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle" xml:space="preserve">
+    <value>Implement Equals() and GetHashcode() methods for a type used in a collection.</value>
+  </data>
+  <data name="EnumCanHaveFlagsAttributeAnalyzerMessage" xml:space="preserve">
+    <value>Enum can have [Flags] attribute.</value>
+  </data>
+  <data name="EnumCanHaveFlagsAttributeAnalyzerTitle" xml:space="preserve">
+    <value>Gives an enum the `[Flags]` attribute.</value>
+  </data>
+  <data name="EqualsAndGetHashcodeNotImplementedTogetherAnalyzerMessage" xml:space="preserve">
+    <value>Equals() and GetHashcode() must be implemented together.</value>
+  </data>
+  <data name="EqualsAndGetHashcodeNotImplementedTogetherAnalyzerTitle" xml:space="preserve">
+    <value>Implement Equals() and GetHashcode() together.</value>
+  </data>
+  <data name="ExceptionsCategory" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="ExceptionThrownFromDisposeAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from the {0} method in type {1}</value>
+    <comment>{0} - Dispose() or Dispose(bool)
+{1} - Containing type</comment>
+  </data>
+  <data name="ExceptionThrownFromDisposeAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from a Dispose method.</value>
+  </data>
+  <data name="ExceptionThrownFromEqualityOperatorAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from the {0} operator between {1} and {2} in type {3}</value>
+    <comment>{0} - Operator
+{1} - First parameter type
+{2} - Second parameter type
+{3} - Containing type</comment>
+  </data>
+  <data name="ExceptionThrownFromEqualityOperatorAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from an equality operator.</value>
+  </data>
+  <data name="ExceptionThrownFromEqualsAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from the Equals({0}) method in type {1}</value>
+    <comment>{0} - Type of parameter</comment>
+  </data>
+  <data name="ExceptionThrownFromEqualsAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from an Equals() method.</value>
+  </data>
+  <data name="ExceptionThrownFromFinalizerAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from the finalizer method in type {0}</value>
+    <comment>{0} - Containing type</comment>
+  </data>
+  <data name="ExceptionThrownFromFinalizerAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from a finalizer method.</value>
+  </data>
+  <data name="ExceptionThrownFromFinallyBlockAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from a finally block</value>
+  </data>
+  <data name="ExceptionThrownFromFinallyBlockAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from a finally block.</value>
+  </data>
+  <data name="ExceptionThrownFromGetHashCodeAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from the GetHashCode() method in type {0}</value>
+    <comment>{0} - Containing type</comment>
+  </data>
+  <data name="ExceptionThrownFromGetHashCodeAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from a GetHashCode() method.</value>
+  </data>
+  <data name="ExceptionThrownFromImplicitOperatorAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from implicit operator {0} in type {1}</value>
+    <comment>{0} - The type being cast to
+{1} - The type being cast from</comment>
+  </data>
+  <data name="ExceptionThrownFromImplicitOperatorAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from an implicit operator.</value>
+  </data>
+  <data name="ExceptionThrownFromPropertyGetterAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from the getter of property {0}</value>
+    <comment>{0} - Property name</comment>
+  </data>
+  <data name="ExceptionThrownFromPropertyGetterAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from a property getter.</value>
+  </data>
+  <data name="ExceptionThrownFromStaticConstructorAnalyzerMessage" xml:space="preserve">
+    <value>An exception is thrown from {0} its static constructor</value>
+    <comment>{0} - Type name</comment>
+  </data>
+  <data name="ExceptionThrownFromStaticConstructorAnalyzerTitle" xml:space="preserve">
+    <value>An exception is thrown from a static constructor.</value>
+  </data>
+  <data name="ExplicitAccessModifiersAnalyzerMessage" xml:space="preserve">
+    <value>Use explicit {0} modifier.</value>
+    <comment>{0} - Access modifier</comment>
+  </data>
+  <data name="ExplicitAccessModifiersAnalyzerTitle" xml:space="preserve">
+    <value>Inserts the default accessibility modifier for a declaration.</value>
+  </data>
+  <data name="FlagsEnumValuesAreNotPowersOfTwoAnalyzerMessage" xml:space="preserve">
+    <value>[Flags] enum {0} its values are not explicit powers of 2</value>
+    <comment>{0} - Enum typename</comment>
+  </data>
+  <data name="FlagsEnumValuesAreNotPowersOfTwoAnalyzerTitle" xml:space="preserve">
+    <value>A [Flags] enum its values are not explicit powers of 2</value>
+  </data>
+  <data name="FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerMessage" xml:space="preserve">
+    <value>[Flags] enum {0} its values are not explicit powers of 2 and does not fit in a {1} enum type.</value>
+    <comment>{0} - Enum typename
+{1} - Enum basetypename</comment>
+  </data>
+  <data name="FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerTitle" xml:space="preserve">
+    <value>A [Flags] enum its values are not explicit powers of 2 and its values dont fit in the specified enum type.</value>
+  </data>
+  <data name="GeneralCategory" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="GetHashCodeRefersToMutableFieldAnalyzerFieldMessage" xml:space="preserve">
+    <value>GetHashCode() refers to mutable field {0}</value>
+    <comment>{0} - Field name</comment>
+  </data>
+  <data name="GetHashCodeRefersToMutableFieldAnalyzerPropertyMessage" xml:space="preserve">
+    <value>GetHashCode() refers to mutable property {0}</value>
+    <comment>{0} - Property name</comment>
+  </data>
+  <data name="GetHashCodeRefersToMutableFieldAnalyzerTitle" xml:space="preserve">
+    <value>GetHashCode() refers to mutable or static member</value>
+  </data>
+  <data name="ImplementEqualsAndGetHashCodeAnalyzerMessage" xml:space="preserve">
+    <value>{0} {1} does not implement Equals() and GetHashCode().</value>
+  </data>
+  <data name="ImplementEqualsAndGetHashCodeAnalyzerTitle" xml:space="preserve">
+    <value>Implements Equals() and GetHashCode() using existing fields and properties.</value>
+  </data>
+  <data name="LoopedRandomInstantiationAnalyzerMessage" xml:space="preserve">
+    <value>Variable {0} of type System.Random is instantiated in a loop.</value>
+  </data>
+  <data name="LoopedRandomInstantiationAnalyzerTitle" xml:space="preserve">
+    <value>An instance of type System.Random is created in a loop.</value>
+  </data>
+  <data name="NewGuidAnalyzerMessage" xml:space="preserve">
+    <value>An empty guid was created in an ambiguous manner</value>
+  </data>
+  <data name="NewGuidAnalyzerTitle" xml:space="preserve">
+    <value>Attempted to create empty guid</value>
+  </data>
+  <data name="NonEncapsulatedOrMutableFieldAnalyzerMessage" xml:space="preserve">
+    <value>Field {0} should be turned into a property.</value>
+    <comment>{0} - Field name</comment>
+  </data>
+  <data name="NonEncapsulatedOrMutableFieldAnalyzerTitle" xml:space="preserve">
+    <value>public or public fields should be immutable or a property.</value>
+  </data>
+  <data name="OnPropertyChangedWithoutNameOfOperatorAnalyzerMessage" xml:space="preserve">
+    <value>OnPropertyChanged({0}) can use the nameof() operator.</value>
+    <comment>{0} - Property name</comment>
+  </data>
+  <data name="OnPropertyChangedWithoutNameOfOperatorAnalyzerTitle" xml:space="preserve">
+    <value>Use the nameof() operator in conjunction with OnPropertyChanged()</value>
+  </data>
+  <data name="RecursiveEqualityOperatorOverloadMessage" xml:space="preserve">
+    <value>Recursively using overloaded operator</value>
+  </data>
+  <data name="RethrowExceptionWithoutLosingStacktraceAnalyzerMessage" xml:space="preserve">
+    <value>Rethrown exception loses the stacktrace.</value>
+  </data>
+  <data name="RethrowExceptionWithoutLosingStacktraceAnalyzerTitle" xml:space="preserve">
+    <value>Warns when an exception is rethrown in a way that it loses the stacktrace.</value>
+  </data>
+  <data name="SimplifyExpressionBodiedMemberAnalyzerMessage" xml:space="preserve">
+    <value>{0} {1} can be written using an expression-bodied member</value>
+    <comment>{0} - Member type
+{1} - Member name</comment>
+  </data>
+  <data name="SimplifyExpressionBodiedMemberAnalyzerTitle" xml:space="preserve">
+    <value>Simplify the expression using an expression-bodied member.</value>
+  </data>
+  <data name="SingleEmptyConstructorAnalyzerMessage" xml:space="preserve">
+    <value>Type "{0}" has a redundant default constructor.</value>
+    <comment>{0} - Type name</comment>
+  </data>
+  <data name="SingleEmptyConstructorAnalyzerTitle" xml:space="preserve">
+    <value>A constructor is the same as a default constructor and can be removed.</value>
+  </data>
+  <data name="SingleGeneralExceptionAnalyzerMessage" xml:space="preserve">
+    <value>A single catch-all clause has been used. Consider adding specific exception handlers.</value>
+  </data>
+  <data name="SingleGeneralExceptionAnalyzerTitle" xml:space="preserve">
+    <value>Verifies whether a try-catch block does not defer all exception handling to a single Exception clause.</value>
+  </data>
+  <data name="StringDotFormatWithDifferentAmountOfArgumentsMessage" xml:space="preserve">
+    <value>A string.Format() call lacks arguments and will cause a runtime exception</value>
+  </data>
+  <data name="StringDotFormatWithDifferentAmountOfArgumentsTitle" xml:space="preserve">
+    <value>A string.Format() call lacks arguments and will cause a runtime exception.</value>
+  </data>
+  <data name="StringPlaceholdersInWrongOrderMessage" xml:space="preserve">
+    <value>string.Format() Placeholders are not in ascending order.</value>
+  </data>
+  <data name="StringPlaceholdersInWrongOrderTitle" xml:space="preserve">
+    <value>Orders the arguments of a string.Format() call in ascending order according to index.</value>
+  </data>
+  <data name="StringsCategory" xml:space="preserve">
+    <value>Strings</value>
+  </data>
+  <data name="StructsCategory" xml:space="preserve">
+    <value>Structs</value>
+  </data>
+  <data name="StructsShouldNotMutateSelfAnalyzerMessage" xml:space="preserve">
+    <value>Struct {0} should not re-assign 'this'.</value>
+    <comment>{0} - Type name</comment>
+  </data>
+  <data name="StructsShouldNotMutateSelfAnalyzerTitle" xml:space="preserve">
+    <value>Warns when a struct replaces 'this' with a new instance.</value>
+  </data>
+  <data name="StructWithoutElementaryMethodsOverriddenAnalyzerMessage" xml:space="preserve">
+    <value>Implement Equals(), GetHashCode() and ToString() methods on struct {0}.</value>
+  </data>
+  <data name="StructWithoutElementaryMethodsOverriddenAnalyzerTitle" xml:space="preserve">
+    <value>Structs should implement Equals(), GetHashCode(), and ToString().</value>
+  </data>
+  <data name="SwitchDoesNotHandleAllEnumOptionsAnalyzerMessage" xml:space="preserve">
+    <value>Missing enum member in switched cases.</value>
+  </data>
+  <data name="SwitchDoesNotHandleAllEnumOptionsAnalyzerTitle" xml:space="preserve">
+    <value>Add cases for missing enum member.</value>
+  </data>
+  <data name="SwitchIsMissingDefaultSectionAnalyzerMessage" xml:space="preserve">
+    <value>Switch should have default label.</value>
+  </data>
+  <data name="SwitchIsMissingDefaultSectionAnalyzerTitle" xml:space="preserve">
+    <value>Switch is missing a default label.</value>
+  </data>
+  <data name="SyncMethodWithAsyncSuffixAnalyzerMessage" xml:space="preserve">
+    <value>Synchronous method "{0}" should not end with 'Async'.</value>
+    <comment>{0} - Method name</comment>
+  </data>
+  <data name="SyncMethodWithAsyncSuffixAnalyzerTitle" xml:space="preserve">
+    <value>A non-async, non-Task method should not end with -Async.</value>
+  </data>
+  <data name="TestMethodWithoutPublicModifierAnalyzerMessage" xml:space="preserve">
+    <value>Test method "{0}" is not public.</value>
+    <comment>{0} - Method name</comment>
+  </data>
+  <data name="TestMethodWithoutPublicModifierAnalyzerTitle" xml:space="preserve">
+    <value>Verifies whether a test method has the public modifier.</value>
+  </data>
+  <data name="TestMethodWithoutTestAttributeAnalyzerMessage" xml:space="preserve">
+    <value>Method {0} might be missing a test attribute</value>
+    <comment>{0} - Method name</comment>
+  </data>
+  <data name="TestMethodWithoutTestAttributeAnalyzerTitle" xml:space="preserve">
+    <value>A method might be missing a test attribute.</value>
+  </data>
+  <data name="TestsCategory" xml:space="preserve">
+    <value>Tests</value>
+  </data>
+  <data name="ThreadSleepInAsyncMethodMessage" xml:space="preserve">
+    <value>Synchronously sleeping thread in an async method</value>
+  </data>
+  <data name="ThreadSleepInAsyncMethodTitle" xml:space="preserve">
+    <value>Synchronously sleeping a thread in an async method</value>
+  </data>
+  <data name="ThrowNullMessage" xml:space="preserve">
+    <value>Throwing null will always result in a runtime exception</value>
+  </data>
+  <data name="TryCastWithoutUsingAsNotNullAnalyzerMessage" xml:space="preserve">
+    <value>Variable {0} can be cast using as/null.</value>
+    <comment>{0} - Variable name</comment>
+  </data>
+  <data name="TryCastWithoutUsingAsNotNullAnalyzerTitle" xml:space="preserve">
+    <value>Use as/null instead of is/as.</value>
+  </data>
+  <data name="TypeToVarAnalyzerMessage" xml:space="preserve">
+    <value>Replace the explicit type with 'var'</value>
+  </data>
+  <data name="TypeToVarAnalyzerTitle" xml:space="preserve">
+    <value>Use var instead of the explicit type.</value>
+  </data>
+  <data name="UseAliasesInsteadOfConcreteTypeAnalyzerMessage" xml:space="preserve">
+    <value>Use alias {0} instead of concrete type {1}.</value>
+    <comment>{0} - Alias name
+{1} - Type name</comment>
+  </data>
+  <data name="UseAliasesInsteadOfConcreteTypeAnalyzerTitle" xml:space="preserve">
+    <value>Use the built-in type alias instead of the concrete type.</value>
+  </data>
+  <data name="UsingStatementWithoutBracesAnalyzerMessage" xml:space="preserve">
+    <value>A using tatement is not delimited with braces.</value>
+  </data>
+  <data name="UsingStatementWithoutBracesAnalyzerTitle" xml:space="preserve">
+    <value>A using statement is missing braces.</value>
+  </data>
+</root>
