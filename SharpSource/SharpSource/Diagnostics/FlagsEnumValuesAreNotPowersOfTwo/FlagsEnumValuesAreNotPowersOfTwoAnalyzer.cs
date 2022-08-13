@@ -187,10 +187,10 @@ namespace SharpSource{
                  * will allow us to avoid a huge `switch` statement
                  * and allow us to just pass the value to `IsPowerOfTwo()`
                  */
-                //if (!IsPowerOfTwo((dynamic)value))
-                //{
-                //    createDiagnostic = true;
-                //} // TODO: re-enable
+                if (!IsPowerOfTwo((dynamic)value))
+                {
+                    createDiagnostic = true;
+                }
             }
 
             if (createDiagnostic)
