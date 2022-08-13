@@ -83,7 +83,7 @@ jobs:
         prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
         draft: false
     - name: Upload Release Asset
-      id: upload-release-asset
+      id: upload-release-asset-pkg
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +93,7 @@ jobs:
         asset_name: sharpsource-pkg
         asset_content_type: application/binary
     - name: Upload Release Asset
-      id: upload-release-asset
+      id: upload-release-asset-vsix
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
