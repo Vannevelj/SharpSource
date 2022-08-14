@@ -34,7 +34,7 @@ jobs:
       - name: Collect artifacts - VSIX
         uses: actions/upload-artifact@v2
         with:
-          name: sharpsource-vsix
+          name: sharpsource.vsix
           path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.Vsix.vsix
           if-no-files-found: error
           retention-days: 5
@@ -42,7 +42,7 @@ jobs:
       - name: Collect artifacts - nugets
         uses: actions/upload-artifact@v2
         with:
-          name: sharpsource-pkg
+          name: sharpsource.nupkg
           path: '**/SharpSource*.nupkg'
           if-no-files-found: error
           retention-days: 5
