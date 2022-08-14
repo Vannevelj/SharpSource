@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="SharpSource.6c4d2743-f363-4b07-93f9-0f9e95d68571" Version="1.0" Language="en-US" Publisher="Jeroen Vannevel"/>
+    <Identity Id="SharpSource.6c4d2743-f363-4b07-93f9-0f9e95d68571" Version="1.0" Language="en-US" Publisher="JeroenVannevel"/>
     <DisplayName>SharpSource</DisplayName>
     <Description xml:space="preserve">Protect your code from runtime issues through static analysis</Description>
   </Metadata>
