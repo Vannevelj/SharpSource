@@ -28,6 +28,8 @@ jobs:
         vsix-manifest-file: './sharpsource.Vsix/source.extension.vsixmanifest'
     - name: Build app for release
       run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
+      env:
+        DeployExtension: False
     - name: Archive changelog artifact
       uses: actions/upload-artifact@v3
       with:
