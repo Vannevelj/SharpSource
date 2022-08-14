@@ -58,6 +58,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
+    - name: debug
+        run: |
+          pwd
+          ls -R
     - name: Get version from CHANGELOG.md
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
