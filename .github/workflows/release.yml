@@ -30,7 +30,7 @@ jobs:
       run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
       env:
         DeployExtension: False
-    - name: Archive changelog artifact
+    - name: Collect artifacts - Changelog
       uses: actions/upload-artifact@v3
       with:
         name: CHANGELOG.md
@@ -42,6 +42,13 @@ jobs:
       with:
         name: sharpsource.vsix
         path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.vsix
+        if-no-files-found: error
+        retention-days: 30
+    - name: Collect artifacts - publishmanifest
+      uses: actions/upload-artifact@v2
+      with:
+        name: publishManifest.json
+        path: SharpSource\SharpSource.Vsix\publishManifest.json
         if-no-files-found: error
         retention-days: 30
     - name: Collect artifacts - nugets
@@ -119,9 +126,13 @@ jobs:
       with:
         name: sharpsource.vsix
         path: .
+    - uses: actions/download-artifact@v3
+      with:
+        name: publishManifest.json
+        path: .
     - name: Publish extension to Marketplace
       uses: cezarypiatek/VsixPublisherAction@0.2
       with:
           extension-file: SharpSource.vsix
-          publish-manifest-file: SharpSource/SharpSource.Vsix/publishManifest.json
+          publish-manifest-file: publishManifest.json
           personal-access-code: ${{ secrets.VSIX_MARKETPLACE_TOKEN }}
