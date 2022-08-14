@@ -84,37 +84,19 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         custom_tag: ${{ steps.changelog_reader.outputs.version }}
-    - name: Create Release
+    - name: Release
       id: create_release
-      uses: actions/create-release@v1.1.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ steps.changelog_reader.outputs.version }}
-        release_name: ${{ steps.changelog_reader.outputs.version }}
         body: ${{ steps.changelog_reader.outputs.changes }}
-        prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
         draft: false
-    - name: Upload Release Asset (nuget)
-      id: upload-release-asset-pkg
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./sharpsource.nupkg
-        asset_name: sharpsource.nupkg
-        asset_content_type: application/binary
-    - name: Upload Release Asset (vsix)
-      id: upload-release-asset-vsix
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./sharpsource.vsix
-        asset_name: sharpsource.vsix
-        asset_content_type: application/binary
+        prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+        tag_name: v${{ steps.changelog_reader.outputs.version }}
+        name: ${{ steps.changelog_reader.outputs.version }}
+        fail_on_unmatched_files: true
+        files: |
+          **/SharpSource*.nupkg
+          SharpSource.Vsix.vsix
 
   nuget:
     name: Release to Nuget
