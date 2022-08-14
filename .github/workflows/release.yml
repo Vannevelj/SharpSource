@@ -37,6 +37,13 @@ jobs:
         path: ./CHANGELOG.md
         retention-days: 30
         if-no-files-found: error
+    - name: Collect artifacts - README
+      uses: actions/upload-artifact@v3
+      with:
+        name: README.md
+        path: ./README.md
+        retention-days: 30
+        if-no-files-found: error
     - name: Collect artifacts - VSIX
       uses: actions/upload-artifact@v2
       with:
@@ -129,6 +136,10 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: publishManifest.json
+        path: .
+    - uses: actions/download-artifact@v3
+      with:
+        name: README.md
         path: .
     - name: Publish extension to Marketplace
       uses: cezarypiatek/VsixPublisherAction@0.2
