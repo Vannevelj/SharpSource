@@ -57,10 +57,8 @@ jobs:
     needs: pack
     runs-on: ubuntu-latest
     steps:
-    - name: Download CHANGELOG
-      uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
-        name: CHANGELOG.md
         path: artifacts/
     - name: Get version from CHANGELOG.md
       id: changelog_reader
@@ -84,24 +82,24 @@ jobs:
         body: ${{ steps.changelog_reader.outputs.changes }}
         prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
         draft: false
-    - name: Upload Release Asset
+    - name: Upload Release Asset (nuget)
       id: upload-release-asset-pkg
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./sharpsource-pkg
+        asset_path: artifacts/sharpsource-pkg
         asset_name: sharpsource-pkg
         asset_content_type: application/binary
-    - name: Upload Release Asset
+    - name: Upload Release Asset (vsix)
       id: upload-release-asset-vsix
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./sharpsource-vsix
+        asset_path: artifacts/sharpsource-vsix
         asset_name: sharpsource-vsix
         asset_content_type: application/binary
 
