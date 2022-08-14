@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: sharpsource.vsix
-        path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.Vsix.vsix
+        path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.vsix
         if-no-files-found: error
         retention-days: 30
     - name: Collect artifacts - nugets
@@ -96,7 +96,7 @@ jobs:
         fail_on_unmatched_files: true
         files: |
           **/SharpSource*.nupkg
-          SharpSource.Vsix.vsix
+          SharpSource.vsix
 
   nuget:
     name: Release to Nuget

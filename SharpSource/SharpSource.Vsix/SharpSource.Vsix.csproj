@@ -5,7 +5,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>SharpSource.Vsix</RootNamespace>
-    <AssemblyName>SharpSource.Vsix</AssemblyName>
+    <AssemblyName>SharpSource</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
