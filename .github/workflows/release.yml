@@ -25,7 +25,7 @@ jobs:
       uses: cezarypiatek/VsixVersionAction@1.0
       with:
         version: ${{ steps.changelog_reader.outputs.version }}
-        vsix-manifest-file: './sharpsource.Vsix/source.extension.vsixmanifest'
+        vsix-manifest-file: 'SharpSource/SharpSource.Vsix/source.extension.vsixmanifest'
     - name: Build app for release
       run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
       env:
