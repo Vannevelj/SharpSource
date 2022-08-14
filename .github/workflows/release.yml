@@ -58,6 +58,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
+      with:
+        name: sharpsource.nupkg
+        path: .
+    - uses: actions/download-artifact@v3
+      with:
+        name: sharpsource.vsix
+        path: .
+    - uses: actions/download-artifact@v3
+      with:
+        name: CHANGELOG.md
+        path: .
     - name: debug
       run: |
         pwd
@@ -91,8 +102,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./sharpsource-pkg
-        asset_name: sharpsource-pkg
+        asset_path: ./sharpsource.nupkg
+        asset_name: sharpsource.nupkg
         asset_content_type: application/binary
     - name: Upload Release Asset (vsix)
       id: upload-release-asset-vsix
@@ -101,8 +112,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./sharpsource-vsix
-        asset_name: sharpsource-vsix
+        asset_path: ./sharpsource.vsix
+        asset_name: sharpsource.vsix
         asset_content_type: application/binary
 
   nuget:
