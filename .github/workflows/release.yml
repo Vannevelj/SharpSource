@@ -7,7 +7,7 @@ on:
     
 jobs:
   pack:
-    name: Create Nuget package
+    name: Build project
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
@@ -109,3 +109,19 @@ jobs:
         name: sharpsource.nupkg
     - name: Push to NuGet
       run: dotnet nuget push "**/SharpSource*.nupkg" --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
+
+  marketplace:
+    name: Release to VSIX marketplace
+    needs: pack
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: sharpsource.vsix
+        path: .
+    - name: Publish extension to Marketplace
+      uses: cezarypiatek/VsixPublisherAction@0.2
+      with:
+          extension-file: SharpSource.vsix
+          publish-manifest-file: SharpSource/SharpSource.Vsix/publishManifest.json
+          personal-access-code: ${{ secrets.VSIX_MARKETPLACE_TOKEN }}
