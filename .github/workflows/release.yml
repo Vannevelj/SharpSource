@@ -64,7 +64,7 @@ jobs:
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
-        path: artifacts/CHANGELOG.md
+        path: SharpSource/artifacts/CHANGELOG.md
     - name: Push a tag
       id: push_tag
       uses: mathieudutour/github-tag-action@v4.6
@@ -89,7 +89,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/sharpsource-pkg
+        asset_path: SharpSource/artifacts/sharpsource-pkg
         asset_name: sharpsource-pkg
         asset_content_type: application/binary
     - name: Upload Release Asset (vsix)
@@ -99,7 +99,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/sharpsource-vsix
+        asset_path: SharpSource/artifacts/sharpsource-vsix
         asset_name: sharpsource-vsix
         asset_content_type: application/binary
 
@@ -111,6 +111,6 @@ jobs:
     - name: Download a single artifact
       uses: actions/download-artifact@v3
       with:
-        name: sharpsource-pkg
+        name: sharpsource.nupkg
     - name: Push to NuGet
       run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
