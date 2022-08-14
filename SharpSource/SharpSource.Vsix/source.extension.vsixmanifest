@@ -6,39 +6,14 @@
     <Description xml:space="preserve">Protect your code from runtime issues through static analysis</Description>
   </Metadata>
   <Installation>
-    <InstallationTarget Version="[14.0,18.0)" Id="Microsoft.VisualStudio.Pro">
-      <ProductArchitecture>x86</ProductArchitecture>
+    <InstallationTarget Version="[17.0, 18.0)" Id="Microsoft.VisualStudio.Community">
+        <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
     <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Pro">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-
-    <InstallationTarget Version="[14.0,18.0)" Id="Microsoft.VisualStudio.Premium">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Premium">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-
-    <InstallationTarget Version="[14.0,18.0)" Id="Microsoft.VisualStudio.Ultimate">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Ultimate">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-
-    <InstallationTarget Version="[14.0,18.0)" Id="Microsoft.VisualStudio.Enterprise">
-      <ProductArchitecture>x86</ProductArchitecture>
+        <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
     <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Enterprise">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-
-    <InstallationTarget Version="[14.0,18.0)" Id="Microsoft.VisualStudio.Community">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
-      <ProductArchitecture>amd64</ProductArchitecture>
+        <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
   </Installation>
   <Dependencies>
@@ -51,7 +26,7 @@
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="SharpSource.CodeFixes" Path="|SharpSource.CodeFixes|"/>
   </Assets>
   <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
     <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,)" DisplayName="Roslyn Language Services" />
   </Prerequisites>
 </PackageManifest>
