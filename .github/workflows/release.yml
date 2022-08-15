@@ -124,6 +124,23 @@ jobs:
     - name: Push to NuGet
       run: dotnet nuget push "**/SharpSource*.nupkg" --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
 
+  github_packages:
+    name: Release to Github Packages
+    needs: pack
+    runs-on: windows-latest
+    steps:
+    - name: Download a single artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: sharpsource.nupkg
+    - name: Push to Github
+      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+      with:
+        nupkg-path: '**/SharpSource*.nupkg'
+        repo-owner: 'Vannevelj'
+        gh-user: 'Vannevelj'
+        token:  ${{ secrets.GITHUB_TOKEN }}
+
   marketplace:
     name: Release to VSIX marketplace
     needs: pack

@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [0.6.0] - 2022-08-15
+- Automatically publish updates to Github Packages
+
 ## [0.5.0] - 2022-08-15
 - Automatically publish updates to the VSIX marketplace
 
