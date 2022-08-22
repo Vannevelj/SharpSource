@@ -267,6 +267,14 @@
   <data name="ExplicitAccessModifiersAnalyzerTitle" xml:space="preserve">
     <value>Inserts the default accessibility modifier for a declaration.</value>
   </data>
+  <data name="ExplicitEnumValuesAnalyzerMessage" xml:space="preserve">
+    <value>Option {0} on enum {1} should explicitly specify its value</value>
+    <comment>{0} - Option name
+{1} - Enum name</comment>
+  </data>
+  <data name="ExplicitEnumValuesAnalyzerTitle" xml:space="preserve">
+    <value>An enum should explicitly specify its values</value>
+  </data>
   <data name="FlagsEnumValuesAreNotPowersOfTwoAnalyzerMessage" xml:space="preserve">
     <value>[Flags] enum {0} its values are not explicit powers of 2</value>
     <comment>{0} - Enum typename</comment>

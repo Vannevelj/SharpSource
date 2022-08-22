@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RoslynTester.Helpers.CSharp;
+using SharpSource.Diagnostics;
 
 namespace SharpSource.Tests
 {

@@ -457,6 +457,24 @@ namespace SharpSource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Option {0} on enum {1} should explicitly specify its value.
+        /// </summary>
+        internal static string ExplicitEnumValuesAnalyzerMessage {
+            get {
+                return ResourceManager.GetString("ExplicitEnumValuesAnalyzerMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An enum should explicitly specify its values.
+        /// </summary>
+        internal static string ExplicitEnumValuesAnalyzerTitle {
+            get {
+                return ResourceManager.GetString("ExplicitEnumValuesAnalyzerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Flags] enum {0} its values are not explicit powers of 2.
         /// </summary>
         internal static string FlagsEnumValuesAreNotPowersOfTwoAnalyzerMessage {
