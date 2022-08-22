@@ -39,7 +39,7 @@ namespace SharpSource.Diagnostics
 
             var symbol = semanticModel.GetDeclaredSymbol(declaration, cancellationToken);
 
-            var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int) symbol.ConstantValue)));
+            var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int)symbol.ConstantValue)));
             var newDeclaration = declaration.WithEqualsValue(newEqualsClause);
             var newDocument = root.ReplaceNode(declaration, newDeclaration);
             return document.WithSyntaxRoot(newDocument);
