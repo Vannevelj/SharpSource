@@ -46,14 +46,14 @@ enum Test {
         {
             var original = @"
 enum Test {
-    A,
+    A = 0,
     B
 }";
 
             var result = @"
 enum Test {
     A = 0,
-    B
+    B = 1
 }";
 
             VerifyDiagnostic(original, "Option B on enum Test should explicitly specify its value");
