@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -29,14 +30,14 @@ namespace SharpSource.Diagnostics
 
             context.RegisterCodeFix(
                 CodeAction.Create(CodeFixResources.ExplicitEnumValuesCodeFixTitle,
-                    x => SpecifyEnumValue(context.Document, root, statement), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
+                    x => SpecifyEnumValue(context.Document, root, statement, context.CancellationToken), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
         }
 
-        private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration)
+        private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync();
 
-            var constantValue = semanticModel.GetConstantValue(declaration);
+            var constantValue = semanticModel.GetConstantValue(declaration, cancellationToken);
             if (!constantValue.HasValue)
             {
                 return document;
