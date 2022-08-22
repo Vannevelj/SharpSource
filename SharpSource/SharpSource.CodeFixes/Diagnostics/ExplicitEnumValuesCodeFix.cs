@@ -37,13 +37,9 @@ namespace SharpSource.Diagnostics
         {
             var semanticModel = await document.GetSemanticModelAsync();
 
-            var constantValue = semanticModel.GetConstantValue(declaration, cancellationToken);
-            if (!constantValue.HasValue)
-            {
-                return document;
-            }
+            var symbol = semanticModel.GetDeclaredSymbol(declaration, cancellationToken);
 
-            var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int) constantValue.Value)));
+            var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int) symbol.ConstantValue)));
             var newDeclaration = declaration.WithEqualsValue(newEqualsClause);
             var newDocument = root.ReplaceNode(declaration, newDeclaration);
             return document.WithSyntaxRoot(newDocument);
