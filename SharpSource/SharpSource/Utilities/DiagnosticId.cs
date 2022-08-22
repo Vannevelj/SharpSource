@@ -37,5 +37,6 @@ namespace SharpSource.Utilities
         public const string AsyncOverloadsAvailable = "SS033";
         public const string AccessingTaskResultWithoutAwait = "SS034";
         public const string SynchronousTaskWait = "SS035";
+        public const string ExplicitEnumValues = "SS036";
     }
 }
