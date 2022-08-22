@@ -30,7 +30,15 @@ namespace SharpSource.Diagnostics
 
         private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
         {
-            
+            var declaration = (EnumMemberDeclarationSyntax)context.Node;
+
+            var valueClause = declaration.EqualsValue;
+            if (valueClause == null)
+            {
+                var option = declaration.Identifier.ValueText;
+                var enumName = declaration.FirstAncestorOrSelf<EnumDeclarationSyntax>()?.Identifier.ValueText;
+                context.ReportDiagnostic(Diagnostic.Create(Rule, declaration.Identifier.GetLocation(), option, enumName));
+            }
         }
     }
 }

@@ -7,8 +7,8 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SharpSource.Diagnostics
 {
@@ -25,16 +25,27 @@ namespace SharpSource.Diagnostics
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-            var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<EnumDeclarationSyntax>().First();
+            var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<EnumMemberDeclarationSyntax>().First();
 
             context.RegisterCodeFix(
                 CodeAction.Create(CodeFixResources.ExplicitEnumValuesCodeFixTitle,
                     x => SpecifyEnumValue(context.Document, root, statement), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
         }
 
-        private Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumDeclarationSyntax declaration)
+        private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration)
         {
-            
+            var semanticModel = await document.GetSemanticModelAsync();
+
+            var constantValue = semanticModel.GetConstantValue(declaration);
+            if (!constantValue.HasValue)
+            {
+                return document;
+            }
+
+            var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int) constantValue.Value)));
+            var newDeclaration = declaration.WithEqualsValue(newEqualsClause);
+            var newDocument = root.ReplaceNode(declaration, newDeclaration);
+            return document.WithSyntaxRoot(newDocument);
         }
     }
 }
