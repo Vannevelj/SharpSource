@@ -1,6 +1,4 @@
-using SharpSource.Tests.Helpers.Helpers.Testing;
-
-namespace RoslynTester.Helpers.Testing
+namespace SharpSource.Test.Helpers.Helpers.Testing
 {
     internal static class Assert
     {

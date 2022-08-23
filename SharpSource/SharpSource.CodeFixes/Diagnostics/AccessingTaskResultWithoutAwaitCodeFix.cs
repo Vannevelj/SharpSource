@@ -11,44 +11,43 @@ using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[ExportCodeFixProvider(DiagnosticId.AccessingTaskResultWithoutAwait + "CF", LanguageNames.CSharp), Shared]
+public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
 {
-    [ExportCodeFixProvider(DiagnosticId.AccessingTaskResultWithoutAwait + "CF", LanguageNames.CSharp), Shared]
-    public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(AccessingTaskResultWithoutAwaitAnalyzer.Rule.Id);
+
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(AccessingTaskResultWithoutAwaitAnalyzer.Rule.Id);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var taskResultExpression = root.FindToken(diagnosticSpan.Start)
+            .Parent
+            .AncestorsAndSelf()
+            .OfType<MemberAccessExpressionSyntax>()
+            .SingleOrDefault(x => x.Name.Identifier.ValueText == "Result");
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        context.RegisterCodeFix(
+            CodeAction.Create(CodeFixResources.AccessingTaskResultWithoutAwaitCodeFixTitle,
+                x => UseAwait(context.Document, taskResultExpression, root, x),
+                AccessingTaskResultWithoutAwaitAnalyzer.Rule.Id),
+            diagnostic);
+    }
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    private async Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken cancellationToken)
+    {
+        if (memberAccessExpression == null)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var taskResultExpression = root.FindToken(diagnosticSpan.Start)
-                .Parent
-                .AncestorsAndSelf()
-                .OfType<MemberAccessExpressionSyntax>()
-                .SingleOrDefault(x => x.Name.Identifier.ValueText == "Result");
-
-            context.RegisterCodeFix(
-                CodeAction.Create(CodeFixResources.AccessingTaskResultWithoutAwaitCodeFixTitle,
-                    x => UseAwait(context.Document, taskResultExpression, root, x),
-                    AccessingTaskResultWithoutAwaitAnalyzer.Rule.Id),
-                diagnostic);
+            return document;
         }
 
-        private async Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken cancellationToken)
-        {
-            if (memberAccessExpression == null)
-            {
-                return document;
-            }
-
-            var newExpression = ParenthesizedExpression(AwaitExpression(memberAccessExpression.Expression)).WithAdditionalAnnotations(Simplifier.Annotation);
-            var newRoot = root.ReplaceNode(memberAccessExpression, newExpression);
-            var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot), cancellationToken: cancellationToken);
-            return newDocument;
-        }
+        var newExpression = ParenthesizedExpression(AwaitExpression(memberAccessExpression.Expression)).WithAdditionalAnnotations(Simplifier.Annotation);
+        var newRoot = root.ReplaceNode(memberAccessExpression, newExpression);
+        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot), cancellationToken: cancellationToken);
+        return newDocument;
     }
 }

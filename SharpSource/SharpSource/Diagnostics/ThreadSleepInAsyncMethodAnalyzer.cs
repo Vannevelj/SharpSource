@@ -7,83 +7,79 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Synchronously sleeping thread in an async method";
+    private static readonly string Title = "Synchronously sleeping a thread in an async method";
+
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Categories.Async, DiagnosticSeverity.Warning, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+    }
 
-        private static readonly string Category = Resources.AsyncCategory;
-        private static readonly string Message = Resources.ThreadSleepInAsyncMethodMessage;
-        private static readonly string Title = Resources.ThreadSleepInAsyncMethodTitle;
+    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    {
+        var method = (MethodDeclarationSyntax)context.Node;
 
-        public static DiagnosticDescriptor Rule => new(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Category, Severity, isEnabledByDefault: true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+        var isAsync = method.Modifiers.Contains(SyntaxKind.AsyncKeyword);
+        if (isAsync)
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+            AnalyzeMembers(method, context, isAsync);
+            return;
         }
 
-        private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+        var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType);
+        var hasTaskReturnType = returnType.Type?.Name == "Task";
+        if (hasTaskReturnType)
         {
-            var method = (MethodDeclarationSyntax)context.Node;
+            AnalyzeMembers(method, context, isAsync);
+            return;
+        }
+    }
 
-            var isAsync = method.Modifiers.Contains(SyntaxKind.AsyncKeyword);
-            if (isAsync)
+    private void AnalyzeMembers(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context, bool isAsync)
+    {
+        foreach (var invocation in method.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
+        {
+            switch (invocation.Expression)
             {
-                AnalyzeMembers(method, context, isAsync);
-                return;
-            }
-
-            var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType);
-            var hasTaskReturnType = returnType.Type?.Name == "Task";
-            if (hasTaskReturnType)
-            {
-                AnalyzeMembers(method, context, isAsync);
-                return;
+                case MemberAccessExpressionSyntax memberAccess:
+                    IsAccessingThreadDotSleep(memberAccess.Name, context, isAsync);
+                    break;
+                case IdentifierNameSyntax identifierName:
+                    IsAccessingThreadDotSleep(identifierName, context, isAsync);
+                    break;
             }
         }
+    }
 
-        private void AnalyzeMembers(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context, bool isAsync)
+    private void IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, bool isAsync)
+    {
+        var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
+        if (invokedSymbol == null)
         {
-            foreach (var invocation in method.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
-            {
-                switch (invocation.Expression)
-                {
-                    case MemberAccessExpressionSyntax memberAccess:
-                        IsAccessingThreadDotSleep(memberAccess.Name, context, isAsync);
-                        break;
-                    case IdentifierNameSyntax identifierName:
-                        IsAccessingThreadDotSleep(identifierName, context, isAsync);
-                        break;
-                }
-            }
+            return;
         }
 
-        private void IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, bool isAsync)
+        var isAccessedFunctionCorrect = invokedSymbol.Name == "Sleep";
+        var isAccessedTypeCorrect = invokedSymbol.ContainingType?.Name == "Thread";
+
+        if (isAccessedFunctionCorrect && isAccessedTypeCorrect)
         {
-            var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
-            if (invokedSymbol == null)
-            {
-                return;
-            }
+            var dic = ImmutableDictionary.CreateBuilder<string, string>();
+            dic.Add("isAsync", isAsync.ToString());
 
-            var isAccessedFunctionCorrect = invokedSymbol.Name == "Sleep";
-            var isAccessedTypeCorrect = invokedSymbol.ContainingType?.Name == "Thread";
-
-            if (isAccessedFunctionCorrect && isAccessedTypeCorrect)
-            {
-                var dic = ImmutableDictionary.CreateBuilder<string, string>();
-                dic.Add("isAsync", isAsync.ToString());
-
-                var invocationNode = invokedFunction.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocationNode.GetLocation(), dic.ToImmutable(), null));
-            }
+            var invocationNode = invokedFunction.FirstAncestorOrSelf<InvocationExpressionSyntax>();
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocationNode.GetLocation(), dic.ToImmutable(), null));
         }
     }
 }

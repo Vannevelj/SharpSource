@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [0.8.0] - 2022-08-24
+- Implemented `HttpClientInstantiatedDirectly`: show a warning when `HttpClient` is instantiated. Use `IHttpClientFactory` instead
+
 ## [0.7.0] - 2022-08-23
 - Implemented `ExplicitEnumValues`: show a warning when an enum does not explicitly specify its value
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -9,10 +10,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
-using RoslynTester.DiagnosticResults;
-using RoslynTester.Helpers.Testing;
+using SharpSource.Test.Helpers.DiagnosticResults;
+using SharpSource.Test.Helpers.Helpers.Testing;
 
-namespace RoslynTester.Helpers
+namespace SharpSource.Test.Helpers.Helpers
 {
     /// <summary>
     ///     Superclass of all Unit Tests for DiagnosticAnalyzers
@@ -23,6 +24,7 @@ namespace RoslynTester.Helpers
 
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
         private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
+        private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location);
         private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
         private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 
@@ -399,6 +401,7 @@ namespace RoslynTester.Helpers
                 CSharpSymbolsReference,
                 CodeAnalysisReference,
                 SystemRuntime,
+                SystemNetHttp
             };
 
             var solution = new AdhocWorkspace()

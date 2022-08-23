@@ -1,6 +1,6 @@
 using System;
 
-namespace RoslynTester.Helpers.Testing
+namespace SharpSource.Test.Helpers.Helpers.Testing
 {
     /// <summary>
     ///     An expected outcome is different from the actual outcome.

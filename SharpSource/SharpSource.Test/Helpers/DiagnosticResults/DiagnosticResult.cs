@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace RoslynTester.DiagnosticResults
+namespace SharpSource.Test.Helpers.DiagnosticResults
 {
     /// <summary>
     ///     Struct that stores information about a Diagnostic appearing in a source

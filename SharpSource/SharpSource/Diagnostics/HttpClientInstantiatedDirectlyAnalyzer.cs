@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Net.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,12 +10,12 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class DateTimeNowAnalyzer : DiagnosticAnalyzer
+public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Use DateTime.UtcNow to get a consistent value";
-    private static readonly string Title = "DateTime.Now was referenced";
+    private static readonly string Message = "HttpClient was instantiated directly. Use IHttpClientFactory instead";
+    private static readonly string Title = "HttpClient was instantiated directly";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.NewGuid, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -22,16 +23,15 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
     }
 
     private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        var expression = (MemberAccessExpressionSyntax)context.Node;
+        var expression = (ObjectCreationExpressionSyntax)context.Node;
+        var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
 
-        if (context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol is INamedTypeSymbol symbol &&
-            symbol.SpecialType == SpecialType.System_DateTime &&
-            expression.Name.Identifier.ValueText == "Now")
+        if (symbol?.Name == "HttpClient" && ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Net.Http" ))
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }

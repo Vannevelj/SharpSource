@@ -1,6 +1,6 @@
 using System;
 
-namespace RoslynTester.Helpers.Testing
+namespace SharpSource.Test.Helpers.Helpers.Testing
 {
     /// <summary>
     ///     Indicates the code is in an invalid state

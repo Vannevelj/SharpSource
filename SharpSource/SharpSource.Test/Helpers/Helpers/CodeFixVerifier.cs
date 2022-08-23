@@ -8,9 +8,9 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using RoslynTester.Helpers.Testing;
+using SharpSource.Test.Helpers.Helpers.Testing;
 
-namespace RoslynTester.Helpers
+namespace SharpSource.Test.Helpers.Helpers
 {
     /// <summary>
     ///     Base class for concrete classes separated by language of all Unit tests made for diagnostics with codefixes.

@@ -1,11 +1,11 @@
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RoslynTester.Helpers.CSharp;
 using SharpSource.Diagnostics;
-using SharpSource.Tests.Helpers;
+using SharpSource.Test.Helpers;
+using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Tests
+namespace SharpSource.Test
 {
     [TestClass]
     public class ThreadSleepInAsyncMethodTests : CSharpCodeFixVerifier

@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 
-namespace RoslynTester.Helpers.CSharp
+namespace SharpSource.Test.Helpers.Helpers.CSharp
 {
     public abstract class CSharpCodeFixVerifier : CSharpDiagnosticVerifier
     {

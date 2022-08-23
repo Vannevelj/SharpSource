@@ -9,236 +9,228 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "[Flags] enum {0} its values are not explicit powers of 2";
+    private static readonly string ValuesDontFitMessage = "[Flags] enum {0} its values are not explicit powers of 2 and does not fit in a {1} enum type.";
+    private static readonly string Title = "A [Flags] enum its values are not explicit powers of 2";
+    private static readonly string ValuesDontFitTitle = "A [Flags] enum its values are not explicit powers of 2 and its values dont fit in the specified enum type.";
+
+    public static DiagnosticDescriptor DefaultRule
+        => new(
+            DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo,
+            Title,
+            Message,
+            Categories.Attributes,
+            DiagnosticSeverity.Error,
+            true);
+
+    public static DiagnosticDescriptor ValuesDontFitRule
+        => new(
+            DiagnosticId.FlagsEnumValuesDontFit,
+            ValuesDontFitTitle,
+            ValuesDontFitMessage,
+            Categories.Attributes,
+            DiagnosticSeverity.Error,
+            true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+        => ImmutableArray.Create(DefaultRule, ValuesDontFitRule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.EnumDeclaration);
+    }
 
-        private static readonly string Category = Resources.AttributesCategory;
-        private static readonly string Message = Resources.FlagsEnumValuesAreNotPowersOfTwoAnalyzerMessage;
+    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    {
+        var declarationExpression = (EnumDeclarationSyntax)context.Node;
 
-        private static readonly string ValuesDontFitMessage =
-            Resources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerMessage;
+        AttributeListSyntax flagsAttribute = null;
 
-        private static readonly string Title = Resources.FlagsEnumValuesAreNotPowersOfTwoAnalyzerTitle;
-
-        private static readonly string ValuesDontFitTitle =
-            Resources.FlagsEnumValuesAreNotPowersOfTwoValuesDontFitAnalyzerTitle;
-
-        public static DiagnosticDescriptor DefaultRule
-            => new(
-                DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo,
-                Title,
-                Message,
-                Category,
-                Severity,
-                true);
-
-        public static DiagnosticDescriptor ValuesDontFitRule
-            => new(
-                DiagnosticId.FlagsEnumValuesDontFit,
-                ValuesDontFitTitle,
-                ValuesDontFitMessage,
-                Category, Severity,
-                true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-            => ImmutableArray.Create(DefaultRule, ValuesDontFitRule);
-
-        public override void Initialize(AnalysisContext context)
+        foreach (var list in declarationExpression.AttributeLists)
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.EnumDeclaration);
-        }
-
-        private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
-        {
-            var declarationExpression = (EnumDeclarationSyntax)context.Node;
-
-            AttributeListSyntax flagsAttribute = null;
-
-            foreach (var list in declarationExpression.AttributeLists)
+            foreach (var attribute in list.Attributes)
             {
-                foreach (var attribute in list.Attributes)
+                var symbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol;
+                if (symbol == null || symbol.ContainingType.MetadataName == typeof(FlagsAttribute).Name)
                 {
-                    var symbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol;
-                    if (symbol == null || symbol.ContainingType.MetadataName == typeof(FlagsAttribute).Name)
-                    {
-                        flagsAttribute = list;
-                        break;
-                    }
-                }
-
-                if (flagsAttribute != null)
-                {
+                    flagsAttribute = list;
                     break;
                 }
             }
 
-            if (flagsAttribute == null)
+            if (flagsAttribute != null)
             {
-                return;
+                break;
+            }
+        }
+
+        if (flagsAttribute == null)
+        {
+            return;
+        }
+
+        var enumName = context.SemanticModel.GetDeclaredSymbol(declarationExpression).Name;
+        var enumMemberDeclarations =
+            declarationExpression.ChildNodes().OfType<EnumMemberDeclarationSyntax>(SyntaxKind.EnumMemberDeclaration).ToArray();
+
+        foreach (var member in enumMemberDeclarations)
+        {
+            if (member.EqualsValue == null)
+            {
+                continue;
             }
 
-            var enumName = context.SemanticModel.GetDeclaredSymbol(declarationExpression).Name;
-            var enumMemberDeclarations =
-                declarationExpression.ChildNodes().OfType<EnumMemberDeclarationSyntax>(SyntaxKind.EnumMemberDeclaration).ToArray();
+            var descendantNodes = member.EqualsValue.Value.DescendantNodesAndSelf();
 
-            foreach (var member in enumMemberDeclarations)
+            var containsLiteralExpression = false;
+            var containsIdentifierName = false;
+            foreach (var node in descendantNodes)
             {
-                if (member.EqualsValue == null)
+                if (node is LiteralExpressionSyntax)
                 {
-                    continue;
+                    containsLiteralExpression = true;
                 }
 
-                var descendantNodes = member.EqualsValue.Value.DescendantNodesAndSelf();
-
-                var containsLiteralExpression = false;
-                var containsIdentifierName = false;
-                foreach (var node in descendantNodes)
+                if (node.IsKind(SyntaxKind.IdentifierName))
                 {
-                    if (node is LiteralExpressionSyntax)
-                    {
-                        containsLiteralExpression = true;
-                    }
-
-                    if (node.IsKind(SyntaxKind.IdentifierName))
-                    {
-                        containsIdentifierName = true;
-                    }
-
-                    if (containsIdentifierName && containsLiteralExpression)
-                    {
-                        return;
-                    }
-                }
-            }
-
-            var enumType = declarationExpression.BaseList?.Types[0].Type;
-            string keyword;
-            if (enumType == null)
-            {
-                keyword = "int";
-            }
-            else
-            {
-                if (enumType is PredefinedTypeSyntax typeSyntax)
-                {
-                    keyword = typeSyntax.Keyword.ValueText;
-                }
-                else
-                {
-                    var enumTypeInfo = context.SemanticModel.GetTypeInfo(enumType);
-                    keyword = enumTypeInfo.Type.Name.ToAlias();
-                }
-            }
-
-            // We have to make sure that by moving to powers of two, we won't exceed the type's maximum value 
-            // For example: 255 is the last possible value for a byte enum
-            if (IsOutsideOfRange(keyword, enumMemberDeclarations.Length))
-            {
-                context.ReportDiagnostic(Diagnostic.Create(ValuesDontFitRule,
-                    declarationExpression.Identifier.GetLocation(),
-                    enumName, keyword.ToLowerInvariant()));
-                return;
-            }
-
-            var createDiagnostic = false;
-            foreach (var member in enumMemberDeclarations)
-            {
-                // member doesn't have defined value - "foo" instead of "foo = 4"
-                if (member.EqualsValue == null)
-                {
-                    createDiagnostic = true;
-                    continue;
+                    containsIdentifierName = true;
                 }
 
-                if (member.EqualsValue.Value is BinaryExpressionSyntax)
-                {
-                    var descendantNodes = new List<SyntaxNode>(member.EqualsValue.Value.DescendantNodesAndSelf());
-
-                    var all = true;
-                    foreach (var node in descendantNodes)
-                    {
-                        if (!node.IsKind(SyntaxKind.IdentifierName) && node is not BinaryExpressionSyntax)
-                        {
-                            all = false;
-                            break;
-                        }
-                    }
-
-                    if (descendantNodes.Any() && all)
-                    {
-                        continue;
-                    }
-                }
-
-                var symbol = context.SemanticModel.GetDeclaredSymbol(member);
-                var value = symbol.ConstantValue;
-
-                if (value == null)
+                if (containsIdentifierName && containsLiteralExpression)
                 {
                     return;
                 }
+            }
+        }
 
-                /* `value` is an `object`.  Casting it to `dynamic`
-                 * will allow us to avoid a huge `switch` statement
-                 * and allow us to just pass the value to `IsPowerOfTwo()`
-                 */
-                if (!IsPowerOfTwo((dynamic)value))
+        var enumType = declarationExpression.BaseList?.Types[0].Type;
+        string keyword;
+        if (enumType == null)
+        {
+            keyword = "int";
+        }
+        else
+        {
+            if (enumType is PredefinedTypeSyntax typeSyntax)
+            {
+                keyword = typeSyntax.Keyword.ValueText;
+            }
+            else
+            {
+                var enumTypeInfo = context.SemanticModel.GetTypeInfo(enumType);
+                keyword = enumTypeInfo.Type.Name.ToAlias();
+            }
+        }
+
+        // We have to make sure that by moving to powers of two, we won't exceed the type's maximum value 
+        // For example: 255 is the last possible value for a byte enum
+        if (IsOutsideOfRange(keyword, enumMemberDeclarations.Length))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(ValuesDontFitRule,
+                declarationExpression.Identifier.GetLocation(),
+                enumName, keyword.ToLowerInvariant()));
+            return;
+        }
+
+        var createDiagnostic = false;
+        foreach (var member in enumMemberDeclarations)
+        {
+            // member doesn't have defined value - "foo" instead of "foo = 4"
+            if (member.EqualsValue == null)
+            {
+                createDiagnostic = true;
+                continue;
+            }
+
+            if (member.EqualsValue.Value is BinaryExpressionSyntax)
+            {
+                var descendantNodes = new List<SyntaxNode>(member.EqualsValue.Value.DescendantNodesAndSelf());
+
+                var all = true;
+                foreach (var node in descendantNodes)
                 {
-                    createDiagnostic = true;
+                    if (!node.IsKind(SyntaxKind.IdentifierName) && node is not BinaryExpressionSyntax)
+                    {
+                        all = false;
+                        break;
+                    }
+                }
+
+                if (descendantNodes.Any() && all)
+                {
+                    continue;
                 }
             }
 
-            if (createDiagnostic)
+            var symbol = context.SemanticModel.GetDeclaredSymbol(member);
+            var value = symbol.ConstantValue;
+
+            if (value == null)
             {
-                context.ReportDiagnostic(Diagnostic.Create(DefaultRule, declarationExpression.Identifier.GetLocation(),
-                    enumName));
+                return;
+            }
+
+            /* `value` is an `object`.  Casting it to `dynamic`
+             * will allow us to avoid a huge `switch` statement
+             * and allow us to just pass the value to `IsPowerOfTwo()`
+             */
+            if (!IsPowerOfTwo((dynamic)value))
+            {
+                createDiagnostic = true;
             }
         }
 
-        /// <summary>
-        ///     Determines whether a given value is a power of two
-        /// </summary>
-        /// <param name="value">The value to check</param>
-        /// <returns></returns>
-        private bool IsPowerOfTwo(double value)
+        if (createDiagnostic)
         {
-            var logValue = Math.Log(value, 2);
-            return Math.Abs(value) < 0.0001 || Math.Abs(logValue - Math.Round(logValue)) < 0.0001;
+            context.ReportDiagnostic(Diagnostic.Create(DefaultRule, declarationExpression.Identifier.GetLocation(),
+                enumName));
+        }
+    }
+
+    /// <summary>
+    ///     Determines whether a given value is a power of two
+    /// </summary>
+    /// <param name="value">The value to check</param>
+    /// <returns></returns>
+    private bool IsPowerOfTwo(double value)
+    {
+        var logValue = Math.Log(value, 2);
+        return Math.Abs(value) < 0.0001 || Math.Abs(logValue - Math.Round(logValue)) < 0.0001;
+    }
+
+    /// <summary>
+    ///     Returns whether or not all values can be changed to powers of two without introducing out of range values.
+    /// </summary>
+    /// <param name="keyword">The type keyword that forms the base type of the enum</param>
+    /// <param name="amountOfMembers">Indicates how many values an enum of this type can have</param>
+    /// <returns></returns>
+    private bool IsOutsideOfRange(string keyword, int amountOfMembers)
+    {
+        // The value represents the amount of members an enum of the given type can contain
+        var rangeMapping = new Dictionary<string, int>
+        {
+            { "sbyte", 8 },
+            { "byte", 9 },
+            { "short", 16 },
+            { "ushort", 17 },
+            { "int", 32 },
+            { "uint", 33 },
+            { "long", 64 },
+            { "ulong", 65 }
+        };
+
+        if (rangeMapping.TryGetValue(keyword, out var amountAllowed))
+        {
+            return amountOfMembers > amountAllowed;
         }
 
-        /// <summary>
-        ///     Returns whether or not all values can be changed to powers of two without introducing out of range values.
-        /// </summary>
-        /// <param name="keyword">The type keyword that forms the base type of the enum</param>
-        /// <param name="amountOfMembers">Indicates how many values an enum of this type can have</param>
-        /// <returns></returns>
-        private bool IsOutsideOfRange(string keyword, int amountOfMembers)
-        {
-            // The value represents the amount of members an enum of the given type can contain
-            var rangeMapping = new Dictionary<string, int>
-            {
-                { "sbyte", 8 },
-                { "byte", 9 },
-                { "short", 16 },
-                { "ushort", 17 },
-                { "int", 32 },
-                { "uint", 33 },
-                { "long", 64 },
-                { "ulong", 65 }
-            };
-
-            if (rangeMapping.TryGetValue(keyword, out var amountAllowed))
-            {
-                return amountOfMembers > amountAllowed;
-            }
-
-            throw new ArgumentException("Unsupported base enum type encountered");
-        }
+        throw new ArgumentException("Unsupported base enum type encountered");
     }
 }

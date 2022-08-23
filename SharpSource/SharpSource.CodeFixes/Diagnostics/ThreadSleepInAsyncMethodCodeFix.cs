@@ -12,64 +12,63 @@ using Microsoft.CodeAnalysis.Formatting;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[ExportCodeFixProvider(DiagnosticId.ThreadSleepInAsyncMethod + "CF", LanguageNames.CSharp), Shared]
+public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
 {
-    [ExportCodeFixProvider(DiagnosticId.ThreadSleepInAsyncMethod + "CF", LanguageNames.CSharp), Shared]
-    public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ThreadSleepInAsyncMethodAnalyzer.Rule.Id);
+
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ThreadSleepInAsyncMethodAnalyzer.Rule.Id);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        context.RegisterCodeFix(
+            CodeAction.Create(CodeFixResources.ThreadSleepInAsyncMethodCodeFixTitle,
+                x => UseTaskDelay(context.Document, memberAccess, root, diagnostic, x),
+                ThreadSleepInAsyncMethodAnalyzer.Rule.Id),
+            diagnostic);
+    }
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    private Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic, CancellationToken cancellationToken)
+    {
+        var isAsync = bool.Parse(diagnostic.Properties["isAsync"]);
+        if (!isAsync)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
-            context.RegisterCodeFix(
-                CodeAction.Create(CodeFixResources.ThreadSleepInAsyncMethodCodeFixTitle,
-                    x => UseTaskDelay(context.Document, memberAccess, root, diagnostic, x),
-                    ThreadSleepInAsyncMethodAnalyzer.Rule.Id),
-                diagnostic);
+            return Task.FromResult(document);
         }
 
-        private Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic, CancellationToken cancellationToken)
+        ExpressionSyntax newExpression;
+        if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
         {
-            var isAsync = bool.Parse(diagnostic.Properties["isAsync"]);
-            if (!isAsync)
-            {
-                return Task.FromResult(document);
-            }
-
-            ExpressionSyntax newExpression;
-            if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
-            {
-                newExpression = memberAccess
-                    .WithExpression(SyntaxFactory.IdentifierName("Task"))
-                    .WithName(SyntaxFactory.IdentifierName("Delay"));
-            }
-            else if (invocation.Expression is IdentifierNameSyntax)
-            {
-                newExpression = SyntaxFactory.ParseExpression("Task.Delay");
-            }
-            else
-            {
-                return Task.FromResult(document);
-            }
-
-            var newInvocation = invocation.WithExpression(newExpression);
-            var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
-
-            var newRoot = root.ReplaceNode(invocation, awaitExpression);
-
-            var compilationUnit = (CompilationUnitSyntax)newRoot;
-            newRoot = compilationUnit.AddUsingStatementIfMissing("System.Threading.Tasks");
-
-            var newDocument = document.WithSyntaxRoot(newRoot);
-
-            return Task.FromResult(newDocument);
+            newExpression = memberAccess
+                .WithExpression(SyntaxFactory.IdentifierName("Task"))
+                .WithName(SyntaxFactory.IdentifierName("Delay"));
         }
+        else if (invocation.Expression is IdentifierNameSyntax)
+        {
+            newExpression = SyntaxFactory.ParseExpression("Task.Delay");
+        }
+        else
+        {
+            return Task.FromResult(document);
+        }
+
+        var newInvocation = invocation.WithExpression(newExpression);
+        var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
+
+        var newRoot = root.ReplaceNode(invocation, awaitExpression);
+
+        var compilationUnit = (CompilationUnitSyntax)newRoot;
+        newRoot = compilationUnit.AddUsingStatementIfMissing("System.Threading.Tasks");
+
+        var newDocument = document.WithSyntaxRoot(newRoot);
+
+        return Task.FromResult(newDocument);
     }
 }
