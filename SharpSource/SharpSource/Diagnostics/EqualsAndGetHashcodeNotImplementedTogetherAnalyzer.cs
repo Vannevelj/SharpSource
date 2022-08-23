@@ -8,100 +8,97 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Equals() and GetHashcode() must be implemented together.";
+    private static readonly string Title = "Implement Equals() and GetHashcode() together.";
+
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = Resources.GeneralCategory;
-        private static readonly string Message = Resources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerMessage;
-        private static readonly string Title = Resources.EqualsAndGetHashcodeNotImplementedTogetherAnalyzerTitle;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterCompilationStartAction((compilationContext) =>
+    {
+        var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
+        IMethodSymbol objectEquals = null;
+        IMethodSymbol objectGetHashCode = null;
 
-        public static DiagnosticDescriptor Rule => new(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Category, Severity, true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+        foreach (var symbol in objectSymbol.GetMembers())
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterCompilationStartAction((compilationContext) =>
-        {
-            var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
-            IMethodSymbol objectEquals = null;
-            IMethodSymbol objectGetHashCode = null;
-
-            foreach (var symbol in objectSymbol.GetMembers())
+            if (!( symbol is IMethodSymbol ))
             {
-                if (!( symbol is IMethodSymbol ))
+                continue;
+            }
+
+            var method = (IMethodSymbol)symbol;
+            if (method.MetadataName == nameof(Equals) && method.Parameters.Length == 1)
+            {
+                objectEquals = method;
+            }
+
+            if (method.MetadataName == nameof(GetHashCode) && !method.Parameters.Any())
+            {
+                objectGetHashCode = method;
+            }
+        }
+
+        compilationContext.RegisterSyntaxNodeAction((syntaxNodeContext) =>
+        {
+            var classDeclaration = (ClassDeclarationSyntax)syntaxNodeContext.Node;
+
+            var equalsImplemented = false;
+            var getHashcodeImplemented = false;
+
+            foreach (var node in classDeclaration.Members)
+            {
+                if (!node.IsKind(SyntaxKind.MethodDeclaration))
                 {
                     continue;
                 }
 
-                var method = (IMethodSymbol)symbol;
-                if (method.MetadataName == nameof(Equals) && method.Parameters.Length == 1)
+                var methodDeclaration = (MethodDeclarationSyntax)node;
+                if (!methodDeclaration.Modifiers.Contains(SyntaxKind.OverrideKeyword))
                 {
-                    objectEquals = method;
+                    continue;
                 }
 
-                if (method.MetadataName == nameof(GetHashCode) && !method.Parameters.Any())
+                var methodSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(methodDeclaration).OverriddenMethod;
+
+                // this will happen if the base class is deleted and there is still a derived class
+                if (methodSymbol == null)
                 {
-                    objectGetHashCode = method;
+                    return;
+                }
+
+                while (methodSymbol.IsOverride)
+                {
+                    methodSymbol = methodSymbol.OverriddenMethod;
+                }
+
+                if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default))
+                {
+                    equalsImplemented = true;
+                }
+
+                if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
+                {
+                    getHashcodeImplemented = true;
                 }
             }
 
-            compilationContext.RegisterSyntaxNodeAction((syntaxNodeContext) =>
+            if (equalsImplemented ^ getHashcodeImplemented)
             {
-                var classDeclaration = (ClassDeclarationSyntax)syntaxNodeContext.Node;
-
-                var equalsImplemented = false;
-                var getHashcodeImplemented = false;
-
-                foreach (var node in classDeclaration.Members)
-                {
-                    if (!node.IsKind(SyntaxKind.MethodDeclaration))
-                    {
-                        continue;
-                    }
-
-                    var methodDeclaration = (MethodDeclarationSyntax)node;
-                    if (!methodDeclaration.Modifiers.Contains(SyntaxKind.OverrideKeyword))
-                    {
-                        continue;
-                    }
-
-                    var methodSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(methodDeclaration).OverriddenMethod;
-
-                    // this will happen if the base class is deleted and there is still a derived class
-                    if (methodSymbol == null)
-                    {
-                        return;
-                    }
-
-                    while (methodSymbol.IsOverride)
-                    {
-                        methodSymbol = methodSymbol.OverriddenMethod;
-                    }
-
-                    if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default))
-                    {
-                        equalsImplemented = true;
-                    }
-
-                    if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
-                    {
-                        getHashcodeImplemented = true;
-                    }
-                }
-
-                if (equalsImplemented ^ getHashcodeImplemented)
-                {
-                    syntaxNodeContext.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(),
-                        ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString()) })));
-                }
-            }, SyntaxKind.ClassDeclaration);
-        });
-        }
+                syntaxNodeContext.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(),
+                    ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString()) })));
+            }
+        }, SyntaxKind.ClassDeclaration);
+    });
     }
 }

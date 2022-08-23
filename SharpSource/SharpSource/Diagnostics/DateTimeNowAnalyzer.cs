@@ -6,38 +6,34 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class DateTimeNowAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class DateTimeNowAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Use DateTime.UtcNow to get a consistent value";
+    private static readonly string Title = "DateTime.Now was referenced";
+
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
+    }
 
-        private static readonly string Category = Resources.GeneralCategory;
-        private static readonly string Message = Resources.DateTimeNowAnalyzerMessage;
-        private static readonly string Title = Resources.DateTimeNowAnalyzerTitle;
+    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    {
+        var expression = (MemberAccessExpressionSyntax)context.Node;
 
-        public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Category, Severity, true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+        if (context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol is INamedTypeSymbol symbol &&
+            symbol.SpecialType == SpecialType.System_DateTime &&
+            expression.Name.Identifier.ValueText == "Now")
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
-        }
-
-        private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
-        {
-            var expression = (MemberAccessExpressionSyntax)context.Node;
-
-            if (context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol is INamedTypeSymbol symbol &&
-                symbol.SpecialType == SpecialType.System_DateTime &&
-                expression.Name.Identifier.ValueText == "Now")
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
-            }
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
     }
 }

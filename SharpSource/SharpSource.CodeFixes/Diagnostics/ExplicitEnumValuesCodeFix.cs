@@ -11,38 +11,37 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[ExportCodeFixProvider(DiagnosticId.ExplicitEnumValues + "CF", LanguageNames.CSharp), Shared]
+public class ExplicitEnumValuesCodeFix : CodeFixProvider
 {
-    [ExportCodeFixProvider(DiagnosticId.ExplicitEnumValues + "CF", LanguageNames.CSharp), Shared]
-    public class ExplicitEnumValuesCodeFix : CodeFixProvider
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ExplicitEnumValuesAnalyzer.Rule.Id);
+
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ExplicitEnumValuesAnalyzer.Rule.Id);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<EnumMemberDeclarationSyntax>().First();
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
+        context.RegisterCodeFix(
+            CodeAction.Create(CodeFixResources.ExplicitEnumValuesCodeFixTitle,
+                x => SpecifyEnumValue(context.Document, root, statement, context.CancellationToken), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
+    }
 
-            var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<EnumMemberDeclarationSyntax>().First();
+    private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
+    {
+        var semanticModel = await document.GetSemanticModelAsync();
 
-            context.RegisterCodeFix(
-                CodeAction.Create(CodeFixResources.ExplicitEnumValuesCodeFixTitle,
-                    x => SpecifyEnumValue(context.Document, root, statement, context.CancellationToken), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
-        }
+        var symbol = semanticModel.GetDeclaredSymbol(declaration, cancellationToken);
 
-        private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
-        {
-            var semanticModel = await document.GetSemanticModelAsync();
-
-            var symbol = semanticModel.GetDeclaredSymbol(declaration, cancellationToken);
-
-            var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int)symbol.ConstantValue)));
-            var newDeclaration = declaration.WithEqualsValue(newEqualsClause);
-            var newDocument = root.ReplaceNode(declaration, newDeclaration);
-            return document.WithSyntaxRoot(newDocument);
-        }
+        var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int)symbol.ConstantValue)));
+        var newDeclaration = declaration.WithEqualsValue(newEqualsClause);
+        var newDocument = root.ReplaceNode(declaration, newDeclaration);
+        return document.WithSyntaxRoot(newDocument);
     }
 }

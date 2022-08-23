@@ -8,84 +8,81 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Implement Equals() and GetHashCode() methods of type {0} for use in a collection.";
+    private static readonly string Title = "Implement Equals() and GetHashcode() methods for a type used in a collection.";
+
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = Resources.GeneralCategory;
-        private static readonly string Message = Resources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerMessage;
-        private static readonly string Title = Resources.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzerTitle;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
+    }
 
-        public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Category, Severity, true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    {
+        if (context.SemanticModel.GetTypeInfo(context.Node).Type is not INamedTypeSymbol objectTypeInfo)
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
+            return;
         }
 
-        private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+        var ienumerableIsImplemented = objectTypeInfo.ImplementsInterface(typeof(IEnumerable)) ||
+                                       objectTypeInfo.ImplementsInterface(typeof(IEnumerable<>));
+
+        if (!ienumerableIsImplemented)
         {
-            if (context.SemanticModel.GetTypeInfo(context.Node).Type is not INamedTypeSymbol objectTypeInfo)
+            return;
+        }
+
+        var node = (ObjectCreationExpressionSyntax)context.Node;
+        if (node.Type is not GenericNameSyntax objectType)
+        {
+            return;
+        }
+
+        foreach (var genericType in objectType.TypeArgumentList.Arguments)
+        {
+            if (genericType == null)
             {
                 return;
             }
 
-            var ienumerableIsImplemented = objectTypeInfo.ImplementsInterface(typeof(IEnumerable)) ||
-                                           objectTypeInfo.ImplementsInterface(typeof(IEnumerable<>));
-
-            if (!ienumerableIsImplemented)
+            var genericTypeInfo = context.SemanticModel.GetTypeInfo(genericType).Type;
+            if (genericTypeInfo == null ||
+                genericTypeInfo.TypeKind == TypeKind.Interface ||
+                genericTypeInfo.TypeKind == TypeKind.TypeParameter ||
+                genericTypeInfo.TypeKind == TypeKind.Enum ||
+                genericTypeInfo.TypeKind == TypeKind.Array)
             {
                 return;
             }
 
-            var node = (ObjectCreationExpressionSyntax)context.Node;
-            if (node.Type is not GenericNameSyntax objectType)
+            var implementsEquals = false;
+            var implementsGetHashCode = false;
+            foreach (var member in genericTypeInfo.GetMembers())
             {
-                return;
+                if (member.Name == nameof(Equals))
+                {
+                    implementsEquals = true;
+                }
+
+                if (member.Name == nameof(GetHashCode))
+                {
+                    implementsGetHashCode = true;
+                }
             }
 
-            foreach (var genericType in objectType.TypeArgumentList.Arguments)
+            if (!implementsEquals || !implementsGetHashCode)
             {
-                if (genericType == null)
-                {
-                    return;
-                }
-
-                var genericTypeInfo = context.SemanticModel.GetTypeInfo(genericType).Type;
-                if (genericTypeInfo == null ||
-                    genericTypeInfo.TypeKind == TypeKind.Interface ||
-                    genericTypeInfo.TypeKind == TypeKind.TypeParameter ||
-                    genericTypeInfo.TypeKind == TypeKind.Enum ||
-                    genericTypeInfo.TypeKind == TypeKind.Array)
-                {
-                    return;
-                }
-
-                var implementsEquals = false;
-                var implementsGetHashCode = false;
-                foreach (var member in genericTypeInfo.GetMembers())
-                {
-                    if (member.Name == nameof(Equals))
-                    {
-                        implementsEquals = true;
-                    }
-
-                    if (member.Name == nameof(GetHashCode))
-                    {
-                        implementsGetHashCode = true;
-                    }
-                }
-
-                if (!implementsEquals || !implementsGetHashCode)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, genericType.GetLocation(), genericTypeInfo.Name));
-                }
+                context.ReportDiagnostic(Diagnostic.Create(Rule, genericType.GetLocation(), genericTypeInfo.Name));
             }
         }
     }

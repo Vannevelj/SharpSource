@@ -7,64 +7,60 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Use await to get the result of a Task.";
+    private static readonly string Title = "Use await to get the result of an asynchronous operation";
+
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.AccessingTaskResultWithoutAwait, Title, Message, Categories.Async, DiagnosticSeverity.Warning, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.SimpleMemberAccessExpression);
+    }
 
-        private static readonly string Category = Resources.AsyncCategory;
-        private static readonly string Message = Resources.AccessingTaskResultWithoutAwaitAnalyzerMessage;
-        private static readonly string Title = Resources.AccessingTaskResultWithoutAwaitAnalyzerTitle;
+    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    {
+        var memberAccess = (MemberAccessExpressionSyntax)context.Node;
 
-        public static DiagnosticDescriptor Rule => new(DiagnosticId.AccessingTaskResultWithoutAwait, Title, Message, Category, Severity, isEnabledByDefault: true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+        var invokedSymbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol;
+        if (invokedSymbol == null)
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.SimpleMemberAccessExpression);
+            return;
         }
 
-        private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+        var enclosingLambda = memberAccess.FirstAncestorOrSelf<LambdaExpressionSyntax>();
+        if (enclosingLambda != null)
         {
-            var memberAccess = (MemberAccessExpressionSyntax)context.Node;
-
-            var invokedSymbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol;
-            if (invokedSymbol == null)
+            if (enclosingLambda.AsyncKeyword == default)
+            {
+                return;
+            }
+        }
+        else
+        {
+            var enclosingMethod = memberAccess.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+            if (enclosingMethod == null)
             {
                 return;
             }
 
-            var enclosingLambda = memberAccess.FirstAncestorOrSelf<LambdaExpressionSyntax>();
-            if (enclosingLambda != null)
+            if (!enclosingMethod.Modifiers.Any(SyntaxKind.AsyncKeyword))
             {
-                if (enclosingLambda.AsyncKeyword == default)
-                {
-                    return;
-                }
+                return;
             }
-            else
-            {
-                var enclosingMethod = memberAccess.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-                if (enclosingMethod == null)
-                {
-                    return;
-                }
+        }
 
-                if (!enclosingMethod.Modifiers.Any(SyntaxKind.AsyncKeyword))
-                {
-                    return;
-                }
-            }
-
-            if (invokedSymbol.Name == "Result" && invokedSymbol.ContainingType?.Name == "Task")
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, memberAccess.GetLocation()));
-            }
+        if (invokedSymbol.Name == "Result" && invokedSymbol.ContainingType?.Name == "Task")
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Rule, memberAccess.GetLocation()));
         }
     }
 }

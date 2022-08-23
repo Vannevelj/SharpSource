@@ -10,32 +10,31 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[ExportCodeFixProvider(DiagnosticId.DateTimeNow + "CF", LanguageNames.CSharp), Shared]
+public class DateTimeNowCodeFix : CodeFixProvider
 {
-    [ExportCodeFixProvider(DiagnosticId.DateTimeNow + "CF", LanguageNames.CSharp), Shared]
-    public class DateTimeNowCodeFix : CodeFixProvider
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DateTimeNowAnalyzer.Rule.Id);
+
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DateTimeNowAnalyzer.Rule.Id);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().First();
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
+        context.RegisterCodeFix(
+            CodeAction.Create(CodeFixResources.DateTimeNowCodeFixTitle,
+                x => UseUtc(context.Document, root, statement), DateTimeNowAnalyzer.Rule.Id), diagnostic);
+    }
 
-            var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().First();
-
-            context.RegisterCodeFix(
-                CodeAction.Create(CodeFixResources.DateTimeNowCodeFixTitle,
-                    x => UseUtc(context.Document, root, statement), DateTimeNowAnalyzer.Rule.Id), diagnostic);
-        }
-
-        private Task<Document> UseUtc(Document document, SyntaxNode root, MemberAccessExpressionSyntax statement)
-        {
-            var newRoot = root.ReplaceNode(statement, SyntaxFactory.ParseExpression("System.DateTime.UtcNow").WithAdditionalAnnotations(Simplifier.Annotation));
-            return Task.FromResult(document.WithSyntaxRoot(newRoot));
-        }
+    private Task<Document> UseUtc(Document document, SyntaxNode root, MemberAccessExpressionSyntax statement)
+    {
+        var newRoot = root.ReplaceNode(statement, SyntaxFactory.ParseExpression("System.DateTime.UtcNow").WithAdditionalAnnotations(Simplifier.Annotation));
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

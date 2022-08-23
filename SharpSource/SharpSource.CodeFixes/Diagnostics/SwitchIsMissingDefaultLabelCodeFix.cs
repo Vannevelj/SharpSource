@@ -13,43 +13,42 @@ using Microsoft.CodeAnalysis.Simplification;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[ExportCodeFixProvider(DiagnosticId.SwitchIsMissingDefaultLabel + "CF", LanguageNames.CSharp), Shared]
+public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
 {
-    [ExportCodeFixProvider(DiagnosticId.SwitchIsMissingDefaultLabel + "CF", LanguageNames.CSharp), Shared]
-    public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
+    public override ImmutableArray<string> FixableDiagnosticIds
+        => ImmutableArray.Create(SwitchIsMissingDefaultLabelAnalyzer.Rule.Id);
+
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        public override ImmutableArray<string> FixableDiagnosticIds
-            => ImmutableArray.Create(SwitchIsMissingDefaultLabelAnalyzer.Rule.Id);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
+        context.RegisterCodeFix(
+            CodeAction.Create(CodeFixResources.SwitchIsMissingDefaultSectionCodeFixTitle,
+                x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
+                SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
+    }
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
+    private Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
+    {
+        var argumentException =
+            SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($"new ArgumentException(\"Unsupported value\")"))
+                         .WithAdditionalAnnotations(Formatter.Annotation);
+        var statements = SyntaxFactory.List(new List<StatementSyntax> { argumentException });
+        var defaultCase = SyntaxFactory.SwitchSection(SyntaxFactory.List<SwitchLabelSyntax>(new[] { SyntaxFactory.DefaultSwitchLabel() }), statements);
 
-            var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
-            context.RegisterCodeFix(
-                CodeAction.Create(CodeFixResources.SwitchIsMissingDefaultSectionCodeFixTitle,
-                    x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
-                    SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
-        }
+        var newNode = switchBlock.AddSections(defaultCase.WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation));
+        var newRoot = root.ReplaceNode(switchBlock, newNode);
 
-        private Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
-        {
-            var argumentException =
-                SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($"new ArgumentException(\"Unsupported value\")"))
-                             .WithAdditionalAnnotations(Formatter.Annotation);
-            var statements = SyntaxFactory.List(new List<StatementSyntax> { argumentException });
-            var defaultCase = SyntaxFactory.SwitchSection(SyntaxFactory.List<SwitchLabelSyntax>(new[] { SyntaxFactory.DefaultSwitchLabel() }), statements);
+        newRoot = newRoot.AddUsingStatementIfMissing("System");
 
-            var newNode = switchBlock.AddSections(defaultCase.WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation));
-            var newRoot = root.ReplaceNode(switchBlock, newNode);
-
-            newRoot = newRoot.AddUsingStatementIfMissing("System");
-
-            return Task.FromResult(document.WithSyntaxRoot(newRoot));
-        }
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

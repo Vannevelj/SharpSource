@@ -7,63 +7,60 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Variable {0} of type System.Random is instantiated in a loop.";
+    private static readonly string Title = "An instance of type System.Random is created in a loop.";
+
+    private readonly SyntaxKind[] _loopTypes = { SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement };
+
+    public static DiagnosticDescriptor Rule =>
+            new(DiagnosticId.LoopedRandomInstantiation, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Warning;
-        private static readonly string Category = Resources.GeneralCategory;
-        private static readonly string Message = Resources.LoopedRandomInstantiationAnalyzerMessage;
-        private static readonly string Title = Resources.LoopedRandomInstantiationAnalyzerTitle;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.VariableDeclaration);
+    }
 
-        private readonly SyntaxKind[] _loopTypes = { SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement };
+    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    {
+        var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-        public static DiagnosticDescriptor Rule =>
-                new(DiagnosticId.LoopedRandomInstantiation, Title, Message, Category, Severity, true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+        var type = variableDeclaration.Type;
+        if (type == null)
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.VariableDeclaration);
+            return;
         }
 
-        private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+        var typeInfo = context.SemanticModel.GetTypeInfo(type).Type;
+
+        if (typeInfo?.OriginalDefinition.ContainingNamespace == null ||
+            typeInfo.OriginalDefinition.ContainingNamespace.Name != nameof(System) ||
+            typeInfo.Name != nameof(Random))
         {
-            var variableDeclaration = (VariableDeclarationSyntax)context.Node;
+            return;
+        }
 
-            var type = variableDeclaration.Type;
-            if (type == null)
+        SyntaxNode currentNode = variableDeclaration;
+        while (!currentNode.IsAnyKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration))
+        {
+            if (_loopTypes.Contains(currentNode.Kind()))
             {
-                return;
-            }
-
-            var typeInfo = context.SemanticModel.GetTypeInfo(type).Type;
-
-            if (typeInfo?.OriginalDefinition.ContainingNamespace == null ||
-                typeInfo.OriginalDefinition.ContainingNamespace.Name != nameof(System) ||
-                typeInfo.Name != nameof(Random))
-            {
-                return;
-            }
-
-            SyntaxNode currentNode = variableDeclaration;
-            while (!currentNode.IsAnyKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration))
-            {
-                if (_loopTypes.Contains(currentNode.Kind()))
+                foreach (var declarator in variableDeclaration.Variables)
                 {
-                    foreach (var declarator in variableDeclaration.Variables)
-                    {
-                        context.ReportDiagnostic(Diagnostic.Create(Rule, declarator.GetLocation(), declarator.Identifier.Text));
-                    }
-                    return;
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, declarator.GetLocation(), declarator.Identifier.Text));
                 }
-
-                currentNode = currentNode.Parent;
+                return;
             }
+
+            currentNode = currentNode.Parent;
         }
     }
 }

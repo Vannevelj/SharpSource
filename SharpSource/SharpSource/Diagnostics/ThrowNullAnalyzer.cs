@@ -6,42 +6,38 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class ThrowNullAnalyzer : DiagnosticAnalyzer
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ThrowNullAnalyzer : DiagnosticAnalyzer
+    private static readonly string Message = "Throwing null will always result in a runtime exception";
+    private static readonly string Title = "Throwing null will always result in a runtime exception";
+
+    public static DiagnosticDescriptor Rule
+        => new(DiagnosticId.ThrowNull, Title, Message, Categories.Exceptions, DiagnosticSeverity.Error, true);
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+    public override void Initialize(AnalysisContext context)
     {
-        private const DiagnosticSeverity Severity = DiagnosticSeverity.Error;
+        context.EnableConcurrentExecution();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ThrowStatement);
+    }
 
-        private static readonly string Category = Resources.ExceptionsCategory;
-        private static readonly string Message = Resources.ThrowNullMessage;
-        private static readonly string Title = Resources.ThrowNullMessage;
-
-        public static DiagnosticDescriptor Rule
-            => new(DiagnosticId.ThrowNull, Title, Message, Category, Severity, isEnabledByDefault: true);
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        public override void Initialize(AnalysisContext context)
+    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    {
+        var throwStatement = (ThrowStatementSyntax)context.Node;
+        if (throwStatement.Expression == null)
         {
-            context.EnableConcurrentExecution();
-            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ThrowStatement);
+            return;
         }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        var throwValue = context.SemanticModel.GetConstantValue(throwStatement.Expression);
+        if (throwValue.HasValue && throwValue.Value == null)
         {
-            var throwStatement = (ThrowStatementSyntax)context.Node;
-            if (throwStatement.Expression == null)
-            {
-                return;
-            }
-
-            var throwValue = context.SemanticModel.GetConstantValue(throwStatement.Expression);
-            if (throwValue.HasValue && throwValue.Value == null)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, throwStatement.Expression.GetLocation()));
-            }
+            context.ReportDiagnostic(Diagnostic.Create(Rule, throwStatement.Expression.GetLocation()));
         }
     }
 }

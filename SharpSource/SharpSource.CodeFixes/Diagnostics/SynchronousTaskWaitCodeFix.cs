@@ -10,45 +10,44 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SharpSource.Diagnostics
+namespace SharpSource.Diagnostics;
+
+[ExportCodeFixProvider(DiagnosticId.SynchronousTaskWait + "CF", LanguageNames.CSharp), Shared]
+public class SynchronousTaskWaitCodeFix : CodeFixProvider
 {
-    [ExportCodeFixProvider(DiagnosticId.SynchronousTaskWait + "CF", LanguageNames.CSharp), Shared]
-    public class SynchronousTaskWaitCodeFix : CodeFixProvider
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SynchronousTaskWaitAnalyzer.Rule.Id);
+
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SynchronousTaskWaitAnalyzer.Rule.Id);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var synchronousWaitMethod = root.FindToken(diagnosticSpan.Start)
+            .Parent
+            .AncestorsAndSelf()
+            .OfType<MemberAccessExpressionSyntax>()
+            .SingleOrDefault(x => x.Name.Identifier.ValueText == "Wait");
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        context.RegisterCodeFix(
+            CodeAction.Create("Use await",
+                x => UseAwait(context.Document, synchronousWaitMethod, root, x),
+                SynchronousTaskWaitAnalyzer.Rule.Id),
+            diagnostic);
+    }
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
+    {
+        if (memberAccessExpression == null)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var synchronousWaitMethod = root.FindToken(diagnosticSpan.Start)
-                .Parent
-                .AncestorsAndSelf()
-                .OfType<MemberAccessExpressionSyntax>()
-                .SingleOrDefault(x => x.Name.Identifier.ValueText == "Wait");
-
-            context.RegisterCodeFix(
-                CodeAction.Create("Use await",
-                    x => UseAwait(context.Document, synchronousWaitMethod, root, x),
-                    SynchronousTaskWaitAnalyzer.Rule.Id),
-                diagnostic);
+            return Task.FromResult(document);
         }
 
-        private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
-        {
-            if (memberAccessExpression == null)
-            {
-                return Task.FromResult(document);
-            }
+        var newExpression = AwaitExpression(memberAccessExpression.Expression);
+        var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
 
-            var newExpression = AwaitExpression(memberAccessExpression.Expression);
-            var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-
-            var newRoot = root.ReplaceNode(originalInvocation, newExpression);
-            return Task.FromResult(document.WithSyntaxRoot(newRoot));
-        }
+        var newRoot = root.ReplaceNode(originalInvocation, newExpression);
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

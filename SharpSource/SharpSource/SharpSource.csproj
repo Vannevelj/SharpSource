@@ -15,9 +15,4 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
-    <EmbeddedResource Update="Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
-  </ItemGroup>
-
 </Project>
