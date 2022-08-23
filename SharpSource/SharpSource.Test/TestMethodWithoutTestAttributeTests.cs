@@ -1,9 +1,10 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RoslynTester.Helpers.CSharp;
-using SharpSource.Tests.Helpers;
+using SharpSource.Diagnostics;
+using SharpSource.Test.Helpers;
+using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Tests
+namespace SharpSource.Test
 {
     [TestClass]
     public class TestMethodWithoutTestAttributeTests : CSharpDiagnosticVerifier

@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SharpSource.Tests.Helpers
+namespace SharpSource.Test.Helpers
 {
     public class BugVerificationTestAttribute : TestMethodAttribute
     {

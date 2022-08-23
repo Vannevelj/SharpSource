@@ -9,10 +9,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
-using RoslynTester.DiagnosticResults;
-using RoslynTester.Helpers.Testing;
+using SharpSource.Test.Helpers.DiagnosticResults;
+using SharpSource.Test.Helpers.Helpers.Testing;
 
-namespace RoslynTester.Helpers
+namespace SharpSource.Test.Helpers.Helpers
 {
     /// <summary>
     ///     Superclass of all Unit Tests for DiagnosticAnalyzers

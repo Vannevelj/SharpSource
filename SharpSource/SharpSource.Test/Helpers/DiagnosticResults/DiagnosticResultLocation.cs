@@ -1,6 +1,6 @@
 using System;
 
-namespace RoslynTester.DiagnosticResults
+namespace SharpSource.Test.Helpers.DiagnosticResults
 {
     /// <summary>
     ///     Location where the diagnostic appears, as determined by path, line number, and column number.

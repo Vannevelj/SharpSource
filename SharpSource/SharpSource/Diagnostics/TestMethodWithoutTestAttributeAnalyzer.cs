@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
 
-namespace SharpSource;
+namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer

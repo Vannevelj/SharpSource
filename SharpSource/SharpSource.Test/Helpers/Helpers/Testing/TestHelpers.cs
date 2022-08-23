@@ -1,16 +1,15 @@
 using System;
 using System.Globalization;
 using System.IO;
-using RoslynTester.Helpers.Testing;
 
 // https://gist.github.com/haacked/1610603
-namespace SharpSource.Tests.Helpers.Helpers.Testing
+namespace SharpSource.Test.Helpers.Helpers.Testing
 {
     public static class TestHelpers
     {
-        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message) => ShouldEqualWithDiff(actualValue, expectedValue, message, DiffStyle.Full, Console.Out);
+        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message) => actualValue.ShouldEqualWithDiff(expectedValue, message, DiffStyle.Full, Console.Out);
 
-        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message, DiffStyle diffStyle) => ShouldEqualWithDiff(actualValue, expectedValue, message, diffStyle, Console.Out);
+        public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message, DiffStyle diffStyle) => actualValue.ShouldEqualWithDiff(expectedValue, message, diffStyle, Console.Out);
 
         public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message, DiffStyle diffStyle, TextWriter output)
         {

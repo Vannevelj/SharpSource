@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace RoslynTester.Helpers.CSharp
+namespace SharpSource.Test.Helpers.Helpers.CSharp
 {
     public abstract class CSharpDiagnosticVerifier : DiagnosticVerifier
     {
