@@ -37,4 +37,6 @@ public static class DiagnosticId
     public const string AccessingTaskResultWithoutAwait = "SS034";
     public const string SynchronousTaskWait = "SS035";
     public const string ExplicitEnumValues = "SS036";
+    public const string HttpClientInstantiatedDirectly = "SS037";
+    public const string HttpContextStoredInField = "SS038";
 }

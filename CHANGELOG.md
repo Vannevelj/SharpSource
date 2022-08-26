@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [0.9.0] - 2022-08-26
+- Implemented `HttpContextStoredInField`: show a warning when `HttpContext` was stored in a field. Use `IHttpContextAccessor` instead
+- Fixed DiagnosticID of `HttpClientInstantiatedDirectly`
+
 ## [0.8.0] - 2022-08-24
 - Implemented `HttpClientInstantiatedDirectly`: show a warning when `HttpClient` is instantiated. Use `IHttpClientFactory` instead
 

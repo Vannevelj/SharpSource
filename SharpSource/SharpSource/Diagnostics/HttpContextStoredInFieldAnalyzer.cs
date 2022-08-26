@@ -10,12 +10,12 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
+public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "HttpClient was instantiated directly. Use IHttpClientFactory instead";
-    private static readonly string Title = "HttpClient was instantiated directly";
+    private static readonly string Message = "HttpContext was stored in a field. Use IHttpContextAccessor instead";
+    private static readonly string Title = "HttpContext was stored in a field";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpClientInstantiatedDirectly, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpContextStoredInField, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -23,15 +23,15 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.FieldDeclaration);
     }
 
     private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        var expression = (ObjectCreationExpressionSyntax)context.Node;
-        var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
+        var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
+        var symbol = context.SemanticModel.GetSymbolInfo(fieldDeclaration.Declaration?.Type).Symbol;
 
-        if (symbol?.Name == "HttpClient" && ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Net.Http" ))
+        if (symbol?.Name == "HttpContext" && ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Web" ))
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
