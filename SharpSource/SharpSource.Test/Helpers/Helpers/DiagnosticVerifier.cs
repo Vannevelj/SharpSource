@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Web;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -25,6 +26,7 @@ namespace SharpSource.Test.Helpers.Helpers
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
         private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
         private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location);
+        private static readonly MetadataReference SystemWeb = MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location);
         private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
         private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 
@@ -401,7 +403,8 @@ namespace SharpSource.Test.Helpers.Helpers
                 CSharpSymbolsReference,
                 CodeAnalysisReference,
                 SystemRuntime,
-                SystemNetHttp
+                SystemNetHttp,
+                SystemWeb
             };
 
             var solution = new AdhocWorkspace()

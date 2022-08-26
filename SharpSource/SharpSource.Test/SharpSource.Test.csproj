@@ -26,4 +26,8 @@
     <ProjectReference Include="..\SharpSource\SharpSource.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
 </Project>
