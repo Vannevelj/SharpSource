@@ -12,7 +12,7 @@ public static class DiagnosticId
     public const string LoopedRandomInstantiation = "SS009";
     public const string NewGuid = "SS010";
     public const string OnPropertyChangedWithoutNameofOperator = "SS011";
-    public const string RecursiveEqualityOperatorOverload = "SS012";
+    public const string RecursiveOperatorOverload = "SS012";
     public const string RethrowExceptionWithoutLosingStacktrace = "SS013";
     public const string StringDotFormatWithDifferentAmountOfArguments = "SS014";
     public const string StringPlaceholdersInWrongOrder = "SS015";

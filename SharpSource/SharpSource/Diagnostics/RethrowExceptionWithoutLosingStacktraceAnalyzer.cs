@@ -13,7 +13,7 @@ namespace SharpSource.Diagnostics;
 public class RethrowExceptionWithoutLosingStacktraceAnalyzer : DiagnosticAnalyzer
 {
     private static readonly string Message = "Rethrown exception loses the stacktrace.";
-    private static readonly string Title = "Warns when an exception is rethrown in a way that it loses the stacktrace.";
+    private static readonly string Title = "An exception is rethrown in a way that it loses the stacktrace.";
 
     public static DiagnosticDescriptor Rule => new(DiagnosticId.RethrowExceptionWithoutLosingStacktrace, Title, Message, Categories.Exceptions, DiagnosticSeverity.Warning, true);
 

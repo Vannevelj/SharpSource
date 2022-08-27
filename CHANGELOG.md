@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [0.10.0] - 2022-08-28
 - Implemented `EnumWithoutDefaultValue`: An enum should specify a default value
 - Changed the categories of ExplicitEnumValues, FlagsEnumValuesAreNotPowersOfTwo and FlagsEnumValuesDontFit
+- Improved messaging for `DateTimeNow`
 
 ## [0.9.0] - 2022-08-26
 - Implemented `HttpContextStoredInField`: show a warning when `HttpContext` was stored in a field. Use `IHttpContextAccessor` instead
