@@ -42,7 +42,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a consistent value");
+            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
             VerifyFix(original, result);
         }
 
@@ -94,7 +94,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a consistent value");
+            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
             VerifyFix(original, result);
         }
 
@@ -125,7 +125,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a consistent value");
+            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
             VerifyFix(original, result);
         }
     }
