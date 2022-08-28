@@ -52,7 +52,8 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
         {
             case SyntaxKind.Block:
             case SyntaxKind.GlobalStatement:
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation())); return;
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
+                return;
         }
     }
 }
