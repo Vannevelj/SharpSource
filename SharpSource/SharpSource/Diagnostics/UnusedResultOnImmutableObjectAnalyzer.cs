@@ -40,12 +40,10 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (invocation.Parent is ExpressionStatementSyntax expressionStatement)
+        if (invocation.Parent is ExpressionStatementSyntax expressionStatement &&
+            expressionStatement.Parent is BlockSyntax or GlobalStatementSyntax)
         {
-            if (expressionStatement.Parent is BlockSyntax or GlobalStatementSyntax)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
-            }
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
         }
     }
 }
