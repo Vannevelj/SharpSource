@@ -40,20 +40,12 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var isBeingAssigned = invocation.FirstAncestorOfType(
-            SyntaxKind.Block,
-            SyntaxKind.GlobalStatement,
-            SyntaxKind.VariableDeclarator,
-            SyntaxKind.IfStatement,
-            SyntaxKind.WhileStatement,
-            SyntaxKind.DoStatement);
-
-        switch (isBeingAssigned?.Kind())
+        if (invocation.Parent is ExpressionStatementSyntax expressionStatement)
         {
-            case SyntaxKind.Block:
-            case SyntaxKind.GlobalStatement:
+            if (expressionStatement.Parent is BlockSyntax or GlobalStatementSyntax)
+            {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
-                return;
+            }
         }
     }
 }

@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.1.1] - 2022-08-28
+- Fixes multiple issues with `UnusedResultOnImmutableObject` when used in particular contexts (passing as argument, as return value, etc).
+
 ## [1.1.0] - 2022-08-28
 - Implemented `UnusedResultOnImmutableObject`: The result of an operation on an immutable object is unused
 

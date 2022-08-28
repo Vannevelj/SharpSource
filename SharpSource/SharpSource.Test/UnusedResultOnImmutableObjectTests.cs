@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
+using SharpSource.Test.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test
@@ -135,6 +136,77 @@ class Test
     {
         var x = ""test"".Contains(""e"") ? 1 : 2;
     }
+}
+";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/82")]
+        public void UnusedResultOnImmutableObjectTests_UsedResult_SeparateVariableDefinition()
+        {
+            var original = @"
+class Test
+{
+    void Method()
+    {
+        bool x = false;
+        x = ""test"".Contains(""e"");
+    }
+}
+";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/83")]
+        public void UnusedResultOnImmutableObjectTests_UsedResult_AsArgument()
+        {
+            var original = @"
+class Test
+{
+    void Method()
+    {
+        Other(""test"".Contains(""e""));
+    }
+
+    void Other(bool b) { }
+}
+";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/85")]
+        public void UnusedResultOnImmutableObjectTests_UsedResult_AsReturnValue()
+        {
+            var original = @"
+class Test
+{
+    public bool Validate(string id) 
+    {
+	    return !string.IsNullOrWhiteSpace(id);
+    }
+}
+";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/81")]
+        public void UnusedResultOnImmutableObjectTests_UsedResult_InLambda()
+        {
+            var original = @"
+using System.Linq;
+
+class Test
+{
+	private string _id;
+
+	void Method(List<string> ids)
+	{
+		_id = ids.First(x => !string.IsNullOrEmpty(x));
+	}
 }
 ";
 
