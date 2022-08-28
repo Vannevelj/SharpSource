@@ -22,7 +22,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 
     private static readonly HashSet<string> DeferredExecutionOperations = new HashSet<string>(new string[]{
         "Select", "SelectMany", "Take", "Skip", "TakeWhile", "SkipWhile", "SkipLast", "Where", "GroupBy", "GroupJoin", "OrderBy", "OrderByDescending",
-        "Union", "UnionBy", "Zip", "Reverse", "Repeat", "Range", "Join", "OfType", "Intersect", "IntersectBy", "Except", "ExceptBy", "Distinct",
+        "Union", "UnionBy", "Zip", "Reverse", "Join", "OfType", "Intersect", "IntersectBy", "Except", "ExceptBy", "Distinct",
         "DistinctBy", "DefaultIfEmpty", "Concat", "Cast"
     });
 
@@ -50,7 +50,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel) &&
                 DeferredExecutionOperations.Contains(expression.Name.Identifier.ValueText))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, expression.Expression.GetLocation(), $"{materializingOperation}()"));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, expression.Expression.GetLocation(), $"{materializingOperation}"));
 
                 //if (/* && invokedFunctionSymbol.ContainingNamespace.Name == "System.Linq"*/)
                 //{
