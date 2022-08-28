@@ -32,7 +32,7 @@ enum Test {
             VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("None")]
         [DataRow("Unknown")]
         public void EnumWithoutDefaultValue_RightName_WrongValue(string memberName)
@@ -46,7 +46,7 @@ enum Test {{
             VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("None")]
         [DataRow("Unknown")]
         public void EnumWithoutDefaultValue_RightName_RightValueExplicit(string memberName)
@@ -60,7 +60,7 @@ enum Test {{
             VerifyDiagnostic(original);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("None")]
         [DataRow("Unknown")]
         public void EnumWithoutDefaultValue_RightName_RightValueImplicit(string memberName)
@@ -74,7 +74,7 @@ enum Test {{
             VerifyDiagnostic(original);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("None")]
         [DataRow("Unknown")]
         public void EnumWithoutDefaultValue_RightName_RightValueDuplicated(string memberName)

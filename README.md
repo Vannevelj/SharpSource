@@ -42,3 +42,4 @@
 | SS037  | HttpClientInstantiatedDirectly  | `HttpClient` was instantiated directly. Use `IHttpClientFactory` instead  | Warning  | No  |
 | SS038  | HttpContextStoredInField  | `HttpContext` was stored in a field. Use `IHttpContextAccessor` instead  | Warning  | No  |
 | SS039  | EnumWithoutDefaultValue  | An `enum` should specify a default value of 0 as "Unknown" or "None"  | Warning  | No  |
+| SS040  | UnusedResultOnImmutableObject  | The result of an operation on a `string` is unused  | Warning  | No  |
