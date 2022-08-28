@@ -12,7 +12,7 @@ namespace SharpSource.Diagnostics;
 public class StructShouldNotMutateSelfAnalyzer : DiagnosticAnalyzer
 {
     private static readonly string Message = "Struct {0} should not re-assign 'this'.";
-    private static readonly string Title = "Warns when a struct replaces 'this' with a new instance.";
+    private static readonly string Title = "A struct replaces 'this' with a new instance.";
 
     public static DiagnosticDescriptor Rule
         => new(DiagnosticId.StructShouldNotMutateSelf, Title, Message, Categories.Structs, DiagnosticSeverity.Warning, true);

@@ -6,7 +6,7 @@ using SharpSource.Test.Helpers.Helpers.CSharp;
 namespace SharpSource.Test
 {
     [TestClass]
-    public class StructMutateSelfTest : CSharpDiagnosticVerifier
+    public class StructShouldNotMutateSelfTest : CSharpDiagnosticVerifier
     {
         protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StructShouldNotMutateSelfAnalyzer();
 
