@@ -541,5 +541,25 @@ namespace SharpSource.Test
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormat()
+        {
+            var original = @"
+using System;
+using System.Text;
+
+class MyClass
+{
+    static string Format(string text, params string[] args) => string.Empty;
+
+    void Method()
+    {
+        string s = string.Format(""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"");
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
