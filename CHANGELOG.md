@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.1.0] - 2022-08-28
+- Implemented `UnusedResultOnImmutableObject`: The result of an operation on an immutable object is unused
+
 ## [1.0.0] - 2022-08-28
 - Implemented `EnumWithoutDefaultValue`: An enum should specify a default value
 - Changed the categories of ExplicitEnumValues, FlagsEnumValuesAreNotPowersOfTwo and FlagsEnumValuesDontFit

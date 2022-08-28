@@ -40,4 +40,5 @@ public static class DiagnosticId
     public const string HttpClientInstantiatedDirectly = "SS037";
     public const string HttpContextStoredInField = "SS038";
     public const string EnumWithoutDefaultValue = "SS039";
+    public const string UnusedResultOnImmutableObject = "SS040";
 }

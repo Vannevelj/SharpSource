@@ -363,4 +363,19 @@ public static class Extensions
 
         return compilation;
     }
+
+    public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params SyntaxKind[] kinds)
+    {
+        var parent = node.Parent;
+        while (parent != default)
+        {
+            if (parent.IsAnyKind(kinds))
+            {
+                return parent;
+            }
+            parent = parent.Parent;
+        }
+
+        return null;
+    }
 }
