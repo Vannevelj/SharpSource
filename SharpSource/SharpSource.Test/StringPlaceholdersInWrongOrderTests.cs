@@ -555,7 +555,7 @@ class MyClass
 
     void Method()
     {
-        string s = string.Format(""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"");
+        string s = MyClass.Format(""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"");
     }
 }";
 

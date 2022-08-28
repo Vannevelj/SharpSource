@@ -2,7 +2,8 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.2.0] - 2022-08-28
-- 
+- `SwitchDoesNotHandleAllEnumOptions` produces more accurate code when static imports cause enum members to conflict
+- SharpSource its unit tests now run on .NET 6.0
 
 ## [1.1.0] - 2022-08-28
 - Implemented `UnusedResultOnImmutableObject`: The result of an operation on an immutable object is unused

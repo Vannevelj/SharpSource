@@ -14,7 +14,7 @@ namespace SharpSource.Test
         public void HttpContextStoredInField_InField()
         {
             var original = @"
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 class Test
 {
@@ -44,7 +44,7 @@ class Test
         public void HttpContextStoredInField_InProperty()
         {
             var original = @"
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 class Test
 {
@@ -59,7 +59,7 @@ class Test
         public void HttpContextStoredInField_AsVariable()
         {
             var original = @"
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 class Test
 {
@@ -77,7 +77,7 @@ class Test
         public void HttpContextStoredInField_InField_MultipleDeclarators()
         {
             var original = @"
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 class Test
 {

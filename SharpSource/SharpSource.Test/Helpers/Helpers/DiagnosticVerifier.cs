@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -24,9 +26,14 @@ namespace SharpSource.Test.Helpers.Helpers
         private const string CSharpFileExtension = ".cs";
 
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
-        private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
+        // After netframework the runtime is split in System.Runtime and System.Private.CoreLib
+        // All references appear to return System.Private.CoreLib so we'll have to manually insert the System.Runtime one
+        private static readonly string SystemPrivateCoreLibPath = typeof(AmbiguousImplementationException).Assembly.Location;
+        private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath), "System.Runtime.dll"));
+        private static readonly MetadataReference SystemConsole = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
+        private static readonly MetadataReference SystemCollections = MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath), "System.Collections.dll"));
         private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location);
-        private static readonly MetadataReference SystemWeb = MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location);
+        private static readonly MetadataReference AspNetCore = MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location);
         private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
         private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 
@@ -403,8 +410,10 @@ namespace SharpSource.Test.Helpers.Helpers
                 CSharpSymbolsReference,
                 CodeAnalysisReference,
                 SystemRuntime,
+                SystemCollections,
+                SystemConsole,
                 SystemNetHttp,
-                SystemWeb
+                AspNetCore
             };
 
             var solution = new AdhocWorkspace()

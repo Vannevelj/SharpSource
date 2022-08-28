@@ -276,7 +276,7 @@ namespace ConsoleApplication1
                     throw new System.NotImplementedException();
                 case SequentialScan:
                     throw new System.NotImplementedException();
-                case RandomAccess:
+                case FileOptions.RandomAccess:
                     throw new System.NotImplementedException();
                 case WriteThrough:
                     throw new System.NotImplementedException();
@@ -393,7 +393,7 @@ namespace ConsoleApplication1
                     throw new System.NotImplementedException();
                 case DeleteOnClose:
                     throw new System.NotImplementedException();
-                case RandomAccess:
+                case FileOptions.RandomAccess:
                     throw new System.NotImplementedException();
                 case Asynchronous:
                     throw new System.NotImplementedException();
@@ -430,7 +430,7 @@ namespace ConsoleApplication1
                     break;
                 case SequentialScan:
                     break;
-                case RandomAccess:
+                case FileOptions.RandomAccess:
                     break;
             }
         }
@@ -462,7 +462,7 @@ namespace ConsoleApplication1
                     break;
                 case SequentialScan:
                     break;
-                case RandomAccess:
+                case FileOptions.RandomAccess:
                     break;
             }
         }
@@ -513,13 +513,13 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case FileOptions.DeleteOnClose:
+                case DeleteOnClose:
                     throw new System.NotImplementedException();
-                case FileOptions.Asynchronous:
+                case Asynchronous:
                     throw new System.NotImplementedException();
-                case FileOptions.WriteThrough:
+                case WriteThrough:
                     throw new System.NotImplementedException();
-                case FileOptions.None:
+                case None:
                     throw new System.NotImplementedException();
                 case FileOptions.Encrypted:
                     break;

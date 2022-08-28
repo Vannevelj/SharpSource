@@ -65,11 +65,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
 
         foreach (var label in missingLabels)
         {
-            // If an existing simplified label exists, it means we can assume that works already and do it ourselves as well (ergo: there is a static using)
-            var expression = caseLabels.Any()
-                ? SyntaxFactory.ParseExpression(hasSimplifiedLabel ? $"{label}" : $"{enumType.Name}.{label}")
-                : SyntaxFactory.ParseExpression($"{enumType.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
-
+            var expression = SyntaxFactory.ParseExpression($"{enumType.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
             var caseLabel = SyntaxFactory.CaseSwitchLabel(expression);
 
             var section =
