@@ -255,20 +255,15 @@ namespace ConsoleApplication1
         [TestMethod]
         public void ExceptionThrownFromProhibitedContext_FinallyBlock()
         {
-            var original = @"
-using System;
-using System.Text;
+            var original = "try { } finally { throw new ArgumentException(); }";
 
-namespace ConsoleApplication1
-{
-    public class MyClass
-    {
-	    void MyMethod()
-        {
-            try { } finally { throw new ArgumentException(); }
+            VerifyDiagnostic(original, "An exception is thrown from a finally block");
         }
-    }
-}";
+
+        [TestMethod]
+        public void ExceptionThrownFromProhibitedContext_FinallyBlock_Nested()
+        {
+            var original = "try { } finally { try { } catch { throw new ArgumentException(); } }";
 
             VerifyDiagnostic(original, "An exception is thrown from a finally block");
         }
@@ -276,20 +271,7 @@ namespace ConsoleApplication1
         [TestMethod]
         public void ExceptionThrownFromProhibitedContext_FinallyBlock_NoException()
         {
-            var original = @"
-using System;
-using System.Text;
-
-namespace ConsoleApplication1
-{
-    public class MyClass
-    {
-	    void MyMethod()
-        {
-            try { } finally { }
-        }
-    }
-}";
+            var original = "try { } finally { }";
 
             VerifyDiagnostic(original);
         }
@@ -297,20 +279,7 @@ namespace ConsoleApplication1
         [TestMethod]
         public void ExceptionThrownFromProhibitedContext_FinallyBlock_NoFinally()
         {
-            var original = @"
-using System;
-using System.Text;
-
-namespace ConsoleApplication1
-{
-    public class MyClass
-    {
-	    void MyMethod()
-        {
-            try { } catch { }
-        }
-    }
-}";
+            var original = "try { } catch { }";
 
             VerifyDiagnostic(original);
         }
