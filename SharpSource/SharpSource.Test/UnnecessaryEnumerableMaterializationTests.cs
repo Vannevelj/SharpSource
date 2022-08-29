@@ -20,9 +20,9 @@ namespace SharpSource.Test
         {
             var materializingOperations = new string[]
             {
-"ToList()",
-"ToArray()",
-"ToHashSet()"
+"ToList",
+"ToArray",
+"ToHashSet"
             };
 
             var deferredExecutionOperations = new string[]
@@ -70,7 +70,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.{first}.{second};
+values.{first}().{second};
 ";
 
             var expected = $@"
@@ -81,7 +81,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{second};
 ";
 
-            VerifyDiagnostic(original, $"{string.Join("",first.TakeWhile(c => c != '('))} is unnecessarily materializing the IEnumerable and can be omitted");
+            VerifyDiagnostic(original, $"{first} is unnecessarily materializing the IEnumerable and can be omitted");
             VerifyFix(original, expected);
         }
 
