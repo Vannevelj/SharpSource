@@ -47,17 +47,15 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 
         foreach (var materializingOperation in MaterializingOperations)
         {
+            var invokedFunction = expression.Name.Identifier.ValueText;
+            var isSuspiciousInvocation = DeferredExecutionOperations.Contains(invokedFunction) || MaterializingOperations.Contains(invokedFunction);
             if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel) &&
-                DeferredExecutionOperations.Contains(expression.Name.Identifier.ValueText))
+                isSuspiciousInvocation)
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string>();
                 properties.Add("operation", materializingOperation);
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), properties.ToImmutable(), $"{materializingOperation}"));
-
-                //if (/* && invokedFunctionSymbol.ContainingNamespace.Name == "System.Linq"*/)
-                //{
-
-                //}
+                return;
             }
         }
     }

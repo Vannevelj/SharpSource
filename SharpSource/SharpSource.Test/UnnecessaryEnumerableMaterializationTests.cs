@@ -63,7 +63,7 @@ namespace SharpSource.Test
 
         [TestMethod]
         [DynamicData(nameof(GetSingleValueData), DynamicDataSourceType.Method)]
-        public void UnnecessaryEnumerableMaterialization_Materialization_FollowByDeferredExecution_SingleValueCollections(string first, string second)
+        public void UnnecessaryEnumerableMaterialization_Materialization_FollowByDeferredExecution(string first, string second)
         {
             var original = $@"
 using System.Linq;
@@ -82,6 +82,32 @@ values.{second};
 ";
 
             VerifyDiagnostic(original, $"{string.Join("",first.TakeWhile(c => c != '('))} is unnecessarily materializing the IEnumerable and can be omitted");
+            VerifyFix(original, expected);
+        }
+
+        [TestMethod]
+        [DataRow("ToArray")]
+        [DataRow("ToHashSet")]
+        [DataRow("ToList")]
+        public void UnnecessaryEnumerableMaterialization_MultipleMaterialization_FollowByDeferredExecution(string first)
+        {
+            var original = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] {{ ""test"" }};
+values.{first}().ToList();
+";
+
+            var expected = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] {{ ""test"" }};
+values.ToList();
+";
+
+            VerifyDiagnostic(original, $"{first} is unnecessarily materializing the IEnumerable and can be omitted");
             VerifyFix(original, expected);
         }
     }
