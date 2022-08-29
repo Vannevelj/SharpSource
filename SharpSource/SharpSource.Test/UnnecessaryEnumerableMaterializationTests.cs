@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -109,6 +108,56 @@ values.ToList();
 
             VerifyDiagnostic(original, $"{first} is unnecessarily materializing the IEnumerable and can be omitted");
             VerifyFix(original, expected);
+        }
+
+        [TestMethod]
+        [DataRow("ToArray")]
+        [DataRow("ToHashSet")]
+        [DataRow("ToList")]
+        public void UnnecessaryEnumerableMaterialization_DeferredBefore(string materialization)
+        {
+            var original = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] {{ ""test"" }};
+values.Where(x => true).{materialization}();
+";
+
+            VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        [DataRow("ToArray")]
+        [DataRow("ToHashSet")]
+        [DataRow("ToList")]
+        public void UnnecessaryEnumerableMaterialization_ImmediateSingleMaterialization(string materialization)
+        {
+            var original = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] {{ ""test"" }};
+values.{materialization}();
+";
+
+            VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        [DataRow("ToArray")]
+        [DataRow("ToHashSet")]
+        [DataRow("ToList")]
+        public void UnnecessaryEnumerableMaterialization_OtherEnumerableMethods(string materialization)
+        {
+            var original = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+var test = Enumerable.Range(0, 100).{materialization}();
+";
+
+            VerifyDiagnostic(original);
         }
     }
 }

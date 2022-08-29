@@ -2,6 +2,7 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.2.0] - 2022-08-28
+- Implemented `UnnecessaryEnumerableMaterialization`: An IEnumerable was materialized before a deferred execution call
 - `SwitchDoesNotHandleAllEnumOptions` produces more accurate code when static imports cause enum members to conflict
 - SharpSource its unit tests now run on .NET 6.0
 
