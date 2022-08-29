@@ -258,6 +258,8 @@ public static class Extensions
         }
     }
 
+    public static T FirstOfKind<T>(this IEnumerable<SyntaxNode> enumerable, SyntaxKind kind) where T : SyntaxNode => enumerable.OfType<T>(kind).FirstOrDefault();
+
     public static bool ContainsAny(this SyntaxTokenList list, params SyntaxKind[] kinds)
     {
         foreach (var item in list)

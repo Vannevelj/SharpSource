@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -12,6 +13,7 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
 {
+    private static readonly HashSet<string> AllowedExceptions = new(new string[] { "NotImplementedException", "NotSupportedException" });
     private static DiagnosticDescriptor ImplicitOperatorRule
         => new(DiagnosticId.ExceptionThrownFromImplicitOperator,
             "An exception is thrown from an implicit operator.",
@@ -80,10 +82,18 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
     {
         // Since the current node is a throw statement there is no symbol to be found. 
         // Therefore we look at whatever member is holding the statement (constructor, method, property, etc) and see what encloses that
-        var containingType = context.SemanticModel.GetEnclosingSymbol(context.Node.SpanStart).ContainingType;
-        var warningLocation = context.Node.GetLocation();
+        var throwStatement = (ThrowStatementSyntax)context.Node;
+        var containingType = context.SemanticModel.GetEnclosingSymbol(throwStatement.SpanStart).ContainingType;
+        var warningLocation = throwStatement.GetLocation();
 
-        var ancestor = context.Node.FirstAncestorOfType(
+        var nestedObjectCreation = throwStatement.DescendantNodes().FirstOfKind<ObjectCreationExpressionSyntax>(SyntaxKind.ObjectCreationExpression);
+        var typeBeingThrown = context.SemanticModel.GetSymbolInfo(nestedObjectCreation.Type).Symbol;
+        if (typeBeingThrown is not null && AllowedExceptions.Contains(typeBeingThrown.Name))
+        {
+            return;
+        }
+
+        var ancestor = throwStatement.FirstAncestorOfType(
             SyntaxKind.MethodDeclaration,
             SyntaxKind.GetAccessorDeclaration,
             SyntaxKind.FinallyClause,
