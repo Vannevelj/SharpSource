@@ -427,5 +427,27 @@ class Test
             VerifyDiagnostic(original, "Async overload available for Test.DoThing");
             VerifyFix(original, result);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/97")]
+        public void AsyncOverloadsAvailable_WithOverload_OnlyIfOverloadIsFound()
+        {
+            var original = @"
+using System.Threading.Tasks;
+using System;
+
+class Test
+{
+    async Task Method()
+    {
+        try { }
+        catch (Exception e)
+        {
+            System.Console.Error.WriteLine(e);
+        }
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
