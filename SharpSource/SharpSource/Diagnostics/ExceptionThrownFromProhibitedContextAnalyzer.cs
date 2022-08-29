@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -12,6 +13,7 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
 {
+    private static readonly HashSet<string> AllowedExceptions = new(new string[] { "NotImplementedException", "NotSupportedException" });
     private static DiagnosticDescriptor ImplicitOperatorRule
         => new(DiagnosticId.ExceptionThrownFromImplicitOperator,
             "An exception is thrown from an implicit operator.",
@@ -80,102 +82,117 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
     {
         // Since the current node is a throw statement there is no symbol to be found. 
         // Therefore we look at whatever member is holding the statement (constructor, method, property, etc) and see what encloses that
-        var containingType = context.SemanticModel.GetEnclosingSymbol(context.Node.SpanStart).ContainingType;
-        var warningLocation = context.Node.GetLocation();
+        var throwStatement = (ThrowStatementSyntax)context.Node;
+        var containingType = context.SemanticModel.GetEnclosingSymbol(throwStatement.SpanStart).ContainingType;
+        var warningLocation = throwStatement.GetLocation();
 
-        foreach (var ancestor in context.Node.Ancestors())
+        var nestedObjectCreation = throwStatement.DescendantNodes().FirstOfKind<ObjectCreationExpressionSyntax>(SyntaxKind.ObjectCreationExpression);
+        var typeBeingThrown = context.SemanticModel.GetSymbolInfo(nestedObjectCreation.Type).Symbol;
+        if (typeBeingThrown is not null && AllowedExceptions.Contains(typeBeingThrown.Name))
         {
-            if (ancestor.IsKind(SyntaxKind.MethodDeclaration))
+            return;
+        }
+
+        var ancestor = throwStatement.FirstAncestorOfType(
+            SyntaxKind.MethodDeclaration,
+            SyntaxKind.GetAccessorDeclaration,
+            SyntaxKind.FinallyClause,
+            SyntaxKind.OperatorDeclaration,
+            SyntaxKind.ConversionOperatorDeclaration,
+            SyntaxKind.ConstructorDeclaration,
+            SyntaxKind.DestructorDeclaration
+        );
+
+        if (ancestor.IsKind(SyntaxKind.MethodDeclaration))
+        {
+            var method = (MethodDeclarationSyntax)ancestor;
+            var methodName = method.Identifier.ValueText;
+
+            if (methodName == "Dispose")
             {
-                var method = (MethodDeclarationSyntax)ancestor;
-                var methodName = method.Identifier.ValueText;
-
-                if (methodName == "Dispose")
-                {
-                    var arity = method.ParameterList.Parameters.Count;
-                    context.ReportDiagnostic(Diagnostic.Create(DisposeRule, warningLocation, arity == 0 ? "Dispose()" : "Dispose(bool)", containingType.Name));
-                    return;
-                }
-
-                if (methodName == "GetHashCode")
-                {
-                    // Make sure we're dealing with the actual members defined in 'Object' in case they're hidden in a subclass
-                    var currentMethodSymbol = context.SemanticModel.GetDeclaredSymbol(method);
-
-                    var objectSymbol = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
-                    var objectGetHashCodeSymbol = objectSymbol.GetMembers("GetHashCode").Single();
-
-                    while (currentMethodSymbol.IsOverride)
-                    {
-                        currentMethodSymbol = currentMethodSymbol.OverriddenMethod;
-                    }
-
-                    if (currentMethodSymbol.Equals(objectGetHashCodeSymbol, SymbolEqualityComparer.Default))
-                    {
-                        context.ReportDiagnostic(Diagnostic.Create(GetHashCodeRule, warningLocation, containingType.Name));
-                        return;
-                    }
-                }
-
-                // We don't verify we're dealing with the 'Object' overridden method of 'Equals' because that would exclude Equals(T) in IEquatable
-                // Furthermore we can expect to have multiple overloads of 'Equals' on argument type to provide a better equality comparison experience
-                // This is not the case for GetHashCode() where we only expect one implementation
-                if (methodName == "Equals" && method.ParameterList.Parameters.Count == 1)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(EqualsRule, warningLocation, method.ParameterList.Parameters[0].Type.ToString(), containingType.Name));
-                    return;
-                }
-            }
-            else if (ancestor.IsKind(SyntaxKind.GetAccessorDeclaration))
-            {
-                var property = ancestor.Ancestors().OfType<PropertyDeclarationSyntax>(SyntaxKind.PropertyDeclaration).FirstOrDefault();
-                if (property == null)
-                {
-                    return;
-                }
-                context.ReportDiagnostic(Diagnostic.Create(PropertyGetterRule, warningLocation, property.Identifier.ValueText));
+                var arity = method.ParameterList.Parameters.Count;
+                context.ReportDiagnostic(Diagnostic.Create(DisposeRule, warningLocation, arity == 0 ? "Dispose()" : "Dispose(bool)", containingType.Name));
                 return;
             }
-            else if (ancestor.IsKind(SyntaxKind.FinallyClause))
+
+            if (methodName == "GetHashCode")
             {
-                context.ReportDiagnostic(Diagnostic.Create(FinallyBlockRule, warningLocation));
+                // Make sure we're dealing with the actual members defined in 'Object' in case they're hidden in a subclass
+                var currentMethodSymbol = context.SemanticModel.GetDeclaredSymbol(method);
+
+                var objectSymbol = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
+                var objectGetHashCodeSymbol = objectSymbol.GetMembers("GetHashCode").Single();
+
+                while (currentMethodSymbol.IsOverride)
+                {
+                    currentMethodSymbol = currentMethodSymbol.OverriddenMethod;
+                }
+
+                if (currentMethodSymbol.Equals(objectGetHashCodeSymbol, SymbolEqualityComparer.Default))
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(GetHashCodeRule, warningLocation, containingType.Name));
+                    return;
+                }
+            }
+
+            // We don't verify we're dealing with the 'Object' overridden method of 'Equals' because that would exclude Equals(T) in IEquatable
+            // Furthermore we can expect to have multiple overloads of 'Equals' on argument type to provide a better equality comparison experience
+            // This is not the case for GetHashCode() where we only expect one implementation
+            if (methodName == "Equals" && method.ParameterList.Parameters.Count == 1)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(EqualsRule, warningLocation, method.ParameterList.Parameters[0].Type.ToString(), containingType.Name));
                 return;
             }
-            else if (ancestor.IsKind(SyntaxKind.OperatorDeclaration))
+        }
+        else if (ancestor.IsKind(SyntaxKind.GetAccessorDeclaration))
+        {
+            var property = ancestor.Ancestors().OfType<PropertyDeclarationSyntax>(SyntaxKind.PropertyDeclaration).FirstOrDefault();
+            if (property == null)
             {
-                var operatorDeclaration = (OperatorDeclarationSyntax)ancestor;
-                if (operatorDeclaration.OperatorToken.IsKind(SyntaxKind.EqualsEqualsToken) || operatorDeclaration.OperatorToken.IsKind(SyntaxKind.ExclamationEqualsToken))
-                {
-                    var operatorToken = operatorDeclaration.OperatorToken.ValueText;
-                    var firstType = operatorDeclaration.ParameterList.Parameters[0].Type.ToString();
-                    var secondType = operatorDeclaration.ParameterList.Parameters[1].Type.ToString();
-                    context.ReportDiagnostic(Diagnostic.Create(EqualityOperatorRule, warningLocation, operatorToken, firstType, secondType, containingType.Name));
-                    return;
-                }
-            }
-            else if (ancestor.IsKind(SyntaxKind.ConversionOperatorDeclaration))
-            {
-                var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax)ancestor;
-                if (conversionOperatorDeclaration.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ImplicitKeyword))
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(ImplicitOperatorRule, warningLocation, conversionOperatorDeclaration.Type.ToString(), containingType.Name));
-                    return;
-                }
-            }
-            else if (ancestor.IsKind(SyntaxKind.ConstructorDeclaration))
-            {
-                var constructor = (ConstructorDeclarationSyntax)ancestor;
-                if (constructor.Modifiers.Any(SyntaxKind.StaticKeyword))
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(StaticConstructorRule, warningLocation, containingType.Name));
-                    return;
-                }
-            }
-            else if (ancestor.IsKind(SyntaxKind.DestructorDeclaration))
-            {
-                context.ReportDiagnostic(Diagnostic.Create(FinalizerRule, warningLocation, containingType.Name));
                 return;
             }
+            context.ReportDiagnostic(Diagnostic.Create(PropertyGetterRule, warningLocation, property.Identifier.ValueText));
+            return;
+        }
+        else if (ancestor.IsKind(SyntaxKind.FinallyClause))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(FinallyBlockRule, warningLocation));
+            return;
+        }
+        else if (ancestor.IsKind(SyntaxKind.OperatorDeclaration))
+        {
+            var operatorDeclaration = (OperatorDeclarationSyntax)ancestor;
+            if (operatorDeclaration.OperatorToken.IsKind(SyntaxKind.EqualsEqualsToken) || operatorDeclaration.OperatorToken.IsKind(SyntaxKind.ExclamationEqualsToken))
+            {
+                var operatorToken = operatorDeclaration.OperatorToken.ValueText;
+                var firstType = operatorDeclaration.ParameterList.Parameters[0].Type.ToString();
+                var secondType = operatorDeclaration.ParameterList.Parameters[1].Type.ToString();
+                context.ReportDiagnostic(Diagnostic.Create(EqualityOperatorRule, warningLocation, operatorToken, firstType, secondType, containingType.Name));
+                return;
+            }
+        }
+        else if (ancestor.IsKind(SyntaxKind.ConversionOperatorDeclaration))
+        {
+            var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax)ancestor;
+            if (conversionOperatorDeclaration.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ImplicitKeyword))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(ImplicitOperatorRule, warningLocation, conversionOperatorDeclaration.Type.ToString(), containingType.Name));
+                return;
+            }
+        }
+        else if (ancestor.IsKind(SyntaxKind.ConstructorDeclaration))
+        {
+            var constructor = (ConstructorDeclarationSyntax)ancestor;
+            if (constructor.Modifiers.Any(SyntaxKind.StaticKeyword))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(StaticConstructorRule, warningLocation, containingType.Name));
+                return;
+            }
+        }
+        else if (ancestor.IsKind(SyntaxKind.DestructorDeclaration))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(FinalizerRule, warningLocation, containingType.Name));
+            return;
         }
     }
 }

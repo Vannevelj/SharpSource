@@ -60,9 +60,10 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
                 genericTypeInfo.TypeKind == TypeKind.Interface ||
                 genericTypeInfo.TypeKind == TypeKind.TypeParameter ||
                 genericTypeInfo.TypeKind == TypeKind.Enum ||
-                genericTypeInfo.TypeKind == TypeKind.Array)
+                genericTypeInfo.TypeKind == TypeKind.Array ||
+                genericTypeInfo.IsDefinedInSystemAssembly())
             {
-                return;
+                continue;
             }
 
             var implementsEquals = false;

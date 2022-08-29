@@ -232,20 +232,13 @@ public static class Extensions
     /// Gets the innermost surrounding class, struct or interface declaration
     /// </summary>
     /// <param name="syntaxNode">The node to start from</param>
-    /// <returns>The surrounding declaration node</returns>
-    /// <exception cref="ArgumentException">Thrown when there is no surrounding class, struct or interface declaration"/></exception>
-    public static SyntaxNode GetEnclosingTypeNode(this SyntaxNode syntaxNode)
-    {
-        foreach (var ancestor in syntaxNode.AncestorsAndSelf())
-        {
-            if (ancestor.IsKind(SyntaxKind.ClassDeclaration) || ancestor.IsKind(SyntaxKind.StructDeclaration) || ancestor.IsKind(SyntaxKind.InterfaceDeclaration))
-            {
-                return ancestor;
-            }
-        }
-
-        throw new ArgumentException("The node is not contained in a type", nameof(syntaxNode));
-    }
+    /// <returns>The surrounding declaration node or null</returns>
+    public static SyntaxNode GetEnclosingTypeNode(this SyntaxNode syntaxNode) =>
+        syntaxNode.FirstAncestorOfType(
+            SyntaxKind.ClassDeclaration,
+            SyntaxKind.StructDeclaration,
+            SyntaxKind.InterfaceDeclaration,
+            SyntaxKind.RecordDeclaration);
 
     public static IEnumerable<T> OfType<T>(this IEnumerable<SyntaxNode> enumerable, SyntaxKind kind) where T : SyntaxNode
     {
@@ -257,6 +250,8 @@ public static class Extensions
             }
         }
     }
+
+    public static T FirstOfKind<T>(this IEnumerable<SyntaxNode> enumerable, SyntaxKind kind) where T : SyntaxNode => enumerable.OfType<T>(kind).FirstOrDefault();
 
     public static bool ContainsAny(this SyntaxTokenList list, params SyntaxKind[] kinds)
     {

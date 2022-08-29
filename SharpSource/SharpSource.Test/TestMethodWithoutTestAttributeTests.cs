@@ -205,5 +205,33 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/91")]
+        [DataRow("record")]
+        [DataRow("record class")]
+        [DataRow("record struct")]
+        public void TestMethodWithoutTestAttribute_Record(string record)
+        {
+            var original = $@"
+{record} Test
+{{
+    public void MyMethod() {{ }}
+}}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/98")]
+        public void TestMethodWithoutTestAttribute_Dispose()
+        {
+            var original = @"
+[TestClass]
+class Test : IDisposable
+{
+    public void Dispose() { }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }

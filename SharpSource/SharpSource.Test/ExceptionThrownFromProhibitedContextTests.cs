@@ -259,16 +259,21 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
-{
-    public class MyClass
-    {
-	    void MyMethod()
-        {
-            try { } finally { throw new ArgumentException(); }
+try { } finally { throw new ArgumentException(); }
+";
+
+            VerifyDiagnostic(original, "An exception is thrown from a finally block");
         }
-    }
-}";
+
+        [TestMethod]
+        public void ExceptionThrownFromProhibitedContext_FinallyBlock_Nested()
+        {
+            var original = @"
+using System;
+using System.Text;
+
+try { } finally { try { } catch { throw new ArgumentException(); } }
+";
 
             VerifyDiagnostic(original, "An exception is thrown from a finally block");
         }
@@ -280,16 +285,8 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
-{
-    public class MyClass
-    {
-	    void MyMethod()
-        {
-            try { } finally { }
-        }
-    }
-}";
+try { } finally { }
+";
 
             VerifyDiagnostic(original);
         }
@@ -301,16 +298,25 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
-{
-    public class MyClass
-    {
-	    void MyMethod()
-        {
-            try { } catch { }
+try { } catch { }
+";
+
+            VerifyDiagnostic(original);
         }
-    }
-}";
+
+        [TestMethod]
+        [DataRow("NotImplementedException")]
+        [DataRow("NotSupportedException")]
+        [DataRow("System.NotImplementedException")]
+        [DataRow("System.NotSupportedException")]
+        public void ExceptionThrownFromProhibitedContext_FinallyBlock_AllowedExceptions(string exception)
+        {
+            var original = $@"
+using System;
+using System.Text;
+
+try {{ }} finally {{ throw new {exception}(); }}
+";
 
             VerifyDiagnostic(original);
         }
@@ -577,14 +583,11 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
+class MyClass
 {
-    public class MyClass
+	public int GetHashCode()
     {
-	    public int GetHashCode()
-        {
-            throw new ArgumentException();
-        }
+        throw new ArgumentException();
     }
 }";
 
@@ -598,18 +601,37 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
+class MyClass
 {
-    public class MyClass
+	public override bool Equals(object o)
     {
-	    public override bool Equals(object o)
-        {
-            throw new ArgumentException();
-        }
+        throw new ArgumentException();
     }
 }";
 
             VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
+        }
+
+        [TestMethod]
+        [DataRow("NotImplementedException")]
+        [DataRow("NotSupportedException")]
+        [DataRow("System.NotImplementedException")]
+        [DataRow("System.NotSupportedException")]
+        public void ExceptionThrownFromProhibitedContext_Equals_AllowedExceptions(string exception)
+        {
+            var original = $@"
+using System;
+using System.Text;
+
+class MyClass
+{{
+	public override bool Equals(object o)
+    {{
+        throw new {exception}();
+    }}
+}}";
+
+            VerifyDiagnostic(original);
         }
 
         [TestMethod]
@@ -619,14 +641,11 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
+public class MyClass : IEquatable<MyClass>
 {
-    public class MyClass : IEquatable<MyClass>
+	public bool Equals(MyClass o)
     {
-	    public bool Equals(MyClass o)
-        {
-            throw new ArgumentException();
-        }
+        throw new ArgumentException();
     }
 }";
 
@@ -640,16 +659,14 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
+public class MyClass
 {
-    public class MyClass
+	public override bool Equals(object o)
     {
-	    public override bool Equals(object o)
-        {
-            return false;
-        }
+        return false;
     }
-}";
+}
+";
 
             VerifyDiagnostic(original);
         }
@@ -661,14 +678,11 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-namespace ConsoleApplication1
+public class MyClass
 {
-    public class MyClass
+	public bool Equals(object o)
     {
-	    public bool Equals(object o)
-        {
-            throw new ArgumentException();
-        }
+        throw new ArgumentException();
     }
 }";
 
