@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
+using SharpSource.Test.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test
@@ -407,6 +408,20 @@ namespace ConsoleApplication1
 
     class SomeClass {}
 }";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/99")]
+        [DataRow("Dictionary<int, int>")]
+        [DataRow("KeyValuePair<int, int>")]
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithSystemTypes(string type)
+        {
+            var original = $@"
+using System.Collections.Generic;
+
+var obj = new List<{type}>();
+";
 
             VerifyDiagnostic(original);
         }
