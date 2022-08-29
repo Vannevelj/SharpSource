@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -55,7 +56,13 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         }
 
         var newInvocation = invocation.WithExpression(newExpression);
-        var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
+        ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
+
+        // If we're accessing the result of the method call, i.e. `DoThing().Property` then we need to wrap the `await` expression with parentheses
+        if (invocation.Parent is MemberAccessExpressionSyntax)
+        {
+            awaitExpression = SyntaxFactory.ParenthesizedExpression(awaitExpression);
+        }
 
         var newRoot = root.ReplaceNode(invocation, awaitExpression);
         var newDocument = document.WithSyntaxRoot(newRoot);

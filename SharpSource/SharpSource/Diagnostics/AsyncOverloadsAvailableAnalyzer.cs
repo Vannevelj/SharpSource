@@ -66,7 +66,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         var methodsInInvokedType = invokedSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>();
         var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
 
-        if (!( invokedSymbol is IMethodSymbol invokedMethod ))
+        if (invokedSymbol is not IMethodSymbol invokedMethod )
         {
             return;
         }

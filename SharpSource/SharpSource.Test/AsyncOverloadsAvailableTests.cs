@@ -392,5 +392,40 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/88")]
+        public void AsyncOverloadsAvailable_WithOverload_AccessingReturnValue()
+        {
+            var original = @"
+using System.Threading.Tasks;
+
+class Test
+{
+    string DoThing() => string.Empty;
+    async Task<string> DoThingAsync() => string.Empty;
+
+    async Task Method()
+    {
+        var length = DoThing().Length;
+    }
+}";
+
+            var result = @"
+using System.Threading.Tasks;
+
+class Test
+{
+    string DoThing() => string.Empty;
+    async Task<string> DoThingAsync() => string.Empty;
+
+    async Task Method()
+    {
+        var length = (await DoThingAsync()).Length;
+    }
+}";
+
+            VerifyDiagnostic(original, "Async overload available for Test.DoThing");
+            VerifyFix(original, result);
+        }
     }
 }
