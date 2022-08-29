@@ -296,5 +296,29 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
             VerifyFix(original, result);
         }
+
+        [TestMethod]
+        public void EqualsAndGetHashcodeNotImplemented_Partial()
+        {
+            var file1 = @"
+partial class MyClass
+{
+    public override bool Equals(object obj)
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+
+            var file2 = @"
+partial class MyClass
+{
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+
+            VerifyDiagnostic(new string[] { file1, file2 });
+        }
     }
 }

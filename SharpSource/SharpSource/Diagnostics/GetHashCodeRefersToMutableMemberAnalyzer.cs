@@ -30,16 +30,12 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
     private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
     {
         var declaration = (MethodDeclarationSyntax)context.Node;
-        if (declaration?.Identifier == null || declaration.ParameterList == null)
+        if (declaration is not { Identifier.ValueText: "GetHashCode", ParameterList.Parameters.Count: 0 })
         {
             return;
         }
 
-        if (declaration.Identifier.ValueText != "GetHashCode" || declaration.ParameterList.Parameters.Any())
-        {
-            return;
-        }
-
+        var currentType = context.SemanticModel.GetDeclaredSymbol(declaration).ContainingSymbol;
         var nodes = declaration.DescendantNodes(descendIntoChildren: target => true);
 
         var identifierNameNodes = nodes.OfType<IdentifierNameSyntax>(SyntaxKind.IdentifierName);
@@ -51,26 +47,27 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
                 continue;
             }
 
-            if (symbol.Kind == SymbolKind.Field)
+            switch (symbol)
             {
-                var fieldIsMutableOrStatic = FieldIsMutable((IFieldSymbol)symbol);
-                if (fieldIsMutableOrStatic)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(FieldRule, node.GetLocation(), symbol.Name));
-                }
-            }
-            else if (symbol.Kind == SymbolKind.Property)
-            {
-                var root = context.Node.SyntaxTree.GetRoot();
-                var propertyNode = root.FindNode(symbol.Locations[0].SourceSpan);
-                if (propertyNode is PropertyDeclarationSyntax propertyDeclaration)
-                {
+                case IFieldSymbol fieldSymbol:
+                    var fieldIsMutableOrStatic = FieldIsMutable(fieldSymbol);
+                    if (fieldIsMutableOrStatic)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(FieldRule, node.GetLocation(), symbol.Name));
+                    }
+                    break;
+                case IPropertySymbol propertySymbol:
+                    if (!propertySymbol.ContainingType.Equals(currentType, SymbolEqualityComparer.Default))
+                    {
+                        continue;
+                    }
+
                     var propertyIsMutable = PropertyIsMutable((IPropertySymbol)symbol);
                     if (propertyIsMutable)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(PropertyRule, node.GetLocation(), symbol.Name));
                     }
-                }
+                    break;
             }
         }
     }
