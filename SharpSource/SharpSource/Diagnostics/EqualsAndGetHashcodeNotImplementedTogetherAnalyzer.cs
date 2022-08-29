@@ -13,7 +13,7 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Equals() and GetHashcode() must be implemented together.";
+    private static readonly string Message = "Equals() and GetHashcode() must be implemented together on {0}";
     private static readonly string Title = "Implement Equals() and GetHashcode() together.";
 
     public static DiagnosticDescriptor Rule => new(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
@@ -32,18 +32,18 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
 
         foreach (var symbol in objectSymbol.GetMembers())
         {
-            if (!( symbol is IMethodSymbol ))
+            if (symbol is not IMethodSymbol)
             {
                 continue;
             }
 
             var method = (IMethodSymbol)symbol;
-            if (method.MetadataName == nameof(Equals) && method.Parameters.Length == 1)
+            if (method is { MetadataName: nameof(Equals), Parameters.Length: 1 })
             {
                 objectEquals = method;
             }
 
-            if (method.MetadataName == nameof(GetHashCode) && !method.Parameters.Any())
+            if (method is { MetadataName: nameof(GetHashCode), Parameters.Length: 0 })
             {
                 objectGetHashCode = method;
             }
@@ -95,8 +95,8 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
 
             if (equalsImplemented ^ getHashcodeImplemented)
             {
-                syntaxNodeContext.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(),
-                    ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString()) })));
+                var properties = ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString()) });
+                syntaxNodeContext.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), properties, classDeclaration.Identifier.ValueText));
             }
         }, SyntaxKind.ClassDeclaration);
     });
