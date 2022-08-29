@@ -50,7 +50,9 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel) &&
                 DeferredExecutionOperations.Contains(expression.Name.Identifier.ValueText))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, expression.Expression.GetLocation(), $"{materializingOperation}"));
+                var properties = ImmutableDictionary.CreateBuilder<string, string>();
+                properties.Add("operation", materializingOperation);
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), properties.ToImmutable(), $"{materializingOperation}"));
 
                 //if (/* && invokedFunctionSymbol.ContainingNamespace.Name == "System.Linq"*/)
                 //{

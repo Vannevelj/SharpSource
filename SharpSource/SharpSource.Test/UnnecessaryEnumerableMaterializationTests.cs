@@ -10,11 +10,11 @@ using SharpSource.Test.Helpers.Helpers.CSharp;
 namespace SharpSource.Test
 {
     [TestClass]
-    public class UnnecessaryEnumerableMaterializationTests : CSharpDiagnosticVerifier
+    public class UnnecessaryEnumerableMaterializationTests : CSharpCodeFixVerifier
     {
         protected override DiagnosticAnalyzer DiagnosticAnalyzer => new UnnecessaryEnumerableMaterializationAnalyzer();
 
-        //protected override CodeFixProvider CodeFixProvider => new UnnecessaryEnumerableMaterializationCodeFix();
+        protected override CodeFixProvider CodeFixProvider => new UnnecessaryEnumerableMaterializationCodeFix();
 
         private static IEnumerable<object[]> GetSingleValueData()
         {
@@ -82,7 +82,7 @@ values.{second};
 ";
 
             VerifyDiagnostic(original, $"{string.Join("",first.TakeWhile(c => c != '('))} is unnecessarily materializing the IEnumerable and can be omitted");
-            //VerifyFix(original, expected);
+            VerifyFix(original, expected);
         }
 
         private static IEnumerable<object[]> GetDictionaryData()
@@ -149,7 +149,7 @@ values.{second};
 ";
 
             VerifyDiagnostic(original, "ToDictionary is unnecessarily materializing the IEnumerable and can be omitted");
-            //VerifyFix(original, expected);
+            VerifyFix(original, expected);
         }
 
         private static IEnumerable<object[]> GetLookupData()
@@ -216,7 +216,7 @@ values.{second};
 ";
 
             VerifyDiagnostic(original, "ToLookup is unnecessarily materializing the IEnumerable and can be omitted");
-            //VerifyFix(original, expected);
+            VerifyFix(original, expected);
         }
     }
 }
