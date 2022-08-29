@@ -102,7 +102,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
         for (var i = 0; i < invokedMethod.Parameters.Length; i++)
         {
-            if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type, SymbolEqualityComparer.Default))
+            if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type, SymbolEqualityComparer.IncludeNullability))
             {
                 return false;
             }

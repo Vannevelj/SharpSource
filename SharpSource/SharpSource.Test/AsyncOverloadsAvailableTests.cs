@@ -466,5 +466,24 @@ await new StringWriter().WriteAsync(string.Empty);";
             VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
             VerifyFix(original, result);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/104")]
+        public void AsyncOverloadsAvailable_WithOverload_Nullability()
+        {
+            var original = @"
+#nullable enable
+using System.Threading.Tasks;
+
+Test.Method(null);
+
+class Test
+{
+    public static void Method(string? arg) { }
+    public static async Task MethodAsync(string arg) { }
+}
+";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
