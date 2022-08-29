@@ -31,7 +31,7 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
         var symbol = context.SemanticModel.GetSymbolInfo(fieldDeclaration.Declaration?.Type).Symbol;
 
-        if (symbol?.Name == "HttpContext" && ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Web" ))
+        if (symbol?.Name == "HttpContext" && symbol.IsDefinedInSystemAssembly())
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }

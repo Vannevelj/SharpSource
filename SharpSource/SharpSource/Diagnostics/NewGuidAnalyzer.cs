@@ -33,7 +33,7 @@ public class NewGuidAnalyzer : DiagnosticAnalyzer
         if (symbol != null &&
             symbol.Name == "Guid" &&
             expression.ArgumentList?.Arguments.Any() != true &&
-            ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Runtime" ))
+            symbol.IsDefinedInSystemAssembly())
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }

@@ -41,4 +41,5 @@ public static class DiagnosticId
     public const string HttpContextStoredInField = "SS038";
     public const string EnumWithoutDefaultValue = "SS039";
     public const string UnusedResultOnImmutableObject = "SS040";
+    public const string UnnecessaryEnumerableMaterialization = "SS041";
 }
