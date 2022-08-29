@@ -17,7 +17,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "An IEnumerable was materialized before a deferred execution call";
 
     private static readonly HashSet<string> MaterializingOperations = new HashSet<string>(new string[]{
-        "ToList", "ToArray", "ToHashSet", "ToDictionary", "ToLookup"
+        "ToList", "ToArray", "ToHashSet"
     });
 
     private static readonly HashSet<string> DeferredExecutionOperations = new HashSet<string>(new string[]{
