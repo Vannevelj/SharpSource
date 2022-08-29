@@ -23,17 +23,21 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var diagnostic = context.Diagnostics.First();
+        var operation = diagnostic.Properties["operation"];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+        var invocations = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>();
+        var semanticModel = await context.Document.GetSemanticModelAsync();
+        var invocation = invocations.First(x => x.IsAnInvocationOf(typeof(Enumerable), operation, semanticModel));
 
         context.RegisterCodeFix(
-            CodeAction.Create($"Remove unnecessary {diagnostic.Properties["operation"]} call",
-                x => RemoveMaterialization(context.Document, memberAccess, root, diagnostic, x),
+            CodeAction.Create(
+                $"Remove unnecessary {operation} call",
+                x => RemoveMaterialization(context.Document, invocation, root),
                 UnnecessaryEnumerableMaterializationAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> RemoveMaterialization(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic, CancellationToken cancellationToken)
+    private Task<Document> RemoveMaterialization(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
     {
         var surroundingMemberAccess = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
         var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
