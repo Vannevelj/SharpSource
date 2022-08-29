@@ -43,3 +43,4 @@
 | SS038  | HttpContextStoredInField  | `HttpContext` was stored in a field. Use `IHttpContextAccessor` instead  | Warning  | No  |
 | SS039  | EnumWithoutDefaultValue  | An `enum` should specify a default value of 0 as "Unknown" or "None"  | Warning  | No  |
 | SS040  | UnusedResultOnImmutableObject  | The result of an operation on a `string` is unused  | Warning  | No  |
+| SS041  | UnnecessaryEnumerableMaterialization  | An IEnumerable was materialized before a deferred execution call  | Warning  | Yes  |
