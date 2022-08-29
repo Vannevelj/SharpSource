@@ -220,5 +220,18 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/98")]
+        public void TestMethodWithoutTestAttribute_Dispose()
+        {
+            var original = @"
+[TestClass]
+class Test : IDisposable
+{
+    public void Dispose() { }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }

@@ -34,6 +34,12 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        // Don't trigger this for IDisposable implementations
+        if (method is { Identifier.ValueText: "Dispose", Arity: 0 })
+        {
+            return;
+        }
+
         // Check if we're in a unit-test context
         // For NUnit and MSTest we can see if the enclosing class/struct has a [TestClass] or [TestFixture] attribute
         // For xUnit.NET we will have to see if there are other methods in the current class that contain a [Fact] attribute
