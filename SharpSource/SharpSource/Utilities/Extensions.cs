@@ -380,7 +380,7 @@ public static class Extensions
     }
 
     public static bool IsDefinedInSystemAssembly(this ISymbol symbol)
-        =>  symbol.ContainingAssembly.Name == "mscorlib" ||
+        => symbol.ContainingAssembly.Name == "mscorlib" ||
             symbol.ContainingAssembly.Name.StartsWith("System.") ||
             symbol.ContainingAssembly.Name.StartsWith("Microsoft.");
 }
