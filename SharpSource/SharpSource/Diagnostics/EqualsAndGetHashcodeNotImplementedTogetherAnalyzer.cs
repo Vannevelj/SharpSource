@@ -52,42 +52,34 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
         compilationContext.RegisterSyntaxNodeAction((syntaxNodeContext) =>
         {
             var classDeclaration = (ClassDeclarationSyntax)syntaxNodeContext.Node;
+            var classSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(classDeclaration);
 
             var equalsImplemented = false;
             var getHashcodeImplemented = false;
 
-            foreach (var node in classDeclaration.Members)
+            foreach (var node in classSymbol.GetMembers())
             {
-                if (!node.IsKind(SyntaxKind.MethodDeclaration))
+                if (node is not IMethodSymbol method)
                 {
                     continue;
                 }
 
-                var methodDeclaration = (MethodDeclarationSyntax)node;
-                if (!methodDeclaration.Modifiers.Contains(SyntaxKind.OverrideKeyword))
+                if (!method.IsOverride)
                 {
                     continue;
                 }
 
-                var methodSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(methodDeclaration).OverriddenMethod;
-
-                // this will happen if the base class is deleted and there is still a derived class
-                if (methodSymbol == null)
+                while (method.IsOverride)
                 {
-                    return;
+                    method = method.OverriddenMethod;
                 }
 
-                while (methodSymbol.IsOverride)
-                {
-                    methodSymbol = methodSymbol.OverriddenMethod;
-                }
-
-                if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default))
+                if (method.Equals(objectEquals, SymbolEqualityComparer.Default))
                 {
                     equalsImplemented = true;
                 }
 
-                if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
+                if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
                 {
                     getHashcodeImplemented = true;
                 }
