@@ -449,5 +449,22 @@ class Test
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/103")]
+        public void AsyncOverloadsAvailable_WithOverload_GlobalStatement()
+        {
+            var original = @"
+using System.IO;
+
+new StringWriter().Write(string.Empty);";
+
+            var result = @"
+using System.IO;
+
+await new StringWriter().WriteAsync(string.Empty);";
+
+            VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
+            VerifyFix(original, result);
+        }
     }
 }
