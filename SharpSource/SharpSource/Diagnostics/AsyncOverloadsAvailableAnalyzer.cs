@@ -23,32 +23,37 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
     }
 
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
-        var methodDeclaration = (MethodDeclarationSyntax)context.Node;
+        var invocation = (InvocationExpressionSyntax)context.Node;
+        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement);
 
-        if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword))
+        var isInCorrectContext = surroundingDeclaration switch
+        {
+            MethodDeclarationSyntax method => method.Modifiers.Any(SyntaxKind.AsyncKeyword),
+            GlobalStatementSyntax => true,
+            _ => false
+        };
+
+        if (!isInCorrectContext)
         {
             return;
         }
 
-        foreach (var invocation in methodDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>())
+        switch (invocation.Expression)
         {
-            switch (invocation.Expression)
-            {
-                case MemberAccessExpressionSyntax memberAccess:
-                    CheckIfOverloadAvailable(memberAccess.Name, context);
-                    break;
-                case IdentifierNameSyntax identifierName:
-                    CheckIfOverloadAvailable(identifierName, context);
-                    break;
-                case GenericNameSyntax genericName:
-                    CheckIfOverloadAvailable(genericName, context);
-                    break;
-            }
+            case MemberAccessExpressionSyntax memberAccess:
+                CheckIfOverloadAvailable(memberAccess.Name, context);
+                break;
+            case IdentifierNameSyntax identifierName:
+                CheckIfOverloadAvailable(identifierName, context);
+                break;
+            case GenericNameSyntax genericName:
+                CheckIfOverloadAvailable(genericName, context);
+                break;
         }
     }
 
@@ -66,52 +71,50 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         var methodsInInvokedType = invokedSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>();
         var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
 
-        if (!( invokedSymbol is IMethodSymbol invokedMethod ))
+        if (invokedSymbol is not IMethodSymbol invokedMethod)
         {
             return;
         }
 
-        var returnType = invokedMethod.ReturnType;
-
         foreach (var overload in relevantOverloads)
         {
-            var hasSameParameters = true;
-            if (overload.Parameters.Length != invokedMethod.Parameters.Length && overload.Parameters.Any())
+            if (IsIdenticalOverload(invokedMethod, overload))
             {
-                // We allow overloads to differ by providing a cancellationtoken
-                var lastParameter = overload.Parameters.Last();
-                hasSameParameters =
-                    overload.Parameters.Length - 1 == invokedMethod.Parameters.Length &&
-                    lastParameter.Type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken &&
-                    ctoken.TypeArguments.Single().Name == "CancellationToken";
-            }
-
-            if (invokedMethod.Parameters.Length <= overload.Parameters.Length)
-            {
-                for (var i = 0; i < invokedMethod.Parameters.Length; i++)
-                {
-                    if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type, SymbolEqualityComparer.Default))
-                    {
-                        hasSameParameters = false;
-                        break;
-                    }
-                }
-            }
-
-            if (hasSameParameters)
-            {
-                var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
-                var isGenericOverload =
-                    returnType.SpecialType != SpecialType.System_Void &&
-                    overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
-                    ( wrappedType.Equals(returnType, SymbolEqualityComparer.Default) || wrappedType.TypeKind == TypeKind.TypeParameter );
-
-                if (isVoidOverload || isGenericOverload)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
-                    return;
-                }
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
             }
         }
+    }
+
+    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload)
+    {
+        var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
+        var hasOneAdditionalCancellationTokenParameter =
+            invokedMethod.Parameters.Length == overload.Parameters.Length - 1 &&
+            overload.Parameters.Last().Type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken &&
+            ctoken.TypeArguments.Single().Name == "CancellationToken";
+
+        // We allow overloads to differ by providing a cancellationtoken
+        var isParameterArityOkay = hasExactSameNumberOfParameters || hasOneAdditionalCancellationTokenParameter;
+        if (!isParameterArityOkay)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < invokedMethod.Parameters.Length; i++)
+        {
+            if (!invokedMethod.Parameters[i].Type.Equals(overload.Parameters[i].Type, SymbolEqualityComparer.IncludeNullability))
+            {
+                return false;
+            }
+        }
+
+        var returnType = invokedMethod.ReturnType;
+        var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
+        var isGenericOverload =
+            returnType.SpecialType != SpecialType.System_Void &&
+            overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
+            ( wrappedType.Equals(returnType, SymbolEqualityComparer.Default) || wrappedType.TypeKind == TypeKind.TypeParameter );
+
+        return isVoidOverload || isGenericOverload;
     }
 }

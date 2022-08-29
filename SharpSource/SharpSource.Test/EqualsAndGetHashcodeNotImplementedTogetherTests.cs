@@ -67,7 +67,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
             VerifyFix(original, result);
         }
 
@@ -103,7 +103,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
             VerifyFix(original, result);
         }
 
@@ -191,7 +191,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
             VerifyFix(original, result);
         }
 
@@ -229,7 +229,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
             VerifyFix(original, result);
         }
 
@@ -293,7 +293,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.MessageFormat.ToString());
+            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
             VerifyFix(original, result);
         }
     }

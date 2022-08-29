@@ -392,5 +392,98 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/88")]
+        public void AsyncOverloadsAvailable_WithOverload_AccessingReturnValue()
+        {
+            var original = @"
+using System.Threading.Tasks;
+
+class Test
+{
+    string DoThing() => string.Empty;
+    async Task<string> DoThingAsync() => string.Empty;
+
+    async Task Method()
+    {
+        var length = DoThing().Length;
+    }
+}";
+
+            var result = @"
+using System.Threading.Tasks;
+
+class Test
+{
+    string DoThing() => string.Empty;
+    async Task<string> DoThingAsync() => string.Empty;
+
+    async Task Method()
+    {
+        var length = (await DoThingAsync()).Length;
+    }
+}";
+
+            VerifyDiagnostic(original, "Async overload available for Test.DoThing");
+            VerifyFix(original, result);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/97")]
+        public void AsyncOverloadsAvailable_WithOverload_OnlyIfOverloadIsFound()
+        {
+            var original = @"
+using System.Threading.Tasks;
+using System;
+
+class Test
+{
+    async Task Method()
+    {
+        try { }
+        catch (Exception e)
+        {
+            System.Console.Error.WriteLine(e);
+        }
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/103")]
+        public void AsyncOverloadsAvailable_WithOverload_GlobalStatement()
+        {
+            var original = @"
+using System.IO;
+
+new StringWriter().Write(string.Empty);";
+
+            var result = @"
+using System.IO;
+
+await new StringWriter().WriteAsync(string.Empty);";
+
+            VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
+            VerifyFix(original, result);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/104")]
+        public void AsyncOverloadsAvailable_WithOverload_Nullability()
+        {
+            var original = @"
+#nullable enable
+using System.Threading.Tasks;
+
+Test.Method(null);
+
+class Test
+{
+    public static void Method(string? arg) { }
+    public static async Task MethodAsync(string arg) { }
+}
+";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
