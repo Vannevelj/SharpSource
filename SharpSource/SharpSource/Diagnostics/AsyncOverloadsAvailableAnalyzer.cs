@@ -23,32 +23,37 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
     }
 
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
-        var methodDeclaration = (MethodDeclarationSyntax)context.Node;
+        var invocation = (InvocationExpressionSyntax)context.Node;
+        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement);
 
-        if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword))
+        var isInCorrectContext = surroundingDeclaration switch
+        {
+            MethodDeclarationSyntax method => method.Modifiers.Any(SyntaxKind.AsyncKeyword),
+            GlobalStatementSyntax => true,
+            _ => false
+        };
+
+        if (!isInCorrectContext)
         {
             return;
         }
 
-        foreach (var invocation in methodDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>())
+        switch (invocation.Expression)
         {
-            switch (invocation.Expression)
-            {
-                case MemberAccessExpressionSyntax memberAccess:
-                    CheckIfOverloadAvailable(memberAccess.Name, context);
-                    break;
-                case IdentifierNameSyntax identifierName:
-                    CheckIfOverloadAvailable(identifierName, context);
-                    break;
-                case GenericNameSyntax genericName:
-                    CheckIfOverloadAvailable(genericName, context);
-                    break;
-            }
+            case MemberAccessExpressionSyntax memberAccess:
+                CheckIfOverloadAvailable(memberAccess.Name, context);
+                break;
+            case IdentifierNameSyntax identifierName:
+                CheckIfOverloadAvailable(identifierName, context);
+                break;
+            case GenericNameSyntax genericName:
+                CheckIfOverloadAvailable(genericName, context);
+                break;
         }
     }
 

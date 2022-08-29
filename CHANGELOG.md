@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.2.2] - 2022-08-29
 - Fixed: `AsyncOverloadsAvailable` wraps the `await` expression with parentheses when the function return value is accessed inline
 - Fixed: `AsyncOverloadsAvailable` no longer suggests a change if it would result in invalid code
+- Fixed: `AsyncOverloadsAvailable` now also reports improvements when using top-level statements
 
 ## [1.2.1] - 2022-08-29
 - Fixed: `ElementaryMethodsOfTypeInCollectionNotOverridden` triggers for external types
