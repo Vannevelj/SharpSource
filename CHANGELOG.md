@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.2.3] - 2022-08-29
+- Fixed: `GetHashCodeRefersToMutableMember` correctly handles `partial` classes
+
 ## [1.2.2] - 2022-08-29
 - Fixed: `AsyncOverloadsAvailable` wraps the `await` expression with parentheses when the function return value is accessed inline
 - Fixed: `AsyncOverloadsAvailable` no longer suggests a change if it would result in invalid code
@@ -15,7 +18,7 @@ https://keepachangelog.com/en/1.0.0/
 - Fixed: `TestMethodWithoutTestAttribute` no longer triggers for `Dispose()` methods
 
 ## [1.2.0] - 2022-08-28
-- Implemented `UnnecessaryEnumerableMaterialization`: An IEnumerable was materialized before a deferred execution call
+- Implemented `UnnecessaryEnumerableMaterialization`: An `IEnumerable` was materialized before a deferred execution call
 - `SwitchDoesNotHandleAllEnumOptions` produces more accurate code when static imports cause enum members to conflict
 - SharpSource its unit tests now run on .NET 6.0
 

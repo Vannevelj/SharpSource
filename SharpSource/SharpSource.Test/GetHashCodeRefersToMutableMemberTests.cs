@@ -381,5 +381,44 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void GetHashCodeRefersToMutableMember_PartialClass_SameFile()
+        {
+            var original = @"
+partial class ClassX
+{
+    public string Code { get; set; }
+}
+
+partial class ClassX
+{
+    public bool Equals(ClassX other) => Code == other.Code;
+
+    public override int GetHashCode() => Code.GetHashCode();
+}";
+
+            VerifyDiagnostic(original, "GetHashCode() refers to mutable property Code");
+        }
+
+        [TestMethod]
+        public void GetHashCodeRefersToMutableMember_PartialClass_DifferentFile()
+        {
+            var file1 = @"
+partial class ClassX
+{
+    public bool Equals(ClassX other) => Code == other.Code;
+
+    public override int GetHashCode() => Code.GetHashCode();
+}";
+
+            var file2 = @"
+partial class ClassX
+{
+    public string Code { get; set; }
+}";
+
+            VerifyDiagnostic(new string[] { file1, file2 }, "GetHashCode() refers to mutable property Code");
+        }
     }
 }
