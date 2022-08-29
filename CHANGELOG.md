@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.2.1] - 2022-08-29
 - Fixed: `ElementaryMethodsOfTypeInCollectionNotOverridden` triggers for external types
 - Fixed: `ExceptionThrownFromProhibitedContext` will no longer trigger for `NotSupportedException` and `NotImplementedException`
+- Fixed: `TestMethodWithoutTestAttribute` no longer crashes when encountering a `record`
 
 ## [1.2.0] - 2022-08-28
 - Implemented `UnnecessaryEnumerableMaterialization`: An IEnumerable was materialized before a deferred execution call
