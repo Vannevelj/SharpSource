@@ -321,11 +321,11 @@ public static class Extensions
         return false;
     }
 
-    internal static bool IsNonGenericTaskType(this ITypeSymbol type) => type is INamedTypeSymbol { Arity: 0, MetadataName: "Task" };
+    internal static bool IsNonGenericTaskType(this ITypeSymbol type) => type is INamedTypeSymbol { Arity: 0, Name: "Task" or "ValueTask" };
 
     internal static bool IsGenericTaskType(this ITypeSymbol type, out ITypeSymbol wrappedType)
     {
-        if (type is INamedTypeSymbol { Arity: 1, MetadataName: "Task`1" } namedType)
+        if (type is INamedTypeSymbol { Arity: 1, Name: "Task" or "ValueTask" } namedType)
         {
             wrappedType = namedType.TypeArguments.Single();
             return true;

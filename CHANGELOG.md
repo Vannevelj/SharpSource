@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.2.4] - 2022-08-31
+- Fixed: `AsyncOverloadsAvailable` supports methods that return `ValueTask`
+- 
+
 ## [1.2.3] - 2022-08-29
 - Fixed: `GetHashCodeRefersToMutableMember` correctly handles `partial` classes
 - Fixed: `EqualsAndGetHashcodeNotImplemented` correctly handles `partial` classes

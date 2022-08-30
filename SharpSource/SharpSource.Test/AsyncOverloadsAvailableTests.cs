@@ -485,5 +485,26 @@ class Test
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/110")]
+        public void AsyncOverloadsAvailable_DifferentReturnType_ValueTask()
+        {
+            var original = @"
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        Get();
+    }
+
+    int Get() => 5;
+
+    async ValueTask<int> GetAsync() => 5;
+}";
+
+            VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        }
     }
 }
