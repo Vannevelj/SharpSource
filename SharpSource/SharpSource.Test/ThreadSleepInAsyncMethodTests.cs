@@ -409,5 +409,69 @@ namespace ConsoleApplication1
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/112")]
+        public void ThreadSleepInAsyncMethod_AsyncMethod_Async_ValueTask()
+        {
+            var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class Test
+{
+    async ValueTask MyMethod()
+    {
+        Thread.Sleep(5000);
+    }
+}";
+
+            var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class Test
+{
+    async ValueTask MyMethod()
+    {
+        await Task.Delay(5000);
+    }
+}";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/112")]
+        public void ThreadSleepInAsyncMethod_AsyncMethod_Sync_ValueTask()
+        {
+            var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class Test
+{
+    ValueTask MyMethod()
+    {
+        Thread.Sleep(5000);
+        return ValueTask.CompletedTask;
+    }
+}";
+
+            var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class Test
+{
+    ValueTask MyMethod()
+    {
+        Thread.Sleep(5000);
+        return ValueTask.CompletedTask;
+    }
+}";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
     }
 }

@@ -38,8 +38,8 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
         }
 
         var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType);
-        var hasTaskReturnType = returnType.Type?.Name == "Task";
-        if (hasTaskReturnType)
+        var hasTaskReturnType = returnType.Type?.IsTaskType();
+        if (hasTaskReturnType == true)
         {
             AnalyzeMembers(method, context, isAsync);
             return;
