@@ -321,9 +321,11 @@ public static class Extensions
         return false;
     }
 
-    internal static bool IsNonGenericTaskType(this ITypeSymbol type) => type is INamedTypeSymbol { Arity: 0, Name: "Task" or "ValueTask" } && type.IsDefinedInSystemAssembly();
+    internal static bool IsTaskType(this ISymbol type) => type.IsNonGenericTaskType() || type.IsGenericTaskType(out _);
 
-    internal static bool IsGenericTaskType(this ITypeSymbol type, out ITypeSymbol wrappedType)
+    internal static bool IsNonGenericTaskType(this ISymbol type) => type is INamedTypeSymbol { Arity: 0, Name: "Task" or "ValueTask" } && type.IsDefinedInSystemAssembly();
+
+    internal static bool IsGenericTaskType(this ISymbol type, out ITypeSymbol wrappedType)
     {
         if (type is INamedTypeSymbol { Arity: 1, Name: "Task" or "ValueTask" } namedType && type.IsDefinedInSystemAssembly())
         {
