@@ -212,5 +212,15 @@ class Test
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        public void UnusedResultOnImmutableObjectTests_UsedResult_NullCoalescing()
+        {
+            var original = @"
+string Method() => string.Empty ?? """".Trim();
+";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
