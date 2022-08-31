@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,63 +25,54 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
     }
 
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
-        var method = (MethodDeclarationSyntax)context.Node;
-
-        var isAsync = method.Modifiers.Contains(SyntaxKind.AsyncKeyword);
-        if (isAsync)
+        var invocation = (InvocationExpressionSyntax)context.Node;
+        var isAccessingThreadDotSleep = invocation.Expression switch
         {
-            AnalyzeMembers(method, context, isAsync);
-            return;
-        }
+            MemberAccessExpressionSyntax memberAccess => IsAccessingThreadDotSleep(memberAccess.Name, context),
+            IdentifierNameSyntax identifierName => IsAccessingThreadDotSleep(identifierName, context),
+            _ => false,
+        };
 
-        var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType);
-        var hasTaskReturnType = returnType.Type?.IsTaskType();
-        if (hasTaskReturnType == true)
-        {
-            AnalyzeMembers(method, context, isAsync);
-            return;
-        }
-    }
-
-    private void AnalyzeMembers(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context, bool isAsync)
-    {
-        foreach (var invocation in method.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
-        {
-            switch (invocation.Expression)
-            {
-                case MemberAccessExpressionSyntax memberAccess:
-                    IsAccessingThreadDotSleep(memberAccess.Name, context, isAsync);
-                    break;
-                case IdentifierNameSyntax identifierName:
-                    IsAccessingThreadDotSleep(identifierName, context, isAsync);
-                    break;
-            }
-        }
-    }
-
-    private void IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, bool isAsync)
-    {
-        var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
-        if (invokedSymbol == null)
+        if (!isAccessingThreadDotSleep)
         {
             return;
         }
 
-        var isAccessedFunctionCorrect = invokedSymbol.Name == "Sleep";
-        var isAccessedTypeCorrect = invokedSymbol.ContainingType?.Name == "Thread";
+        var (found, returnType, modifiers) = context.Node.FirstAncestorOfType(
+            SyntaxKind.MethodDeclaration,
+            SyntaxKind.LocalFunctionStatement,
+            SyntaxKind.ParenthesizedLambdaExpression) switch
+        {
+            MethodDeclarationSyntax method => (true, method.ReturnType, method.Modifiers),
+            LocalFunctionStatementSyntax local => (true, local.ReturnType, local.Modifiers),
+            _ => (false, default, default)
+        };
 
-        if (isAccessedFunctionCorrect && isAccessedTypeCorrect)
+        if (!found)
+        {
+            return;
+        }
+
+        var isAsync = modifiers.Contains(SyntaxKind.AsyncKeyword);
+        var returnTypeInfo = context.SemanticModel.GetTypeInfo(returnType);
+        var hasTaskReturnType = returnTypeInfo.Type?.IsTaskType();
+
+        if (isAsync || hasTaskReturnType == true)
         {
             var dic = ImmutableDictionary.CreateBuilder<string, string>();
             dic.Add("isAsync", isAsync.ToString());
-
-            var invocationNode = invokedFunction.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocationNode.GetLocation(), dic.ToImmutable(), null));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), dic.ToImmutable(), null));
         }
+    }
+
+    private bool IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
+    {
+        var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
+        return invokedSymbol is { ContainingType.Name: "Thread", Name: "Sleep" };
     }
 }

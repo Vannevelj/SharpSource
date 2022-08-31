@@ -473,5 +473,76 @@ class Test
             VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
             VerifyFix(original, result);
         }
+
+        [TestMethod]
+        public void ThreadSleepInAsyncMethod_AsyncMethod_TopLevel()
+        {
+            var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task MyMethod() => Thread.Sleep(5000);
+await MyMethod();
+";
+
+            var result = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task MyMethod() => await Task.Delay(5000);
+await MyMethod();
+";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
+
+        [TestMethod]
+        public void ThreadSleepInAsyncMethod_AsyncMethod_LocalFunction()
+        {
+            var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task Method()
+{
+    async Task MyMethod() => Thread.Sleep(5000);
+    await MyMethod();
+}";
+
+            var result = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task Method()
+{
+    async Task MyMethod() => await Task.Delay(5000);
+    await MyMethod();
+}";
+
+            VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+            VerifyFix(original, result);
+        }
+
+        [TestMethod]
+        public void ThreadSleepInAsyncMethod_AsyncMethod_Lambda()
+        {
+            var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task MyMethod() {
+	Action lambda = () => Thread.Sleep(32);
+	lambda();
+}
+";
+
+            VerifyDiagnostic(original);
+        }
     }
 }

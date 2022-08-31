@@ -6,6 +6,7 @@ https://keepachangelog.com/en/1.0.0/
 - Fixed: `AccessingTaskResultWithoutAwait` supports methods that return `ValueTask`
 - Fixed: `ThreadSleepInAsyncMethod` supports methods that return `ValueTask`
 - `AsyncMethodWithVoidReturnType` now also works for top-level function declarations and local functions
+- `ThreadSleepInAsyncMethod` now also works for top-level function declarations and local functions
 
 ## [1.2.3] - 2022-08-29
 - Fixed: `GetHashCodeRefersToMutableMember` correctly handles `partial` classes
