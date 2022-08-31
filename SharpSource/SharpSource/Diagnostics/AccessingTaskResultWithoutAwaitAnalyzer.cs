@@ -58,7 +58,7 @@ public class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        if (invokedSymbol.Name == "Result" && invokedSymbol.ContainingType?.Name == "Task")
+        if (invokedSymbol.Name == "Result" && invokedSymbol.ContainingType.IsTaskType())
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, memberAccess.GetLocation()));
         }

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -27,7 +29,7 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var methodDeclaration =
-            root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+            root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
 
         context.RegisterCodeFix(
             CodeAction.Create(CodeFixResources.AsyncMethodWithVoidReturnTypeCodeFixTitle,
@@ -36,9 +38,15 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> ChangeReturnTypeAsync(Document document, MethodDeclarationSyntax methodDeclaration, SyntaxNode root, CancellationToken cancellationToken)
+    private Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root, CancellationToken cancellationToken)
     {
-        var newMethod = methodDeclaration.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation));
+        SyntaxNode newMethod = methodDeclaration switch
+        {
+            MethodDeclarationSyntax method => method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation)),
+            LocalFunctionStatementSyntax local => local.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation)),
+            _ => throw new NotSupportedException($"Unexpected node: {methodDeclaration.GetType().Name}")
+        };
+
         var newRoot = root.ReplaceNode(methodDeclaration, newMethod);
         var compilation = (CompilationUnitSyntax)newRoot;
         newRoot = compilation.AddUsingStatementIfMissing("System.Threading.Tasks");

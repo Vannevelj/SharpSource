@@ -24,34 +24,39 @@ public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
     }
 
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
-        var method = (MethodDeclarationSyntax)context.Node;
+        var (returnType, modifiers, parameterList, identifier) = context.Node switch
+        {
+            MethodDeclarationSyntax method => (method.ReturnType, method.Modifiers, method.ParameterList, method.Identifier),
+            LocalFunctionStatementSyntax local => (local.ReturnType, local.Modifiers, local.ParameterList, local.Identifier),
+            _ => throw new NotSupportedException($"Unexpected node: {context.Node.GetType().Name}")
+        };
 
         // Method has to return void
-        var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType);
-        if (returnType.Type == null || returnType.Type.SpecialType != SpecialType.System_Void)
+        var returnTypeInfo = context.SemanticModel.GetTypeInfo(returnType).Type;
+        if (returnTypeInfo == null || returnTypeInfo.SpecialType != SpecialType.System_Void)
         {
             return;
         }
 
-        if (method.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
+        if (modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
         {
             return;
         }
 
-        if (!method.Modifiers.Any(m => m.IsKind(SyntaxKind.AsyncKeyword)))
+        if (!modifiers.Any(m => m.IsKind(SyntaxKind.AsyncKeyword)))
         {
             return;
         }
 
         // Event handlers can only have a void return type
-        if (method.ParameterList?.Parameters.Count == 2)
+        if (parameterList?.Parameters.Count == 2)
         {
-            var parameters = method.ParameterList.Parameters;
+            var parameters = parameterList.Parameters;
             var firstArgumentType = context.SemanticModel.GetTypeInfo(parameters[0].Type);
             var isFirstArgumentObject = firstArgumentType.Type != null &&
                                         firstArgumentType.Type.SpecialType == SpecialType.System_Object;
@@ -67,6 +72,6 @@ public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, method.ReturnType.GetLocation(), method.Identifier.ValueText));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, returnType.GetLocation(), identifier.ValueText));
     }
 }

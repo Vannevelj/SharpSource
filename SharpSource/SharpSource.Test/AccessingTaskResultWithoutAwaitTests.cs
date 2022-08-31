@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
+using SharpSource.Test.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test
@@ -367,6 +368,47 @@ namespace ConsoleApplication1
 	    }
 	
 	    async Task<int> Get() => 5;
+    }
+}";
+
+            VerifyDiagnostic(original, "Use await to get the result of a Task.");
+            VerifyFix(original, result);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/111")]
+        public void AccessingTaskResultWithoutAwait_AsyncContext_ValueTask()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            var number = Other().Result;
+        }
+
+        async ValueTask<int> Other() => 5;
+    }
+}";
+
+            var result = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            var number = await Other();
+        }
+
+        async ValueTask<int> Other() => 5;
     }
 }";
 

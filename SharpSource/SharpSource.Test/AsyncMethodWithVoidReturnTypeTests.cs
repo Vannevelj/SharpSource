@@ -297,5 +297,67 @@ namespace ConsoleApplication1
             VerifyDiagnostic(original, "Method Method is marked as async but has a void return type");
             VerifyFix(original, result);
         }
+
+        [TestMethod]
+        public void AsyncMethodWithVoidReturnType_TopLevel()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+async void MyMethod()
+{
+    await Task.CompletedTask;
+}";
+
+            var result = @"
+using System;
+using System.Threading.Tasks;
+
+async Task MyMethod()
+{
+    await Task.CompletedTask;
+}";
+
+            VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
+            VerifyFix(original, result);
+        }
+
+        [TestMethod]
+        public void AsyncMethodWithVoidReturnType_LocalFunction()
+        {
+            var original = @"
+using System;
+using System.Threading.Tasks;
+
+class Test
+{
+    void Method()
+    {
+        async void MyMethod()
+        {
+            await Task.CompletedTask;
+        }
+    }
+}";
+
+            var result = @"
+using System;
+using System.Threading.Tasks;
+
+class Test
+{
+    void Method()
+    {
+        async Task MyMethod()
+        {
+            await Task.CompletedTask;
+        }
+    }
+}";
+
+            VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
+            VerifyFix(original, result);
+        }
     }
 }
