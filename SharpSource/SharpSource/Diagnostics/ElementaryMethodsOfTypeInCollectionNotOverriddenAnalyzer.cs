@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,8 +16,17 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Implement Equals() and GetHashCode() methods of type {0} for use in a collection.";
+    private static readonly string Message = "Type {0} is used in a collection lookup but does not override Equals() and GetHashCode()";
     private static readonly string Title = "Implement Equals() and GetHashcode() methods for a type used in a collection.";
+
+    private static readonly (Type type, string method)[] SupportedLookups = new [] {
+        (typeof(List<>), "Contains"),
+        (typeof(Enumerable), "Contains"),
+        (typeof(Dictionary<,>), "Contains"),
+        (typeof(Dictionary<,>), "TryGetValue"),
+        (typeof(Dictionary<,>), "ContainsKey"),
+        (typeof(Dictionary<,>), "ContainsValue")
+    };
 
     public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
 
@@ -24,67 +36,52 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression);
     }
 
     private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        if (context.SemanticModel.GetTypeInfo(context.Node).Type is not INamedTypeSymbol objectTypeInfo)
+        var invocation = (InvocationExpressionSyntax)context.Node;
+        if (!SupportedLookups.Any(lookup => invocation.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
         {
             return;
         }
 
-        var ienumerableIsImplemented = objectTypeInfo.ImplementsInterface(typeof(IEnumerable)) ||
-                                       objectTypeInfo.ImplementsInterface(typeof(IEnumerable<>));
-
-        if (!ienumerableIsImplemented)
+        var argument = invocation.ArgumentList?.Arguments.FirstOrDefault();
+        if (argument == default)
         {
             return;
         }
 
-        var node = (ObjectCreationExpressionSyntax)context.Node;
-        if (node.Type is not GenericNameSyntax objectType)
+        var invokedType = context.SemanticModel.GetTypeInfo(argument.Expression).Type;
+        if (invokedType == null ||
+            invokedType.TypeKind == TypeKind.Interface ||
+            invokedType.TypeKind == TypeKind.TypeParameter ||
+            invokedType.TypeKind == TypeKind.Enum ||
+            invokedType.TypeKind == TypeKind.Array ||
+            invokedType.IsDefinedInSystemAssembly())
         {
             return;
         }
 
-        foreach (var genericType in objectType.TypeArgumentList.Arguments)
+        var implementsEquals = false;
+        var implementsGetHashCode = false;
+        foreach (var member in invokedType.GetMembers())
         {
-            if (genericType == null)
+            if (member.Name == nameof(Equals))
             {
-                return;
+                implementsEquals = true;
             }
 
-            var genericTypeInfo = context.SemanticModel.GetTypeInfo(genericType).Type;
-            if (genericTypeInfo == null ||
-                genericTypeInfo.TypeKind == TypeKind.Interface ||
-                genericTypeInfo.TypeKind == TypeKind.TypeParameter ||
-                genericTypeInfo.TypeKind == TypeKind.Enum ||
-                genericTypeInfo.TypeKind == TypeKind.Array ||
-                genericTypeInfo.IsDefinedInSystemAssembly())
+            if (member.Name == nameof(GetHashCode))
             {
-                continue;
+                implementsGetHashCode = true;
             }
+        }
 
-            var implementsEquals = false;
-            var implementsGetHashCode = false;
-            foreach (var member in genericTypeInfo.GetMembers())
-            {
-                if (member.Name == nameof(Equals))
-                {
-                    implementsEquals = true;
-                }
-
-                if (member.Name == nameof(GetHashCode))
-                {
-                    implementsGetHashCode = true;
-                }
-            }
-
-            if (!implementsEquals || !implementsGetHashCode)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, genericType.GetLocation(), genericTypeInfo.Name));
-            }
+        if (!implementsEquals || !implementsGetHashCode)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), invokedType.Name));
         }
     }
 }
