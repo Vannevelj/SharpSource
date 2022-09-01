@@ -199,8 +199,7 @@ public static class Extensions
 
     // TODO: tests
     // NOTE: string.Format() vs Format() (current/external type)
-    public static bool IsAnInvocationOf(this InvocationExpressionSyntax invocation, Type type, string method,
-                                        SemanticModel semanticModel)
+    public static bool IsAnInvocationOf(this SyntaxNode invocation, Type type, string method, SemanticModel semanticModel)
     {
         var invokedMethod = semanticModel.GetSymbolInfo(invocation);
         var invokedType = invokedMethod.Symbol?.ContainingType;

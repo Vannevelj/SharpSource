@@ -470,5 +470,47 @@ var s = list.Contains(default);
 
             VerifyDiagnostic(original);
         }
+
+        [TestMethod]
+        [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
+        [DataRow("new Dictionary<int, MyCollectionItem>().ContainsValue(new MyCollectionItem())")]
+        [DataRow("new Dictionary<MyCollectionItem, int>()[new MyCollectionItem()]")]
+        [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue(new MyCollectionItem(), out _)")]
+        [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
+        {
+            var original = @$"
+using System.Collections.Generic;
+using System.Linq;
+
+var x = {invocation};
+
+class MyCollectionItem {{}}
+";
+
+            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        }
+
+        [TestMethod]
+        [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
+        [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
+        [DataRow("new HashSet<MyCollectionItem>().Contains(new MyCollectionItem())")]
+        [DataRow("new ReadOnlyCollection<MyCollectionItem>(new[] { new MyCollectionItem() }).Contains(new MyCollectionItem())")]
+        [DataRow("new Queue<MyCollectionItem>().Contains(new MyCollectionItem())")]
+        [DataRow("new Stack<MyCollectionItem>().Contains(new MyCollectionItem())")]
+        public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedTypes(string invocation)
+        {
+            var original = @$"
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+
+var x = {invocation};
+
+class MyCollectionItem {{}}
+";
+
+            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        }
     }
 }

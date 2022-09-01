@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,11 +22,17 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
     private static readonly (Type type, string method)[] SupportedLookups = new [] {
         (typeof(List<>), "Contains"),
+        (typeof(HashSet<>), "Contains"),
+        (typeof(ReadOnlyCollection<>), "Contains"),
+        (typeof(Queue<>), "Contains"),
+        (typeof(Stack<>), "Contains"),
         (typeof(Enumerable), "Contains"),
+        (typeof(IEnumerable), "Contains"),
         (typeof(Dictionary<,>), "Contains"),
         (typeof(Dictionary<,>), "TryGetValue"),
         (typeof(Dictionary<,>), "ContainsKey"),
-        (typeof(Dictionary<,>), "ContainsValue")
+        (typeof(Dictionary<,>), "ContainsValue"),
+        (typeof(Dictionary<,>), "Item") // indexer
     };
 
     public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
@@ -36,19 +43,23 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression, SyntaxKind.ElementAccessExpression);
     }
 
     private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-        if (!SupportedLookups.Any(lookup => invocation.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
+        var argument = context.Node switch
+        {
+            InvocationExpressionSyntax invocation => invocation.ArgumentList?.Arguments.FirstOrDefault(),
+            ElementAccessExpressionSyntax indexer => indexer.ArgumentList?.Arguments.FirstOrDefault(),
+            _ => default
+        };
+        if (argument == default)
         {
             return;
         }
 
-        var argument = invocation.ArgumentList?.Arguments.FirstOrDefault();
-        if (argument == default)
+        if (!SupportedLookups.Any(lookup => context.Node.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
         {
             return;
         }
@@ -81,7 +92,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         if (!implementsEquals || !implementsGetHashCode)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), invokedType.Name));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, argument.GetLocation(), invokedType.Name));
         }
     }
 }
