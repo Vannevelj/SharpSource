@@ -7,6 +7,7 @@ https://keepachangelog.com/en/1.0.0/
 - `ExceptionThrownFromProhibitedContext` doesn't crash when encountering `throw` statements that reference properties
 - `AsyncOverloadsAvailable` will no longer suggest to use an overload if that overload is the current surrounding method
 - `AsyncOverloadsAvailable` now works inside lambda expressions as well
+- `UnusedResultOnImmutableObject` doesn't trigger on `CopyTo` and `TryCopyTo`
 
 ## [1.2.4] - 2022-08-31
 - Fixed: `AsyncOverloadsAvailable` supports methods that return `ValueTask`

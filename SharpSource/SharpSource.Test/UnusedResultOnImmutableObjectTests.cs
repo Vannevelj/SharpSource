@@ -222,5 +222,19 @@ string Method() => string.Empty ?? """".Trim();
 
             VerifyDiagnostic(original);
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/119")]
+        [DataRow("CopyTo(Span<char>.Empty)")]
+        [DataRow("TryCopyTo(Span<char>.Empty)")]
+        public void UnusedResultOnImmutableObjectTests_ExcludedFunctions(string invocation)
+        {
+            var original = @$"
+using System;
+
+"""".{invocation};
+";
+
+            VerifyDiagnostic(original);
+        }
     }
 }
