@@ -29,12 +29,13 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
-        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement);
+        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
 
         var isInCorrectContext = surroundingDeclaration switch
         {
             MethodDeclarationSyntax method => method.Modifiers.Any(SyntaxKind.AsyncKeyword),
             GlobalStatementSyntax => true,
+            SimpleLambdaExpressionSyntax lambda => lambda.Modifiers.Any(SyntaxKind.AsyncKeyword),
             _ => false
         };
 
