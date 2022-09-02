@@ -506,5 +506,25 @@ class MyClass
 
             VerifyDiagnostic(original, "Async overload available for MyClass.Get");
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
+        public void AsyncOverloadsAvailable_DoesNotSuggestItself()
+        {
+            var original = @"
+using System.Threading.Tasks;
+
+class Test
+{
+    private void CleanAssets() { }
+
+    private async Task CleanAssetsAsync()
+    {
+        CleanAssets();
+        await Task.Delay(1);
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }

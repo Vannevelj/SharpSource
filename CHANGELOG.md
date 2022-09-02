@@ -5,6 +5,7 @@ https://keepachangelog.com/en/1.0.0/
 - `ElementaryMethodsOfTypeInCollectionNotOverridden` is more targeted and only warns if it finds an actual lookup that will be problematic
 - `ExceptionThrownFromProhibitedContext` doesn't crash when encountering empty `throw` statements
 - `ExceptionThrownFromProhibitedContext` doesn't crash when encountering `throw` statements that reference properties
+- `AsyncOverloadsAvailable` will no longer suggest to use an overload if that overload is the current surrounding method
 
 ## [1.2.4] - 2022-08-31
 - Fixed: `AsyncOverloadsAvailable` supports methods that return `ValueTask`
