@@ -3,6 +3,8 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.3.0] - 2022-09-02
 - `ElementaryMethodsOfTypeInCollectionNotOverridden` is more targeted and only warns if it finds an actual lookup that will be problematic
+- `ExceptionThrownFromProhibitedContext` doesn't crash when encountering empty `throw` statements
+- `ExceptionThrownFromProhibitedContext` doesn't crash when encountering `throw` statements that reference properties
 
 ## [1.2.4] - 2022-08-31
 - Fixed: `AsyncOverloadsAvailable` supports methods that return `ValueTask`
@@ -38,7 +40,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.0.0] - 2022-08-28
 - Implemented `EnumWithoutDefaultValue`: An enum should specify a default value
-- Changed the categories of ExplicitEnumValues, FlagsEnumValuesAreNotPowersOfTwo and FlagsEnumValuesDontFit
+- Changed the categories of `ExplicitEnumValues`, `FlagsEnumValuesAreNotPowersOfTwo` and `FlagsEnumValuesDontFit`
 - Improved messaging for `DateTimeNow`
 - Added documentation
 
