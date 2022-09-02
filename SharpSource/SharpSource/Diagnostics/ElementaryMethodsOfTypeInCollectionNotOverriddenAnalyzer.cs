@@ -20,7 +20,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
     private static readonly string Message = "Type {0} is used in a collection lookup but does not override Equals() and GetHashCode()";
     private static readonly string Title = "Implement Equals() and GetHashcode() methods for a type used in a collection.";
 
-    private static readonly (Type type, string method)[] SupportedLookups = new [] {
+    private static readonly (Type type, string method)[] SupportedLookups = new[] {
         (typeof(List<>), "Contains"),
         (typeof(HashSet<>), "Contains"),
         (typeof(ReadOnlyCollection<>), "Contains"),
