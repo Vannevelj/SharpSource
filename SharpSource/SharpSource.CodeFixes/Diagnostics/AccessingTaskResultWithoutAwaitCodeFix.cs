@@ -32,7 +32,7 @@ public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
             .SingleOrDefault(x => x.Name.Identifier.ValueText == "Result");
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.AccessingTaskResultWithoutAwaitCodeFixTitle,
+            CodeAction.Create("Use await",
                 x => UseAwait(context.Document, taskResultExpression, root, x),
                 AccessingTaskResultWithoutAwaitAnalyzer.Rule.Id),
             diagnostic);

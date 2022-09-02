@@ -28,11 +28,11 @@ public class NewGuidCodeFix : CodeFixProvider
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.NewGuidUseNewGuidCodeFixTitle,
+            CodeAction.Create("Use Guid.NewGuid()",
                 x => UseNewGuid(context.Document, root, statement), $"{NewGuidAnalyzer.Rule.Id}A"), diagnostic);
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.NewGuidUseEmptyGuidCodeFixTitle,
+            CodeAction.Create("Use Guid.Empty",
                 x => UseEmptyGuid(context.Document, root, statement), $"{NewGuidAnalyzer.Rule.Id}B"), diagnostic);
     }
 

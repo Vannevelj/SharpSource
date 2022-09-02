@@ -29,7 +29,7 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
         var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.ThreadSleepInAsyncMethodCodeFixTitle,
+            CodeAction.Create("Use Task.Delay",
                 x => UseTaskDelay(context.Document, memberAccess, root, diagnostic, x),
                 ThreadSleepInAsyncMethodAnalyzer.Rule.Id),
             diagnostic);

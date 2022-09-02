@@ -31,7 +31,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         if (bool.Parse(diagnostic.Properties["IsEqualsImplemented"]))
         {
             context.RegisterCodeFix(
-                CodeAction.Create(string.Format(CodeFixResources.EqualsAndGetHashcodeNotImplementedTogetherCodeFixTitle, "GetHashCode()"),
+                CodeAction.Create("Implement GetHashCode().",
                     x => ImplementGetHashCodeAsync(context.Document, root, statement),
                     EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id),
                 diagnostic);
@@ -39,7 +39,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         else
         {
             context.RegisterCodeFix(
-                CodeAction.Create(string.Format(CodeFixResources.EqualsAndGetHashcodeNotImplementedTogetherCodeFixTitle, "Equals(object obj)"),
+                CodeAction.Create("Implement Equals(object obj).",
                     x => ImplementEqualsAsync(context.Document, root, statement),
                     EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id),
                 diagnostic);

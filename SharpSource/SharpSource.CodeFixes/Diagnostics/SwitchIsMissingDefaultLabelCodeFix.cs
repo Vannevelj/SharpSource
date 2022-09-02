@@ -31,7 +31,7 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
 
         var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.SwitchIsMissingDefaultSectionCodeFixTitle,
+            CodeAction.Create("Add default label",
                 x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
                 SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
     }

@@ -32,7 +32,7 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
             root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.AsyncMethodWithVoidReturnTypeCodeFixTitle,
+            CodeAction.Create("Use Task as return type",
                 x => ChangeReturnTypeAsync(context.Document, methodDeclaration, root, x),
                 AsyncMethodWithVoidReturnTypeAnalyzer.Rule.Id),
             diagnostic);

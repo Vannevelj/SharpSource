@@ -31,7 +31,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         var statement = root.FindNode(diagnosticSpan);
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.FlagsEnumValuesAreNotPowersOfTwoCodeFixTitle,
+            CodeAction.Create("Use powers of 2",
                 x => AdjustEnumValuesAsync(context.Document, root, statement),
                 FlagsEnumValuesAreNotPowersOfTwoAnalyzer.DefaultRule.Id), diagnostic);
     }

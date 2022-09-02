@@ -25,7 +25,7 @@ public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.OnPropertyChangedWithoutNameOfOperatorCodeFixTitle,
+            CodeAction.Create("Use nameof()",
                 x => UseNameOfAsync(context.Document, root, diagnostic),
                 OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.Id), diagnostic);
     }

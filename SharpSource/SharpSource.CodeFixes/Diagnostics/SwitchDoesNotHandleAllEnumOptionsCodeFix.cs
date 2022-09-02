@@ -31,7 +31,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
 
         var statement = root.FindNode(diagnosticSpan);
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.SwitchDoesNotHandleAllEnumOptionsCodeFixTitle,
+            CodeAction.Create("Add cases",
                 x => AddMissingCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
                 SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
     }

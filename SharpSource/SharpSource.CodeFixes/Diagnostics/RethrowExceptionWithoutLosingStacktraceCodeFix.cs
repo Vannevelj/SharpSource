@@ -28,7 +28,7 @@ public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
         var throwStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.RethrowExceptionWithoutLosingStacktraceCodeFixTitle,
+            CodeAction.Create("Remove rethrow",
                 x => RemoveRethrowAsync(context.Document, root, throwStatement),
                 RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.Id), diagnostic);
     }

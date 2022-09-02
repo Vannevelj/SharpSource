@@ -28,7 +28,7 @@ public class DateTimeNowCodeFix : CodeFixProvider
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.DateTimeNowCodeFixTitle,
+            CodeAction.Create("Use DateTime.UtcNow",
                 x => UseUtc(context.Document, root, statement), DateTimeNowAnalyzer.Rule.Id), diagnostic);
     }
 
