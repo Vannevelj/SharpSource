@@ -29,7 +29,7 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<EnumMemberDeclarationSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.ExplicitEnumValuesCodeFixTitle,
+            CodeAction.Create("Specify value explicitly",
                 x => SpecifyEnumValue(context.Document, root, statement, context.CancellationToken), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
     }
 

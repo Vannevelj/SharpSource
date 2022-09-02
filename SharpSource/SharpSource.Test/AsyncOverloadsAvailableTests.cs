@@ -506,5 +506,91 @@ class MyClass
 
             VerifyDiagnostic(original, "Async overload available for MyClass.Get");
         }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
+        public void AsyncOverloadsAvailable_DoesNotSuggestItself()
+        {
+            var original = @"
+using System.Threading.Tasks;
+
+class Test
+{
+    private void CleanAssets() { }
+
+    private async Task CleanAssetsAsync()
+    {
+        CleanAssets();
+        await Task.Delay(1);
+    }
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
+        public void AsyncOverloadsAvailable_SyncLambda()
+        {
+            var original = @"
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+
+class Test
+{
+	int DoThing() => 5;
+	async Task<int> DoThingAsync() => 5;
+
+	async Task Method()
+	{
+		var obj = new List<Test>().Select(t => t.DoThing());
+	}
+}";
+
+            VerifyDiagnostic(original);
+        }
+
+        [TestMethod]
+        public void AsyncOverloadsAvailable_AsyncLambda_WithMatch()
+        {
+            var original = @"
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+
+class Test
+{
+	public int DoThing() => 5;
+	public async Task<int> DoThingAsync() => 5;
+
+	async Task Method()
+	{
+		var obj = new List<Test>().Select(async t => t.DoThing());
+	}
+}";
+
+            VerifyDiagnostic(original, "Async overload available for Test.DoThing");
+        }
+
+        [TestMethod]
+        public void AsyncOverloadsAvailable_AsyncLambda_WithoutMatch()
+        {
+            var original = @"
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+
+class Test
+{
+	int DoThing() => 5;
+	async Task DoThingAsync() { }
+
+	async Task Method()
+	{
+		var obj = new List<Test>().Select(async t => t.DoThing());
+	}
+}";
+
+            VerifyDiagnostic(original);
+        }
     }
 }

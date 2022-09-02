@@ -47,7 +47,7 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
         var statement = root.FindNode(diagnosticSpan);
 
         context.RegisterCodeFix(CodeAction.Create(
-            string.Format(CodeFixResources.StructWithoutElementaryMethodsOverriddenCodeFixTitle, FormatMissingMembers(dict)),
+            string.Format("Implement {0}", FormatMissingMembers(dict)),
                 x => AddMissingMethodsAsync(context.Document, root, (StructDeclarationSyntax)statement,
                         implementEquals, implementGetHashCode, implementToString),
                 StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.Id), diagnostic);

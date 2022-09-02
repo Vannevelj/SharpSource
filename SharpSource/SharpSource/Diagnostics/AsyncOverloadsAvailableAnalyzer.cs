@@ -29,12 +29,13 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
-        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement);
+        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
 
         var isInCorrectContext = surroundingDeclaration switch
         {
             MethodDeclarationSyntax method => method.Modifiers.Any(SyntaxKind.AsyncKeyword),
             GlobalStatementSyntax => true,
+            SimpleLambdaExpressionSyntax lambda => lambda.Modifiers.Any(SyntaxKind.AsyncKeyword),
             _ => false
         };
 
@@ -46,18 +47,18 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         switch (invocation.Expression)
         {
             case MemberAccessExpressionSyntax memberAccess:
-                CheckIfOverloadAvailable(memberAccess.Name, context);
+                CheckIfOverloadAvailable(memberAccess.Name, context, surroundingDeclaration);
                 break;
             case IdentifierNameSyntax identifierName:
-                CheckIfOverloadAvailable(identifierName, context);
+                CheckIfOverloadAvailable(identifierName, context, surroundingDeclaration);
                 break;
             case GenericNameSyntax genericName:
-                CheckIfOverloadAvailable(genericName, context);
+                CheckIfOverloadAvailable(genericName, context, surroundingDeclaration);
                 break;
         }
     }
 
-    private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
+    private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration)
     {
         var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
         if (invokedSymbol == null)
@@ -76,16 +77,18 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var surroundingMethodDeclaration = context.SemanticModel.GetDeclaredSymbol(surroundingDeclaration);
+
         foreach (var overload in relevantOverloads)
         {
-            if (IsIdenticalOverload(invokedMethod, overload))
+            if (IsIdenticalOverload(invokedMethod, overload, surroundingMethodDeclaration))
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
             }
         }
     }
 
-    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload)
+    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, ISymbol surroundingMethodDeclaration)
     {
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
         var hasOneAdditionalCancellationTokenParameter =
@@ -114,7 +117,8 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             returnType.SpecialType != SpecialType.System_Void &&
             overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
             ( wrappedType.Equals(returnType, SymbolEqualityComparer.Default) || wrappedType.TypeKind == TypeKind.TypeParameter );
+        var isSurroundingMethod = overload.Equals(surroundingMethodDeclaration, SymbolEqualityComparer.Default);
 
-        return isVoidOverload || isGenericOverload;
+        return ( isVoidOverload || isGenericOverload ) && !isSurroundingMethod;
     }
 }

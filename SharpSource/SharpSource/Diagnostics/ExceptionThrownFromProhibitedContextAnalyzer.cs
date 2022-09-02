@@ -85,10 +85,7 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
         var throwStatement = (ThrowStatementSyntax)context.Node;
         var containingType = context.SemanticModel.GetEnclosingSymbol(throwStatement.SpanStart).ContainingType;
         var warningLocation = throwStatement.GetLocation();
-
-        var nestedObjectCreation = throwStatement.DescendantNodes().FirstOfKind<ObjectCreationExpressionSyntax>(SyntaxKind.ObjectCreationExpression);
-        var typeBeingThrown = context.SemanticModel.GetSymbolInfo(nestedObjectCreation.Type).Symbol;
-        if (typeBeingThrown is not null && AllowedExceptions.Contains(typeBeingThrown.Name))
+        if (!ShouldWarnForExpression(throwStatement, context))
         {
             return;
         }
@@ -194,5 +191,23 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
             context.ReportDiagnostic(Diagnostic.Create(FinalizerRule, warningLocation, containingType.Name));
             return;
         }
+    }
+
+    private bool ShouldWarnForExpression(ThrowStatementSyntax statement, SyntaxNodeAnalysisContext context)
+    {
+        if (statement.Expression == default)
+        {
+            // Not enough information to decide the exact type being thrown, let's just always warn
+            return true;
+        }
+
+        var typeBeingThrown = statement.Expression switch
+        {
+            ObjectCreationExpressionSyntax objectCreation => context.SemanticModel.GetSymbolInfo(objectCreation.Type).Symbol,
+            MemberAccessExpressionSyntax memberAccess => context.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol,
+            _ => default
+        };
+
+        return typeBeingThrown is null || !AllowedExceptions.Contains(typeBeingThrown.Name);
     }
 }

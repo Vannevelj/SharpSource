@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -13,6 +14,8 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
 {
     private static readonly string Message = "The result of an operation on an immutable object is unused";
     private static readonly string Title = "The result of an operation on an immutable object is unused";
+
+    private static readonly HashSet<string> AllowedInvocations = new() { "CopyTo", "TryCopyTo" };
 
     public static DiagnosticDescriptor Rule
         => new(DiagnosticId.UnusedResultOnImmutableObject, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
@@ -36,6 +39,11 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
 
         var typeBeingAccessed = context.SemanticModel.GetTypeInfo(memberAccess.Expression).Type;
         if (typeBeingAccessed == null || typeBeingAccessed.SpecialType != SpecialType.System_String)
+        {
+            return;
+        }
+
+        if (AllowedInvocations.Contains(memberAccess.Name.Identifier.ValueText))
         {
             return;
         }

@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
+using SharpSource.Test.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test
@@ -710,6 +711,52 @@ namespace ConsoleApplication1
 }";
 
             VerifyDiagnostic(original);
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/118")]
+        public void ExceptionThrownFromProhibitedContext_EmptyThrow()
+        {
+            var original = @"
+class MyClass
+{
+	int MyProp
+	{
+		get
+		{
+            try { }
+            catch { 
+			    throw;
+            }
+            return 5;
+		}
+	}
+}";
+
+            VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        }
+
+        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/117")]
+        public void ExceptionThrownFromProhibitedContext_MemberAccessExpression()
+        {
+            var original = @"
+class MyClass
+{
+	int MyProp
+	{
+		get
+		{
+			throw Exceptions.Unreachable;
+		}
+	}
+}
+
+static class Exceptions
+{
+	public static Exception Unreachable = new Exception();
+}
+";
+
+            VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
         }
     }
 }

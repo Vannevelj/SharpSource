@@ -30,7 +30,7 @@ public class TestMethodWithoutPublicModifierCodeFix : CodeFixProvider
             root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.TestMethodWithoutPublicModifierCodeFixTitle,
+            CodeAction.Create("Make public",
                 x => MakePublicAsync(context.Document, root, methodDeclaration),
                 TestMethodWithoutPublicModifierAnalyzer.Rule.Id), diagnostic);
     }

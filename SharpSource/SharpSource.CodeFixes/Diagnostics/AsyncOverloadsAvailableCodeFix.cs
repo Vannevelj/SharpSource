@@ -29,7 +29,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.AsyncOverloadsAvailableCodeFixTitle,
+            CodeAction.Create("Use Async overload",
                 x => UseAsyncOverload(context.Document, memberAccess, root, x),
                 AsyncOverloadsAvailableAnalyzer.Rule.Id),
             diagnostic);

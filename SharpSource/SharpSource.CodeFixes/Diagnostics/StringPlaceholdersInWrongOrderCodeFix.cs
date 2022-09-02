@@ -34,7 +34,7 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
                 .OfType<InvocationExpressionSyntax>()
                 .First();
         context.RegisterCodeFix(
-            CodeAction.Create(CodeFixResources.StringPlaceholdersInWrongOrderCodeFixTitle,
+            CodeAction.Create("Re-order placeholders",
                 x => ReOrderPlaceholdersAsync(context.Document, root, stringFormatInvocation),
                 StringPlaceholdersInWrongOrderAnalyzer.Rule.Id),
             diagnostic);
