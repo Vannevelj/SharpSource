@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>SharpSource</PackageId>
-    <PackageVersion>1.3.0</PackageVersion>
+    <PackageVersion>1.3.1</PackageVersion>
     <Authors>Jeroen Vannevel</Authors>
     <PackageLicenseUrl>https://github.com/Vannevelj/SharpSource/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Vannevelj/SharpSource</PackageProjectUrl>

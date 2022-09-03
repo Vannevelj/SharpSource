@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.3.1] - 2022-09-03
+- `ThreadSleepInAsyncMethod` does not suggest a no-op refactor if the method is not marked as `async`
+
 ## [1.3.0] - 2022-09-02
 - `ElementaryMethodsOfTypeInCollectionNotOverridden` is more targeted and only warns if it finds an actual lookup that will be problematic
 - `ExceptionThrownFromProhibitedContext` doesn't crash when encountering empty `throw` statements
