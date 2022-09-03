@@ -4,19 +4,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class RethrowExceptionWithoutLosingStracktraceTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class RethrowExceptionWithoutLosingStracktraceTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RethrowExceptionWithoutLosingStacktraceAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new RethrowExceptionWithoutLosingStacktraceCodeFix();
+
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RethrowExceptionWithoutLosingStacktraceAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new RethrowExceptionWithoutLosingStacktraceCodeFix();
-
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument()
-        {
-            var original = @"
+        var original = @"
 using System;
 using System.Text;
 
@@ -38,7 +38,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -60,14 +60,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, result, allowNewCompilerDiagnostics: true); // Removing the argument will remove all usages of the e parameter. This will cause a CS0168 warning.
-        }
+        VerifyDiagnostic(original, RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, result, allowNewCompilerDiagnostics: true); // Removing the argument will remove all usages of the e parameter. This will cause a CS0168 warning.
+    }
 
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_ThrowsANewException()
-        {
-            var original = @"
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_ThrowsANewException()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -89,13 +89,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_WithRethrows()
-        {
-            var original = @"
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_WithRethrows()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -117,13 +117,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_ThrowingANewPredefinedException()
-        {
-            var original = @"
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_ThrowingANewPredefinedException()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -146,13 +146,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_WithThrowStatementOutsideCatchClause()
-        {
-            var original = @"
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_WithThrowStatementOutsideCatchClause()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -167,13 +167,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument_AndNoIdentifier()
-        {
-            var original = @"
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument_AndNoIdentifier()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -195,13 +195,13 @@ namespace ConsoleApplication1
         }
     }
 }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RethrowExceptionWithoutLosingStracktrace_WithRethrow_AndNoIdentifier()
-        {
-            var original = @"
+    [TestMethod]
+    public void RethrowExceptionWithoutLosingStracktrace_WithRethrow_AndNoIdentifier()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -222,7 +222,6 @@ namespace ConsoleApplication1
         }
     }
 }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
     }
 }

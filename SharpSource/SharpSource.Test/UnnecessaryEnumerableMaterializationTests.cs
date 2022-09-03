@@ -6,26 +6,26 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class UnnecessaryEnumerableMaterializationTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class UnnecessaryEnumerableMaterializationTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new UnnecessaryEnumerableMaterializationAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new UnnecessaryEnumerableMaterializationCodeFix();
+
+    private static IEnumerable<object[]> GetSingleValueData()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new UnnecessaryEnumerableMaterializationAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new UnnecessaryEnumerableMaterializationCodeFix();
-
-        private static IEnumerable<object[]> GetSingleValueData()
+        var materializingOperations = new string[]
         {
-            var materializingOperations = new string[]
-            {
 "ToList",
 "ToArray",
 "ToHashSet"
-            };
+        };
 
-            var deferredExecutionOperations = new string[]
-            {
+        var deferredExecutionOperations = new string[]
+        {
 "Select(x => x)",
 "SelectMany(x => x)",
 "Take(1)",
@@ -53,18 +53,18 @@ namespace SharpSource.Test
 "DefaultIfEmpty()",
 "Concat(Enumerable.Empty<string>())",
 "Cast<object>()",
-            };
+        };
 
-            return from materialization in materializingOperations
-                   from deferred in deferredExecutionOperations
-                   select new object[] { materialization, deferred };
-        }
+        return from materialization in materializingOperations
+               from deferred in deferredExecutionOperations
+               select new object[] { materialization, deferred };
+    }
 
-        [TestMethod]
-        [DynamicData(nameof(GetSingleValueData), DynamicDataSourceType.Method)]
-        public void UnnecessaryEnumerableMaterialization_Materialization_FollowByDeferredExecution(string materialization, string deferred)
-        {
-            var original = $@"
+    [TestMethod]
+    [DynamicData(nameof(GetSingleValueData), DynamicDataSourceType.Method)]
+    public void UnnecessaryEnumerableMaterialization_Materialization_FollowByDeferredExecution(string materialization, string deferred)
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -72,7 +72,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{materialization}().{deferred};
 ";
 
-            var expected = $@"
+        var expected = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -80,17 +80,17 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{deferred};
 ";
 
-            VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        [DataRow("ToArray")]
-        [DataRow("ToHashSet")]
-        [DataRow("ToList")]
-        public void UnnecessaryEnumerableMaterialization_MultipleMaterialization_FollowByDeferredExecution(string materialization)
-        {
-            var original = $@"
+    [TestMethod]
+    [DataRow("ToArray")]
+    [DataRow("ToHashSet")]
+    [DataRow("ToList")]
+    public void UnnecessaryEnumerableMaterialization_MultipleMaterialization_FollowByDeferredExecution(string materialization)
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -98,7 +98,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{materialization}().ToList();
 ";
 
-            var expected = $@"
+        var expected = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -106,17 +106,17 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.ToList();
 ";
 
-            VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        [DataRow("ToArray")]
-        [DataRow("ToHashSet")]
-        [DataRow("ToList")]
-        public void UnnecessaryEnumerableMaterialization_DeferredBefore(string materialization)
-        {
-            var original = $@"
+    [TestMethod]
+    [DataRow("ToArray")]
+    [DataRow("ToHashSet")]
+    [DataRow("ToList")]
+    public void UnnecessaryEnumerableMaterialization_DeferredBefore(string materialization)
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -124,16 +124,16 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Where(x => true).{materialization}();
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        [DataRow("ToArray")]
-        [DataRow("ToHashSet")]
-        [DataRow("ToList")]
-        public void UnnecessaryEnumerableMaterialization_ImmediateSingleMaterialization(string materialization)
-        {
-            var original = $@"
+    [TestMethod]
+    [DataRow("ToArray")]
+    [DataRow("ToHashSet")]
+    [DataRow("ToList")]
+    public void UnnecessaryEnumerableMaterialization_ImmediateSingleMaterialization(string materialization)
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -141,29 +141,29 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{materialization}();
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        [DataRow("ToArray")]
-        [DataRow("ToHashSet")]
-        [DataRow("ToList")]
-        public void UnnecessaryEnumerableMaterialization_OtherEnumerableMethods(string materialization)
-        {
-            var original = $@"
+    [TestMethod]
+    [DataRow("ToArray")]
+    [DataRow("ToHashSet")]
+    [DataRow("ToList")]
+    public void UnnecessaryEnumerableMaterialization_OtherEnumerableMethods(string materialization)
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
 var test = Enumerable.Range(0, 100).{materialization}();
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void UnnecessaryEnumerableMaterialization_MultipleDeferred_NoMaterialization()
-        {
-            var original = $@"
+    [TestMethod]
+    public void UnnecessaryEnumerableMaterialization_MultipleDeferred_NoMaterialization()
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -171,16 +171,16 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Where(x => true).Skip(1).Reverse();
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        [DataRow("ToArray")]
-        [DataRow("ToHashSet")]
-        [DataRow("ToList")]
-        public void UnnecessaryEnumerableMaterialization_MultipleDeferred_Materialization(string materialization)
-        {
-            var original = $@"
+    [TestMethod]
+    [DataRow("ToArray")]
+    [DataRow("ToHashSet")]
+    [DataRow("ToList")]
+    public void UnnecessaryEnumerableMaterialization_MultipleDeferred_Materialization(string materialization)
+    {
+        var original = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -188,7 +188,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Skip(1).Reverse().{materialization}().Take(1);
 ";
 
-            var expected = $@"
+        var expected = $@"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -196,8 +196,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Skip(1).Reverse().Take(1);
 ";
 
-            VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
+        VerifyFix(original, expected);
     }
 }

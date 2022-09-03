@@ -15,8 +15,8 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
     private static readonly string PropertyMessage = "GetHashCode() refers to mutable property {0}";
     private static readonly string Title = "GetHashCode() refers to mutable or static member";
 
-    public static DiagnosticDescriptor FieldRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Categories.General, DiagnosticSeverity.Warning, true);
-    public static DiagnosticDescriptor PropertyRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor FieldRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor PropertyRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(PropertyRule);
 

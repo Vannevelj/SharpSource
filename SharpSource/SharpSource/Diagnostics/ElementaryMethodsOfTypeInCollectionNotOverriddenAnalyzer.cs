@@ -35,7 +35,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         (typeof(Dictionary<,>), "Item") // indexer
     };
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

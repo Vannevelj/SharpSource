@@ -42,4 +42,5 @@ public static class DiagnosticId
     public const string EnumWithoutDefaultValue = "SS039";
     public const string UnusedResultOnImmutableObject = "SS040";
     public const string UnnecessaryEnumerableMaterialization = "SS041";
+    public const string InstanceFieldWithThreadStatic = "SS042";
 }

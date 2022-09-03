@@ -4,19 +4,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class StringPlaceholdersInWrongOrderTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class StringPlaceholdersInWrongOrderTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StringPlaceholdersInWrongOrderAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new StringPlaceHoldersInWrongOrderCodeFix();
+
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrence()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StringPlaceholdersInWrongOrderAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new StringPlaceHoldersInWrongOrderCodeFix();
-
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrence()
-        {
-            var original = @"
+        var original = @"
     using System;
     using System.Text;
 
@@ -30,13 +30,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InCorrectOrder_WithMultipleOccurrences()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InCorrectOrder_WithMultipleOccurrences()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -50,13 +50,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultipleOccurrences()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultipleOccurrences()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -71,7 +71,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -86,14 +86,14 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSingleOccurrence()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSingleOccurrence()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -108,7 +108,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -123,14 +123,14 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithUnusedPlaceholder()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithUnusedPlaceholder()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -145,7 +145,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -160,14 +160,14 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultiplePlaceholders()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultiplePlaceholders()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -182,7 +182,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -197,14 +197,14 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSinglePlaceholder()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSinglePlaceholder()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -219,13 +219,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithFormatDefinedSeparately()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithFormatDefinedSeparately()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -240,13 +240,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithInterpolatedString()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithInterpolatedString()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -261,13 +261,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormattedString()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormattedString()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -283,7 +283,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -299,14 +299,14 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormatProvider()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormatProvider()
+    {
+        var original = @"
     using System;
     using System.Text;
     using System.Globalization;
@@ -322,7 +322,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
     using System.Globalization;
@@ -338,14 +338,14 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithEscapedCurlyBrace()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithEscapedCurlyBrace()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -359,13 +359,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithDoubleEscapedCurlyBrace()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithDoubleEscapedCurlyBrace()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -380,7 +380,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -394,14 +394,14 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithNestedCurlyBraces()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithNestedCurlyBraces()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -416,7 +416,7 @@ namespace SharpSource.Test
         }
     }";
 
-            var expected = @"
+        var expected = @"
     using System;
     using System.Text;
 
@@ -430,14 +430,14 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-            VerifyFix(original, expected);
-        }
+        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        VerifyFix(original, expected);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithCommentedPlaceholder_AlsoUsedValidly()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithCommentedPlaceholder_AlsoUsedValidly()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -451,13 +451,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithInvalidIndex()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithInvalidIndex()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -471,13 +471,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithDifferentMethodName()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithDifferentMethodName()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -495,13 +495,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_WithReusedPlaceholderInDescendingOrder()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_WithReusedPlaceholderInDescendingOrder()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -515,13 +515,13 @@ namespace SharpSource.Test
             }
         }
     }";
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_StringsAreVariables()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_StringsAreVariables()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -539,13 +539,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormat()
-        {
-            var original = @"
+    [TestMethod]
+    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormat()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -559,7 +559,6 @@ class MyClass
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
     }
 }

@@ -17,47 +17,47 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
     private static DiagnosticDescriptor ImplicitOperatorRule
         => new(DiagnosticId.ExceptionThrownFromImplicitOperator,
             "An exception is thrown from an implicit operator.",
-            "An exception is thrown from implicit operator {0} in type {1}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from implicit operator {0} in type {1}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor PropertyGetterRule
         => new(DiagnosticId.ExceptionThrownFromPropertyGetter,
             "An exception is thrown from a property getter.",
-            "An exception is thrown from the getter of property {0}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from the getter of property {0}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor StaticConstructorRule
         => new(DiagnosticId.ExceptionThrownFromStaticConstructor,
             "An exception is thrown from a static constructor.",
-            "An exception is thrown from {0} its static constructor", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from {0} its static constructor", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor FinallyBlockRule
         => new(DiagnosticId.ExceptionThrownFromFinallyBlock,
             "An exception is thrown from a finally block.",
-            "An exception is thrown from a finally block", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from a finally block", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor EqualityOperatorRule
         => new(DiagnosticId.ExceptionThrownFromEqualityOperator,
             "An exception is thrown from an equality operator.",
-            "An exception is thrown from the {0} operator between {1} and {2} in type {3}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from the {0} operator between {1} and {2} in type {3}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor DisposeRule
         => new(DiagnosticId.ExceptionThrownFromDispose,
             "An exception is thrown from a Dispose method.",
-            "An exception is thrown from the {0} method in type {1}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from the {0} method in type {1}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor FinalizerRule
         => new(DiagnosticId.ExceptionThrownFromFinalizer,
             "An exception is thrown from a finalizer method.",
-            "An exception is thrown from the finalizer method in type {0}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from the finalizer method in type {0}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor GetHashCodeRule
         => new(DiagnosticId.ExceptionThrownFromGetHashCode,
             "An exception is thrown from a GetHashCode() method.",
-            "An exception is thrown from the GetHashCode() method in type {0}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from the GetHashCode() method in type {0}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     private static DiagnosticDescriptor EqualsRule
         => new(DiagnosticId.ExceptionThrownFromEquals,
             "An exception is thrown from an Equals() method.",
-            "An exception is thrown from the Equals({0}) method in type {1}", Categories.Exceptions, DiagnosticSeverity.Warning, true);
+            "An exception is thrown from the Equals({0}) method in type {1}", Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         => ImmutableArray.Create(

@@ -15,7 +15,7 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "HttpClient was instantiated directly. Use IHttpClientFactory instead";
     private static readonly string Title = "HttpClient was instantiated directly";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpClientInstantiatedDirectly, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpClientInstantiatedDirectly, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

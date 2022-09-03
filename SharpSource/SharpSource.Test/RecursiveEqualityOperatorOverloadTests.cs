@@ -3,17 +3,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class RecursiveEqualityOperatorOverloadTests : CSharpDiagnosticVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RecursiveOperatorOverloadAnalyzer();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithEqualityOperators()
-        {
-            var original = @"
+[TestClass]
+public class RecursiveEqualityOperatorOverloadTests : CSharpDiagnosticVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RecursiveOperatorOverloadAnalyzer();
+
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithEqualityOperators()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -30,13 +30,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithEquals()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithEquals()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -55,13 +55,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithDifferentComparison()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithDifferentComparison()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -80,13 +80,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithDifferentOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithDifferentOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -108,13 +108,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithNullComparison()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithNullComparison()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -131,13 +131,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithNullComparisonLeftHand()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithNullComparisonLeftHand()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -154,13 +154,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithIs()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithIs()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -177,13 +177,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithReturnNull()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithReturnNull()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -200,13 +200,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithExpressionBody()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithExpressionBody()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -215,13 +215,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithPlusOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithPlusOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -233,13 +233,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithUnaryPlusOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithUnaryPlusOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -251,13 +251,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithMinusOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithMinusOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -269,13 +269,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithUnaryMinusOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithUnaryMinusOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -287,13 +287,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithMultiplicationOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithMultiplicationOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -305,13 +305,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithDivisionOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithDivisionOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -323,13 +323,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithNotOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithNotOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -341,13 +341,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithBitwiseNotOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithBitwiseNotOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -359,13 +359,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithPostFixIncrementOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithPostFixIncrementOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -377,13 +377,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithPreFixIncrementOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithPreFixIncrementOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -395,13 +395,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithDecrementOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithDecrementOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -413,13 +413,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -442,13 +442,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBody()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBody()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -459,13 +459,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyWithNestedConditionals()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyWithNestedConditionals()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -476,13 +476,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithLeftShiftOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithLeftShiftOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -494,13 +494,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithRightShiftOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithRightShiftOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -512,13 +512,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithXorOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithXorOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -530,13 +530,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithOrOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithOrOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -548,13 +548,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithAndOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithAndOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -566,13 +566,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithModOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithModOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -584,13 +584,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithGreaterLesserThanEqualityOperators()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithGreaterLesserThanEqualityOperators()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -607,13 +607,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithCastOperator()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithCastOperator()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -625,13 +625,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void RecursiveEqualityOperatorOverload_WithMultipleOperators()
-        {
-            var original = @"
+    [TestMethod]
+    public void RecursiveEqualityOperatorOverload_WithMultipleOperators()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     public class A
@@ -644,7 +644,6 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
-        }
+        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 }

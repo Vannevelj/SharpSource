@@ -4,19 +4,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new TestMethodWithoutPublicModifierAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new TestMethodWithoutPublicModifierCodeFix();
+
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithPublicModifierAndTestAttribute()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new TestMethodWithoutPublicModifierAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new TestMethodWithoutPublicModifierCodeFix();
-
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithPublicModifierAndTestAttribute()
-        {
-            var test = @"
+        var test = @"
     using System;
     using System.Text;
 
@@ -33,13 +33,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(test);
-        }
+        VerifyDiagnostic(test);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithPublicModifierAndTestMethodAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithPublicModifierAndTestMethodAttribute()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -56,13 +56,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithPublicModifierAndFactAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithPublicModifierAndFactAttribute()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -78,13 +78,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttribute()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -101,7 +101,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -118,14 +118,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttribute()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -142,7 +142,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -159,14 +159,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -182,7 +182,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -198,14 +198,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributes()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributes()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -223,13 +223,13 @@ namespace ConsoleApplication1
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttribute()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -246,7 +246,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -263,14 +263,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithMultipleModifiersAndTestMethodAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithMultipleModifiersAndTestMethodAttribute()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -287,7 +287,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -304,14 +304,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithoutModifierAndTestAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithoutModifierAndTestAttribute()
+    {
+        var original = @"
 using System;
 using System.Text;
 
@@ -328,7 +328,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 
@@ -345,14 +345,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void TestMethodWithoutPublicModifier_WithoutTestAttributeAttribute()
-        {
-            var original = @"
+    [TestMethod]
+    public void TestMethodWithoutPublicModifier_WithoutTestAttributeAttribute()
+    {
+        var original = @"
     using System;
     using System.Text;
 
@@ -367,7 +367,6 @@ namespace ConsoleApplication1
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
     }
 }

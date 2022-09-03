@@ -2,12 +2,7 @@ namespace SharpSource.Utilities;
 
 public static class Categories
 {
-    public const string Arithmetic = "Arithmetic";
-    public const string Async = "Async";
-    public const string Exceptions = "Exceptions";
-    public const string General = "General";
-    public const string Strings = "Strings";
-    public const string Structs = "Structs";
-    public const string Tests = "Tests";
-    public const string Enums = "Enums";
+    public const string Performance = "Performance";
+    public const string Correctness = "Correctness";
+    public const string ApiDesign = "ApiDesign";
 }

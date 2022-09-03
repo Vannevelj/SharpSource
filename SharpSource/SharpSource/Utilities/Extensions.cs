@@ -91,6 +91,10 @@ public static class Extensions
         return false;
     }
 
+    public static bool IsType(this ISymbol typeSymbol, Type type) =>
+        typeSymbol.MetadataName == type.Name &&
+        typeSymbol.ContainingAssembly.MetadataName == type.Assembly.GetName().Name;
+
     public static bool IsCommentTrivia(this SyntaxTrivia trivia)
     {
         switch (trivia.Kind())
@@ -110,17 +114,11 @@ public static class Extensions
         }
     }
 
-    public static bool IsWhitespaceTrivia(this SyntaxTrivia trivia)
+    public static bool IsWhitespaceTrivia(this SyntaxTrivia trivia) => trivia.Kind() switch
     {
-        switch (trivia.Kind())
-        {
-            case SyntaxKind.WhitespaceTrivia:
-            case SyntaxKind.EndOfLineTrivia:
-                return true;
-            default:
-                return false;
-        }
-    }
+        SyntaxKind.WhitespaceTrivia or SyntaxKind.EndOfLineTrivia => true,
+        _ => false,
+    };
 
     public static string ToAlias(this string type)
     {

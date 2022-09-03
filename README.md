@@ -52,3 +52,4 @@ It is not intended to help with general housekeeping tasks like formatting your 
 | SS039  | EnumWithoutDefaultValue  | An `enum` should specify a default value of 0 as "Unknown" or "None"  | Warning  | No  |
 | SS040  | UnusedResultOnImmutableObject  | The result of an operation on a `string` is unused  | Warning  | No  |
 | SS041  | UnnecessaryEnumerableMaterialization  | An `IEnumerable` was materialized before a deferred execution call  | Warning  | Yes  |
+| SS042  | InstanceFieldWithThreadStatic  | `[ThreadStatic]` can only be used on static fields  | Error  | No  |

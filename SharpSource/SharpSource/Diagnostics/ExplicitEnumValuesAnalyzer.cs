@@ -14,7 +14,7 @@ public class ExplicitEnumValuesAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "Option {0} on enum {1} should explicitly specify its value";
     private static readonly string Title = "An enum should explicitly specify its values";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.ExplicitEnumValues, Title, Message, Categories.Enums, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.ExplicitEnumValues, Title, Message, Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

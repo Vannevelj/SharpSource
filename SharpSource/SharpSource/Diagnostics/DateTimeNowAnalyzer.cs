@@ -14,7 +14,7 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "Use DateTime.UtcNow to get a locale-independent value";
     private static readonly string Title = "DateTime.Now was referenced";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

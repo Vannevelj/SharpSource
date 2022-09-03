@@ -4,23 +4,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class StructWithoutElementaryMethodsOverriddenTests : CSharpCodeFixVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StructWithoutElementaryMethodsOverriddenAnalyzer();
-        protected override CodeFixProvider CodeFixProvider => new StructWithoutElementaryMethodsOverriddenCodeFix();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void StructWithoutElementaryMethodsOverridden_NoMethodsImplemented()
-        {
-            var original = @"
+[TestClass]
+public class StructWithoutElementaryMethodsOverriddenTests : CSharpCodeFixVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StructWithoutElementaryMethodsOverriddenAnalyzer();
+    protected override CodeFixProvider CodeFixProvider => new StructWithoutElementaryMethodsOverriddenCodeFix();
+
+    [TestMethod]
+    public void StructWithoutElementaryMethodsOverridden_NoMethodsImplemented()
+    {
+        var original = @"
 struct X
 {
 }";
 
-            var result = @"
+        var result = @"
 struct X
 {
     public override bool Equals(object obj)
@@ -39,14 +39,14 @@ struct X
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void StructWithoutElementaryMethodsOverridden_EqualsImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void StructWithoutElementaryMethodsOverridden_EqualsImplemented()
+    {
+        var original = @"
 struct X
 {
     public override bool Equals(object obj)
@@ -55,7 +55,7 @@ struct X
     }
 }";
 
-            var result = @"
+        var result = @"
 struct X
 {
     public override bool Equals(object obj)
@@ -74,14 +74,14 @@ struct X
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void StructWithoutElementaryMethodsOverridden_GetHashCodeImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void StructWithoutElementaryMethodsOverridden_GetHashCodeImplemented()
+    {
+        var original = @"
 struct X
 {
     public override int GetHashCode()
@@ -90,7 +90,7 @@ struct X
     }
 }";
 
-            var result = @"
+        var result = @"
 struct X
 {
     public override int GetHashCode()
@@ -109,14 +109,14 @@ struct X
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void StructWithoutElementaryMethodsOverridden_ToStringImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void StructWithoutElementaryMethodsOverridden_ToStringImplemented()
+    {
+        var original = @"
 struct X
 {
     public override string ToString()
@@ -125,7 +125,7 @@ struct X
     }
 }";
 
-            var result = @"
+        var result = @"
 struct X
 {
     public override string ToString()
@@ -144,14 +144,14 @@ struct X
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplemented()
+    {
+        var original = @"
 struct X
 {
     public override bool Equals(object obj)
@@ -165,7 +165,7 @@ struct X
     }
 }";
 
-            var result = @"
+        var result = @"
 struct X
 {
     public override bool Equals(object obj)
@@ -184,14 +184,14 @@ struct X
     }
 }";
 
-            VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void StructWithoutElementaryMethodsOverridden_AllImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void StructWithoutElementaryMethodsOverridden_AllImplemented()
+    {
+        var original = @"
 struct X
 {
     public override bool Equals(object obj)
@@ -210,7 +210,6 @@ struct X
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
     }
 }

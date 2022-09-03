@@ -3,17 +3,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class HttpContextStoredInFieldAnalyzerTests : CSharpDiagnosticVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpContextStoredInFieldAnalyzer();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void HttpContextStoredInField_InField()
-        {
-            var original = @"
+[TestClass]
+public class HttpContextStoredInFieldAnalyzerTests : CSharpDiagnosticVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpContextStoredInFieldAnalyzer();
+
+    [TestMethod]
+    public void HttpContextStoredInField_InField()
+    {
+        var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
@@ -22,13 +22,13 @@ class Test
 }
 ";
 
-            VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
-        }
+        VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
+    }
 
-        [TestMethod]
-        public void HttpContextStoredInField_CustomHttpContextClass()
-        {
-            var original = @"
+    [TestMethod]
+    public void HttpContextStoredInField_CustomHttpContextClass()
+    {
+        var original = @"
 class HttpContext { }
 
 class Test
@@ -37,13 +37,13 @@ class Test
 }
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void HttpContextStoredInField_InProperty()
-        {
-            var original = @"
+    [TestMethod]
+    public void HttpContextStoredInField_InProperty()
+    {
+        var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
@@ -52,13 +52,13 @@ class Test
 }
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void HttpContextStoredInField_AsVariable()
-        {
-            var original = @"
+    [TestMethod]
+    public void HttpContextStoredInField_AsVariable()
+    {
+        var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
@@ -70,13 +70,13 @@ class Test
 }
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void HttpContextStoredInField_InField_MultipleDeclarators()
-        {
-            var original = @"
+    [TestMethod]
+    public void HttpContextStoredInField_InField_MultipleDeclarators()
+    {
+        var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
@@ -85,7 +85,6 @@ class Test
 }
 ";
 
-            VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
-        }
+        VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
     }
 }

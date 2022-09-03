@@ -24,7 +24,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
             DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo,
             Title,
             Message,
-            Categories.Enums,
+            Categories.Correctness,
             DiagnosticSeverity.Error,
             true);
 
@@ -33,7 +33,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
             DiagnosticId.FlagsEnumValuesDontFit,
             ValuesDontFitTitle,
             ValuesDontFitMessage,
-            Categories.Enums,
+            Categories.Correctness,
             DiagnosticSeverity.Error,
             true);
 

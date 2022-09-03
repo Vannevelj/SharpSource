@@ -17,7 +17,7 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
     private static readonly string Title = "Structs should implement Equals(), GetHashCode(), and ToString().";
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.StructWithoutElementaryMethodsOverridden, Title, Message, Categories.Structs, DiagnosticSeverity.Warning, true);
+        => new(DiagnosticId.StructWithoutElementaryMethodsOverridden, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -37,7 +37,7 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
 
         foreach (var symbol in objectSymbol.GetMembers())
         {
-            if (!( symbol is IMethodSymbol ))
+            if (symbol is not IMethodSymbol)
             {
                 continue;
             }

@@ -15,7 +15,7 @@ public class ThrowNullAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "Throwing null will always result in a runtime exception";
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.ThrowNull, Title, Message, Categories.Exceptions, DiagnosticSeverity.Error, true);
+        => new(DiagnosticId.ThrowNull, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

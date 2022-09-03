@@ -15,7 +15,7 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "HttpContext was stored in a field. Use IHttpContextAccessor instead";
     private static readonly string Title = "HttpContext was stored in a field";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpContextStoredInField, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpContextStoredInField, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

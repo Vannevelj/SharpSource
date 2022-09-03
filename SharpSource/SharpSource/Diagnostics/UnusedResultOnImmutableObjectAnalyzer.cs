@@ -18,7 +18,7 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
     private static readonly HashSet<string> AllowedInvocations = new() { "CopyTo", "TryCopyTo" };
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.UnusedResultOnImmutableObject, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+        => new(DiagnosticId.UnusedResultOnImmutableObject, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

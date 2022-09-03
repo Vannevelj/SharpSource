@@ -16,7 +16,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
     private static readonly string Message = "Equals() and GetHashcode() must be implemented together on {0}";
     private static readonly string Title = "Implement Equals() and GetHashcode() together.";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

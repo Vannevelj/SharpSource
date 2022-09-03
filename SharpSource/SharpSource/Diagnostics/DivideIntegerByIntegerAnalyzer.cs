@@ -22,7 +22,7 @@ public class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "The operands of a divisive expression are both integers and result in an implicit rounding.";
 
     public static DiagnosticDescriptor Rule =>
-            new(DiagnosticId.DivideIntegerByInteger, Title, Message, Categories.Arithmetic, DiagnosticSeverity.Warning, true);
+            new(DiagnosticId.DivideIntegerByInteger, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

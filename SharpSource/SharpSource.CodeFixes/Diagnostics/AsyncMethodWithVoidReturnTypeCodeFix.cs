@@ -33,12 +33,12 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Task as return type",
-                x => ChangeReturnTypeAsync(context.Document, methodDeclaration, root, x),
+                x => ChangeReturnTypeAsync(context.Document, methodDeclaration, root),
                 AsyncMethodWithVoidReturnTypeAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root, CancellationToken cancellationToken)
+    private Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
     {
         SyntaxNode newMethod = methodDeclaration switch
         {

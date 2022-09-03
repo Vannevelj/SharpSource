@@ -16,7 +16,7 @@ public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "Method {0} is marked as async but has a void return type";
     private static readonly string Title = "Async methods should return a Task to make them awaitable";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.AsyncMethodWithVoidReturnType, Title, Message, Categories.Async, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.AsyncMethodWithVoidReturnType, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -4,19 +4,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class DateTimeNowTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class DateTimeNowTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DateTimeNowAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new DateTimeNowCodeFix();
+
+    [TestMethod]
+    public void DateTimeNow_Now()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DateTimeNowAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new DateTimeNowCodeFix();
-
-        [TestMethod]
-        public void DateTimeNow_Now()
-        {
-            var original = @"
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -29,7 +29,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -42,14 +42,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void DateTimeNow_UtcNow()
-        {
-            var original = @"
+    [TestMethod]
+    public void DateTimeNow_UtcNow()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -62,13 +62,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DateTimeNow_Now_Expression()
-        {
-            var original = @"
+    [TestMethod]
+    public void DateTimeNow_Now_Expression()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -81,7 +81,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -94,14 +94,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void DateTimeNow_FullName()
-        {
-            var original = @"
+    [TestMethod]
+    public void DateTimeNow_FullName()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -113,7 +113,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -125,8 +125,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
+        VerifyFix(original, result);
     }
 }

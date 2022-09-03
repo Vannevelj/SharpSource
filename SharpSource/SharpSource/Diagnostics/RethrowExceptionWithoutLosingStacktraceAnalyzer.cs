@@ -15,7 +15,7 @@ public class RethrowExceptionWithoutLosingStacktraceAnalyzer : DiagnosticAnalyze
     private static readonly string Message = "Rethrown exception loses the stacktrace.";
     private static readonly string Title = "An exception is rethrown in a way that it loses the stacktrace.";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.RethrowExceptionWithoutLosingStacktrace, Title, Message, Categories.Exceptions, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.RethrowExceptionWithoutLosingStacktrace, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

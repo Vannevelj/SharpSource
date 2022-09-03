@@ -15,7 +15,7 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "Asynchronously wait for task completion using await instead";
     private static readonly string Title = "Asynchronously await tasks instead of blocking them";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.SynchronousTaskWait, Title, Message, Categories.Async, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.SynchronousTaskWait, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
