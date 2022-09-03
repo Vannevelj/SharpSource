@@ -91,6 +91,10 @@ public static class Extensions
         return false;
     }
 
+    public static bool IsType(this ISymbol typeSymbol, Type type) =>
+        typeSymbol.MetadataName == type.Name &&
+        typeSymbol.ContainingAssembly.MetadataName == type.Assembly.GetName().Name;
+
     public static bool IsCommentTrivia(this SyntaxTrivia trivia)
     {
         switch (trivia.Kind())
