@@ -26,7 +26,6 @@ It is not intended to help with general housekeeping tasks like formatting your 
 | SS013  | RethrowExceptionWithoutLosingStacktrace | An exception is rethrown in a way that it loses the stacktrace  | Warning  | Yes  |
 | SS014  | StringDotFormatWithDifferentAmountOfArguments  | A `string.Format()` call lacks arguments and will cause a runtime exception  | Error  | Yes  |
 | SS015  | StringPlaceholdersInWrongOrder  | Orders the arguments of a `string.Format()` call in ascending order according to index  | Warning  | Yes  |
-| SS016  | StructShouldNotMutateSelf  | A `struct` replaces `this` with a new instance  | Warning  | No  |
 | SS017  | StructWithoutElementaryMethodsOverridden  | Structs should implement `Equals()`, `GetHashCode()`, and `ToString()`  | Warning  | Yes  |
 | SS018  | SwitchDoesNotHandleAllEnumOptions  | Add cases for missing enum member  | Warning  | Yes  |
 | SS019  | SwitchIsMissingDefaultLabel  | Switch is missing a `default` label  | Warning   | Yes  |
