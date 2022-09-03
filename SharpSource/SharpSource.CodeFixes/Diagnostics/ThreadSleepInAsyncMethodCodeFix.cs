@@ -28,21 +28,21 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
+        var isAsync = bool.Parse(diagnostic.Properties["isAsync"]);
+        if (!isAsync)
+        {
+            return;
+        }
+
         context.RegisterCodeFix(
             CodeAction.Create("Use Task.Delay",
-                x => UseTaskDelay(context.Document, memberAccess, root, diagnostic, x),
+                x => UseTaskDelay(context.Document, memberAccess, root),
                 ThreadSleepInAsyncMethodAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic, CancellationToken cancellationToken)
+    private Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
     {
-        var isAsync = bool.Parse(diagnostic.Properties["isAsync"]);
-        if (!isAsync)
-        {
-            return Task.FromResult(document);
-        }
-
         ExpressionSyntax newExpression;
         if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
         {
