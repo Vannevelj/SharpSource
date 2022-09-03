@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.4.1] - 2022-09-03
+- `TestMethodWithoutTestAttribute`: improved the accuracy of discovering `TestClass` and `TestFixture` attributes
+
 ## [1.4.0] - 2022-09-03
 - `InstanceFieldWithThreadStatic`: warn when `[ThreadStatic]` is applied to an instance field
 - Removed `StructShouldNotMutateSelf`

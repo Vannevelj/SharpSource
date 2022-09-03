@@ -198,6 +198,7 @@ class Test
     {
         var original = @"
 using System.Linq;
+using System.Collections.Generic;
 
 class Test
 {

@@ -694,19 +694,18 @@ public class MyClass
     public void ExceptionThrownFromProhibitedContext_Indexer()
     {
         var original = @"
-namespace ConsoleApplication1
-{
-    class MyClass
-    {
-	    public string this[int i]
-	    {
-		    get
-		    {
-			    throw new ArgumentException();
-		    }
+using System;
 
-		    set { }
+class MyClass
+{
+    public string this[int i]
+    {
+	    get
+	    {
+		    throw new ArgumentException();
 	    }
+
+	    set { }
     }
 }";
 
@@ -717,6 +716,8 @@ namespace ConsoleApplication1
     public void ExceptionThrownFromProhibitedContext_EmptyThrow()
     {
         var original = @"
+using System;
+
 class MyClass
 {
 	int MyProp
@@ -739,6 +740,8 @@ class MyClass
     public void ExceptionThrownFromProhibitedContext_MemberAccessExpression()
     {
         var original = @"
+using System;
+
 class MyClass
 {
 	int MyProp
