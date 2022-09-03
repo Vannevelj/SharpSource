@@ -1,10 +1,13 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.4.1] - 2022-09-03
+- `TestMethodWithoutTestAttribute`: improved the accuracy of discovering `TestClass` and `TestFixture` attributes
+
 ## [1.4.0] - 2022-09-03
 - `InstanceFieldWithThreadStatic`: warn when `[ThreadStatic]` is applied to an instance field
 - Removed `StructShouldNotMutateSelf`
-- Restructured the diagnostic categories into _Performance_ and _Correctness_
+- Restructured the diagnostic categories into _Performance_, _ApiDesign_ and _Correctness_
 
 ## [1.3.1] - 2022-09-03
 - `ThreadSleepInAsyncMethod` does not suggest a no-op refactor if the method is not marked as `async`

@@ -58,7 +58,10 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         var isTestClass = false;
         foreach (var attribute in symbol.GetAttributes())
         {
-            if (attribute.AttributeClass.Name == "TestClass" || attribute.AttributeClass.Name == "TestFixture")
+            if (attribute.AttributeClass.Name == "TestClass" ||
+                attribute.AttributeClass.Name == "TestClassAttribute" ||
+                attribute.AttributeClass.Name == "TestFixture" ||
+                attribute.AttributeClass.Name == "TestFixtureAttribute")
             {
                 isTestClass = true;
                 break;

@@ -15,6 +15,8 @@ public class TestMethodWithoutTestAttributeTests : CSharpDiagnosticVerifier
     public void TestMethodWithoutTestAttribute_MSTest()
     {
         var original = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace ConsoleApplication1
 {
     [TestClass]
@@ -33,6 +35,8 @@ namespace ConsoleApplication1
     public void TestMethodWithoutTestAttribute_NUnit()
     {
         var original = @"
+using NUnit.Framework;
+
 namespace ConsoleApplication1
 {
     [TestFixture]
@@ -51,6 +55,8 @@ namespace ConsoleApplication1
     public void TestMethodWithoutTestAttribute_XUnit_NoOtherMethodsWithAttribute()
     {
         var original = @"
+using Xunit;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -68,6 +74,8 @@ namespace ConsoleApplication1
     public void TestMethodWithoutTestAttribute_XUnit_OtherMethodWithAttribute()
     {
         var original = @"
+using Xunit;
+
 namespace ConsoleApplication1
 {
     class MyClass
@@ -87,28 +95,11 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_struct()
-    {
-        var original = @"
-namespace ConsoleApplication1
-{
-    [TestClass]
-    struct MyStruct
-    {
-        public void MyMethod()
-        {
-        }
-    }
-}";
-
-        VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
-    }
-
-    [TestMethod]
     public void TestMethodWithoutTestAttribute_TaskReturn()
     {
         var original = @"
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -130,6 +121,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -150,6 +142,8 @@ namespace ConsoleApplication1
     public void TestMethodWithoutTestAttribute_OtherReturnType()
     {
         var original = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace ConsoleApplication1
 {
     [TestClass]
@@ -169,6 +163,9 @@ namespace ConsoleApplication1
     public void TestMethodWithoutTestAttribute_OtherAttribute()
     {
         var original = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace ConsoleApplication1
 {
     [TestClass]
@@ -180,7 +177,10 @@ namespace ConsoleApplication1
             return 5;
         }
     }
-}";
+}
+
+class SomethingElseAttribute : Attribute { }
+";
 
         VerifyDiagnostic(original);
     }
@@ -190,6 +190,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -225,6 +226,9 @@ namespace ConsoleApplication1
     public void TestMethodWithoutTestAttribute_Dispose()
     {
         var original = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 [TestClass]
 class Test : IDisposable
 {

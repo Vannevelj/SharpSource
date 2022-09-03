@@ -29,24 +29,30 @@ public abstract class DiagnosticVerifier
     // After netframework the runtime is split in System.Runtime and System.Private.CoreLib
     // All references appear to return System.Private.CoreLib so we'll have to manually insert the System.Runtime one
     private static readonly string SystemPrivateCoreLibPath = typeof(AmbiguousImplementationException).Assembly.Location;
-    private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath), "System.Runtime.dll"));
+    private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(GetDllDirectory("System.Runtime.dll"));
     private static readonly MetadataReference SystemConsole = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
-    private static readonly MetadataReference SystemCollections = MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath), "System.Collections.dll"));
+    private static readonly MetadataReference SystemCollections = MetadataReference.CreateFromFile(GetDllDirectory("System.Collections.dll"));
+    private static readonly MetadataReference SystemObjectModel = MetadataReference.CreateFromFile(GetDllDirectory("System.ObjectModel.dll"));
     private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location);
     private static readonly MetadataReference AspNetCore = MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location);
     private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
     private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
+    private static readonly MetadataReference XunitReference = MetadataReference.CreateFromFile(typeof(Xunit.FactAttribute).Assembly.Location);
+    private static readonly MetadataReference NunitReference = MetadataReference.CreateFromFile(typeof(NUnit.Framework.TestFixtureAttribute).Assembly.Location);
+    private static readonly MetadataReference MsTestReference = MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
+    private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
 
     private const string FileName = "Test";
     private const string FileNameTemplate = FileName + "{0}{1}";
     private const string ProjectName = "TestProject";
-    private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
     private readonly string _languageName;
 
     public DiagnosticVerifier(string languageName)
     {
         _languageName = languageName;
     }
+
+    private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath), dllName);
 
     /// <summary>
     ///     Get the analyzer being tested - to be implemented in non-abstract class
@@ -319,9 +325,8 @@ public abstract class DiagnosticVerifier
             var compilation = project.GetCompilationAsync().Result;
 
             // We're ignoring the diagnostic that tells us we don't have a main method
-            // We're also ignoring the diagnostics that complain about not being able to find a type or namespace
             var systemDiags = compilation.GetDiagnostics()
-                    .Where(x => x.Id != "CS5001" && x.Id != "BC30420" && x.Id != "CS0246")
+                    .Where(x => x.Id != "CS5001")
                     .ToList();
 
             if (systemDiags.Any(d => d.Severity == DiagnosticSeverity.Error))
@@ -413,7 +418,11 @@ public abstract class DiagnosticVerifier
             SystemCollections,
             SystemConsole,
             SystemNetHttp,
-            AspNetCore
+            SystemObjectModel,
+            AspNetCore,
+            XunitReference,
+            MsTestReference,
+            NunitReference
         };
 
         var solution = new AdhocWorkspace()

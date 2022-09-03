@@ -18,7 +18,7 @@ public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
     {
         var test = @"
     using System;
-    using System.Text;
+    using NUnit.Framework;
 
     namespace ConsoleApplication1
     {
@@ -41,7 +41,7 @@ public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
     {
         var original = @"
     using System;
-    using System.Text;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     namespace ConsoleApplication1
     {
@@ -64,7 +64,7 @@ public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
     {
         var original = @"
     using System;
-    using System.Text;
+    using Xunit;
 
     namespace ConsoleApplication1
     {
@@ -86,7 +86,7 @@ public class TestMethodWithoutPublicModifierTests : CSharpCodeFixVerifier
     {
         var original = @"
 using System;
-using System.Text;
+using NUnit.Framework;
 
 namespace ConsoleApplication1
 {
@@ -103,7 +103,7 @@ namespace ConsoleApplication1
 
         var result = @"
 using System;
-using System.Text;
+using NUnit.Framework;
 
 namespace ConsoleApplication1
 {
@@ -127,7 +127,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -144,7 +144,7 @@ namespace ConsoleApplication1
 
         var result = @"
 using System;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -168,7 +168,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System;
-using System.Text;
+using Xunit;
 
 namespace ConsoleApplication1
 {
@@ -184,7 +184,7 @@ namespace ConsoleApplication1
 
         var result = @"
 using System;
-using System.Text;
+using Xunit;
 
 namespace ConsoleApplication1
 {
@@ -206,22 +206,18 @@ namespace ConsoleApplication1
     public void TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributes()
     {
         var original = @"
-    using System;
-    using System.Text;
+using System;
+using Xunit;
 
-    namespace ConsoleApplication1
+public class MyClass
+{
+    [Obsolete]
+    [Fact]
+    public void Method()
     {
-        [TestFixture]
-        public class MyClass
-        {
-            [Ignore]
-            [Test]
-            public void Method()
-            {
                 
-            }
-        }
-    }";
+    }
+}";
 
         VerifyDiagnostic(original);
     }
@@ -231,7 +227,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -248,7 +244,7 @@ namespace ConsoleApplication1
 
         var result = @"
 using System;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -272,7 +268,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -289,7 +285,7 @@ namespace ConsoleApplication1
 
         var result = @"
 using System;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleApplication1
 {
@@ -313,7 +309,7 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System;
-using System.Text;
+using NUnit.Framework;
 
 namespace ConsoleApplication1
 {
@@ -330,7 +326,7 @@ namespace ConsoleApplication1
 
         var result = @"
 using System;
-using System.Text;
+using NUnit.Framework;
 
 namespace ConsoleApplication1
 {
@@ -350,11 +346,10 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithoutTestAttributeAttribute()
+    public void TestMethodWithoutPublicModifier_WithoutTestAttribute()
     {
         var original = @"
     using System;
-    using System.Text;
 
     namespace ConsoleApplication1
     {

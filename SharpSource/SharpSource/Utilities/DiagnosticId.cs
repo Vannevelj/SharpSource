@@ -16,7 +16,6 @@ public static class DiagnosticId
     public const string RethrowExceptionWithoutLosingStacktrace = "SS013";
     public const string StringDotFormatWithDifferentAmountOfArguments = "SS014";
     public const string StringPlaceholdersInWrongOrder = "SS015";
-    public const string StructShouldNotMutateSelf = "SS016";
     public const string StructWithoutElementaryMethodsOverridden = "SS017";
     public const string SwitchDoesNotHandleAllEnumOptions = "SS018";
     public const string SwitchIsMissingDefaultLabel = "SS019";
