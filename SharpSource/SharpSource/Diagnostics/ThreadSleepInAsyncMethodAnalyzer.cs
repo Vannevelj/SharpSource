@@ -17,7 +17,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "Synchronously sleeping thread in an async method";
     private static readonly string Title = "Synchronously sleeping a thread in an async method";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Categories.Async, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

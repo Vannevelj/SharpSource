@@ -18,7 +18,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
     private static readonly string Title = "A string.Format() call lacks arguments and will cause a runtime exception.";
 
     public static DiagnosticDescriptor Rule =>
-        new(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Categories.Strings, DiagnosticSeverity.Error, true);
+        new(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

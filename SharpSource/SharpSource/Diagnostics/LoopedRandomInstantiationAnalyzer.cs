@@ -18,7 +18,7 @@ public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
     private readonly SyntaxKind[] _loopTypes = { SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement };
 
     public static DiagnosticDescriptor Rule =>
-            new(DiagnosticId.LoopedRandomInstantiation, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+            new(DiagnosticId.LoopedRandomInstantiation, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

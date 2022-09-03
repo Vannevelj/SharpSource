@@ -16,7 +16,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "Recursively using overloaded operator";
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.RecursiveOperatorOverload, Title, Message, Categories.General, DiagnosticSeverity.Error, true);
+        => new(DiagnosticId.RecursiveOperatorOverload, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

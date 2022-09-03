@@ -16,7 +16,7 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "Orders the arguments of a string.Format() call in ascending order according to index.";
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Categories.Strings, DiagnosticSeverity.Warning, true);
+        => new(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

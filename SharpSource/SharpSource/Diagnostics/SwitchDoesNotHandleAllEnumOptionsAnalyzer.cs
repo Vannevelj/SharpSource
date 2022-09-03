@@ -16,7 +16,7 @@ public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "Add cases for missing enum member.";
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+        => new(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

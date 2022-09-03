@@ -18,7 +18,7 @@ public class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
 
     private static readonly string[] AcceptedNames = new[] { "Unknown", "None" };
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.EnumWithoutDefaultValue, Title, Message, Categories.Enums, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.EnumWithoutDefaultValue, Title, Message, Categories.ApiDesign, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -18,7 +18,7 @@ public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
     private static readonly string Message = "OnPropertyChanged({0}) can use the nameof() operator.";
     private static readonly string Title = "Use the nameof() operator in conjunction with OnPropertyChanged()";
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.OnPropertyChangedWithoutNameofOperator, Title, Message, Categories.General, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(DiagnosticId.OnPropertyChangedWithoutNameofOperator, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

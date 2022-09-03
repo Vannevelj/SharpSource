@@ -16,7 +16,7 @@ public class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
     private static readonly string Title = "Verifies whether a test method has the public modifier.";
 
     public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.TestMethodWithoutPublicModifier, Title, Message, Categories.Tests, DiagnosticSeverity.Warning, true);
+        => new(DiagnosticId.TestMethodWithoutPublicModifier, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
