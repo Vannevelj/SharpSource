@@ -1,11 +1,10 @@
 using Microsoft.CodeAnalysis;
 
-namespace SharpSource.Test.Helpers.Helpers.CSharp
+namespace SharpSource.Test.Helpers.Helpers.CSharp;
+
+public abstract class CSharpDiagnosticVerifier : DiagnosticVerifier
 {
-    public abstract class CSharpDiagnosticVerifier : DiagnosticVerifier
+    public CSharpDiagnosticVerifier() : base(LanguageNames.CSharp)
     {
-        public CSharpDiagnosticVerifier() : base(LanguageNames.CSharp)
-        {
-        }
     }
 }

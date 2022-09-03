@@ -4,19 +4,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class NewGuidTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class NewGuidTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new NewGuidAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new NewGuidCodeFix();
+
+    [TestMethod]
+    public void NewGuid_Constructor_NewGuid()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new NewGuidAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new NewGuidCodeFix();
-
-        [TestMethod]
-        public void NewGuid_Constructor_NewGuid()
-        {
-            var original = @"
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -29,7 +29,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -42,14 +42,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-            VerifyFix(original, result, codeFixIndex: 0);
-        }
+        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        VerifyFix(original, result, codeFixIndex: 0);
+    }
 
-        [TestMethod]
-        public void NewGuid_Constructor_NewGuid_FullName()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_Constructor_NewGuid_FullName()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -61,7 +61,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -73,14 +73,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-            VerifyFix(original, result, codeFixIndex: 0);
-        }
+        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        VerifyFix(original, result, codeFixIndex: 0);
+    }
 
-        [TestMethod]
-        public void NewGuid_Constructor_EmptyGuid()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_Constructor_EmptyGuid()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -93,7 +93,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -106,14 +106,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-            VerifyFix(original, result, codeFixIndex: 1);
-        }
+        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        VerifyFix(original, result, codeFixIndex: 1);
+    }
 
-        [TestMethod]
-        public void NewGuid_Constructor_EmptyGuid_FullName()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_Constructor_EmptyGuid_FullName()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -125,7 +125,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -137,14 +137,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-            VerifyFix(original, result, codeFixIndex: 1);
-        }
+        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        VerifyFix(original, result, codeFixIndex: 1);
+    }
 
-        [TestMethod]
-        public void NewGuid_Constructor_AsExpression()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_Constructor_AsExpression()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -157,7 +157,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -170,14 +170,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-            VerifyFix(original, result, codeFixIndex: 0);
-        }
+        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        VerifyFix(original, result, codeFixIndex: 0);
+    }
 
-        [TestMethod]
-        public void NewGuid_GuidNewGuid()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_GuidNewGuid()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -190,13 +190,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void NewGuid_GuidEmpty()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_GuidEmpty()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -209,13 +209,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void NewGuid_Default()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_Default()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -228,13 +228,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void NewGuid_OverloadedConstructor()
-        {
-            var original = @"
+    [TestMethod]
+    public void NewGuid_OverloadedConstructor()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -247,7 +247,6 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
     }
 }

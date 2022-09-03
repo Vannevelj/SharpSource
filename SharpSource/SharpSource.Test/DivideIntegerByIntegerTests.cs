@@ -3,17 +3,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class DivideIntegerByIntegerTests : CSharpDiagnosticVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DivideIntegerByIntegerAnalyzer();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void DivideIntegerByInteger_TwoIntegers()
-        {
-            var original = @"
+[TestClass]
+public class DivideIntegerByIntegerTests : CSharpDiagnosticVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DivideIntegerByIntegerAnalyzer();
+
+    [TestMethod]
+    public void DivideIntegerByInteger_TwoIntegers()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -25,13 +25,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_IntegerAndDouble()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_IntegerAndDouble()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -43,13 +43,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_DoubleAndInteger()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_DoubleAndInteger()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -61,13 +61,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_DoubleAndDouble()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_DoubleAndDouble()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -79,13 +79,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_ThreeIntegerOperands()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_ThreeIntegerOperands()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -97,15 +97,15 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original,
-                string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6 / 2"),
-                string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
-        }
+        VerifyDiagnostic(original,
+            string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6 / 2"),
+            string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_ThreeIntegerOperands_TwoSubsequentIntegers_IntegerDivisionEvaluatedFirst()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_ThreeIntegerOperands_TwoSubsequentIntegers_IntegerDivisionEvaluatedFirst()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -117,17 +117,17 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
+    }
 
-        /// <summary>
-        /// This scenario is less important because 5.0 / 6 is evaluated first and results in a double.
-        /// In practice there will be no integer division here.
-        /// </summary>
-        [TestMethod]
-        public void DivideIntegerByInteger_ThreeIntegerOperands_TwoSubsequentIntegers_IntegerDivisionEvaluatedLast()
-        {
-            var original = @"
+    /// <summary>
+    /// This scenario is less important because 5.0 / 6 is evaluated first and results in a double.
+    /// In practice there will be no integer division here.
+    /// </summary>
+    [TestMethod]
+    public void DivideIntegerByInteger_ThreeIntegerOperands_TwoSubsequentIntegers_IntegerDivisionEvaluatedLast()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -139,13 +139,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_ThreeIntegerOperands_NoSubsequentIntegerOperands()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_ThreeIntegerOperands_NoSubsequentIntegerOperands()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -157,13 +157,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_DynamicOperand()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_DynamicOperand()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -176,13 +176,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_TwoIntegers_OneAsVariable()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_TwoIntegers_OneAsVariable()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -195,13 +195,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / 3"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / 3"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_TwoIntegers_TwoAsVariables()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_TwoIntegers_TwoAsVariables()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -215,13 +215,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_TwoIntegers_MethodReference()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_TwoIntegers_MethodReference()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -239,13 +239,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "IntMethod() / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "IntMethod() / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_TwoIntegers_InsideExpression()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_TwoIntegers_InsideExpression()
+    {
+        var original = @"
     using System;
 
     namespace ConsoleApplication1
@@ -259,13 +259,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_ShortAndShort()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_ShortAndShort()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -279,13 +279,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_LongAndLong()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_LongAndLong()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -299,13 +299,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_LongAndInt()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_LongAndInt()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -319,13 +319,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_ULongAndULong()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_ULongAndULong()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -339,13 +339,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_UIntAndUInt()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_UIntAndUInt()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -359,13 +359,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_UShortAndUShort()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_UShortAndUShort()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -379,13 +379,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_ByteAndByte()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_ByteAndByte()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -399,13 +399,13 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
+    }
 
-        [TestMethod]
-        public void DivideIntegerByInteger_SByteAndSByte()
-        {
-            var original = @"
+    [TestMethod]
+    public void DivideIntegerByInteger_SByteAndSByte()
+    {
+        var original = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -419,7 +419,6 @@ namespace SharpSource.Test
         }
     }";
 
-            VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
-        }
+        VerifyDiagnostic(original, string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "x / y"));
     }
 }

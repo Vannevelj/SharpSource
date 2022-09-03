@@ -4,19 +4,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class SynchronousTaskWaitTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class SynchronousTaskWaitTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SynchronousTaskWaitAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new SynchronousTaskWaitCodeFix();
+
+    [TestMethod]
+    public void SynchronousTaskWait_AsyncContext()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SynchronousTaskWaitAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new SynchronousTaskWaitCodeFix();
-
-        [TestMethod]
-        public void SynchronousTaskWait_AsyncContext()
-        {
-            var original = @"
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,14 +48,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_SyncContext()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_SyncContext()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,13 +71,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_AsyncContext_Void()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_AsyncContext_Void()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,7 +93,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -109,14 +109,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_ExpressionBodiedMember()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_ExpressionBodiedMember()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -129,7 +129,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -142,14 +142,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_AsyncLambda()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_AsyncLambda()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -162,7 +162,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -175,14 +175,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_SyncLambda()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_SyncLambda()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -195,13 +195,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_Constructor()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_Constructor()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -219,13 +219,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void SynchronousTaskWait_ChainedExpression()
-        {
-            var original = @"
+    [TestMethod]
+    public void SynchronousTaskWait_ChainedExpression()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -243,7 +243,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -261,8 +261,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        VerifyFix(original, result);
     }
 }

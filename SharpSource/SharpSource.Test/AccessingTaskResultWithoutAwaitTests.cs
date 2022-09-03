@@ -5,19 +5,19 @@ using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
+namespace SharpSource.Test;
+
+[TestClass]
+public class AccessingTaskResultWithoutAwaitTests : CSharpCodeFixVerifier
 {
-    [TestClass]
-    public class AccessingTaskResultWithoutAwaitTests : CSharpCodeFixVerifier
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AccessingTaskResultWithoutAwaitAnalyzer();
+
+    protected override CodeFixProvider CodeFixProvider => new AccessingTaskResultWithoutAwaitCodeFix();
+
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_AsyncContext()
     {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AccessingTaskResultWithoutAwaitAnalyzer();
-
-        protected override CodeFixProvider CodeFixProvider => new AccessingTaskResultWithoutAwaitCodeFix();
-
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_AsyncContext()
-        {
-            var original = @"
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,14 +53,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_SyncContext()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_SyncContext()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,13 +79,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_AsyncContext_Void()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_AsyncContext_Void()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,7 +103,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -121,14 +121,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_ExpressionBodiedMember()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_ExpressionBodiedMember()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -143,7 +143,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -158,14 +158,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_ChainedInvocations()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_ChainedInvocations()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -180,7 +180,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -195,14 +195,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_AsyncLambda()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_AsyncLambda()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -217,7 +217,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -232,14 +232,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_SyncLambda()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_SyncLambda()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -254,13 +254,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_Constructor()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_Constructor()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -278,13 +278,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_ChainedPropertyAccess()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_ChainedPropertyAccess()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -304,7 +304,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -324,14 +324,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void AccessingTaskResultWithoutAwait_ObjectInitializer()
-        {
-            var original = @"
+    [TestMethod]
+    public void AccessingTaskResultWithoutAwait_ObjectInitializer()
+    {
+        var original = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -351,7 +351,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -371,14 +371,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
+    }
 
-        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/111")]
-        public void AccessingTaskResultWithoutAwait_AsyncContext_ValueTask()
-        {
-            var original = @"
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/111")]
+    public void AccessingTaskResultWithoutAwait_AsyncContext_ValueTask()
+    {
+        var original = @"
 using System;
 using System.Threading.Tasks;
 
@@ -395,7 +395,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 using System.Threading.Tasks;
 
@@ -412,8 +412,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Use await to get the result of a Task.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        VerifyFix(original, result);
     }
 }

@@ -4,18 +4,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class SwitchIsMissingDefaultLabelTests : CSharpCodeFixVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SwitchIsMissingDefaultLabelAnalyzer();
-        protected override CodeFixProvider CodeFixProvider => new SwitchIsMissingDefaultLabelCodeFix();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnum()
-        {
-            var original = @"
+[TestClass]
+public class SwitchIsMissingDefaultLabelTests : CSharpCodeFixVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SwitchIsMissingDefaultLabelAnalyzer();
+    protected override CodeFixProvider CodeFixProvider => new SwitchIsMissingDefaultLabelCodeFix();
+
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnum()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -40,7 +40,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -67,14 +67,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnString()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnString()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -94,7 +94,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -116,14 +116,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteral()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteral()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -142,7 +142,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -163,14 +163,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteral()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteral()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -189,7 +189,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -210,14 +210,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_HasDefaultStatement()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_HasDefaultStatement()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -238,13 +238,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatement()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatement()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -264,7 +264,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -286,14 +286,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteral()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteral()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -312,7 +312,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -333,14 +333,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteral()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteral()
+    {
+        var original = @"
 using System;
 
 namespace ConsoleApplication1
@@ -359,7 +359,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 
 namespace ConsoleApplication1
@@ -380,14 +380,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatement()
-        {
-            var original = @"
+    [TestMethod]
+    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatement()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -404,7 +404,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"using System;
+        var result = @"using System;
 
 namespace ConsoleApplication1
 {
@@ -424,8 +424,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Switch should have default label.");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Switch should have default label.");
+        VerifyFix(original, result);
     }
 }

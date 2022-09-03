@@ -4,18 +4,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class EqualsAndGetHashcodeNotImplementedTogetherTests : CSharpCodeFixVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new EqualsAndGetHashcodeNotImplementedTogetherAnalyzer();
-        protected override CodeFixProvider CodeFixProvider => new EqualsAndGetHashcodeNotImplementedTogetherCodeFix();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarning()
-        {
-            var original = @"
+[TestClass]
+public class EqualsAndGetHashcodeNotImplementedTogetherTests : CSharpCodeFixVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new EqualsAndGetHashcodeNotImplementedTogetherAnalyzer();
+    protected override CodeFixProvider CodeFixProvider => new EqualsAndGetHashcodeNotImplementedTogetherCodeFix();
+
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarning()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -32,13 +32,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_EqualsImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_EqualsImplemented()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -50,7 +50,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -67,14 +67,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -86,7 +86,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -103,14 +103,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_NeitherImplemented_NoWarning()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_NeitherImplemented_NoWarning()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -118,13 +118,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_NonOverridingEqualsImplemented_NoWarning()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_NonOverridingEqualsImplemented_NoWarning()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -136,13 +136,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_NonOverridingGetHashcodeImplemented_NoWarning()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_NonOverridingGetHashcodeImplemented_NoWarning()
+    {
+        var original = @"
 namespace ConsoleApplication1
 {
     class MyClass
@@ -154,13 +154,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_EqualsImplemented_SimplifiesNameWhenUsingSystem()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_EqualsImplemented_SimplifiesNameWhenUsingSystem()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -173,7 +173,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -191,14 +191,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_SimplifiesNameWhenUsingSystem()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_SimplifiesNameWhenUsingSystem()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -211,7 +211,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -229,14 +229,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_BaseClassImplementsBoth()
-        {
-            var original = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_BaseClassImplementsBoth()
+    {
+        var original = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -262,7 +262,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var result = @"
+        var result = @"
 using System;
 namespace ConsoleApplication1
 {
@@ -293,14 +293,14 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-            VerifyFix(original, result);
-        }
+        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        VerifyFix(original, result);
+    }
 
-        [TestMethod]
-        public void EqualsAndGetHashcodeNotImplemented_Partial()
-        {
-            var file1 = @"
+    [TestMethod]
+    public void EqualsAndGetHashcodeNotImplemented_Partial()
+    {
+        var file1 = @"
 partial class MyClass
 {
     public override bool Equals(object obj)
@@ -309,7 +309,7 @@ partial class MyClass
     }
 }";
 
-            var file2 = @"
+        var file2 = @"
 partial class MyClass
 {
     public override int GetHashCode()
@@ -318,7 +318,6 @@ partial class MyClass
     }
 }";
 
-            VerifyDiagnostic(new string[] { file1, file2 });
-        }
+        VerifyDiagnostic(new string[] { file1, file2 });
     }
 }

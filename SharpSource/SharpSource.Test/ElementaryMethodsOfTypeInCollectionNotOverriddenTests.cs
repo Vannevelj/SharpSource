@@ -4,17 +4,17 @@ using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
-namespace SharpSource.Test
-{
-    [TestClass]
-    public class ElementaryMethodsOfTypeInCollectionNotOverriddenTests : CSharpDiagnosticVerifier
-    {
-        protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer();
+namespace SharpSource.Test;
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType()
-        {
-            var original = @"
+[TestClass]
+public class ElementaryMethodsOfTypeInCollectionNotOverriddenTests : CSharpDiagnosticVerifier
+{
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer();
+
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -30,13 +30,13 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithInterfaceType()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithInterfaceType()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -52,13 +52,13 @@ namespace ConsoleApplication1
     interface MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -74,13 +74,13 @@ namespace ConsoleApplication1
     struct MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsEquals()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsEquals()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -102,13 +102,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsEquals()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsEquals()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -130,13 +130,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsGetHashCode()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsGetHashCode()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -158,13 +158,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsGetHashCode()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsGetHashCode()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -186,13 +186,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsMethods()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsMethods()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -219,13 +219,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsMethods()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsMethods()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -252,13 +252,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_BothDoNotImplementMethods()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_BothDoNotImplementMethods()
+    {
+        var original = @"
 using System.Collections.Generic;
 using System.Linq;
 
@@ -276,14 +276,14 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original,
-                "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original,
+            "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_UsedInCall()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_UsedInCall()
+    {
+        var original = @"
 using System.Collections.Generic;
 using System.Linq;
 
@@ -301,13 +301,13 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_NotUsedInCall()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_NotUsedInCall()
+    {
+        var original = @"
 using System.Collections.Generic;
 using System.Linq;
 
@@ -325,13 +325,13 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_TypeParameterWithoutObjectCreation()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_TypeParameterWithoutObjectCreation()
+    {
+        var original = @"
 using System.Linq;
 namespace ConsoleApplication1
 {
@@ -347,13 +347,13 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromClass()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromClass()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -368,13 +368,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromMethod()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromMethod()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -389,13 +389,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithEnum()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithEnum()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -411,13 +411,13 @@ namespace ConsoleApplication1
     enum SomeEnum {}
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_Object()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Object()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -431,13 +431,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithArray()
-        {
-            var original = @"
+    [TestMethod]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithArray()
+    {
+        var original = @"
 using System.Collections.Generic;
 namespace ConsoleApplication1
 {
@@ -453,33 +453,33 @@ namespace ConsoleApplication1
     class SomeClass {}
 }";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/99")]
-        [DataRow("Dictionary<int, int>")]
-        [DataRow("KeyValuePair<int, int>")]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithSystemTypes(string type)
-        {
-            var original = $@"
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/99")]
+    [DataRow("Dictionary<int, int>")]
+    [DataRow("KeyValuePair<int, int>")]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithSystemTypes(string type)
+    {
+        var original = $@"
 using System.Collections.Generic;
 
 var list = new List<{type}>();
 var s = list.Contains(default);
 ";
 
-            VerifyDiagnostic(original);
-        }
+        VerifyDiagnostic(original);
+    }
 
-        [TestMethod]
-        [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
-        [DataRow("new Dictionary<int, MyCollectionItem>().ContainsValue(new MyCollectionItem())")]
-        [DataRow("new Dictionary<MyCollectionItem, int>()[new MyCollectionItem()]")]
-        [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue(new MyCollectionItem(), out _)")]
-        [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
-        {
-            var original = @$"
+    [TestMethod]
+    [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
+    [DataRow("new Dictionary<int, MyCollectionItem>().ContainsValue(new MyCollectionItem())")]
+    [DataRow("new Dictionary<MyCollectionItem, int>()[new MyCollectionItem()]")]
+    [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue(new MyCollectionItem(), out _)")]
+    [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
+    {
+        var original = @$"
 using System.Collections.Generic;
 using System.Linq;
 
@@ -488,19 +488,19 @@ var x = {invocation};
 class MyCollectionItem {{}}
 ";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 
-        [TestMethod]
-        [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
-        [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
-        [DataRow("new HashSet<MyCollectionItem>().Contains(new MyCollectionItem())")]
-        [DataRow("new ReadOnlyCollection<MyCollectionItem>(new[] { new MyCollectionItem() }).Contains(new MyCollectionItem())")]
-        [DataRow("new Queue<MyCollectionItem>().Contains(new MyCollectionItem())")]
-        [DataRow("new Stack<MyCollectionItem>().Contains(new MyCollectionItem())")]
-        public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedTypes(string invocation)
-        {
-            var original = @$"
+    [TestMethod]
+    [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
+    [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    [DataRow("new HashSet<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    [DataRow("new ReadOnlyCollection<MyCollectionItem>(new[] { new MyCollectionItem() }).Contains(new MyCollectionItem())")]
+    [DataRow("new Queue<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    [DataRow("new Stack<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedTypes(string invocation)
+    {
+        var original = @$"
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -510,7 +510,6 @@ var x = {invocation};
 class MyCollectionItem {{}}
 ";
 
-            VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
-        }
+        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 }
