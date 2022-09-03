@@ -145,13 +145,13 @@ public abstract class DiagnosticVerifier
     ///     Verifies that no diagnostic is triggered.
     /// </summary>
     /// <param name="source">A string representing the document to run the analyzer on</param>
-    protected void VerifyDiagnostic(string source) => VerifyDiagnostics(new[] { source }, _languageName, new string[] { });
+    protected void VerifyDiagnostic(string source) => VerifyDiagnostics(new[] { source }, _languageName, Array.Empty<string>());
 
     /// <summary>
     ///     Verifies that no diagnostic is triggered.
     /// </summary>
     /// <param name="sources">An array of strings representing the documents</param>
-    protected void VerifyDiagnostic(string[] sources) => VerifyDiagnostics(sources, _languageName, new string[] { });
+    protected void VerifyDiagnostic(string[] sources) => VerifyDiagnostics(sources, _languageName, Array.Empty<string>());
 
     /// <summary>
     ///     General method that gets a collection of actual diagnostics found in the source after the analyzer is run,
@@ -190,7 +190,7 @@ public abstract class DiagnosticVerifier
     /// <param name="expectedResults">Diagnostic results that should have appeared in the code</param>
     private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
     {
-        var expectedCount = expectedResults.Count();
+        var expectedCount = expectedResults.Length;
         var results = actualResults.ToArray();
         var actualCount = results.Length;
 
@@ -246,7 +246,7 @@ public abstract class DiagnosticVerifier
     /// <param name="expectedResults">Diagnostic messages that should have appeared in the code</param>
     private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params string[] expectedResults)
     {
-        var expectedCount = expectedResults.Count();
+        var expectedCount = expectedResults.Length;
         var results = actualResults.ToArray();
         var actualCount = results.Length;
 

@@ -32,12 +32,12 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use await",
-                x => UseAwait(context.Document, synchronousWaitMethod, root, x),
+                x => UseAwait(context.Document, synchronousWaitMethod, root),
                 SynchronousTaskWaitAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root, CancellationToken x)
+    private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root)
     {
         if (memberAccessExpression == null)
         {

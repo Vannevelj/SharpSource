@@ -5,7 +5,7 @@ namespace SharpSource.Test.Helpers.Helpers.CSharp;
 
 public abstract class CSharpCodeFixVerifier : CSharpDiagnosticVerifier
 {
-    private readonly CodeFixVerifier _codeFixVerifier = new CodeFixVerifier();
+    private readonly CodeFixVerifier _codeFixVerifier = new();
 
     /// <summary>
     ///     Returns the codefix being tested - to be implemented in non-abstract class

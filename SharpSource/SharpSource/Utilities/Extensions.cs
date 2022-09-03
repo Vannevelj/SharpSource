@@ -114,17 +114,11 @@ public static class Extensions
         }
     }
 
-    public static bool IsWhitespaceTrivia(this SyntaxTrivia trivia)
+    public static bool IsWhitespaceTrivia(this SyntaxTrivia trivia) => trivia.Kind() switch
     {
-        switch (trivia.Kind())
-        {
-            case SyntaxKind.WhitespaceTrivia:
-            case SyntaxKind.EndOfLineTrivia:
-                return true;
-            default:
-                return false;
-        }
-    }
+        SyntaxKind.WhitespaceTrivia or SyntaxKind.EndOfLineTrivia => true,
+        _ => false,
+    };
 
     public static string ToAlias(this string type)
     {

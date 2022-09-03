@@ -37,7 +37,7 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
 
         foreach (var symbol in objectSymbol.GetMembers())
         {
-            if (!( symbol is IMethodSymbol ))
+            if (symbol is not IMethodSymbol)
             {
                 continue;
             }

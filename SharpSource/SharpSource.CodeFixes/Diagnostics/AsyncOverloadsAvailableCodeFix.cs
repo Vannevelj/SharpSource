@@ -30,12 +30,12 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Async overload",
-                x => UseAsyncOverload(context.Document, memberAccess, root, x),
+                x => UseAsyncOverload(context.Document, memberAccess, root),
                 AsyncOverloadsAvailableAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, CancellationToken cancellationToken)
+    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
     {
         ExpressionSyntax newExpression;
         if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
