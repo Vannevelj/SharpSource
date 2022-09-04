@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.4.3] - 2022-09-04
+- Include README in nuget package
+
 ## [1.4.2] - 2022-09-04
 - CI will ensure the version has been updated appropriately before releasing a new package
 - CI will run its `dotnet format` check much faster
