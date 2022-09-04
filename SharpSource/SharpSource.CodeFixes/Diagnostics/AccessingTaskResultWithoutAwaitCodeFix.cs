@@ -25,11 +25,16 @@ public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var taskResultExpression = root.FindToken(diagnosticSpan.Start)
-            .Parent
+        var taskResultExpression = root?.FindToken(diagnosticSpan.Start)
+            .Parent?
             .AncestorsAndSelf()
             .OfType<MemberAccessExpressionSyntax>()
             .SingleOrDefault(x => x.Name.Identifier.ValueText == "Result");
+
+        if (root == default || taskResultExpression == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use await",

@@ -29,7 +29,12 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var methodDeclaration =
-            root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
+            root?.FindToken(diagnosticSpan.Start).Parent?.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
+
+        if (root == default || methodDeclaration == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Task as return type",

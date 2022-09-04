@@ -28,7 +28,12 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var statement = root.FindNode(diagnosticSpan);
+        var statement = root?.FindNode(diagnosticSpan);
+
+        if (root == default || statement == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use powers of 2",
@@ -43,7 +48,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         var declarationExpression = (EnumDeclarationSyntax)statement;
 
         var declaredSymbol = semanticModel.GetDeclaredSymbol(declarationExpression);
-        var typeName = declaredSymbol.EnumUnderlyingType.MetadataName;
+        var typeName = declaredSymbol?.EnumUnderlyingType?.MetadataName;
 
         var enumMemberDeclarations =
             declarationExpression.ChildNodes().OfType<EnumMemberDeclarationSyntax>().ToList();
@@ -53,7 +58,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         {
             if (enumMemberDeclarations[i].EqualsValue != null)
             {
-                var descendantNodes = enumMemberDeclarations[i].EqualsValue.Value.DescendantNodesAndSelf().ToList();
+                var descendantNodes = enumMemberDeclarations[i]?.EqualsValue?.Value.DescendantNodesAndSelf().ToList();
                 if (descendantNodes.Any() &&
                     descendantNodes.All(n => n is IdentifierNameSyntax || n is BinaryExpressionSyntax))
                 {

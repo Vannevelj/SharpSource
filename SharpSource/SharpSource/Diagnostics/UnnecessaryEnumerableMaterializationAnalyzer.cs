@@ -52,7 +52,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel) &&
                 isSuspiciousInvocation)
             {
-                var properties = ImmutableDictionary.CreateBuilder<string, string>();
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 properties.Add("operation", materializingOperation);
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), properties.ToImmutable(), $"{materializingOperation}"));
                 return;

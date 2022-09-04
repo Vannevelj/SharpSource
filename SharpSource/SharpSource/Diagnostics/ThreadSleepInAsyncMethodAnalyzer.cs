@@ -53,7 +53,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
             _ => (false, default, default)
         };
 
-        if (!found)
+        if (!found || returnType == default)
         {
             return;
         }
@@ -64,7 +64,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
 
         if (isAsync || hasTaskReturnType == true)
         {
-            var dic = ImmutableDictionary.CreateBuilder<string, string>();
+            var dic = ImmutableDictionary.CreateBuilder<string, string?>();
             dic.Add("isAsync", isAsync.ToString());
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), dic.ToImmutable(), null));
         }

@@ -83,7 +83,12 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
         // Since the current node is a throw statement there is no symbol to be found. 
         // Therefore we look at whatever member is holding the statement (constructor, method, property, etc) and see what encloses that
         var throwStatement = (ThrowStatementSyntax)context.Node;
-        var containingType = context.SemanticModel.GetEnclosingSymbol(throwStatement.SpanStart).ContainingType;
+        var containingType = context.SemanticModel.GetEnclosingSymbol(throwStatement.SpanStart)?.ContainingType;
+        if (containingType == null)
+        {
+            return;
+        }
+
         var warningLocation = throwStatement.GetLocation();
         if (!ShouldWarnForExpression(throwStatement, context))
         {
@@ -120,12 +125,9 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
                 var objectSymbol = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
                 var objectGetHashCodeSymbol = objectSymbol.GetMembers("GetHashCode").Single();
 
-                while (currentMethodSymbol.IsOverride)
-                {
-                    currentMethodSymbol = currentMethodSymbol.OverriddenMethod;
-                }
+                currentMethodSymbol = currentMethodSymbol?.GetBaseDefinition();
 
-                if (currentMethodSymbol.Equals(objectGetHashCodeSymbol, SymbolEqualityComparer.Default))
+                if (currentMethodSymbol?.Equals(objectGetHashCodeSymbol, SymbolEqualityComparer.Default) == true)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(GetHashCodeRule, warningLocation, containingType.Name));
                     return;
@@ -137,7 +139,8 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
             // This is not the case for GetHashCode() where we only expect one implementation
             if (methodName == "Equals" && method.ParameterList.Parameters.Count == 1)
             {
-                context.ReportDiagnostic(Diagnostic.Create(EqualsRule, warningLocation, method.ParameterList.Parameters[0].Type.ToString(), containingType.Name));
+                var equalsParameter = method.ParameterList?.Parameters[0]?.Type?.ToString();
+                context.ReportDiagnostic(Diagnostic.Create(EqualsRule, warningLocation, equalsParameter, containingType.Name));
                 return;
             }
         }
@@ -162,8 +165,8 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
             if (operatorDeclaration.OperatorToken.IsKind(SyntaxKind.EqualsEqualsToken) || operatorDeclaration.OperatorToken.IsKind(SyntaxKind.ExclamationEqualsToken))
             {
                 var operatorToken = operatorDeclaration.OperatorToken.ValueText;
-                var firstType = operatorDeclaration.ParameterList.Parameters[0].Type.ToString();
-                var secondType = operatorDeclaration.ParameterList.Parameters[1].Type.ToString();
+                var firstType = operatorDeclaration.ParameterList?.Parameters[0]?.Type?.ToString();
+                var secondType = operatorDeclaration.ParameterList?.Parameters[1]?.Type?.ToString();
                 context.ReportDiagnostic(Diagnostic.Create(EqualityOperatorRule, warningLocation, operatorToken, firstType, secondType, containingType.Name));
                 return;
             }

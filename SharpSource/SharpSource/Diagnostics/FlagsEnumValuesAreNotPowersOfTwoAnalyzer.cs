@@ -51,8 +51,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
     {
         var declarationExpression = (EnumDeclarationSyntax)context.Node;
 
-        AttributeListSyntax flagsAttribute = null;
-
+        AttributeListSyntax? flagsAttribute = null;
         foreach (var list in declarationExpression.AttributeLists)
         {
             foreach (var attribute in list.Attributes)
@@ -76,7 +75,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var enumName = context.SemanticModel.GetDeclaredSymbol(declarationExpression).Name;
+        var enumName = context.SemanticModel.GetDeclaredSymbol(declarationExpression)?.Name;
         var enumMemberDeclarations =
             declarationExpression.ChildNodes().OfType<EnumMemberDeclarationSyntax>(SyntaxKind.EnumMemberDeclaration).ToArray();
 
@@ -111,7 +110,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
         }
 
         var enumType = declarationExpression.BaseList?.Types[0].Type;
-        string keyword;
+        string? keyword;
         if (enumType == null)
         {
             keyword = "int";
@@ -125,7 +124,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
             else
             {
                 var enumTypeInfo = context.SemanticModel.GetTypeInfo(enumType);
-                keyword = enumTypeInfo.Type.Name.ToAlias();
+                keyword = enumTypeInfo.Type?.Name.ToAlias();
             }
         }
 
@@ -135,7 +134,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
         {
             context.ReportDiagnostic(Diagnostic.Create(ValuesDontFitRule,
                 declarationExpression.Identifier.GetLocation(),
-                enumName, keyword.ToLowerInvariant()));
+                enumName, keyword?.ToLowerInvariant()));
             return;
         }
 
@@ -170,8 +169,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
             }
 
             var symbol = context.SemanticModel.GetDeclaredSymbol(member);
-            var value = symbol.ConstantValue;
-
+            var value = symbol?.ConstantValue;
             if (value == null)
             {
                 return;
@@ -211,8 +209,13 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
     /// <param name="keyword">The type keyword that forms the base type of the enum</param>
     /// <param name="amountOfMembers">Indicates how many values an enum of this type can have</param>
     /// <returns></returns>
-    private bool IsOutsideOfRange(string keyword, int amountOfMembers)
+    private bool IsOutsideOfRange(string? keyword, int amountOfMembers)
     {
+        if (keyword == null)
+        {
+            return false;
+        }
+
         // The value represents the amount of members an enum of the given type can contain
         var rangeMapping = new Dictionary<string, int>
         {

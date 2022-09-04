@@ -35,7 +35,7 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var currentType = context.SemanticModel.GetDeclaredSymbol(declaration).ContainingSymbol;
+        var currentType = context.SemanticModel.GetDeclaredSymbol(declaration)?.ContainingSymbol;
         var nodes = declaration.DescendantNodes(descendIntoChildren: target => true);
 
         var identifierNameNodes = nodes.OfType<IdentifierNameSyntax>(SyntaxKind.IdentifierName);

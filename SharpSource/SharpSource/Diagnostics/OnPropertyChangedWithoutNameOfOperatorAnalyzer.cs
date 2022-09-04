@@ -65,7 +65,7 @@ public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
         }
 
         var invocationArgument = context.SemanticModel.GetConstantValue(invokedProperty.Expression);
-        if (!invocationArgument.HasValue)
+        if (invocationArgument is not { Value: not null } argument)
         {
             return;
         }
@@ -86,15 +86,15 @@ public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
 
         foreach (var property in classSymbol.GetMembers().OfType<IPropertySymbol>())
         {
-            if (string.Equals(property.Name, (string)invocationArgument.Value, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(property.Name, (string)argument.Value, StringComparison.OrdinalIgnoreCase))
             {
                 // The original Linq was `Last()`.  I used `LastOrDefault()` just because I didn't feel the need to implement a
                 // version to throw an `InvalidOperationException()` rather than a `NullReferenceException()` in this case.
                 var location = invokedProperty.Expression.DescendantNodesAndSelf().LastOrDefault().GetLocation();
-                var data = ImmutableDictionary.CreateRange(new[]
+                var data = ImmutableDictionary.CreateRange(new KeyValuePair<string, string?>[]
                 {
-                    new KeyValuePair<string, string>("parameterName", property.Name),
-                    new KeyValuePair<string, string>("startLocation", location.SourceSpan.Start.ToString(CultureInfo.InvariantCulture))
+                    new ("parameterName", property.Name),
+                    new ("startLocation", location.SourceSpan.Start.ToString(CultureInfo.InvariantCulture))
                 });
                 context.ReportDiagnostic(Diagnostic.Create(Rule, location, data, property.Name));
             }

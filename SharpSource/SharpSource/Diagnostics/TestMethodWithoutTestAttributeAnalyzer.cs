@@ -58,6 +58,11 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         var isTestClass = false;
         foreach (var attribute in symbol.GetAttributes())
         {
+            if (attribute?.AttributeClass == default)
+            {
+                continue;
+            }
+
             if (attribute.AttributeClass.Name == "TestClass" ||
                 attribute.AttributeClass.Name == "TestClassAttribute" ||
                 attribute.AttributeClass.Name == "TestFixture" ||
@@ -104,7 +109,10 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         var voidType = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Void);
         var taskType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
         var taskTType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
-        if (!( returnType.Equals(voidType, SymbolEqualityComparer.Default) || returnType.Equals(taskType, SymbolEqualityComparer.Default) || returnType.OriginalDefinition.Equals(taskTType, SymbolEqualityComparer.Default) ))
+        if (returnType != default && !(
+            returnType.Equals(voidType, SymbolEqualityComparer.Default) ||
+            returnType.Equals(taskType, SymbolEqualityComparer.Default) ||
+            returnType.OriginalDefinition.Equals(taskTType, SymbolEqualityComparer.Default) ))
         {
             return;
         }

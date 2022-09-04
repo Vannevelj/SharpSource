@@ -13,12 +13,6 @@ public static class TestHelpers
 
     public static void ShouldEqualWithDiff(this string actualValue, string expectedValue, string message, DiffStyle diffStyle, TextWriter output)
     {
-        if (actualValue == null || expectedValue == null)
-        {
-            Assert.AreEqual(expectedValue, actualValue);
-            return;
-        }
-
         if (actualValue.Equals(expectedValue, StringComparison.Ordinal))
         {
             return;

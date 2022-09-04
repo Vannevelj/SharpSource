@@ -57,12 +57,18 @@ public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
         if (parameterList?.Parameters.Count == 2)
         {
             var parameters = parameterList.Parameters;
-            var firstArgumentType = context.SemanticModel.GetTypeInfo(parameters[0].Type);
+            var firstType = parameters[0].Type;
+            var secondType = parameters[1].Type;
+            if (firstType is null || secondType is null)
+            {
+                return;
+            }
+
+            var firstArgumentType = context.SemanticModel.GetTypeInfo(firstType);
             var isFirstArgumentObject = firstArgumentType.Type != null &&
                                         firstArgumentType.Type.SpecialType == SpecialType.System_Object;
 
-
-            var secondArgumentType = context.SemanticModel.GetTypeInfo(parameters[1].Type);
+            var secondArgumentType = context.SemanticModel.GetTypeInfo(secondType);
             var isSecondArgumentEventArgs = secondArgumentType.Type != null &&
                                             secondArgumentType.Type.InheritsFrom(typeof(EventArgs));
 

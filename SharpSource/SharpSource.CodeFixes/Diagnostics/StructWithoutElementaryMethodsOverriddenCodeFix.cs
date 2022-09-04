@@ -44,11 +44,16 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
                 {"ToString()", implementToString}
             };
 
-        var statement = root.FindNode(diagnosticSpan);
+        var statement = root?.FindNode(diagnosticSpan) as StructDeclarationSyntax;
+
+        if (root == default || statement == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(CodeAction.Create(
             string.Format("Implement {0}", FormatMissingMembers(dict)),
-                x => AddMissingMethodsAsync(context.Document, root, (StructDeclarationSyntax)statement,
+                x => AddMissingMethodsAsync(context.Document, root, statement,
                         implementEquals, implementGetHashCode, implementToString),
                 StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.Id), diagnostic);
     }

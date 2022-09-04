@@ -18,17 +18,17 @@ namespace SharpSource.Test.Helpers.Helpers;
 /// </summary>
 internal class CodeFixVerifier
 {
-    private CodeFixProvider CodeFixProvider { get; set; }
+    private CodeFixProvider? CodeFixProvider { get; set; }
 
-    private DiagnosticAnalyzer DiagnosticAnalyzer { get; set; }
+    private DiagnosticAnalyzer? DiagnosticAnalyzer { get; set; }
 
-    internal void VerifyFix(CodeFixProvider codeFixProvider,
+    internal async void VerifyFix(CodeFixProvider codeFixProvider,
                             DiagnosticAnalyzer diagnosticAnalyzer,
                             string language,
                             string oldSource,
                             string newSource,
                             int? codeFixIndex = null,
-                            string[] allowedNewCompilerDiagnosticsId = null)
+                            string[]? allowedNewCompilerDiagnosticsId = null)
     {
         CodeFixProvider = codeFixProvider;
         DiagnosticAnalyzer = diagnosticAnalyzer;
@@ -48,9 +48,10 @@ internal class CodeFixVerifier
 
             if (newCompilerDiagnostics.Any(diagnostic => allowedNewCompilerDiagnosticsId.Any(s => s == diagnostic.Id)))
             {
+                var root = await document.GetSyntaxRootAsync();
                 Assert.Fail(
                     "Fix introduced new compiler diagnostics. " +
-                    $"\r\n{document.GetSyntaxRootAsync().Result.ToFullString()}" +
+                    $"\r\n{root?.ToFullString()}" +
                     $"\r\n\r\n{string.Join(Environment.NewLine, newCompilerDiagnostics.Select(d => d.ToString()))}");
             }
         }
@@ -129,13 +130,18 @@ internal class CodeFixVerifier
             //check if applying the code fix introduced any new compiler diagnostics
             if (!allowNewCompilerDiagnostics && interestingDiagnostics.Any())
             {
+                var root = document.GetSyntaxRootAsync().Result;
+                if (root == default)
+                {
+                    throw new InvalidOperationException("Failed to retrieve syntax root");
+                }
                 // Format and get the compiler diagnostics again so that the locations make sense in the output
-                document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace));
+                document = document.WithSyntaxRoot(Formatter.Format(root, Formatter.Annotation, document.Project.Solution.Workspace));
                 interestingDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
 
                 Assert.Fail(
                     "Fix introduced new compiler diagnostics. " +
-                    $"\r\n{document.GetSyntaxRootAsync().Result.ToFullString()}" +
+                    $"\r\n{root.ToFullString()}" +
                     $"\r\n\r\n{string.Join(Environment.NewLine, interestingDiagnostics.Select(d => d.ToString()))}");
             }
 
@@ -162,7 +168,12 @@ internal class CodeFixVerifier
     {
         var operations = codeAction.GetOperationsAsync(CancellationToken.None).Result;
         var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
-        return solution.GetDocument(document.Id);
+        var newDocument = solution.GetDocument(document.Id);
+        if (newDocument == default)
+        {
+            throw new InvalidOperationException("Failed to fetch document after applying fixes");
+        }
+        return newDocument;
     }
 
     /// <summary>
@@ -202,17 +213,27 @@ internal class CodeFixVerifier
     /// </summary>
     /// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
     /// <returns>The compiler diagnostics that were found in the code</returns>
-    private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document) => document.GetSemanticModelAsync().Result.GetDiagnostics();
+    private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document) =>
+        document.GetSemanticModelAsync()?.Result?.GetDiagnostics() ?? Enumerable.Empty<Diagnostic>();
 
     /// <summary>
     ///     Given a document, turn it into a string based on the syntax root
     /// </summary>
     /// <param name="document">The Document to be converted to a string</param>
     /// <returns>A string contianing the syntax of the Document after formatting</returns>
-    private static string GetStringFromDocument(Document document)
+    private static string GetStringFromDocument(Document? document)
     {
+        if (document == default)
+        {
+            return "";
+        }
+
         var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
         var root = simplifiedDoc.GetSyntaxRootAsync().Result;
+        if (root == default)
+        {
+            throw new InvalidOperationException("Failed to fetch root");
+        }
         root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
         return root.GetText().ToString();
     }

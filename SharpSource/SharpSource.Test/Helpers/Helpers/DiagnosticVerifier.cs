@@ -52,7 +52,7 @@ public abstract class DiagnosticVerifier
         _languageName = languageName;
     }
 
-    private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath), dllName);
+    private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath) ?? "", dllName);
 
     /// <summary>
     ///     Get the analyzer being tested - to be implemented in non-abstract class
@@ -91,7 +91,7 @@ public abstract class DiagnosticVerifier
                             Assert.Fail($"Test base does not currently handle diagnostics in metadata locations.Diagnostic in metadata:\r\n{diagnostics[i]}");
                         }
 
-                        var resultMethodName = diagnostics[i].Location.SourceTree.FilePath.EndsWith(CSharpFileExtension) ? "GetCSharpResultAt" : "GetBasicResultAt";
+                        var resultMethodName = diagnostics[i].Location.SourceTree?.FilePath.EndsWith(CSharpFileExtension) == true ? "GetCSharpResultAt" : "GetBasicResultAt";
                         var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
                         builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
@@ -323,6 +323,10 @@ public abstract class DiagnosticVerifier
         foreach (var project in documents.Select(x => x.Project).Distinct())
         {
             var compilation = project.GetCompilationAsync().Result;
+            if (compilation == default)
+            {
+                throw new InvalidOperationException("No compilation available");
+            }
 
             // We're ignoring the diagnostic that tells us we don't have a main method
             var systemDiags = compilation.GetDiagnostics()
@@ -335,7 +339,7 @@ public abstract class DiagnosticVerifier
                 throw new InvalidCodeException(
                     $"Unable to compile program: \"{firstError.GetMessage()}\"\n" +
                     $"Error at line {firstError.Location.GetLineSpan().StartLinePosition.Line} and column {firstError.Location.GetLineSpan().StartLinePosition.Character}." +
-                    $"{firstError.Location.SourceTree.GetTextAsync().Result}");
+                    $"{firstError.Location.SourceTree?.GetTextAsync().Result}");
             }
 
             var diags = compilation.WithAnalyzers(ImmutableArray.Create(analyzer)).GetAnalyzerDiagnosticsAsync().Result;
@@ -444,6 +448,11 @@ public abstract class DiagnosticVerifier
             count++;
         }
 
-        return solution.GetProject(projectId);
+        var newProject = solution.GetProject(projectId);
+        if (newProject == default)
+        {
+            throw new InvalidOperationException("Unable to create new project");
+        }
+        return newProject;
     }
 }

@@ -4,5 +4,5 @@ namespace SharpSource.Test.Helpers;
 
 public class BugVerificationTestAttribute : TestMethodAttribute
 {
-    public string IssueUrl { get; set; }
+    public string? IssueUrl { get; set; }
 }

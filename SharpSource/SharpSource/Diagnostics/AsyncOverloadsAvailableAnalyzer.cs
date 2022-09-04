@@ -39,7 +39,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             _ => false
         };
 
-        if (!isInCorrectContext)
+        if (!isInCorrectContext || surroundingDeclaration == default)
         {
             return;
         }
@@ -61,13 +61,13 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration)
     {
         var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
-        if (invokedSymbol == null)
+        if (invokedSymbol?.ContainingType == default)
         {
             return;
         }
 
         var invokedMethodName = invokedSymbol.Name;
-        var invokedTypeName = invokedSymbol.ContainingType?.Name;
+        var invokedTypeName = invokedSymbol.ContainingType.Name;
 
         var methodsInInvokedType = invokedSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>();
         var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
@@ -78,7 +78,6 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
 
         var surroundingMethodDeclaration = context.SemanticModel.GetDeclaredSymbol(surroundingDeclaration);
-
         foreach (var overload in relevantOverloads)
         {
             if (IsIdenticalOverload(invokedMethod, overload, surroundingMethodDeclaration))
@@ -88,7 +87,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, ISymbol surroundingMethodDeclaration)
+    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, ISymbol? surroundingMethodDeclaration)
     {
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
         var hasOneAdditionalCancellationTokenParameter =
@@ -116,6 +115,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         var isGenericOverload =
             returnType.SpecialType != SpecialType.System_Void &&
             overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
+            wrappedType != default &&
             ( wrappedType.Equals(returnType, SymbolEqualityComparer.Default) || wrappedType.TypeKind == TypeKind.TypeParameter );
         var isSurroundingMethod = overload.Equals(surroundingMethodDeclaration, SymbolEqualityComparer.Default);
 
