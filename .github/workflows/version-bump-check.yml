@@ -26,4 +26,4 @@ jobs:
       
       - name: Verify version changed
         run: |
-          ${{ needs.changes.outputs.version == 'true' }} || exit 1
+          ${{ changes.outputs.version == 'true' }} || exit 1
