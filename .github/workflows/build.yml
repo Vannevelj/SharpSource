@@ -21,7 +21,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
 
       - name: Restore NuGet Packages
-        run: nuget restore sharpsource.sln
+        run: dotnet restore sharpsource.sln
 
       - name: Build app for release
         run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
