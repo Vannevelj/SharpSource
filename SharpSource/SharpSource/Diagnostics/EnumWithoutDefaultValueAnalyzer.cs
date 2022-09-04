@@ -41,7 +41,7 @@ public class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var membersWithZeroValue = membersOfInterest.Where(m => context.SemanticModel.GetDeclaredSymbol(m).ConstantValue.Equals(0));
+        var membersWithZeroValue = membersOfInterest.Where(m => context.SemanticModel.GetDeclaredSymbol(m)?.ConstantValue?.Equals(0) == true);
         if (!membersWithZeroValue.Any())
         {
             Report(enumDeclaration.Identifier, context);

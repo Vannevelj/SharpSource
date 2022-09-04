@@ -28,11 +28,21 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
+        if (root == default)
+        {
+            return;
+        }
+
         var stringFormatInvocation =
             root.FindToken(diagnosticSpan.Start)
-                .Parent.AncestorsAndSelf()
+                .Parent?.AncestorsAndSelf()
                 .OfType<InvocationExpressionSyntax>()
                 .First();
+        if (stringFormatInvocation == default)
+        {
+            return;
+        }
+
         context.RegisterCodeFix(
             CodeAction.Create("Re-order placeholders",
                 x => ReOrderPlaceholdersAsync(context.Document, root, stringFormatInvocation),

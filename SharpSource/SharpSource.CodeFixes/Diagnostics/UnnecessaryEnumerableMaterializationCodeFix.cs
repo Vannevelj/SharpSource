@@ -24,9 +24,15 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var diagnostic = context.Diagnostics.First();
         var operation = diagnostic.Properties["operation"];
-        var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var invocations = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>();
         var semanticModel = await context.Document.GetSemanticModelAsync();
+
+        if (root == default || operation == default || semanticModel == default)
+        {
+            return;
+        }
+
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var invocations = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>();
         var invocation = invocations.First(x => x.IsAnInvocationOf(typeof(Enumerable), operation, semanticModel));
 
         context.RegisterCodeFix(
@@ -41,7 +47,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
     {
         var surroundingMemberAccess = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
         var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
-        if (nestedMemberAccess == null)
+        if (nestedMemberAccess == null || surroundingMemberAccess == null)
         {
             return Task.FromResult(document);
         }

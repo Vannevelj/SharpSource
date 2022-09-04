@@ -47,7 +47,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
         // Verify we're dealing with a call to a method that accepts a variable named 'format' and a object, params object[] or a plain object[]
         // params object[] and object[] can both be verified by looking for the latter
         // This allows us to support similar calls like Console.WriteLine("{0}", "test") as well which carry an implicit string.Format
-        IParameterSymbol formatParam = null;
+        IParameterSymbol? formatParam = null;
         foreach (var parameter in methodSymbol.Parameters)
         {
             if (parameter.Name == "format")
@@ -113,7 +113,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
 
         var formatExpression = invocation.ArgumentList.Arguments[formatIndex].Expression;
         var formatString = context.SemanticModel.GetConstantValue(formatExpression);
-        if (!formatString.HasValue)
+        if (formatString is not { Value: not null } format)
         {
             return;
         }
@@ -150,7 +150,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
                     return;
                 }
 
-                InitializerExpressionSyntax inlineArrayCreation = null;
+                InitializerExpressionSyntax? inlineArrayCreation = null;
                 foreach (var argument in formatArguments[0].DescendantNodes())
                 {
                     if (argument is InitializerExpressionSyntax syntax)
@@ -182,7 +182,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
         // and verify that this value + 1 (to account for 0-based indexing) is not greater than the amount of placeholder arguments
         var placeholders = new List<int>();
 
-        foreach (Match placeholder in PlaceholderHelpers.GetPlaceholders((string)formatString.Value))
+        foreach (Match placeholder in PlaceholderHelpers.GetPlaceholders((string)format.Value))
         {
             placeholders.Add(int.Parse(PlaceholderHelpers.GetPlaceholderIndex(placeholder.Value)));
         }

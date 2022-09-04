@@ -2,9 +2,9 @@
 
 This repo houses a collection of analyzers that aim to make some language features and framework types easier to work with. It does this by highlighting when you might be using something incorrectly in a way that would result in suboptimal performance, runtime exceptions or general unintended behaviour. 
 
-Let's put it this way: this repo only contains analyzers for patterns that have a concrete potential to turn into a defect ticket.
+In other words, **this repo only contains analyzers for patterns that have a concrete potential to turn into a defect ticket**. It is not intended to help with general housekeeping tasks like formatting your code or providing productivity helpers. 
 
-It is not intended to help with general housekeeping tasks like formatting your code or providing productivity helpers. 
+Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 
 ---
  
@@ -52,4 +52,5 @@ It is not intended to help with general housekeeping tasks like formatting your 
 | SS040  | UnusedResultOnImmutableObject  | The result of an operation on a `string` is unused. At best this has no effect, at worst this means a desired `string` operation has not been performed.  | Warning  | No  |
 | SS041  | UnnecessaryEnumerableMaterialization  | An `IEnumerable` was materialized before a deferred execution call. This generally results in unnecessary work being done.  | Warning  | Yes  |
 | SS042  | InstanceFieldWithThreadStatic  | `[ThreadStatic]` can only be used on static fields. If used on an instance field the attribute will not have any effect and the subsequent multithreading behaviour will not be as intended.  | Error  | No  |
-| SS043  | MultipleFromBodyParameters  | A method specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use `[FromForm]`, `[FromRoute]`, `[FromHeader]` and `[FromQuery]` instead.  | Error  | No  |
+| SS043  | MultipleFromBodyParameters  | A method specifies multiple `[FromBody]` parameters but only one is allowed. Specify a wrapper type or use `[FromForm]`, `[FromRoute]`, `[FromHeader]` and `[FromQuery]` instead.  | Error  | No  |
+| SS044  | AttributeMustSpecifyAttributeUsage  | An attribute was defined without specifying the `[AttributeUsage]`  | Warning  | Yes  |

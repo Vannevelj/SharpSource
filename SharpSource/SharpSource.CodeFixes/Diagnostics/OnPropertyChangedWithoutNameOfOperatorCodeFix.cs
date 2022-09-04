@@ -24,6 +24,11 @@ public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics.First();
 
+        if (root == default)
+        {
+            return;
+        }
+
         context.RegisterCodeFix(
             CodeAction.Create("Use nameof()",
                 x => UseNameOfAsync(context.Document, root, diagnostic),

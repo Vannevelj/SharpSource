@@ -25,6 +25,11 @@ public class NewGuidCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
+        if (root == default)
+        {
+            return;
+        }
+
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
 
         context.RegisterCodeFix(

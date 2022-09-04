@@ -27,8 +27,8 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
         context.RegisterCompilationStartAction((compilationContext) =>
     {
         var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
-        IMethodSymbol objectEquals = null;
-        IMethodSymbol objectGetHashCode = null;
+        IMethodSymbol? objectEquals = null;
+        IMethodSymbol? objectGetHashCode = null;
 
         foreach (var symbol in objectSymbol.GetMembers())
         {
@@ -53,6 +53,10 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
         {
             var classDeclaration = (ClassDeclarationSyntax)syntaxNodeContext.Node;
             var classSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(classDeclaration);
+            if (classSymbol == null)
+            {
+                return;
+            }
 
             var equalsImplemented = false;
             var getHashcodeImplemented = false;
@@ -64,15 +68,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
                     continue;
                 }
 
-                if (!method.IsOverride)
-                {
-                    continue;
-                }
-
-                while (method.IsOverride)
-                {
-                    method = method.OverriddenMethod;
-                }
+                method = method.GetBaseDefinition();
 
                 if (method.Equals(objectEquals, SymbolEqualityComparer.Default))
                 {
@@ -87,7 +83,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
 
             if (equalsImplemented ^ getHashcodeImplemented)
             {
-                var properties = ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString()) });
+                var properties = ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string?>("IsEqualsImplemented", equalsImplemented.ToString()) });
                 syntaxNodeContext.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), properties, classDeclaration.Identifier.ValueText));
             }
         }, SyntaxKind.ClassDeclaration);

@@ -31,16 +31,14 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
     {
         var operatorDeclaration = (OperatorDeclarationSyntax)context.Node;
         var definedToken = operatorDeclaration.OperatorToken;
-        var hasBody = operatorDeclaration.Body != null;
-        var hasExpression = operatorDeclaration.ExpressionBody != null;
 
-        if (!hasBody && !hasExpression)
+        SyntaxNode? body = operatorDeclaration.Body != default ? operatorDeclaration.Body : operatorDeclaration.ExpressionBody != default ? operatorDeclaration.ExpressionBody : default;
+        if (body == default)
         {
             return;
         }
 
-        var operatorUsages = hasBody ? operatorDeclaration.Body.DescendantTokens().Where(x => x.IsKind(definedToken.Kind())).ToArray()
-                                     : operatorDeclaration.ExpressionBody.DescendantTokens().Where(x => x.IsKind(definedToken.Kind())).ToArray();
+        var operatorUsages = body.DescendantTokens().Where(x => x.IsKind(definedToken.Kind())).ToArray();
 
         if (operatorUsages.Length == 0)
         {
@@ -67,8 +65,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
 
         foreach (var usage in operatorUsages)
         {
-            var surroundingNode = hasBody ? operatorDeclaration.Body.FindNode(usage.FullSpan)
-                                          : operatorDeclaration.ExpressionBody.FindNode(usage.FullSpan);
+            var surroundingNode = body.FindNode(usage.FullSpan);
             if (surroundingNode == null)
             {
                 continue;
@@ -127,7 +124,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
 
         void checkForTrueOrFalseKeyword()
         {
-            if (hasBody)
+            if (operatorDeclaration.Body != default)
             {
                 var ifConditions = operatorDeclaration.Body.DescendantNodes().OfType<IfStatementSyntax>().ToArray();
                 foreach (var ifCondition in ifConditions)
@@ -135,7 +132,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
                     checkOperatorToken(definedToken, ifCondition.Condition);
                 }
             }
-            else if (hasExpression)
+            else if (operatorDeclaration.ExpressionBody != default)
             {
                 var conditionalExpressions = operatorDeclaration.ExpressionBody.Expression.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().ToArray();
                 foreach (var conditionalExpression in conditionalExpressions)

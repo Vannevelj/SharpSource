@@ -26,10 +26,15 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+        if (root == default)
+        {
+            return;
+        }
+
+        var memberAccess = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
         var isAsync = bool.Parse(diagnostic.Properties["isAsync"]);
-        if (!isAsync)
+        if (!isAsync || memberAccess == default)
         {
             return;
         }

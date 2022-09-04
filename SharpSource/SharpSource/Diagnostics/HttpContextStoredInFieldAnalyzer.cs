@@ -27,9 +27,14 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
     private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
-        var symbol = context.SemanticModel.GetSymbolInfo(fieldDeclaration.Declaration?.Type).Symbol;
+        var type = fieldDeclaration.Declaration?.Type;
+        if (type == default)
+        {
+            return;
+        }
 
-        if (symbol?.Name == "HttpContext" && symbol.IsDefinedInSystemAssembly())
+        var symbol = context.SemanticModel.GetSymbolInfo(type).Symbol;
+        if (symbol is { Name: "HttpContext" } && symbol.IsDefinedInSystemAssembly())
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }

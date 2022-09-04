@@ -27,7 +27,12 @@ public class TestMethodWithoutPublicModifierCodeFix : CodeFixProvider
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var methodDeclaration =
-            root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+            root?.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+
+        if (root == default || methodDeclaration == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Make public",

@@ -36,7 +36,7 @@ public static class Extensions
             return false;
         }
 
-        if (typeSymbol.BaseType.MetadataName == interfaceType.Name)
+        if (typeSymbol.BaseType?.MetadataName == interfaceType.Name)
         {
             return true;
         }
@@ -156,7 +156,7 @@ public static class Extensions
 
     public static bool IsDefinedInAncestor(this IMethodSymbol methodSymbol)
     {
-        var containingType = methodSymbol?.ContainingType;
+        var containingType = methodSymbol.ContainingType;
         if (containingType == null)
         {
             return false;
@@ -201,13 +201,9 @@ public static class Extensions
     {
         var invokedMethod = semanticModel.GetSymbolInfo(invocation);
         var invokedType = invokedMethod.Symbol?.ContainingType;
-        if (invokedType == null)
-        {
-            return false;
-        }
 
-        return invokedType.MetadataName == type.Name &&
-               invokedMethod.Symbol.MetadataName == method;
+        return invokedType?.MetadataName == type.Name &&
+               invokedMethod.Symbol?.MetadataName == method;
     }
 
     // TODO: tests
@@ -230,7 +226,7 @@ public static class Extensions
     /// </summary>
     /// <param name="syntaxNode">The node to start from</param>
     /// <returns>The surrounding declaration node or null</returns>
-    public static SyntaxNode GetEnclosingTypeNode(this SyntaxNode syntaxNode) =>
+    public static SyntaxNode? GetEnclosingTypeNode(this SyntaxNode syntaxNode) =>
         syntaxNode.FirstAncestorOfType(
             SyntaxKind.ClassDeclaration,
             SyntaxKind.StructDeclaration,
@@ -322,7 +318,7 @@ public static class Extensions
 
     internal static bool IsNonGenericTaskType(this ISymbol type) => type is INamedTypeSymbol { Arity: 0, Name: "Task" or "ValueTask" } && type.IsDefinedInSystemAssembly();
 
-    internal static bool IsGenericTaskType(this ISymbol type, out ITypeSymbol wrappedType)
+    internal static bool IsGenericTaskType(this ISymbol type, out ITypeSymbol? wrappedType)
     {
         if (type is INamedTypeSymbol { Arity: 1, Name: "Task" or "ValueTask" } namedType && type.IsDefinedInSystemAssembly())
         {
@@ -358,7 +354,7 @@ public static class Extensions
         return compilation;
     }
 
-    public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params SyntaxKind[] kinds)
+    public static SyntaxNode? FirstAncestorOfType(this SyntaxNode node, params SyntaxKind[] kinds)
     {
         var parent = node.Parent;
         while (parent != default)
@@ -380,4 +376,19 @@ public static class Extensions
 
     public static IEnumerable<AttributeSyntax> GetAttributesOfType(this SyntaxList<AttributeListSyntax> attributes, Type type, SemanticModel semanticModel) =>
         attributes.SelectMany(x => x.Attributes).Where(a => semanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol.IsType(type) == true);
+
+    public static IMethodSymbol GetBaseDefinition(this IMethodSymbol method)
+    {
+        if (!method.IsOverride)
+        {
+            return method;
+        }
+
+        while (method.IsOverride && method.OverriddenMethod != default)
+        {
+            method = method.OverriddenMethod;
+        }
+
+        return method;
+    }
 }

@@ -25,6 +25,11 @@ public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
+        if (root == default)
+        {
+            return;
+        }
+
         var throwStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
 
         context.RegisterCodeFix(

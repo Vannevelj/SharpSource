@@ -34,7 +34,7 @@ public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
             .SelectMany(p => p.AttributeLists)
             .SelectMany(x => x.Attributes)
             .Select(a => context.SemanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol)
-            .Count(s => s.MetadataName is "FromBody" or "FromBodyAttribute" && s.IsDefinedInSystemAssembly());
+            .Count(s => s?.MetadataName is "FromBody" or "FromBodyAttribute" && s.IsDefinedInSystemAssembly());
 
         if (attributesOnParameters > 1)
         {

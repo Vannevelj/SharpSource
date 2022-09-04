@@ -26,6 +26,11 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
+        if (root == default)
+        {
+            return;
+        }
+
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<EnumMemberDeclarationSyntax>().First();
 
         context.RegisterCodeFix(
@@ -36,10 +41,14 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
     private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
     {
         var semanticModel = await document.GetSemanticModelAsync();
+        var symbol = semanticModel?.GetDeclaredSymbol(declaration, cancellationToken);
+        var constantSymbolValue = symbol?.ConstantValue as int?;
+        if (constantSymbolValue == null)
+        {
+            return document;
+        }
 
-        var symbol = semanticModel.GetDeclaredSymbol(declaration, cancellationToken);
-
-        var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int)symbol.ConstantValue)));
+        var newEqualsClause = EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal((int)constantSymbolValue)));
         var newDeclaration = declaration.WithEqualsValue(newEqualsClause);
         var newDocument = root.ReplaceNode(declaration, newDeclaration);
         return document.WithSyntaxRoot(newDocument);

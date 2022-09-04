@@ -28,21 +28,29 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var semanticModel = await context.Document.GetSemanticModelAsync();
+
+        if (semanticModel == default || root == default)
+        {
+            return;
+        }
 
         var statement = root.FindNode(diagnosticSpan);
+        var switchStatement = statement.Parent as SwitchStatementSyntax;
+        if (switchStatement == default)
+        {
+            return;
+        }
+
         context.RegisterCodeFix(
             CodeAction.Create("Add cases",
-                x => AddMissingCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
+                x => AddMissingCaseAsync(context.Document, semanticModel, (CompilationUnitSyntax)root, switchStatement),
                 SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
     }
 
-    private async Task<Solution> AddMissingCaseAsync(Document document, CompilationUnitSyntax root, SyntaxNode statement)
+    private async Task<Solution> AddMissingCaseAsync(Document document, SemanticModel semanticModel, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
     {
-        var semanticModel = await document.GetSemanticModelAsync();
-
-        var switchBlock = (SwitchStatementSyntax)statement.Parent;
-
-        var enumType = (INamedTypeSymbol)semanticModel.GetTypeInfo(switchBlock.Expression).Type;
+        var enumType = semanticModel.GetTypeInfo(switchBlock.Expression).Type as INamedTypeSymbol;
         var caseLabels = switchBlock.Sections.SelectMany(l => l.Labels)
                                     .OfType<CaseSwitchLabelSyntax>()
                                     .Select(l => l.Value)
@@ -65,7 +73,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
 
         foreach (var label in missingLabels)
         {
-            var expression = SyntaxFactory.ParseExpression($"{enumType.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
+            var expression = SyntaxFactory.ParseExpression($"{enumType?.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
             var caseLabel = SyntaxFactory.CaseSwitchLabel(expression);
 
             var section =
@@ -85,8 +93,13 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         return newDocument.Project.Solution;
     }
 
-    private IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol enumType)
+    private IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
     {
+        if (enumType == default)
+        {
+            return Enumerable.Empty<string>();
+        }
+
         // these are the labels like `MyEnum.EnumMember`
         var labels = caseLabels
             .OfType<MemberAccessExpressionSyntax>()

@@ -29,10 +29,15 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var statement = root.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
+        var statement = root?.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
+        if (root is not CompilationUnitSyntax compilation || statement == default)
+        {
+            return;
+        }
+
         context.RegisterCodeFix(
             CodeAction.Create("Add default label",
-                x => AddDefaultCaseAsync(context.Document, (CompilationUnitSyntax)root, statement),
+                x => AddDefaultCaseAsync(context.Document, compilation, statement),
                 SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
     }
 

@@ -31,9 +31,9 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
     private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
         var objectSymbol = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
-        IMethodSymbol objectEquals = null;
-        IMethodSymbol objectGetHashCode = null;
-        IMethodSymbol objectToString = null;
+        IMethodSymbol? objectEquals = null;
+        IMethodSymbol? objectGetHashCode = null;
+        IMethodSymbol? objectToString = null;
 
         foreach (var symbol in objectSymbol.GetMembers())
         {
@@ -78,7 +78,7 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
                 continue;
             }
 
-            var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration).OverriddenMethod;
+            var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration)?.OverriddenMethod;
 
             // this will happen if the base class is deleted and there is still a derived class
             if (methodSymbol == null)
@@ -86,22 +86,19 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
                 return;
             }
 
-            while (methodSymbol.IsOverride)
-            {
-                methodSymbol = methodSymbol.OverriddenMethod;
-            }
+            methodSymbol = methodSymbol.GetBaseDefinition();
 
-            if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default))
+            if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default) == true)
             {
                 equalsImplemented = true;
             }
 
-            if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
+            if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default) == true)
             {
                 getHashCodeImplemented = true;
             }
 
-            if (methodSymbol.Equals(objectToString, SymbolEqualityComparer.Default))
+            if (methodSymbol.Equals(objectToString, SymbolEqualityComparer.Default) == true)
             {
                 toStringImplemented = true;
             }
@@ -109,12 +106,12 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
 
         if (!equalsImplemented || !getHashCodeImplemented || !toStringImplemented)
         {
-            var isEqualsImplemented = new KeyValuePair<string, string>("IsEqualsImplemented", equalsImplemented.ToString());
-            var isGetHashcodeImplemented = new KeyValuePair<string, string>("IsGetHashCodeImplemented", getHashCodeImplemented.ToString());
-            var isGetToStringImplemented = new KeyValuePair<string, string>("IsToStringImplemented", toStringImplemented.ToString());
-
-            var properties = ImmutableDictionary.CreateRange(new[]
-                {isEqualsImplemented, isGetHashcodeImplemented, isGetToStringImplemented});
+            var properties = ImmutableDictionary.CreateRange(new KeyValuePair<string, string?>[]
+                {
+                    new ("IsEqualsImplemented", equalsImplemented.ToString()),
+                    new ("IsGetHashCodeImplemented", getHashCodeImplemented.ToString()),
+                    new ("IsToStringImplemented", toStringImplemented.ToString())
+                });
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, structDeclaration.Identifier.GetLocation(), properties, structDeclaration.Identifier));
         }

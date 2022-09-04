@@ -24,13 +24,21 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        if (root == default)
+        {
+            return;
+        }
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var memberAccess = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+        var invocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+        if (invocation == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Async overload",
-                x => UseAsyncOverload(context.Document, memberAccess, root),
+                x => UseAsyncOverload(context.Document, invocation, root),
                 AsyncOverloadsAvailableAnalyzer.Rule.Id),
             diagnostic);
     }

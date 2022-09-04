@@ -48,8 +48,8 @@ public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        SyntaxNode currentNode = variableDeclaration;
-        while (!currentNode.IsAnyKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration))
+        SyntaxNode? currentNode = variableDeclaration;
+        while (currentNode is not null && !currentNode.IsAnyKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration))
         {
             if (_loopTypes.Contains(currentNode.Kind()))
             {

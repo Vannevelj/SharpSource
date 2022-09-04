@@ -24,11 +24,16 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var synchronousWaitMethod = root.FindToken(diagnosticSpan.Start)
-            .Parent
+        var synchronousWaitMethod = root?.FindToken(diagnosticSpan.Start)
+            .Parent?
             .AncestorsAndSelf()
             .OfType<MemberAccessExpressionSyntax>()
             .SingleOrDefault(x => x.Name.Identifier.ValueText == "Wait");
+
+        if (root == default || synchronousWaitMethod == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use await",
@@ -46,6 +51,10 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
 
         var newExpression = AwaitExpression(memberAccessExpression.Expression);
         var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
+        if (originalInvocation == default)
+        {
+            return Task.FromResult(document);
+        }
 
         var newRoot = root.ReplaceNode(originalInvocation, newExpression);
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
