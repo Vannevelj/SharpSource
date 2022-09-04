@@ -199,7 +199,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
     /// </summary>
     /// <param name="value">The value to check</param>
     /// <returns></returns>
-    private bool IsPowerOfTwo(double value) 
+    private bool IsPowerOfTwo(double value)
     {
         var logValue = Math.Log(value, 2);
         return Math.Abs(value) < 0.0001 || Math.Abs(logValue - Math.Round(logValue)) < 0.0001;
