@@ -53,3 +53,4 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 | SS041  | UnnecessaryEnumerableMaterialization  | An `IEnumerable` was materialized before a deferred execution call. This generally results in unnecessary work being done.  | Warning  | Yes  |
 | SS042  | InstanceFieldWithThreadStatic  | `[ThreadStatic]` can only be used on static fields. If used on an instance field the attribute will not have any effect and the subsequent multithreading behaviour will not be as intended.  | Error  | No  |
 | SS043  | MultipleFromBodyParameters  | A method specifies multiple `[FromBody]` parameters but only one is allowed. Specify a wrapper type or use `[FromForm]`, `[FromRoute]`, `[FromHeader]` and `[FromQuery]` instead.  | Error  | No  |
+| SS044  | AttributeMustSpecifyAttributeUsage  | An attribute was defined without specifying the `[AttributeUsage]`  | Warning  | Yes  |

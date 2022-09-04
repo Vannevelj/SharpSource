@@ -43,4 +43,5 @@ public static class DiagnosticId
     public const string UnnecessaryEnumerableMaterialization = "SS041";
     public const string InstanceFieldWithThreadStatic = "SS042";
     public const string MultipleFromBodyParameters = "SS043";
+    public const string AttributeMustSpecifyAttributeUsage = "SS044";
 }

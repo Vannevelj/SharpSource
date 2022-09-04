@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.6.0] - 2022-09-04
+- `AttributeMustSpecifyAttributeUsage`: warn when an attribute is defined without specifying the `[AttributeUsage]`
+- All internal code now uses nullable reference types
+
 ## [1.5.0] - 2022-09-04
 - `MultipleFromBodyParameters`: warn when an API was defined with multiple `[FromBody]` parameters that attempt to deserialize the request body
 - Include README in nuget package
