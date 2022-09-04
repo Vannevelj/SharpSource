@@ -29,7 +29,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var semanticModel = await context.Document.GetSemanticModelAsync();
-        
+
         if (semanticModel == default || root == default)
         {
             return;
