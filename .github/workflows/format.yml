@@ -12,19 +12,13 @@ concurrency:
 jobs:
   format:
     name: Format code
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-
       - name: Restore NuGet Packages
-        run: nuget restore sharpsource.sln
-
-      - name: Build app for release
-        run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
+        run: dotnet restore sharpsource.sln
 
       - name: Check format
         run: dotnet format --no-restore --verify-no-changes

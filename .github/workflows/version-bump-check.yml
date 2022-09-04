@@ -1,0 +1,29 @@
+name: Version Bump Check
+
+on:
+  push:
+    branches:
+      - "**" # matches every branch
+
+concurrency:
+  group: ${{ github.head_ref }}-version
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Verify the package version was updated
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            version:
+              - 'SharpSource/SharpSource.Package/SharpSource.Package.csproj'
+      
+      - name: Verify version changed
+        run: |
+          ${{ steps.changes.outputs.version == 'true' }} || exit 1
