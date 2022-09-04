@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
-using System.Net.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;

@@ -9,10 +9,11 @@
 
   <PropertyGroup>
     <PackageId>SharpSource</PackageId>
-    <PackageVersion>1.4.2</PackageVersion>
+    <PackageVersion>1.5.0</PackageVersion>
     <Authors>Jeroen Vannevel</Authors>
     <PackageLicenseUrl>https://github.com/Vannevelj/SharpSource/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Vannevelj/SharpSource</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Vannevelj/SharpSource</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>Protect your code from runtime issues through static analysis</Description>
@@ -31,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\"/>
     <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
   </ItemGroup>
 
