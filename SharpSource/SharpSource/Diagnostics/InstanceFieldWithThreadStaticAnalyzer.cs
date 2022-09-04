@@ -31,8 +31,8 @@ public class InstanceFieldWithThreadStaticAnalyzer : DiagnosticAnalyzer
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
         var attribute = fieldDeclaration
             .AttributeLists
-            .SelectMany(x => x.Attributes)
-            .FirstOrDefault(a => context.SemanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol.IsType(typeof(ThreadStaticAttribute)) == true);
+            .GetAttributesOfType(typeof(ThreadStaticAttribute), context.SemanticModel)
+            .FirstOrDefault();
 
         if (attribute == default)
         {

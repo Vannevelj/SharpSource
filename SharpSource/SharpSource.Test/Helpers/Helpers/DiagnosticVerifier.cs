@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -34,7 +33,8 @@ public abstract class DiagnosticVerifier
     private static readonly MetadataReference SystemCollections = MetadataReference.CreateFromFile(GetDllDirectory("System.Collections.dll"));
     private static readonly MetadataReference SystemObjectModel = MetadataReference.CreateFromFile(GetDllDirectory("System.ObjectModel.dll"));
     private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location);
-    private static readonly MetadataReference AspNetCore = MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location);
+    private static readonly MetadataReference AspNetCoreHttp = MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Http.HttpContext).Assembly.Location);
+    private static readonly MetadataReference AspNetCoreMvc = MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Mvc.FromBodyAttribute).Assembly.Location);
     private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
     private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
     private static readonly MetadataReference XunitReference = MetadataReference.CreateFromFile(typeof(Xunit.FactAttribute).Assembly.Location);
@@ -419,7 +419,8 @@ public abstract class DiagnosticVerifier
             SystemConsole,
             SystemNetHttp,
             SystemObjectModel,
-            AspNetCore,
+            AspNetCoreHttp,
+            AspNetCoreMvc,
             XunitReference,
             MsTestReference,
             NunitReference

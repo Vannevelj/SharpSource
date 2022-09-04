@@ -377,4 +377,7 @@ public static class Extensions
         => symbol.ContainingAssembly.Name == "mscorlib" ||
             symbol.ContainingAssembly.Name.StartsWith("System.") ||
             symbol.ContainingAssembly.Name.StartsWith("Microsoft.");
+
+    public static IEnumerable<AttributeSyntax> GetAttributesOfType(this SyntaxList<AttributeListSyntax> attributes, Type type, SemanticModel semanticModel) =>
+        attributes.SelectMany(x => x.Attributes).Where(a => semanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol.IsType(type) == true);
 }
