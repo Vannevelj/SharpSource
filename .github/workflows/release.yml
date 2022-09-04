@@ -20,7 +20,7 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Restore NuGet Packages
-      run: nuget restore sharpsource.sln
+      run: dotnet restore sharpsource.sln
     - name: Set version for Visual Studio Extension
       uses: cezarypiatek/VsixVersionAction@1.0
       with:
