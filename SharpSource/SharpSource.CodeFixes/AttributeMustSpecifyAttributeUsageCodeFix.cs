@@ -46,13 +46,12 @@ public class AttributeMustSpecifyAttributeUsageCodeFix : CodeFixProvider
         var arguments = new[]
         {
             SyntaxFactory.AttributeArgument(SyntaxFactory.ParseExpression("AttributeTargets.All")),
-            SyntaxFactory.AttributeArgument(SyntaxFactory.NameEquals("AllowMultiple"), null, SyntaxFactory.ParseExpression("false"))
+            SyntaxFactory.AttributeArgument(SyntaxFactory.NameEquals("AllowMultiple"), null, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))
         };
         var newAttribute =
             SyntaxFactory.Attribute(
                 SyntaxFactory.IdentifierName("AttributeUsage"),
-                SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(arguments)))
-            .WithAdditionalAnnotations(Simplifier.Annotation);
+                SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(arguments)));
 
         var newClass = classDeclaration.AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[] { newAttribute })));
         var newRoot = root.ReplaceNode(classDeclaration, newClass);
