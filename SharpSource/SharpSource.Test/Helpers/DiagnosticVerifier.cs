@@ -56,61 +56,6 @@ public abstract class DiagnosticVerifier
     protected virtual CodeFixProvider? CodeFixProvider { get; }
 
     /// <summary>
-    ///     Helper method to format a Diagnostic into an easily reasible string
-    /// </summary>
-    /// <param name="analyzer">The analyzer that this Verifer tests</param>
-    /// <param name="diagnostics">The Diagnostics to be formatted</param>
-    /// <returns>The Diagnostics formatted as a string</returns>
-    private static string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
-    {
-        var builder = new StringBuilder();
-        for (var i = 0; i < diagnostics.Length; ++i)
-        {
-            builder.AppendLine("// " + diagnostics[i]);
-
-            var analyzerType = analyzer.GetType();
-            var rules = analyzer.SupportedDiagnostics;
-
-            foreach (var rule in rules)
-            {
-                if (rule != null && rule.Id == diagnostics[i].Id)
-                {
-                    var location = diagnostics[i].Location;
-                    if (location == Location.None)
-                    {
-                        builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
-                    }
-                    else
-                    {
-                        if (!location.IsInSource)
-                        {
-                            Assert.Fail($"Test base does not currently handle diagnostics in metadata locations.Diagnostic in metadata:\r\n{diagnostics[i]}");
-                        }
-
-                        var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
-
-                        builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
-                            "GetCSharpResultAt",
-                            linePosition.Line + 1,
-                            linePosition.Character + 1,
-                            analyzerType.Name,
-                            rule.Id);
-                    }
-
-                    if (i != diagnostics.Length - 1)
-                    {
-                        builder.Append(',');
-                    }
-
-                    builder.AppendLine();
-                    break;
-                }
-            }
-        }
-        return builder.ToString();
-    }
-
-    /// <summary>
     ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
     ///     Note: input a DiagnosticResult for each Diagnostic expected
     /// </summary>
@@ -129,6 +74,155 @@ public abstract class DiagnosticVerifier
         var documents = CreateProject(sources).Documents.ToArray();
         var diagnostics = await GetSortedDiagnosticsFromDocuments(documents);
         VerifyDiagnosticResults(diagnostics, expected);
+    }
+
+    /// <summary>
+    ///     General verifier for codefixes.
+    ///     Creates a Document from the source string, then gets diagnostics on it and applies the relevant codefixes.
+    ///     Then gets the string after the codefix is applied and compares it with the expected result.
+    ///     Note: If any codefix causes new diagnostics to show up, the test fails
+    /// </summary>
+    /// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
+    /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
+    /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
+    protected async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0)
+    {
+        if (CodeFixProvider == null)
+        {
+            throw new InvalidOperationException(nameof(CodeFixProvider));
+        }
+
+        var document = CreateProject(new[] { oldSource }).Documents.First();
+        var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
+        var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
+        var attempts = analyzerDiagnostics.Length;
+
+        for (var i = 0; i < attempts; ++i)
+        {
+            var actions = new List<CodeAction>();
+            var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+            await CodeFixProvider.RegisterCodeFixesAsync(context);
+
+            if (!actions.Any())
+            {
+                break;
+            }
+
+            document = await ApplyFix(document, actions, codeFixIndex);
+            analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
+
+            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
+            var interestingDiagnostics = newCompilerDiagnostics
+                .Where(x =>
+                    x.Id != "CS8019" && // Unnecessary using directive 
+                    x.Id != "CS0168" // The variable is declared but never used
+                );
+
+            //check if applying the code fix introduced any new compiler diagnostics
+            if (interestingDiagnostics.Any())
+            {
+                var root = await document.GetSyntaxRootAsync();
+                if (root == default)
+                {
+                    throw new InvalidOperationException("Failed to retrieve syntax root");
+                }
+                // Format and get the compiler diagnostics again so that the locations make sense in the output
+                document = document.WithSyntaxRoot(Formatter.Format(root, Formatter.Annotation, document.Project.Solution.Workspace));
+                interestingDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
+
+                Assert.Fail(
+                    "Fix introduced new compiler diagnostics. " +
+                    $"\r\n{root.ToFullString()}" +
+                    $"\r\n\r\n{string.Join(Environment.NewLine, interestingDiagnostics.Select(d => d.ToString()))}");
+            }
+
+            //check if there are analyzer diagnostics left after the code fix
+            if (!analyzerDiagnostics.Any())
+            {
+                break;
+            }
+        }
+
+        //after applying all of the code fixes, compare the resulting string to the inputted one
+        var actual = await GetStringFromDocument(document);
+        Assert.AreEqual(newSource, actual, "Expected document is not the same as the resulting one.");
+    }
+
+    /// <summary>
+    ///     Apply the inputted CodeAction to the inputted document.
+    ///     Meant to be used to apply codefixes.
+    /// </summary>
+    /// <param name="document">The Document to apply the fix on</param>
+    /// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
+    /// <returns>A Document with the changes from the CodeAction</returns>
+    private static async Task<Document> ApplyFix(Document document, List<CodeAction> codeActions, int codeActionIndex = 0)
+    {
+        var codeAction = codeActions.ElementAt(codeActionIndex);
+        var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
+        var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
+        var newDocument = solution.GetDocument(document.Id);
+        if (newDocument == default)
+        {
+            throw new InvalidOperationException("Failed to fetch document after applying fixes");
+        }
+        return newDocument;
+    }
+
+    /// <summary>
+    ///     Compare two collections of Diagnostics,and return a list of any new diagnostics that appear only in the second
+    ///     collection.
+    ///     Note: Considers Diagnostics to be the same if they have the same Ids.  In teh case of mulitple diagnostics with the
+    ///     smae Id in a row,
+    ///     this method may not necessarily return the new one.
+    /// </summary>
+    /// <param name="diagnostics">The Diagnostics that existed in the code before the CodeFix was applied</param>
+    /// <param name="newDiagnostics">The Diagnostics that exist in the code after the CodeFix was applied</param>
+    /// <returns>A list of Diagnostics that only surfaced in the code after the CodeFix was applied</returns>
+    private static IEnumerable<Diagnostic> GetNewDiagnostics(IEnumerable<Diagnostic> diagnostics, IEnumerable<Diagnostic> newDiagnostics)
+    {
+        var oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
+        var newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
+
+        var oldIndex = 0;
+        var newIndex = 0;
+
+        while (newIndex < newArray.Length)
+        {
+            if (oldIndex < oldArray.Length && oldArray[oldIndex].Id == newArray[newIndex].Id)
+            {
+                ++oldIndex;
+                ++newIndex;
+            }
+            else
+            {
+                yield return newArray[newIndex++];
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Get the existing compiler diagnostics on the inputted document.
+    /// </summary>
+    /// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
+    /// <returns>The compiler diagnostics that were found in the code</returns>
+    private static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnostics(Document document) =>
+        ( await document.GetSemanticModelAsync() )?.GetDiagnostics() ?? Enumerable.Empty<Diagnostic>();
+
+    /// <summary>
+    ///     Given a document, turn it into a string based on the syntax root
+    /// </summary>
+    /// <param name="document">The Document to be converted to a string</param>
+    /// <returns>A string contianing the syntax of the Document after formatting</returns>
+    private static async Task<string> GetStringFromDocument(Document document)
+    {
+        var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation);
+        var root = await simplifiedDoc.GetSyntaxRootAsync();
+        if (root == default)
+        {
+            throw new InvalidOperationException("Failed to fetch root");
+        }
+        root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
+        return root.GetText().ToString();
     }
 
     /// <summary>
@@ -278,151 +372,57 @@ public abstract class DiagnosticVerifier
     }
 
     /// <summary>
-    ///     General verifier for codefixes.
-    ///     Creates a Document from the source string, then gets diagnostics on it and applies the relevant codefixes.
-    ///     Then gets the string after the codefix is applied and compares it with the expected result.
-    ///     Note: If any codefix causes new diagnostics to show up, the test fails
+    ///     Helper method to format a Diagnostic into an easily reasible string
     /// </summary>
-    /// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
-    /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
-    /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-    protected async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0)
+    /// <param name="analyzer">The analyzer that this Verifer tests</param>
+    /// <param name="diagnostics">The Diagnostics to be formatted</param>
+    /// <returns>The Diagnostics formatted as a string</returns>
+    private static string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
     {
-        if (CodeFixProvider == null)
+        var builder = new StringBuilder();
+        for (var i = 0; i < diagnostics.Length; ++i)
         {
-            throw new InvalidOperationException(nameof(CodeFixProvider));
-        }
+            builder.AppendLine("// " + diagnostics[i]);
 
-        var document = CreateProject(new[] { oldSource }).Documents.First();
-        var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
-        var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
-        var attempts = analyzerDiagnostics.Length;
+            var analyzerType = analyzer.GetType();
+            var rules = analyzer.SupportedDiagnostics;
 
-        for (var i = 0; i < attempts; ++i)
-        {
-            var actions = new List<CodeAction>();
-            var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
-            await CodeFixProvider.RegisterCodeFixesAsync(context);
-
-            if (!actions.Any())
+            foreach (var rule in rules)
             {
-                break;
-            }
-
-            document = await ApplyFix(document, actions, codeFixIndex);
-            analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
-
-            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
-            var interestingDiagnostics = newCompilerDiagnostics
-                .Where(x =>
-                    x.Id != "CS8019" && // Unnecessary using directive 
-                    x.Id != "CS0168" // The variable is declared but never used
-                ); 
-
-            //check if applying the code fix introduced any new compiler diagnostics
-            if (interestingDiagnostics.Any())
-            {
-                var root = await document.GetSyntaxRootAsync();
-                if (root == default)
+                if (rule != null && rule.Id == diagnostics[i].Id)
                 {
-                    throw new InvalidOperationException("Failed to retrieve syntax root");
+                    var location = diagnostics[i].Location;
+                    if (location == Location.None)
+                    {
+                        builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
+                    }
+                    else
+                    {
+                        if (!location.IsInSource)
+                        {
+                            Assert.Fail($"Test base does not currently handle diagnostics in metadata locations.Diagnostic in metadata:\r\n{diagnostics[i]}");
+                        }
+
+                        var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
+
+                        builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
+                            "GetCSharpResultAt",
+                            linePosition.Line + 1,
+                            linePosition.Character + 1,
+                            analyzerType.Name,
+                            rule.Id);
+                    }
+
+                    if (i != diagnostics.Length - 1)
+                    {
+                        builder.Append(',');
+                    }
+
+                    builder.AppendLine();
+                    break;
                 }
-                // Format and get the compiler diagnostics again so that the locations make sense in the output
-                document = document.WithSyntaxRoot(Formatter.Format(root, Formatter.Annotation, document.Project.Solution.Workspace));
-                interestingDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
-
-                Assert.Fail(
-                    "Fix introduced new compiler diagnostics. " +
-                    $"\r\n{root.ToFullString()}" +
-                    $"\r\n\r\n{string.Join(Environment.NewLine, interestingDiagnostics.Select(d => d.ToString()))}");
-            }
-
-            //check if there are analyzer diagnostics left after the code fix
-            if (!analyzerDiagnostics.Any())
-            {
-                break;
             }
         }
-
-        //after applying all of the code fixes, compare the resulting string to the inputted one
-        var actual = await GetStringFromDocument(document);
-        Assert.AreEqual(newSource, actual, "Expected document is not the same as the resulting one.");
-    }
-
-    /// <summary>
-    ///     Apply the inputted CodeAction to the inputted document.
-    ///     Meant to be used to apply codefixes.
-    /// </summary>
-    /// <param name="document">The Document to apply the fix on</param>
-    /// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
-    /// <returns>A Document with the changes from the CodeAction</returns>
-    private static async Task<Document> ApplyFix(Document document, List<CodeAction> codeActions, int codeActionIndex = 0)
-    {
-        var codeAction = codeActions.ElementAt(codeActionIndex);
-        var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
-        var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
-        var newDocument = solution.GetDocument(document.Id);
-        if (newDocument == default)
-        {
-            throw new InvalidOperationException("Failed to fetch document after applying fixes");
-        }
-        return newDocument;
-    }
-
-    /// <summary>
-    ///     Compare two collections of Diagnostics,and return a list of any new diagnostics that appear only in the second
-    ///     collection.
-    ///     Note: Considers Diagnostics to be the same if they have the same Ids.  In teh case of mulitple diagnostics with the
-    ///     smae Id in a row,
-    ///     this method may not necessarily return the new one.
-    /// </summary>
-    /// <param name="diagnostics">The Diagnostics that existed in the code before the CodeFix was applied</param>
-    /// <param name="newDiagnostics">The Diagnostics that exist in the code after the CodeFix was applied</param>
-    /// <returns>A list of Diagnostics that only surfaced in the code after the CodeFix was applied</returns>
-    private static IEnumerable<Diagnostic> GetNewDiagnostics(IEnumerable<Diagnostic> diagnostics, IEnumerable<Diagnostic> newDiagnostics)
-    {
-        var oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-        var newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-
-        var oldIndex = 0;
-        var newIndex = 0;
-
-        while (newIndex < newArray.Length)
-        {
-            if (oldIndex < oldArray.Length && oldArray[oldIndex].Id == newArray[newIndex].Id)
-            {
-                ++oldIndex;
-                ++newIndex;
-            }
-            else
-            {
-                yield return newArray[newIndex++];
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Get the existing compiler diagnostics on the inputted document.
-    /// </summary>
-    /// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
-    /// <returns>The compiler diagnostics that were found in the code</returns>
-    private static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnostics(Document document) =>
-        ( await document.GetSemanticModelAsync() )?.GetDiagnostics() ?? Enumerable.Empty<Diagnostic>();
-
-    /// <summary>
-    ///     Given a document, turn it into a string based on the syntax root
-    /// </summary>
-    /// <param name="document">The Document to be converted to a string</param>
-    /// <returns>A string contianing the syntax of the Document after formatting</returns>
-    private static async Task<string> GetStringFromDocument(Document document)
-    {
-        var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation);
-        var root = await simplifiedDoc.GetSyntaxRootAsync();
-        if (root == default)
-        {
-            throw new InvalidOperationException("Failed to fetch root");
-        }
-        root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
-        return root.GetText().ToString();
+        return builder.ToString();
     }
 }
