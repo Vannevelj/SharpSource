@@ -17,7 +17,7 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 | SS004  | ElementaryMethodsOfTypeInCollectionNotOverridden  | Implement `Equals()` and `GetHashcode()` methods for a type used in a collection. Collections use these to fetch objects but by default they use reference equality. Depending on where your objects come from, they might be missed in the lookup.  | Warning  | No  |
 | SS005  | EqualsAndGetHashcodeNotImplementedTogether  | Implement `Equals()` and `GetHashcode()` together. Implement both to ensure consistent behaviour around lookups.  | Warning  | Yes  |
 | SS006  | ThrowNull  | Throwing `null` will always result in a runtime exception.  | Error  | No  |
-| SS007  | FlagsEnumValuesAreNotPowersOfTwo  | A `[Flags]` enum its values are not explicit powers of 2.  | Error  | Yes  |
+| SS007  | FlagsEnumValuesAreNotPowersOfTwo  | `[Flags]` enum members need to be either powers of two, or bitwise OR expressions. This will fire if they are non-negative decimal literals that are not powers of two, and provide a code fix if the value can be achieved through a binary OR using other enum members. | Error  | Yes  |
 | SS008  | GetHashCodeRefersToMutableMember  | `GetHashCode(`) refers to mutable or static member. If the object is used in a collection and then is mutated, subsequent lookups will result in a different hash and might cause lookups to fail.   | Warning  | No  |
 | SS009  | LoopedRandomInstantiation  | An instance of type `System.Random` is created in a loop. `Random` uses a time-based seed so when used in a fast loop it will end up with multiple identical seeds for subsequent invocations.  | Warning  | No  |
 | SS010  | NewGuid  | An empty GUID was created in an ambiguous manner. The default `Guid` constructor creates an instance with an empty value which is rarely what you want.  | Error  | Yes   |
@@ -40,7 +40,6 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 | SS028  | ExceptionThrownFromFinalizer  | An exception is thrown from a finalizer method  |  Warning  | No  |
 | SS029  | ExceptionThrownFromGetHashCode | An exception is thrown from a `GetHashCode()` method  |  Warning  | No  |
 | SS030  | ExceptionThrownFromEquals  | An exception is thrown from an `Equals() method`  |  Warning  | No  |
-| SS031  | FlagsEnumValuesDontFit  | A `[Flags]` enum its values are not explicit powers of 2 and its values dont fit in the specified enum type.  | Error  | No  |
 | SS032  | ThreadSleepInAsyncMethod  | Synchronously sleeping a thread in an `async` method combines two threading models and can lead to deadlocks.  | Warning  | Yes  |
 | SS033  | AsyncOverloadsAvailable  | An `async` overload is available. These overloads typically exist to provide better performing IO calls and should generally be preferred.  | Warning  | Yes  |
 | SS034  | AccessingTaskResultWithoutAwait  | Use `await` to get the result of an asynchronous operation. While accessing `.Result` is fine once the `Task` has been completed, this removes any ambiguity and helps prevent regressions if the code changes later on.  | Warning  | Yes  |

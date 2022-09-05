@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.7.0] - 2022-09-05
+- `FlagsEnumValuesAreNotPowersOfTwo` has been rewritten to reduce the scope of its warning. Now it will only warn if a non-negative decimal literal is found which is not a power of two. A code fix will be available if a binary OR expression can be constructed with other enum members
+- `FlagsEnumValuesDontFit` will no longer fire as this was inaccurate and already covered by the default CA analyzers
+- `FlagsEnumValuesAreNotPowersOfTwo` will now mention the enum member that triggered the violation
+
 ## [1.6.0] - 2022-09-04
 - `AttributeMustSpecifyAttributeUsage`: warn when an attribute is defined without specifying the `[AttributeUsage]`
 - All internal code now uses nullable reference types

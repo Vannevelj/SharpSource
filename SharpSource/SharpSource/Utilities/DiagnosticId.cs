@@ -30,7 +30,6 @@ public static class DiagnosticId
     public const string ExceptionThrownFromFinalizer = "SS028";
     public const string ExceptionThrownFromGetHashCode = "SS029";
     public const string ExceptionThrownFromEquals = "SS030";
-    public const string FlagsEnumValuesDontFit = "SS031";
     public const string ThreadSleepInAsyncMethod = "SS032";
     public const string AsyncOverloadsAvailable = "SS033";
     public const string AccessingTaskResultWithoutAwait = "SS034";
