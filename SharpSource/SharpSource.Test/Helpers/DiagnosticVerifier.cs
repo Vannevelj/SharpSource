@@ -226,13 +226,6 @@ public abstract class DiagnosticVerifier
     }
 
     /// <summary>
-    ///     Create a Document from a string through creating a project that contains it.
-    /// </summary>
-    /// <param name="source">Classes in the form of a string</param>
-    /// <returns>A Document created from the source string</returns>
-    internal static Document CreateDocument(string source) => CreateProject(new[] { source }).Documents.First();
-
-    /// <summary>
     ///     Create a project using the inputted strings as sources.
     /// </summary>
     /// <param name="sources">Classes in the form of strings</param>
@@ -307,7 +300,7 @@ public abstract class DiagnosticVerifier
             throw new InvalidOperationException(nameof(CodeFixProvider));
         }
 
-        var document = CreateDocument(oldSource);
+        var document = CreateProject(new[] { oldSource }).Documents.First();
         var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, document);
         var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
         var attempts = analyzerDiagnostics.Length;
