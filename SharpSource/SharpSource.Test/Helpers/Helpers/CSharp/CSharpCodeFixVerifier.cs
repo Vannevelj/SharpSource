@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace SharpSource.Test.Helpers.Helpers.CSharp;
 
-public abstract class CSharpCodeFixVerifier : CSharpDiagnosticVerifier
+public abstract class CSharpCodeFixVerifier : DiagnosticVerifier
 {
     private readonly CodeFixVerifier _codeFixVerifier = new();
 

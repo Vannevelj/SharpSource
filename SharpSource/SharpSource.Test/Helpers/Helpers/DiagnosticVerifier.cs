@@ -12,7 +12,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
-using SharpSource.Test.Helpers.DiagnosticResults;
 using SharpSource.Test.Helpers.Helpers.Testing;
 
 namespace SharpSource.Test.Helpers.Helpers;
@@ -45,12 +44,6 @@ public abstract class DiagnosticVerifier
     private const string FileName = "Test";
     private const string FileNameTemplate = FileName + "{0}{1}";
     private const string ProjectName = "TestProject";
-    private readonly string _languageName;
-
-    public DiagnosticVerifier(string languageName)
-    {
-        _languageName = languageName;
-    }
 
     private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath) ?? "", dllName);
 
@@ -119,58 +112,9 @@ public abstract class DiagnosticVerifier
     ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
     ///     Note: input a DiagnosticResult for each Diagnostic expected
     /// </summary>
-    /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-    /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-    protected void VerifyDiagnostic(string[] sources, params DiagnosticResult[] expected) => VerifyDiagnostics(sources, _languageName, expected);
-
-    /// <summary>
-    ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
-    ///     Note: input a DiagnosticResult for each Diagnostic expected
-    /// </summary>
-    /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-    /// <param name="expected">Diagnostic messages that should appear after the analyzer is run on the sources</param>
-    protected void VerifyDiagnostic(string[] sources, params string[] expected) => VerifyDiagnostics(sources, _languageName, expected);
-
-    /// <summary>
-    ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
-    ///     Note: input a DiagnosticResult for each Diagnostic expected
-    /// </summary>
-    /// <param name="source">A string representing the document to run the analyzer on</param>
-    /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-    protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected) => VerifyDiagnostics(new[] { source }, _languageName, expected);
-
-    /// <summary>
-    ///     Called to test a DiagnosticAnalyzer when applied on the inputted strings as a source
-    ///     Note: input a DiagnosticResult for each Diagnostic expected
-    /// </summary>
     /// <param name="source">A string representing the document to run the analyzer on</param>
     /// <param name="expected">Diagnostic messages that should appear after the analyzer is run on the sources</param>
-    protected void VerifyDiagnostic(string source, params string[] expected) => VerifyDiagnostics(new[] { source }, _languageName, expected);
-
-    /// <summary>
-    ///     Verifies that no diagnostic is triggered.
-    /// </summary>
-    /// <param name="source">A string representing the document to run the analyzer on</param>
-    protected void VerifyDiagnostic(string source) => VerifyDiagnostics(new[] { source }, _languageName, Array.Empty<string>());
-
-    /// <summary>
-    ///     Verifies that no diagnostic is triggered.
-    /// </summary>
-    /// <param name="sources">An array of strings representing the documents</param>
-    protected void VerifyDiagnostic(string[] sources) => VerifyDiagnostics(sources, _languageName, Array.Empty<string>());
-
-    /// <summary>
-    ///     General method that gets a collection of actual diagnostics found in the source after the analyzer is run,
-    ///     then verifies each of them.
-    /// </summary>
-    /// <param name="sources">An array of strings to create source documents from to run teh analyzers on</param>
-    /// <param name="language">The language of the classes represented by the source strings</param>
-    /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-    private void VerifyDiagnostics(string[] sources, string language, params DiagnosticResult[] expected)
-    {
-        var diagnostics = GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, GetDocuments(sources, language));
-        VerifyDiagnosticResults(diagnostics, DiagnosticAnalyzer, expected);
-    }
+    protected void VerifyDiagnostic(string source, params string[] expected) => VerifyDiagnostic(new[] { source }, expected);
 
     /// <summary>
     ///     General method that gets a collection of actual diagnostics found in the source after the analyzer is run,
@@ -179,66 +123,10 @@ public abstract class DiagnosticVerifier
     /// <param name="sources">An array of strings to create source documents from to run teh analyzers on</param>
     /// <param name="language">The language of the classes represented by the source strings</param>
     /// <param name="expected">Diagnostic messages that should appear after the analyzer is run on the sources</param>
-    private void VerifyDiagnostics(string[] sources, string language, params string[] expected)
+    protected void VerifyDiagnostic(string[] sources, params string[] expected)
     {
-        var diagnostics = GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, GetDocuments(sources, language));
+        var diagnostics = GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, GetDocuments(sources, LanguageNames.CSharp));
         VerifyDiagnosticResults(diagnostics, DiagnosticAnalyzer, expected);
-    }
-
-    /// <summary>
-    ///     Checks each of the actual Diagnostics found and compares them with the corresponding DiagnosticResult in the array
-    ///     of expected results.
-    ///     Diagnostics are considered equal only if the DiagnosticResultLocation, Id, Severity, and Message of the
-    ///     DiagnosticResult match the actual diagnostic.
-    /// </summary>
-    /// <param name="actualResults">The Diagnostics found by the compiler after running the analyzer on the source code</param>
-    /// <param name="analyzer">The analyzer that was being run on the sources</param>
-    /// <param name="expectedResults">Diagnostic results that should have appeared in the code</param>
-    private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
-    {
-        var expectedCount = expectedResults.Length;
-        var results = actualResults.ToArray();
-        var actualCount = results.Length;
-
-        if (expectedCount != actualCount)
-        {
-            var diagnosticsOutput = results.Any() ? FormatDiagnostics(analyzer, results) : "NONE.";
-            Assert.Fail($"Mismatch between number of diagnostics returned, expected \"{expectedCount}\" actual \"{actualCount}\"\r\n\r\nDiagnostics:\r\n{diagnosticsOutput}\r\n");
-        }
-
-        for (var i = 0; i < expectedResults.Length; i++)
-        {
-            var actual = results[i];
-            var expected = expectedResults[i];
-
-            if (actual.Id != expected.Id)
-            {
-                Assert.Fail($"Expected diagnostic id to be \"{expected.Id}\" was \"{actual.Id}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, actual)}\r\n");
-            }
-
-            if (actual.Severity != expected.Severity)
-            {
-                Assert.Fail($"Expected diagnostic severity to be \"{expected.Severity}\" was \"{actual.Severity}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, actual)}\r\n");
-            }
-
-            if (actual.GetMessage() != expected.Message)
-            {
-                Assert.Fail($"Expected diagnostic message to be \"{expected.Message}\" was \"{actual.GetMessage()}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, actual)}\r\n");
-            }
-
-            var actualLocations = new[] { actual.Location }.Concat(actual.AdditionalLocations).ToArray();
-            if (actualLocations.Length != expected.Locations.Length)
-            {
-                Assert.Fail($"Expected {expected.Locations.Length} locations but got {actualLocations.Length} for Diagnostic:\r\n{FormatDiagnostics(analyzer, actual)}\r\n");
-            }
-
-            for (var j = 0; j < expected.Locations.Length; j++)
-            {
-                var expectedLocation = expected.Locations[j];
-                var actualLocation = actualLocations[j];
-                VerifyDiagnosticLocation(analyzer, actual, actualLocation, expectedLocation);
-            }
-        }
     }
 
     /// <summary>
@@ -271,42 +159,6 @@ public abstract class DiagnosticVerifier
             {
                 Assert.Fail($"Expected diagnostic message to be \"{expected}\" was \"{actual.GetMessage()}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, actual)}\r\n");
             }
-        }
-    }
-
-    /// <summary>
-    ///     Helper method to VerifyDiagnosticResult that checks the location of a diagnostic and compares it with the location
-    ///     in the expected DiagnosticResult.
-    /// </summary>
-    /// <param name="analyzer">The analyzer that was being run on the sources</param>
-    /// <param name="diagnostic">The diagnostic that was found in the code</param>
-    /// <param name="actual">The Location of the Diagnostic found in the code</param>
-    /// <param name="expected">The DiagnosticResultLocation that should have been found</param>
-    private static void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
-    {
-        if (expected.Line == null || expected.Column == null)
-        {
-            if (actual != Location.None)
-            {
-                Assert.Fail($"Expected:\nA project diagnostic with No location\nActual:\n{FormatDiagnostics(analyzer, diagnostic)}");
-            }
-        }
-
-        var actualSpan = actual.GetLineSpan();
-        Assert.AreEqual(actualSpan.Path, expected.FilePath,
-            $"Expected diagnostic to be in file \"{expected.FilePath}\" was actually in file \"{actualSpan.Path}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, diagnostic)}\r\n");
-
-        var actualLinePosition = actualSpan.StartLinePosition;
-        if (actualLinePosition.Line + 1 != expected.Line)
-        {
-            Assert.Fail(
-                $"Expected diagnostic to be on line \"{expected.Line}\" was actually on line \"{actualLinePosition.Line + 1}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, diagnostic)}\r\n");
-        }
-
-        if (actualLinePosition.Character + 1 != expected.Column)
-        {
-            Assert.Fail(
-                $"Expected diagnostic to start at column \"{expected.Column}\" was actually at column \"{actualLinePosition.Character + 1}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, diagnostic)}\r\n");
         }
     }
 

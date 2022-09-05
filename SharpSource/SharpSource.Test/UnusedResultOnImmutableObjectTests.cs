@@ -2,12 +2,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+using SharpSource.Test.Helpers.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class UnusedResultOnImmutableObjectTests : CSharpDiagnosticVerifier
+public class UnusedResultOnImmutableObjectTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new UnusedResultOnImmutableObjectAnalyzer();
 

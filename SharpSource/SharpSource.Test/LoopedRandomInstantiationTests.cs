@@ -1,12 +1,13 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
+using SharpSource.Test.Helpers.Helpers;
 using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class LoopedRandomInstantiationTests : CSharpDiagnosticVerifier
+public class LoopedRandomInstantiationTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LoopedRandomInstantiationAnalyzer();
 
