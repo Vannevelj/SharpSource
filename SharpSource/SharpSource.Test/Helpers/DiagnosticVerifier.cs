@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Runtime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,12 +27,12 @@ public abstract class DiagnosticVerifier
     private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
     // After netframework the runtime is split in System.Runtime and System.Private.CoreLib
     // All references appear to return System.Private.CoreLib so we'll have to manually insert the System.Runtime one
-    private static readonly string SystemPrivateCoreLibPath = typeof(AmbiguousImplementationException).Assembly.Location;
+    private static readonly string SystemPrivateCoreLibPath = typeof(System.Runtime.AmbiguousImplementationException).Assembly.Location;
     private static readonly MetadataReference SystemRuntime = MetadataReference.CreateFromFile(GetDllDirectory("System.Runtime.dll"));
     private static readonly MetadataReference SystemConsole = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
     private static readonly MetadataReference SystemCollections = MetadataReference.CreateFromFile(GetDllDirectory("System.Collections.dll"));
     private static readonly MetadataReference SystemObjectModel = MetadataReference.CreateFromFile(GetDllDirectory("System.ObjectModel.dll"));
-    private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location);
+    private static readonly MetadataReference SystemNetHttp = MetadataReference.CreateFromFile(typeof(System.Net.Http.HttpClient).Assembly.Location);
     private static readonly MetadataReference AspNetCoreHttp = MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Http.HttpContext).Assembly.Location);
     private static readonly MetadataReference AspNetCoreMvc = MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Mvc.FromBodyAttribute).Assembly.Location);
     private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
@@ -129,8 +127,8 @@ public abstract class DiagnosticVerifier
     protected async Task VerifyDiagnostic(string[] sources, params string[] expected)
     {
         var documents = CreateProject(sources).Documents.ToArray();
-        var diagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, documents);
-        VerifyDiagnosticResults(diagnostics, DiagnosticAnalyzer, expected);
+        var diagnostics = await GetSortedDiagnosticsFromDocuments(documents);
+        VerifyDiagnosticResults(diagnostics, expected);
     }
 
     /// <summary>
@@ -142,7 +140,7 @@ public abstract class DiagnosticVerifier
     /// <param name="actualResults">The Diagnostics found by the compiler after running the analyzer on the source code</param>
     /// <param name="analyzer">The analyzer that was being run on the sources</param>
     /// <param name="expectedResults">Diagnostic messages that should have appeared in the code</param>
-    private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params string[] expectedResults)
+    private void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, params string[] expectedResults)
     {
         var expectedCount = expectedResults.Length;
         var results = actualResults.ToArray();
@@ -150,7 +148,7 @@ public abstract class DiagnosticVerifier
 
         if (expectedCount != actualCount)
         {
-            var diagnosticsOutput = results.Any() ? FormatDiagnostics(analyzer, results) : "NONE.";
+            var diagnosticsOutput = results.Any() ? FormatDiagnostics(DiagnosticAnalyzer, results) : "NONE.";
             Assert.Fail($"Mismatch between number of diagnostics returned, expected \"{expectedCount}\" actual \"{actualCount}\"\r\n\r\nDiagnostics:\r\n{diagnosticsOutput}\r\n");
         }
 
@@ -161,7 +159,7 @@ public abstract class DiagnosticVerifier
 
             if (actual.GetMessage() != expected)
             {
-                Assert.Fail($"Expected diagnostic message to be \"{expected}\" was \"{actual.GetMessage()}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(analyzer, actual)}\r\n");
+                Assert.Fail($"Expected diagnostic message to be \"{expected}\" was \"{actual.GetMessage()}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(DiagnosticAnalyzer, actual)}\r\n");
             }
         }
     }
@@ -173,7 +171,7 @@ public abstract class DiagnosticVerifier
     /// <param name="analyzer">The analyzer to run on the documents</param>
     /// <param name="documents">The Documents that the analyzer will be run on</param>
     /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-    internal static async Task<Diagnostic[]> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, params Document[] documents)
+    internal async Task<Diagnostic[]> GetSortedDiagnosticsFromDocuments(params Document[] documents)
     {
         var diagnostics = new List<Diagnostic>();
         foreach (var project in documents.Select(x => x.Project).Distinct())
@@ -200,7 +198,7 @@ public abstract class DiagnosticVerifier
                     $"{sourceTree}");
             }
 
-            var diags = await compilation.WithAnalyzers(ImmutableArray.Create(analyzer)).GetAnalyzerDiagnosticsAsync();
+            var diags = await compilation.WithAnalyzers(ImmutableArray.Create(DiagnosticAnalyzer)).GetAnalyzerDiagnosticsAsync();
             foreach (var diagnostic in diags)
             {
                 if (diagnostic.Location == Location.None || diagnostic.Location.IsInMetadata)
@@ -296,7 +294,7 @@ public abstract class DiagnosticVerifier
         }
 
         var document = CreateProject(new[] { oldSource }).Documents.First();
-        var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, document);
+        var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
         var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
         var attempts = analyzerDiagnostics.Length;
 
@@ -312,7 +310,7 @@ public abstract class DiagnosticVerifier
             }
 
             document = await ApplyFix(document, actions, codeFixIndex);
-            analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, document);
+            analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
 
             var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
             var interestingDiagnostics = newCompilerDiagnostics
