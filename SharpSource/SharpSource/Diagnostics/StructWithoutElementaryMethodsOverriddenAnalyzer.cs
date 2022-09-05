@@ -43,62 +43,66 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
             }
 
             var method = (IMethodSymbol)symbol;
-            if (method.MetadataName == nameof(Equals) && method.Parameters.Count() == 1)
+            if (method is { MetadataName: nameof(Equals), Parameters.Length: 1 })
             {
                 objectEquals = method;
             }
 
-            if (method.MetadataName == nameof(GetHashCode) && !method.Parameters.Any())
+            // TODO: ARITY
+            if (method is { MetadataName: nameof(GetHashCode), Parameters.Length: 0 })
             {
                 objectGetHashCode = method;
             }
 
-            if (method.MetadataName == nameof(ToString) && !method.Parameters.Any())
+            if (method is { MetadataName: nameof(ToString), Parameters.Length: 0 })
             {
                 objectToString = method;
             }
         }
 
         var structDeclaration = (StructDeclarationSyntax)context.Node;
+        var structSymbol = context.SemanticModel.GetDeclaredSymbol(structDeclaration);
+        if (structSymbol == default)
+        {
+            return;
+        }
 
         var equalsImplemented = false;
         var getHashCodeImplemented = false;
         var toStringImplemented = false;
 
-        foreach (var node in structDeclaration.Members)
+        foreach (var node in structSymbol.GetMembers())
         {
-            if (!node.IsKind(SyntaxKind.MethodDeclaration))
+            if (node is not IMethodSymbol method)
             {
                 continue;
             }
 
-            var methodDeclaration = (MethodDeclarationSyntax)node;
-            if (!methodDeclaration.Modifiers.Contains(SyntaxKind.OverrideKeyword))
+
+            if (!method.IsOverride)
             {
                 continue;
             }
 
-            var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration)?.OverriddenMethod;
+            method = method.GetBaseDefinition();
 
             // this will happen if the base class is deleted and there is still a derived class
-            if (methodSymbol == null)
+            if (method == default)
             {
                 return;
             }
 
-            methodSymbol = methodSymbol.GetBaseDefinition();
-
-            if (methodSymbol.Equals(objectEquals, SymbolEqualityComparer.Default) == true)
+            if (method.Equals(objectEquals, SymbolEqualityComparer.Default) == true)
             {
                 equalsImplemented = true;
             }
 
-            if (methodSymbol.Equals(objectGetHashCode, SymbolEqualityComparer.Default) == true)
+            if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default) == true)
             {
                 getHashCodeImplemented = true;
             }
 
-            if (methodSymbol.Equals(objectToString, SymbolEqualityComparer.Default) == true)
+            if (method.Equals(objectToString, SymbolEqualityComparer.Default) == true)
             {
                 toStringImplemented = true;
             }

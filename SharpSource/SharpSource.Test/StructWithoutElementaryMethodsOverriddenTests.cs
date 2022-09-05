@@ -40,7 +40,7 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
         await VerifyFix(original, result);
     }
 
@@ -75,7 +75,7 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
         await VerifyFix(original, result);
     }
 
@@ -110,7 +110,7 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
         await VerifyFix(original, result);
     }
 
@@ -145,7 +145,7 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
         await VerifyFix(original, result);
     }
 
@@ -185,7 +185,7 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
         await VerifyFix(original, result);
     }
 
@@ -212,5 +212,61 @@ struct X
 }";
 
         await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StructWithoutElementaryMethodsOverridden_Partial_PartiallyImplemented()
+    {
+        var file1 = @"
+partial struct X
+{
+    public override bool Equals(object obj) => false;
+}";
+
+        var file2 = @"
+partial struct X
+{
+    
+}";
+
+        var file1Result = @"
+partial struct X
+{
+    public override bool Equals(object obj) => false;
+
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override string ToString()
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+
+        await VerifyDiagnostic(new[] { file1, file2 },
+            "Implement Equals(), GetHashCode() and ToString() methods on struct X.",
+            "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
+        await VerifyFix(file1, file1Result);
+    }
+
+    [TestMethod]
+    public async Task StructWithoutElementaryMethodsOverridden_Partial_FullyImplemented()
+    {
+        var file1 = @"
+partial struct X
+{
+    public override bool Equals(object obj) => false;
+}";
+
+        var file2 = @"
+partial struct X
+{
+    public override int GetHashCode() => 5;
+    public override string ToString() => string.Empty;
+}";
+
+        await VerifyDiagnostic(new[] { file1, file2 });
     }
 }
