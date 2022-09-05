@@ -3,7 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.7.1] - 2022-09-06
 - `StructWithoutElementaryMethodsOverridden`: take `partial struct` definitions into account where the methods are implemented across separate files
-- `TestMethodWithoutTestAttribute`: more accurately excluse `Dispose()` methods
+- `TestMethodWithoutTestAttribute`: more accurately exclude `Dispose()` methods
 
 ## [1.7.0] - 2022-09-05
 - `FlagsEnumValuesAreNotPowersOfTwo` has been rewritten to reduce the scope of its warning. Now it will only warn if a non-negative decimal literal is found which is not a power of two. A code fix will be available if a binary OR expression can be constructed with other enum members
