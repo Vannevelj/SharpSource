@@ -18,7 +18,7 @@ using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 using SharpSource.Test.Helpers.Helpers.Testing;
 
-namespace SharpSource.Test.Helpers.Helpers;
+namespace SharpSource.Test.Helpers;
 
 /// <summary>
 ///     Superclass of all Unit Tests for DiagnosticAnalyzers
