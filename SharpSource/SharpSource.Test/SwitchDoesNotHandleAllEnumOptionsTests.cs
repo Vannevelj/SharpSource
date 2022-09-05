@@ -2,12 +2,12 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class SwitchDoesNotHandleAllEnumOptionsTests : CSharpCodeFixVerifier
+public class SwitchDoesNotHandleAllEnumOptionsTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SwitchDoesNotHandleAllEnumOptionsAnalyzer();
     protected override CodeFixProvider CodeFixProvider => new SwitchDoesNotHandleAllEnumOptionsCodeFix();

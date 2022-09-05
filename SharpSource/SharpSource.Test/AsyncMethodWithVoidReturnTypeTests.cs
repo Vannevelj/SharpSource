@@ -3,12 +3,12 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AsyncMethodWithVoidReturnTypeTests : CSharpCodeFixVerifier
+public class AsyncMethodWithVoidReturnTypeTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AsyncMethodWithVoidReturnTypeAnalyzer();
     protected override CodeFixProvider CodeFixProvider => new AsyncMethodWithVoidReturnTypeCodeFix();

@@ -13,7 +13,7 @@ using SharpSource.Test.Helpers.Helpers.Testing;
 namespace SharpSource.Test.Helpers.Helpers;
 
 /// <summary>
-///     Base class for concrete classes separated by language of all Unit tests made for diagnostics with codefixes.
+///     Base class for concrete classes of all Unit tests made for diagnostics with codefixes.
 ///     Contains methods used to verify correctness of codefixes
 /// </summary>
 internal class CodeFixVerifier
@@ -24,7 +24,6 @@ internal class CodeFixVerifier
 
     internal async void VerifyFix(CodeFixProvider codeFixProvider,
                             DiagnosticAnalyzer diagnosticAnalyzer,
-                            string language,
                             string oldSource,
                             string newSource,
                             int? codeFixIndex = null,
@@ -35,14 +34,14 @@ internal class CodeFixVerifier
 
         if (allowedNewCompilerDiagnosticsId == null || !allowedNewCompilerDiagnosticsId.Any())
         {
-            VerifyFix(language, DiagnosticAnalyzer, CodeFixProvider, oldSource, newSource, codeFixIndex, false);
+            VerifyFix(DiagnosticAnalyzer, CodeFixProvider, oldSource, newSource, codeFixIndex, false);
         }
         else
         {
-            var document = DiagnosticVerifier.CreateDocument(oldSource, language);
+            var document = DiagnosticVerifier.CreateDocument(oldSource);
             var compilerDiagnostics = GetCompilerDiagnostics(document).ToArray();
 
-            VerifyFix(language, DiagnosticAnalyzer, CodeFixProvider, oldSource, newSource, codeFixIndex, true);
+            VerifyFix(DiagnosticAnalyzer, CodeFixProvider, oldSource, newSource, codeFixIndex, true);
 
             var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document)).ToList();
 
@@ -59,7 +58,6 @@ internal class CodeFixVerifier
 
     internal void VerifyFix(CodeFixProvider codeFixProvider,
                             DiagnosticAnalyzer diagnosticAnalyzer,
-                            string language,
                             string oldSource,
                             string newSource,
                             int? codeFixIndex = null,
@@ -67,7 +65,7 @@ internal class CodeFixVerifier
     {
         CodeFixProvider = codeFixProvider;
         DiagnosticAnalyzer = diagnosticAnalyzer;
-        VerifyFix(language, DiagnosticAnalyzer, CodeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+        VerifyFix(DiagnosticAnalyzer, CodeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
     }
 
     /// <summary>
@@ -77,7 +75,6 @@ internal class CodeFixVerifier
     ///     Note: If any codefix causes new diagnostics to show up, the test fails unless allowNewCompilerDiagnostics is set to
     ///     true.
     /// </summary>
-    /// <param name="language">The language the source code is in</param>
     /// <param name="analyzer">The analyzer to be applied to the source code</param>
     /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
     /// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
@@ -87,7 +84,7 @@ internal class CodeFixVerifier
     ///     A bool controlling whether or not the test will fail if the CodeFix
     ///     introduces other warnings after being applied
     /// </param>
-    private void VerifyFix(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
+    private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
     {
         if (analyzer == null)
         {
@@ -99,7 +96,7 @@ internal class CodeFixVerifier
             throw new ArgumentNullException(nameof(codeFixProvider));
         }
 
-        var document = DiagnosticVerifier.CreateDocument(oldSource, language);
+        var document = DiagnosticVerifier.CreateDocument(oldSource);
         var analyzerDiagnostics = DiagnosticVerifier.GetSortedDiagnosticsFromDocuments(analyzer, document);
         var compilerDiagnostics = GetCompilerDiagnostics(document).ToArray();
         var attempts = analyzerDiagnostics.Length;

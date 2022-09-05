@@ -2,12 +2,12 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ExplicitEnumValuesTests : CSharpCodeFixVerifier
+public class ExplicitEnumValuesTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ExplicitEnumValuesAnalyzer();
 
