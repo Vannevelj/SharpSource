@@ -61,7 +61,7 @@ namespace ConsoleApplication1
 }";
 
         VerifyDiagnostic(original, RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result, allowNewCompilerDiagnostics: true); // Removing the argument will remove all usages of the e parameter. This will cause a CS0168 warning.
+        VerifyFix(original, result, allowedNewCompilerDiagnosticsId: "CS0168"); // Removing the argument will remove all usages of the e parameter. This will cause a CS0168 warning.
     }
 
     [TestMethod]
