@@ -303,9 +303,8 @@ public abstract class DiagnosticVerifier
         var document = CreateProject(new[] { oldSource }).Documents.First();
         var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, document);
         var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
-        var attempts = analyzerDiagnostics.Length;
 
-        for (var i = 0; i < attempts; ++i)
+        for (var i = 0; i < analyzerDiagnostics.Length; ++i)
         {
             var actions = new List<CodeAction>();
             var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
