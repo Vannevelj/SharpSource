@@ -128,7 +128,8 @@ public abstract class DiagnosticVerifier
     /// <param name="expected">Diagnostic messages that should appear after the analyzer is run on the sources</param>
     protected async Task VerifyDiagnostic(string[] sources, params string[] expected)
     {
-        var diagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, GetDocuments(sources));
+        var documents = CreateProject(sources).Documents.ToArray();
+        var diagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, documents);
         VerifyDiagnosticResults(diagnostics, DiagnosticAnalyzer, expected);
     }
 
@@ -222,25 +223,6 @@ public abstract class DiagnosticVerifier
         }
 
         return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-    }
-
-    /// <summary>
-    ///     Given an array of strings as sources, turn them into a project and return the documents and spans of
-    ///     it.
-    /// </summary>
-    /// <param name="sources">Classes in the form of strings</param>
-    /// <returns>A Tuple containing the Documents produced from the sources and thier TextSpans if relevant</returns>
-    private static Document[] GetDocuments(string[] sources)
-    {
-        var project = CreateProject(sources);
-        var documents = project.Documents.ToArray();
-
-        if (sources.Length != documents.Length)
-        {
-            throw new SystemException("Amount of sources did not match amount of Documents created");
-        }
-
-        return documents;
     }
 
     /// <summary>
