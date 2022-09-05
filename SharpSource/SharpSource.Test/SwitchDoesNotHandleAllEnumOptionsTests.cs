@@ -471,7 +471,7 @@ namespace ConsoleApplication1
 }";
 
         await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        await VerifyFix(original, result, allowedNewCompilerDiagnosticsId: "CS8019");     // unneeded using directive
+        await VerifyFix(original, result);
     }
 
     [TestMethod]

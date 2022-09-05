@@ -286,32 +286,6 @@ public abstract class DiagnosticVerifier
         return newProject;
     }
 
-    internal async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0, params string[] allowedNewCompilerDiagnosticsId)
-    {
-        if (allowedNewCompilerDiagnosticsId == null || !allowedNewCompilerDiagnosticsId.Any())
-        {
-            await VerifyFix(oldSource, newSource, codeFixIndex, false);
-        }
-        else
-        {
-            var document = CreateDocument(oldSource);
-            var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
-
-            await VerifyFix(oldSource, newSource, codeFixIndex, true);
-
-            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document)).ToList();
-
-            if (newCompilerDiagnostics.Any(diagnostic => allowedNewCompilerDiagnosticsId.Any(s => s == diagnostic.Id)))
-            {
-                var root = await document.GetSyntaxRootAsync();
-                Assert.Fail(
-                    "Fix introduced new compiler diagnostics. " +
-                    $"\r\n{root?.ToFullString()}" +
-                    $"\r\n\r\n{string.Join(Environment.NewLine, newCompilerDiagnostics.Select(d => d.ToString()))}");
-            }
-        }
-    }
-
     /// <summary>
     ///     General verifier for codefixes.
     ///     Creates a Document from the source string, then gets diagnostics on it and applies the relevant codefixes.
@@ -326,7 +300,7 @@ public abstract class DiagnosticVerifier
     ///     A bool controlling whether or not the test will fail if the CodeFix
     ///     introduces other warnings after being applied
     /// </param>
-    private async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
+    protected async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
     {
         if (CodeFixProvider == null)
         {
@@ -353,7 +327,11 @@ public abstract class DiagnosticVerifier
             analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, document);
 
             var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
-            var interestingDiagnostics = newCompilerDiagnostics.Where(x => x.Id != "CS8019");
+            var interestingDiagnostics = newCompilerDiagnostics
+                .Where(x =>
+                    x.Id != "CS8019" && // Unnecessary using directive 
+                    x.Id != "CS0168" // The variable is declared but never used
+                ); 
 
             //check if applying the code fix introduced any new compiler diagnostics
             if (!allowNewCompilerDiagnostics && interestingDiagnostics.Any())
@@ -450,13 +428,8 @@ public abstract class DiagnosticVerifier
     /// </summary>
     /// <param name="document">The Document to be converted to a string</param>
     /// <returns>A string contianing the syntax of the Document after formatting</returns>
-    private static async Task<string> GetStringFromDocument(Document? document)
+    private static async Task<string> GetStringFromDocument(Document document)
     {
-        if (document == default)
-        {
-            return "";
-        }
-
         var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation);
         var root = await simplifiedDoc.GetSyntaxRootAsync();
         if (root == default)
