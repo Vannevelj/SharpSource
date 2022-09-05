@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ public class SynchronousTaskWaitTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new SynchronousTaskWaitCodeFix();
 
     [TestMethod]
-    public void SynchronousTaskWait_AsyncContext()
+    public async Task SynchronousTaskWait_AsyncContextAsync()
     {
         var original = @"
 using System;
@@ -48,12 +49,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_SyncContext()
+    public async Task SynchronousTaskWait_SyncContextAsync()
     {
         var original = @"
 using System;
@@ -71,11 +72,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_AsyncContext_Void()
+    public async Task SynchronousTaskWait_AsyncContext_VoidAsync()
     {
         var original = @"
 using System;
@@ -109,12 +110,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_ExpressionBodiedMember()
+    public async Task SynchronousTaskWait_ExpressionBodiedMemberAsync()
     {
         var original = @"
 using System;
@@ -142,12 +143,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_AsyncLambda()
+    public async Task SynchronousTaskWait_AsyncLambdaAsync()
     {
         var original = @"
 using System;
@@ -175,12 +176,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_SyncLambda()
+    public async Task SynchronousTaskWait_SyncLambdaAsync()
     {
         var original = @"
 using System;
@@ -195,11 +196,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_Constructor()
+    public async Task SynchronousTaskWait_ConstructorAsync()
     {
         var original = @"
 using System;
@@ -219,11 +220,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SynchronousTaskWait_ChainedExpression()
+    public async Task SynchronousTaskWait_ChainedExpressionAsync()
     {
         var original = @"
 using System;
@@ -261,7 +262,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
     }
 }

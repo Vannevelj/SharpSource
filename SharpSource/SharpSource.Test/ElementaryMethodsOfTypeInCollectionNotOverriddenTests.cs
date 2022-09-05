@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,7 +12,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenTests : DiagnosticV
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer();
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType()
     {
         var original = @"
 using System.Collections.Generic;
@@ -29,11 +30,11 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithInterfaceType()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithInterfaceType()
     {
         var original = @"
 using System.Collections.Generic;
@@ -51,11 +52,11 @@ namespace ConsoleApplication1
     interface MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType()
     {
         var original = @"
 using System.Collections.Generic;
@@ -73,11 +74,11 @@ namespace ConsoleApplication1
     struct MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsEquals()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsEquals()
     {
         var original = @"
 using System.Collections.Generic;
@@ -101,11 +102,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsEquals()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsEquals()
     {
         var original = @"
 using System.Collections.Generic;
@@ -129,11 +130,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsGetHashCode()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsGetHashCode()
     {
         var original = @"
 using System.Collections.Generic;
@@ -157,11 +158,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsGetHashCode()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsGetHashCode()
     {
         var original = @"
 using System.Collections.Generic;
@@ -185,11 +186,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsMethods()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType_ImplementsMethods()
     {
         var original = @"
 using System.Collections.Generic;
@@ -218,11 +219,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsMethods()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithValueType_ImplementsMethods()
     {
         var original = @"
 using System.Collections.Generic;
@@ -251,11 +252,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_BothDoNotImplementMethods()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_BothDoNotImplementMethods()
     {
         var original = @"
 using System.Collections.Generic;
@@ -275,12 +276,12 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original,
+        await VerifyDiagnostic(original,
             "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_UsedInCall()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_UsedInCall()
     {
         var original = @"
 using System.Collections.Generic;
@@ -300,11 +301,11 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_NotUsedInCall()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_Dictionary_OneDoesNotImplementMethods_NotUsedInCall()
     {
         var original = @"
 using System.Collections.Generic;
@@ -324,11 +325,11 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_TypeParameterWithoutObjectCreation()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_TypeParameterWithoutObjectCreation()
     {
         var original = @"
 using System.Linq;
@@ -346,11 +347,11 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromClass()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromClass()
     {
         var original = @"
 using System.Collections.Generic;
@@ -367,11 +368,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromMethod()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_GenericTypeFromMethod()
     {
         var original = @"
 using System.Collections.Generic;
@@ -388,11 +389,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithEnum()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithEnum()
     {
         var original = @"
 using System.Collections.Generic;
@@ -410,11 +411,11 @@ namespace ConsoleApplication1
     enum SomeEnum {}
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_Object()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_Object()
     {
         var original = @"
 using System.Collections.Generic;
@@ -430,11 +431,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithArray()
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithArray()
     {
         var original = @"
 using System.Collections.Generic;
@@ -452,13 +453,13 @@ namespace ConsoleApplication1
     class SomeClass {}
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/99")]
     [DataRow("Dictionary<int, int>")]
     [DataRow("KeyValuePair<int, int>")]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_WithSystemTypes(string type)
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithSystemTypes(string type)
     {
         var original = $@"
 using System.Collections.Generic;
@@ -467,7 +468,7 @@ var list = new List<{type}>();
 var s = list.Contains(default);
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
@@ -476,7 +477,7 @@ var s = list.Contains(default);
     [DataRow("new Dictionary<MyCollectionItem, int>()[new MyCollectionItem()]")]
     [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue(new MyCollectionItem(), out _)")]
     [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
     {
         var original = @$"
 using System.Collections.Generic;
@@ -487,7 +488,7 @@ var x = {invocation};
 class MyCollectionItem {{}}
 ";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 
     [TestMethod]
@@ -497,7 +498,7 @@ class MyCollectionItem {{}}
     [DataRow("new ReadOnlyCollection<MyCollectionItem>(new[] { new MyCollectionItem() }).Contains(new MyCollectionItem())")]
     [DataRow("new Queue<MyCollectionItem>().Contains(new MyCollectionItem())")]
     [DataRow("new Stack<MyCollectionItem>().Contains(new MyCollectionItem())")]
-    public void ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedTypes(string invocation)
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedTypes(string invocation)
     {
         var original = @$"
 using System.Collections.Generic;
@@ -509,6 +510,6 @@ var x = {invocation};
 class MyCollectionItem {{}}
 ";
 
-        VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
 }

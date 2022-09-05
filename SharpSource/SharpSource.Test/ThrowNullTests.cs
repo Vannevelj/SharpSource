@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,7 +12,7 @@ public class ThrowNullTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ThrowNullAnalyzer();
 
     [TestMethod]
-    public void ThrowNull_ThrowsNull()
+    public async Task ThrowNull_ThrowsNullAsync()
     {
         var original = @"
     using System;
@@ -28,11 +29,11 @@ public class ThrowNullTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
+        await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
     }
 
     [TestMethod]
-    public void ThrowNull_DoesNotThrowNull()
+    public async Task ThrowNull_DoesNotThrowNullAsync()
     {
         var original = @"
     using System;
@@ -49,11 +50,11 @@ public class ThrowNullTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ThrowNull_Rethrow()
+    public async Task ThrowNull_RethrowAsync()
     {
         var original = @"
     using System;
@@ -74,6 +75,6 @@ public class ThrowNullTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

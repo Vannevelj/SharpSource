@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherTests : DiagnosticVerifie
     protected override CodeFixProvider CodeFixProvider => new EqualsAndGetHashcodeNotImplementedTogetherCodeFix();
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarning()
+    public async Task EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarningAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -32,11 +33,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_EqualsImplemented()
+    public async Task EqualsAndGetHashcodeNotImplemented_EqualsImplementedAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -67,12 +68,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented()
+    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplementedAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -103,12 +104,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_NeitherImplemented_NoWarning()
+    public async Task EqualsAndGetHashcodeNotImplemented_NeitherImplemented_NoWarningAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -118,11 +119,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_NonOverridingEqualsImplemented_NoWarning()
+    public async Task EqualsAndGetHashcodeNotImplemented_NonOverridingEqualsImplemented_NoWarningAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -136,11 +137,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_NonOverridingGetHashcodeImplemented_NoWarning()
+    public async Task EqualsAndGetHashcodeNotImplemented_NonOverridingGetHashcodeImplemented_NoWarningAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -154,11 +155,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_EqualsImplemented_SimplifiesNameWhenUsingSystem()
+    public async Task EqualsAndGetHashcodeNotImplemented_EqualsImplemented_SimplifiesNameWhenUsingSystemAsync()
     {
         var original = @"
 using System;
@@ -191,12 +192,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_SimplifiesNameWhenUsingSystem()
+    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_SimplifiesNameWhenUsingSystemAsync()
     {
         var original = @"
 using System;
@@ -229,12 +230,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_BaseClassImplementsBoth()
+    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_BaseClassImplementsBothAsync()
     {
         var original = @"
 using System;
@@ -293,12 +294,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void EqualsAndGetHashcodeNotImplemented_Partial()
+    public async Task EqualsAndGetHashcodeNotImplemented_Partial()
     {
         var file1 = @"
 partial class MyClass
@@ -318,6 +319,6 @@ partial class MyClass
     }
 }";
 
-        VerifyDiagnostic(new string[] { file1, file2 });
+        await VerifyDiagnostic(new string[] { file1, file2 });
     }
 }

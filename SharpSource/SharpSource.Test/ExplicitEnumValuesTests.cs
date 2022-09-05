@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ public class ExplicitEnumValuesTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new ExplicitEnumValuesCodeFix();
 
     [TestMethod]
-    public void ExplicitEnumValues_NotSpecified()
+    public async Task ExplicitEnumValues_NotSpecifiedAsync()
     {
         var original = @"
 enum Test {
@@ -26,23 +27,23 @@ enum Test {
     A = 0
 }";
 
-        VerifyDiagnostic(original, "Option A on enum Test should explicitly specify its value");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Option A on enum Test should explicitly specify its value");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void ExplicitEnumValues_Specified()
+    public async Task ExplicitEnumValues_SpecifiedAsync()
     {
         var original = @"
 enum Test {
     A = 0
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExplicitEnumValues_SomeSpecified()
+    public async Task ExplicitEnumValues_SomeSpecifiedAsync()
     {
         var original = @"
 enum Test {
@@ -56,12 +57,12 @@ enum Test {
     B = 1
 }";
 
-        VerifyDiagnostic(original, "Option B on enum Test should explicitly specify its value");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Option B on enum Test should explicitly specify its value");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void ExplicitEnumValues_SpecifiedWithReference()
+    public async Task ExplicitEnumValues_SpecifiedWithReferenceAsync()
     {
         var original = @"
 enum Test {
@@ -69,22 +70,22 @@ enum Test {
     B = A
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExplicitEnumValues_SpecifiedWithCalculation()
+    public async Task ExplicitEnumValues_SpecifiedWithCalculationAsync()
     {
         var original = @"
 enum Test {
     A = 1 << 1
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExplicitEnumValues_NotSpecifiedWithMultiple()
+    public async Task ExplicitEnumValues_NotSpecifiedWithMultipleAsync()
     {
         var original = @"
 enum Test {
@@ -100,7 +101,7 @@ enum Test {
     C = 2
 }";
 
-        VerifyDiagnostic(original, "Option A on enum Test should explicitly specify its value", "Option C on enum Test should explicitly specify its value");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Option A on enum Test should explicitly specify its value", "Option C on enum Test should explicitly specify its value");
+        await VerifyFix(original, result);
     }
 }

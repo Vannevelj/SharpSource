@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -19,7 +20,7 @@ public class UnusedResultOnImmutableObjectTests : DiagnosticVerifier
     [DataRow("ToUpper()")]
     [DataRow("Split('e')")]
     [DataRow("PadRight(5)")]
-    public void UnusedResultOnImmutableObjectTests_UnusedResult(string invocation)
+    public async Task UnusedResultOnImmutableObjectTests_UnusedResultAsync(string invocation)
     {
         var original = $@"
 class Test
@@ -31,7 +32,7 @@ class Test
 }}
 ";
 
-        VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
     }
 
     [TestMethod]
@@ -43,13 +44,13 @@ class Test
     [DataRow("ToUpper()")]
     [DataRow("Split('e')")]
     [DataRow("PadRight(5)")]
-    public void UnusedResultOnImmutableObjectTests_UnusedResult_Global(string invocation)
+    public async Task UnusedResultOnImmutableObjectTests_UnusedResult_GlobalAsync(string invocation)
     {
         var original = $@"
 ""test"".{invocation};
 ";
 
-        VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
     }
 
     [TestMethod]
@@ -61,14 +62,14 @@ class Test
     [DataRow("ToUpper()")]
     [DataRow("Split('e')")]
     [DataRow("PadRight(5)")]
-    public void UnusedResultOnImmutableObjectTests_UnusedResult_WithVariable(string invocation)
+    public async Task UnusedResultOnImmutableObjectTests_UnusedResult_WithVariableAsync(string invocation)
     {
         var original = $@"
 var str = ""test"";
 str.{invocation};
 ";
 
-        VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
     }
 
     [TestMethod]
@@ -80,19 +81,19 @@ str.{invocation};
     [DataRow("ToUpper()")]
     [DataRow("Split('e')")]
     [DataRow("PadRight(5)")]
-    public void UnusedResultOnImmutableObjectTests_UsedResult(string invocation)
+    public async Task UnusedResultOnImmutableObjectTests_UsedResultAsync(string invocation)
     {
         var original = $@"
 var temp = ""test"".{invocation};
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
     [DataRow("if")]
     [DataRow("while")]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_InCondition(string condition)
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InConditionAsync(string condition)
     {
         var original = $@"
 class Test
@@ -104,11 +105,11 @@ class Test
 }}
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_InCondition_DoWhile()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InCondition_DoWhileAsync()
     {
         var original = @"
 class Test
@@ -122,11 +123,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_InCondition_Ternary()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InCondition_TernaryAsync()
     {
         var original = @"
 class Test
@@ -138,11 +139,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/82")]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_SeparateVariableDefinition()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_SeparateVariableDefinitionAsync()
     {
         var original = @"
 class Test
@@ -155,11 +156,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/83")]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_AsArgument()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_AsArgumentAsync()
     {
         var original = @"
 class Test
@@ -173,11 +174,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/85")]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_AsReturnValue()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_AsReturnValueAsync()
     {
         var original = @"
 class Test
@@ -189,11 +190,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/81")]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_InLambda()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InLambdaAsync()
     {
         var original = @"
 using System.Linq;
@@ -210,23 +211,23 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void UnusedResultOnImmutableObjectTests_UsedResult_NullCoalescing()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_NullCoalescingAsync()
     {
         var original = @"
 string Method() => string.Empty ?? """".Trim();
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/119")]
     [DataRow("CopyTo(Span<char>.Empty)")]
     [DataRow("TryCopyTo(Span<char>.Empty)")]
-    public void UnusedResultOnImmutableObjectTests_ExcludedFunctions(string invocation)
+    public async Task UnusedResultOnImmutableObjectTests_ExcludedFunctionsAsync(string invocation)
     {
         var original = @$"
 using System;
@@ -234,6 +235,6 @@ using System;
 """".{invocation};
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

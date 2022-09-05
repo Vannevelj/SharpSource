@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,7 @@ public class SwitchDoesNotHandleAllEnumOptionsTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new SwitchDoesNotHandleAllEnumOptionsCodeFix();
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatementAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -63,12 +64,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_AllEnumStatements()
+    public async Task SwitchDoesNotHandleAllEnumOptions_AllEnumStatementsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -94,11 +95,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_CaseStatementsNotEnum()
+    public async Task SwitchDoesNotHandleAllEnumOptions_CaseStatementsNotEnumAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -118,11 +119,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_CaseHasDefaultStatement_NewStatementsAreAddedAboveDefault()
+    public async Task SwitchDoesNotHandleAllEnumOptions_CaseHasDefaultStatement_NewStatementsAreAddedAboveDefaultAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -174,12 +175,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_MultipleSections()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_MultipleSectionsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -231,12 +232,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatements()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatementsAsync()
     {
         var original = @"
 using System.IO;
@@ -290,12 +291,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_AddsAllMissingStatements()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_AddsAllMissingStatementsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -349,12 +350,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_NoEnumStatements()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_NoEnumStatementsAsync()
     {
         var original = @"
 using System.IO;
@@ -406,12 +407,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_MixedExpandedEnumStatements()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_MixedExpandedEnumStatementsAsync()
     {
         var original = @"
 using System.IO;
@@ -469,12 +470,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result, allowedNewCompilerDiagnosticsId: "CS8019");     // unneeded using directive
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result, allowedNewCompilerDiagnosticsId: "CS8019");     // unneeded using directive
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_AllExpandedEnumStatements()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_AllExpandedEnumStatementsAsync()
     {
         var original = @"
 using System.IO;
@@ -489,38 +490,6 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case FileOptions.Encrypted:
-                    break;
-                case FileOptions.SequentialScan:
-                    break;
-                case FileOptions.RandomAccess:
-                    break;
-            }
-        }
-    }
-}";
-
-        var result = @"
-using System.IO;
-using static System.IO.FileOptions;
-
-namespace ConsoleApplication1
-{
-    class MyClass
-    {
-        void Method()
-        {
-            var e = DeleteOnClose;
-            switch (e)
-            {
-                case DeleteOnClose:
-                    throw new System.NotImplementedException();
-                case Asynchronous:
-                    throw new System.NotImplementedException();
-                case WriteThrough:
-                    throw new System.NotImplementedException();
-                case None:
-                    throw new System.NotImplementedException();
                 case FileOptions.Encrypted:
                     break;
                 case FileOptions.SequentialScan:
@@ -532,12 +501,44 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        var result = @"
+using System.IO;
+using static System.IO.FileOptions;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var e = DeleteOnClose;
+            switch (e)
+            {
+                case DeleteOnClose:
+                    throw new System.NotImplementedException();
+                case Asynchronous:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
+                    throw new System.NotImplementedException();
+                case None:
+                    throw new System.NotImplementedException();
+                case FileOptions.Encrypted:
+                    break;
+                case FileOptions.SequentialScan:
+                    break;
+                case FileOptions.RandomAccess:
+                    break;
+            }
+        }
+    }
+}";
+
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NoRedundantQualifierIfUsingSystemDirectiveExists()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NoRedundantQualifierIfUsingSystemDirectiveExistsAsync()
     {
         var original = @"
 using System;
@@ -589,12 +590,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_UsingAliasForSystem()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_UsingAliasForSystemAsync()
     {
         var original = @"
 using Fizz = System;    // seriously...
@@ -646,12 +647,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenParentDirectiveNotIncluded()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenParentDirectiveNotIncludedAsync()
     {
         var original = @"
 using static System.IO.FileOptions;
@@ -707,12 +708,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenUsingDirectiveIncludesWhitespace()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenUsingDirectiveIncludesWhitespaceAsync()
     {
         var original = @"
 using static System .       IO      . FileOptions;  // Happy maintaining
@@ -768,12 +769,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NestedEnum()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NestedEnumAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -823,12 +824,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_MissingEnumStatements_CaseValueIsCastToEnumType()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatements_CaseValueIsCastToEnumTypeAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -852,11 +853,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NoUsings()
+    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NoUsingsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -902,12 +903,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NormalUsing()
+    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NormalUsingAsync()
     {
         var original = @"
 using System.IO;
@@ -957,12 +958,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_UsingStatic()
+    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_UsingStaticAsync()
     {
         var original = @"
 using static System.IO.FileOptions;
@@ -1012,7 +1013,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 }

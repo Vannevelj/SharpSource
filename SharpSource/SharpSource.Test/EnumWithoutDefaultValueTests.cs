@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,31 +12,31 @@ public class EnumWithoutDefaultValueTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new EnumWithoutDefaultValueAnalyzer();
 
     [TestMethod]
-    public void EnumWithoutDefaultValue_WrongName()
+    public async Task EnumWithoutDefaultValue_WrongName()
     {
         var original = @"
 enum Test {
     A
 }";
 
-        VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
+        await VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
     }
 
     [TestMethod]
-    public void EnumWithoutDefaultValue_NoMembers()
+    public async Task EnumWithoutDefaultValue_NoMembers()
     {
         var original = @"
 enum Test {
     
 }";
 
-        VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
+        await VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
     }
 
     [TestMethod]
     [DataRow("None")]
     [DataRow("Unknown")]
-    public void EnumWithoutDefaultValue_RightName_WrongValue(string memberName)
+    public async Task EnumWithoutDefaultValue_RightName_WrongValue(string memberName)
     {
         var original = $@"
 enum Test {{
@@ -43,13 +44,13 @@ enum Test {{
     {memberName} = 1
 }}";
 
-        VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
+        await VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
     }
 
     [TestMethod]
     [DataRow("None")]
     [DataRow("Unknown")]
-    public void EnumWithoutDefaultValue_RightName_RightValueExplicit(string memberName)
+    public async Task EnumWithoutDefaultValue_RightName_RightValueExplicit(string memberName)
     {
         var original = $@"
 enum Test {{
@@ -57,13 +58,13 @@ enum Test {{
     A = 1
 }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
     [DataRow("None")]
     [DataRow("Unknown")]
-    public void EnumWithoutDefaultValue_RightName_RightValueImplicit(string memberName)
+    public async Task EnumWithoutDefaultValue_RightName_RightValueImplicit(string memberName)
     {
         var original = $@"
 enum Test {{
@@ -71,13 +72,13 @@ enum Test {{
     A = 1
 }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
     [DataRow("None")]
     [DataRow("Unknown")]
-    public void EnumWithoutDefaultValue_RightName_RightValueDuplicated(string memberName)
+    public async Task EnumWithoutDefaultValue_RightName_RightValueDuplicated(string memberName)
     {
         var original = $@"
 enum Test {{
@@ -85,6 +86,6 @@ enum Test {{
     {memberName} = 0,
 }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,7 @@ public class StructWithoutElementaryMethodsOverriddenTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new StructWithoutElementaryMethodsOverriddenCodeFix();
 
     [TestMethod]
-    public void StructWithoutElementaryMethodsOverridden_NoMethodsImplemented()
+    public async Task StructWithoutElementaryMethodsOverridden_NoMethodsImplementedAsync()
     {
         var original = @"
 struct X
@@ -39,12 +40,12 @@ struct X
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void StructWithoutElementaryMethodsOverridden_EqualsImplemented()
+    public async Task StructWithoutElementaryMethodsOverridden_EqualsImplementedAsync()
     {
         var original = @"
 struct X
@@ -74,12 +75,12 @@ struct X
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void StructWithoutElementaryMethodsOverridden_GetHashCodeImplemented()
+    public async Task StructWithoutElementaryMethodsOverridden_GetHashCodeImplementedAsync()
     {
         var original = @"
 struct X
@@ -109,12 +110,12 @@ struct X
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void StructWithoutElementaryMethodsOverridden_ToStringImplemented()
+    public async Task StructWithoutElementaryMethodsOverridden_ToStringImplementedAsync()
     {
         var original = @"
 struct X
@@ -144,12 +145,12 @@ struct X
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplemented()
+    public async Task StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplementedAsync()
     {
         var original = @"
 struct X
@@ -184,12 +185,12 @@ struct X
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.MessageFormat.ToString(), "X"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void StructWithoutElementaryMethodsOverridden_AllImplemented()
+    public async Task StructWithoutElementaryMethodsOverridden_AllImplementedAsync()
     {
         var original = @"
 struct X
@@ -210,6 +211,6 @@ struct X
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

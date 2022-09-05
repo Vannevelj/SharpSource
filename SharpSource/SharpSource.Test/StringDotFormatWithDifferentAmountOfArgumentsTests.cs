@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,7 +12,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsTests : DiagnosticVeri
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StringDotFormatWithDifferentAmountOfArgumentsAnalyzer();
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithValidScenario()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithValidScenarioAsync()
     {
         var original = @"
 using System;
@@ -27,11 +28,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithRepeatedPlaceholders()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithRepeatedPlaceholdersAsync()
     {
         var original = @"
 using System;
@@ -47,11 +48,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExtraArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExtraArgumentsAsync()
     {
         var original = @"
 using System;
@@ -67,11 +68,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithLackingArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingArgumentsAsync()
     {
         var original = @"
 using System;
@@ -87,11 +88,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithLackingArguments_AndSkippedPlaceholderIndex()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingArguments_AndSkippedPlaceholderIndexAsync()
     {
         var original = @"
 using System;
@@ -107,11 +108,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithEqualAmountOfPlaceholdersAndArgumentsButDontMatchUp()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEqualAmountOfPlaceholdersAndArgumentsButDontMatchUpAsync()
     {
         var original = @"
 using System;
@@ -127,11 +128,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithEscapedPlaceholder()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEscapedPlaceholderAsync()
     {
         var original = @"
 using System;
@@ -147,11 +148,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithPlaceholderFormatting()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithPlaceholderFormattingAsync()
     {
         var original = @"
 using System;
@@ -167,11 +168,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_InDifferentOrder()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_InDifferentOrderAsync()
     {
         var original = @"
 using System;
@@ -187,11 +188,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithoutFormatLiteral()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutFormatLiteralAsync()
     {
         var original = @"
 using System;
@@ -208,11 +209,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedString()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedStringAsync()
     {
         var original = @"
 using System;
@@ -229,11 +230,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedString_AndCultureInfo()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedString_AndCultureInfoAsync()
     {
         var original = @"
 using System;
@@ -251,11 +252,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProviderAsync()
     {
         var original = @"
 using System;
@@ -272,11 +273,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndFormat_AndNoArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndFormat_AndNoArgumentsAsync()
     {
         var original = @"
 using System;
@@ -293,11 +294,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithEscapedBraces()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEscapedBracesAsync()
     {
         var original = @"
 using System;
@@ -313,11 +314,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithNestedBraces()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNestedBracesAsync()
     {
         var original = @"
 using System;
@@ -333,12 +334,12 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongTypes()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongTypesAsync()
     {
         var original = @"
 using System;
@@ -358,11 +359,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithCorrectTypes()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithCorrectTypesAsync()
     {
         var original = @"
 using System;
@@ -382,11 +383,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongFormatParamName()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongFormatParamNameAsync()
     {
         var original = @"
 using System;
@@ -406,11 +407,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithoutArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutArgumentsAsync()
     {
         var original = @"
 using System;
@@ -426,11 +427,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithoutPlaceholders()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutPlaceholdersAsync()
     {
         var original = @"
 using System;
@@ -446,11 +447,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArray()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAsync()
     {
         var original = @"
 using System;
@@ -466,11 +467,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndLackingArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndLackingArgumentsAsync()
     {
         var original = @"
 using System;
@@ -486,12 +487,12 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayMultipleArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayMultipleArgumentsAsync()
     {
         var original = @"
 using System;
@@ -507,11 +508,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethod()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethodAsync()
     {
         var original = @"
 using System;
@@ -533,11 +534,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethod_WithLackingArgs()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethod_WithLackingArgsAsync()
     {
         var original = @"
 using System;
@@ -559,11 +560,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferenced()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedAsync()
     {
         var original = @"
 using System;
@@ -580,11 +581,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughMethodCall()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughMethodCallAsync()
     {
         var original = @"
 using System;
@@ -605,11 +606,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndAdditionalArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndAdditionalArgumentsAsync()
     {
         var original = @"
 using System;
@@ -625,11 +626,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArray()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayAsync()
     {
         var original = @"
 using System;
@@ -646,11 +647,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayWithLackingArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayWithLackingArgumentsAsync()
     {
         var original = @"
 using System;
@@ -667,11 +668,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughVariable()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughVariableAsync()
     {
         var original = @"
 using System;
@@ -689,11 +690,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughMethod()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughMethodAsync()
     {
         var original = @"
 using System;
@@ -715,11 +716,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConstantFormat()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConstantFormatAsync()
     {
         var original = @"
 using System;
@@ -737,11 +738,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConstantConcatenation()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConstantConcatenationAsync()
     {
         var original = @"
 using System;
@@ -761,11 +762,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithStaticImport()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithStaticImportAsync()
     {
         var original = @"
 using static System.String;
@@ -783,11 +784,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExpression()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExpressionAsync()
     {
         var original = @"
 using System;
@@ -804,11 +805,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndSingleObject()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndSingleObjectAsync()
     {
         var original = @"
 using System;
@@ -823,11 +824,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndParamsObject()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndParamsObjectAsync()
     {
         var original = @"
 using System;
@@ -842,11 +843,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArray()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArrayAsync()
     {
         var original = @"
 using System;
@@ -861,11 +862,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArrayReference()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArrayReferenceAsync()
     {
         var original = @"
 using System;
@@ -881,11 +882,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraParameters()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraParametersAsync()
     {
         var original = @"
 using System;
@@ -904,11 +905,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraObjectArrayParameters()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraObjectArrayParametersAsync()
     {
         var original = @"
 using System;
@@ -927,11 +928,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithObjectArrayAsObject()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithObjectArrayAsObjectAsync()
     {
         var original = @"
 using System;
@@ -947,11 +948,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArray()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArrayAsync()
     {
         var original = @"
 using System;
@@ -967,11 +968,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArray_WithValidScenario()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArray_WithValidScenarioAsync()
     {
         var original = @"
 using System;
@@ -987,11 +988,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithOneArgument()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithOneArgumentAsync()
     {
         var original = @"
 using System;
@@ -1012,11 +1013,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithMethod_WithParenthesizedMethodCall()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_WithParenthesizedMethodCallAsync()
     {
         var original = @"
 using System;
@@ -1037,11 +1038,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithTwoArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithTwoArgumentsAsync()
     {
         var original = @"
 using System;
@@ -1062,11 +1063,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArrayAsync()
     {
         var original = @"
 using System;
@@ -1092,11 +1093,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithConcatArgs()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConcatArgsAsync()
     {
         var original = @"
 using System;
@@ -1112,11 +1113,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithLackingConcatArgs()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingConcatArgsAsync()
     {
         var original = @"
 using System;
@@ -1132,11 +1133,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithObjectInitializer()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithObjectInitializerAsync()
     {
         var original = @"
 using System;
@@ -1155,11 +1156,11 @@ namespace ConsoleApplication1
 	    public int Prop2 { get; set; }
     }
 }";
-        VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithNonStringFormatType()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNonStringFormatTypeAsync()
     {
         var original = @"
 using System;
@@ -1181,11 +1182,11 @@ namespace ConsoleApplication1
         
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithNonStringLiteralFormatType()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNonStringLiteralFormatTypeAsync()
     {
         var original = @"
 using System;
@@ -1202,11 +1203,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormat()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormatAsync()
     {
         var original = @"
 using System;
@@ -1223,11 +1224,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormatAndArguments()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormatAndArgumentsAsync()
     {
         var original = @"
 using System;
@@ -1244,6 +1245,6 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

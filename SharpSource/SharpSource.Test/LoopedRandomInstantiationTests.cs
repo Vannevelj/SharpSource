@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,7 +12,7 @@ public class LoopedRandomInstantiationTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LoopedRandomInstantiationAnalyzer();
 
     [TestMethod]
-    public void LoopedRandomInstantiation_WhileLoop()
+    public async Task LoopedRandomInstantiation_WhileLoopAsync()
     {
         var original = @"
 using System;
@@ -30,11 +31,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_DoWhileLoop()
+    public async Task LoopedRandomInstantiation_DoWhileLoopAsync()
     {
         var original = @"
 using System;
@@ -53,11 +54,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_ForLoop()
+    public async Task LoopedRandomInstantiation_ForLoopAsync()
     {
         var original = @"
 using System;
@@ -76,11 +77,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_ForeachLoop()
+    public async Task LoopedRandomInstantiation_ForeachLoopAsync()
     {
         var original = @"
 using System;
@@ -101,11 +102,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_MultipleDeclaratorsInDeclaration()
+    public async Task LoopedRandomInstantiation_MultipleDeclaratorsInDeclarationAsync()
     {
         var original = @"
 using System;
@@ -124,12 +125,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"),
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"),
                                    string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rind"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_MultipleLevelsOfNesting()
+    public async Task LoopedRandomInstantiation_MultipleLevelsOfNestingAsync()
     {
         var original = @"
 using System;
@@ -151,11 +152,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_RandomInstanceNotInLoop()
+    public async Task LoopedRandomInstantiation_RandomInstanceNotInLoopAsync()
     {
         var original = @"
 using System;
@@ -172,11 +173,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_RandomNotSystemRandom()
+    public async Task LoopedRandomInstantiation_RandomNotSystemRandomAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -192,11 +193,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_TypeIsObject_DoesNotCrashAnalyzerBecauseContainingNamespaceIsNull()
+    public async Task LoopedRandomInstantiation_TypeIsObject_DoesNotCrashAnalyzerBecauseContainingNamespaceIsNullAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -210,11 +211,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_Struct()
+    public async Task LoopedRandomInstantiation_StructAsync()
     {
         var original = @"
 using System;
@@ -233,11 +234,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
     }
 
     [TestMethod]
-    public void LoopedRandomInstantiation_NotInLoop_Struct()
+    public async Task LoopedRandomInstantiation_NotInLoop_StructAsync()
     {
         var original = @"
 using System;
@@ -253,6 +254,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

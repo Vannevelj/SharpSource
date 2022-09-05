@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -14,7 +15,7 @@ public class MultipleFromBodyParametersTests : DiagnosticVerifier
     [DataRow("[FromBody]")]
     [DataRow("[FromBodyAttribute]")]
     [DataRow("[Microsoft.AspNetCore.Mvc.FromBody]")]
-    public void MultipleFromBodyParameters_Multiple(string attribute)
+    public async Task MultipleFromBodyParameters_MultipleAsync(string attribute)
     {
         var original = $@"
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ class MyController
 }}
 ";
 
-        VerifyDiagnostic(original, "Method DoThing specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.");
+        await VerifyDiagnostic(original, "Method DoThing specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.");
     }
 
     [TestMethod]
@@ -33,7 +34,7 @@ class MyController
     [DataRow("[FromBody]")]
     [DataRow("[FromBodyAttribute]")]
     [DataRow("[Microsoft.AspNetCore.Mvc.FromBody]")]
-    public void MultipleFromBodyParameters_MinimalWebApi(string attribute)
+    public async Task MultipleFromBodyParameters_MinimalWebApiAsync(string attribute)
     {
         var original = $@"
 using Microsoft.AspNetCore.Mvc;
@@ -46,11 +47,11 @@ class WebApplication {{
 }}
 class Service {{ }}";
 
-        VerifyDiagnostic(original, "Method specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.");
+        await VerifyDiagnostic(original, "Method specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.");
     }
 
     [TestMethod]
-    public void MultipleFromBodyParameters_Single()
+    public async Task MultipleFromBodyParameters_SingleAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -61,11 +62,11 @@ class MyController
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void MultipleFromBodyParameters_MultipleDifferent()
+    public async Task MultipleFromBodyParameters_MultipleDifferentAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -76,11 +77,11 @@ class MyController
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void MultipleFromBodyParameters_Different()
+    public async Task MultipleFromBodyParameters_DifferentAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -91,11 +92,11 @@ class MyController
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void MultipleFromBodyParameters_NoAttributes()
+    public async Task MultipleFromBodyParameters_NoAttributesAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -106,11 +107,11 @@ class MyController
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void MultipleFromBodyParameters_NoParameters()
+    public async Task MultipleFromBodyParameters_NoParametersAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -121,6 +122,6 @@ class MyController
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

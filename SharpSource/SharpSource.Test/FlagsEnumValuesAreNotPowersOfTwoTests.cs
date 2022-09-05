@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new FlagsEnumValuesAreNotPowersOfTwoCodeFix();
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwoAsync()
     {
         var original = @"
 using System;
@@ -42,8 +43,8 @@ enum Foo
     Boz = 4
 }";
 
-        VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
@@ -58,7 +59,7 @@ enum Foo
     [DataRow("UInt16")]
     [DataRow("UInt32")]
     [DataRow("UInt64")]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_DifferentTypes(string type)
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_DifferentTypesAsync(string type)
     {
         var original = $@"
 using System;
@@ -86,12 +87,12 @@ enum Foo : {type}
     Boz = 4
 }}";
 
-        VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwoAsync()
     {
         var original = @"
 using System;
@@ -106,11 +107,11 @@ enum Foo
     Boz = 8
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_HexValues()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_HexValuesAsync()
     {
         var original = @"
 using System;
@@ -138,12 +139,12 @@ enum Foo
     Boz = 0x4
 }";
 
-        VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_HexValues()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_HexValuesAsync()
     {
         var original = @"
 using System;
@@ -158,11 +159,11 @@ enum Foo
     Boz = 0x8
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_NegativeValues()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_NegativeValuesAsync()
     {
         var original = @"
 using System;
@@ -175,11 +176,11 @@ enum Foo
     Buz = -3
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_NoValues()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_NoValuesAsync()
     {
         var original = @"
 using System;
@@ -194,11 +195,11 @@ enum Foo
     Boz
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_NotFlagsEnum()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_NotFlagsEnumAsync()
     {
         var original = @"
 enum Foo
@@ -210,11 +211,11 @@ enum Foo
     Boz = 4
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_FlagsEnum_WithSystemNamespace()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_FlagsEnum_WithSystemNamespaceAsync()
     {
         var original = @"
 [System.Flags]
@@ -238,12 +239,12 @@ enum Foo
     Boz = 4
 }";
 
-        VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_BitShifting()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_BitShiftingAsync()
     {
         var original = @"
 using System;
@@ -258,11 +259,11 @@ enum Foo
     Boz = 1 << 3
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_ValuesOfOtherFlags()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_ValuesOfOtherFlagsAsync()
     {
         var original = @"
 using System;
@@ -283,11 +284,11 @@ enum Days
     Weekend = Saturday | Sunday,
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_CharValues()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_CharValuesAsync()
     {
         var original = @"
 using System;
@@ -302,12 +303,12 @@ enum Foo
     Boz = 'e'
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
     [Ignore("We need to support binary expressions on top of literals")]
-    public void FlagsEnumValuesAreNotPowersOfTwo_BinaryExpressions()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_BinaryExpressionsAsync()
     {
         var original = @"
 using System;
@@ -349,16 +350,16 @@ enum Days
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
 
-        VerifyDiagnostic(original,
+        await VerifyDiagnostic(original,
             "Enum Days.Tuesday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
             "Enum Days.Thursday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
             "Enum Days.Friday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
             "Enum Days.Saturday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        VerifyFix(original, result);
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitshiftedValuesNotPowersOfTwo()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitshiftedValuesNotPowersOfTwoAsync()
     {
         var original = @"
 using System;
@@ -380,11 +381,11 @@ enum Days
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitOredValuesNotPowersOfTwo()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitOredValuesNotPowersOfTwoAsync()
     {
         var original = @"
 using System;
@@ -406,11 +407,11 @@ enum Days
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_WithoutExplicitValues()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_WithoutExplicitValuesAsync()
     {
         var original = @"
 using System;
@@ -423,11 +424,11 @@ enum Foo
     C
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_MultipleOptions()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_MultipleOptionsAsync()
     {
         var original = @"
 [System.Flags]
@@ -455,7 +456,7 @@ enum Foo
     Bop = Bip | Boz,
 }";
 
-        VerifyDiagnostic(original, "Enum Foo.Bop is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Enum Foo.Bop is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
+        await VerifyFix(original, result);
     }
 }

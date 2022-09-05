@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,7 +12,7 @@ public class HttpContextStoredInFieldAnalyzerTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpContextStoredInFieldAnalyzer();
 
     [TestMethod]
-    public void HttpContextStoredInField_InField()
+    public async Task HttpContextStoredInField_InFieldAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
@@ -22,11 +23,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
+        await VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
     }
 
     [TestMethod]
-    public void HttpContextStoredInField_CustomHttpContextClass()
+    public async Task HttpContextStoredInField_CustomHttpContextClassAsync()
     {
         var original = @"
 class HttpContext { }
@@ -37,11 +38,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void HttpContextStoredInField_InProperty()
+    public async Task HttpContextStoredInField_InPropertyAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
@@ -52,11 +53,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void HttpContextStoredInField_AsVariable()
+    public async Task HttpContextStoredInField_AsVariableAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
@@ -70,11 +71,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void HttpContextStoredInField_InField_MultipleDeclarators()
+    public async Task HttpContextStoredInField_InField_MultipleDeclaratorsAsync()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
@@ -85,6 +86,6 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
+        await VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
     }
 }

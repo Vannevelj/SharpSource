@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ public class AttributeMustSpecifyAttributeUsageTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new AttributeMustSpecifyAttributeUsageCodeFix();
 
     [TestMethod]
-    public void AttributeMustSpecifyAttributeUsage_NoAttribute()
+    public async Task AttributeMustSpecifyAttributeUsage_NoAttribute()
     {
         var original = @"
 using System;
@@ -31,12 +32,12 @@ class MyAttribute : Attribute
 {
 }";
 
-        VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void AttributeMustSpecifyAttributeUsage_NoAttribute_OtherExisting()
+    public async Task AttributeMustSpecifyAttributeUsage_NoAttribute_OtherExisting()
     {
         var original = @"
 using System;
@@ -55,15 +56,15 @@ class MyAttribute : Attribute
 {
 }";
 
-        VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
     [DataRow("AttributeUsage")]
     [DataRow("AttributeUsageAttribute")]
     [DataRow("System.AttributeUsageAttribute")]
-    public void AttributeMustSpecifyAttributeUsage_Existing(string name)
+    public async Task AttributeMustSpecifyAttributeUsage_Existing(string name)
     {
         var original = $@"
 using System;
@@ -73,22 +74,22 @@ class MyAttribute : Attribute
 {{
 }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AttributeMustSpecifyAttributeUsage_NotAnAttribute()
+    public async Task AttributeMustSpecifyAttributeUsage_NotAnAttribute()
     {
         var original = $@"
 using System;
 
 class SomeAttribute {{ }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AttributeMustSpecifyAttributeUsage_NoUsingStatement()
+    public async Task AttributeMustSpecifyAttributeUsage_NoUsingStatement()
     {
         var original = @"
 class MyAttribute : System.Attribute
@@ -102,7 +103,7 @@ class MyAttribute : System.Attribute
 {
 }";
 
-        VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
+        await VerifyFix(original, result);
     }
 }

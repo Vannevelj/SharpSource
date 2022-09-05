@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,7 @@ public class SwitchIsMissingDefaultLabelTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new SwitchIsMissingDefaultLabelCodeFix();
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnum()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnumAsync()
     {
         var original = @"
 using System;
@@ -67,12 +68,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnString()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringAsync()
     {
         var original = @"
 using System;
@@ -116,12 +117,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteral()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteralAsync()
     {
         var original = @"
 using System;
@@ -163,12 +164,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteral()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteralAsync()
     {
         var original = @"
 using System;
@@ -210,12 +211,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_HasDefaultStatement()
+    public async Task SwitchIsMissingDefaultLabel_HasDefaultStatementAsync()
     {
         var original = @"
 using System;
@@ -238,11 +239,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatement()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatementAsync()
     {
         var original = @"
 using System;
@@ -286,12 +287,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteral()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteralAsync()
     {
         var original = @"
 using System;
@@ -333,12 +334,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteral()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteralAsync()
     {
         var original = @"
 using System;
@@ -380,12 +381,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatement()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatementAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -424,7 +425,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Switch should have default label.");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -11,7 +12,7 @@ public class GetHashCodeRefersToMutableMemberTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new GetHashCodeRefersToMutableMemberAnalyzer();
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_ConstantField()
+    public async Task GetHashCodeRefersToMutableMember_ConstantFieldAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -27,11 +28,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_NonReadonlyField()
+    public async Task GetHashCodeRefersToMutableMember_NonReadonlyFieldAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -47,11 +48,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_StaticField()
+    public async Task GetHashCodeRefersToMutableMember_StaticFieldAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -67,11 +68,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_NonReadonlyStaticNonValueTypeField()
+    public async Task GetHashCodeRefersToMutableMember_NonReadonlyStaticNonValueTypeFieldAsync()
     {
         var original = @"
 using System;
@@ -88,11 +89,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_NonValueTypeNonStringField()
+    public async Task GetHashCodeRefersToMutableMember_NonValueTypeNonStringFieldAsync()
     {
         var original = @"
 using System;
@@ -109,11 +110,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_ImmutableMember_NoWarning()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableMember_NoWarningAsync()
     {
         var original = @"
 using System;
@@ -130,11 +131,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_ImmutableStringMember_NoWarning()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableStringMember_NoWarningAsync()
     {
         var original = @"
 using System;
@@ -151,11 +152,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_StaticReadonlyProperty()
+    public async Task GetHashCodeRefersToMutableMember_StaticReadonlyPropertyAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -171,11 +172,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_NonValueTypeNonStringProperty()
+    public async Task GetHashCodeRefersToMutableMember_NonValueTypeNonStringPropertyAsync()
     {
         var original = @"
 using System;
@@ -192,11 +193,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_SettableProperty()
+    public async Task GetHashCodeRefersToMutableMember_SettablePropertyAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -212,11 +213,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_PropertyWithBodiedGetter()
+    public async Task GetHashCodeRefersToMutableMember_PropertyWithBodiedGetterAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -232,11 +233,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_StaticNonValueTypeSettablePropertyWithBodiedGetter()
+    public async Task GetHashCodeRefersToMutableMember_StaticNonValueTypeSettablePropertyWithBodiedGetterAsync()
     {
         var original = @"
 using System;
@@ -253,11 +254,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_PropertyWithExpressionBodiedGetter()
+    public async Task GetHashCodeRefersToMutableMember_PropertyWithExpressionBodiedGetterAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -273,11 +274,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_ImmutableProperty_NoDiagnostic()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableProperty_NoDiagnosticAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -293,11 +294,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_ImmutableStringProperty_NoDiagnostic()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableStringProperty_NoDiagnosticAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -313,11 +314,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_InOtherType_PropertyWithExpressionBodiedGetter()
+    public async Task GetHashCodeRefersToMutableMember_InOtherType_PropertyWithExpressionBodiedGetterAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -334,11 +335,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_InOtherType_ImmutableProperty_NoDiagnostic()
+    public async Task GetHashCodeRefersToMutableMember_InOtherType_ImmutableProperty_NoDiagnosticAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -355,11 +356,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/3")]
-    public void GetHashCodeRefersToMutableMember_CallsExternalProperty()
+    public async Task GetHashCodeRefersToMutableMember_CallsExternalPropertyAsync()
     {
         var original = @"
 using System.Text;
@@ -378,11 +379,11 @@ namespace ConsoleApplication1
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_PartialClass_SameFile()
+    public async Task GetHashCodeRefersToMutableMember_PartialClass_SameFileAsync()
     {
         var original = @"
 partial class ClassX
@@ -397,11 +398,11 @@ partial class ClassX
     public override int GetHashCode() => Code.GetHashCode();
 }";
 
-        VerifyDiagnostic(original, "GetHashCode() refers to mutable property Code");
+        await VerifyDiagnostic(original, "GetHashCode() refers to mutable property Code");
     }
 
     [TestMethod]
-    public void GetHashCodeRefersToMutableMember_PartialClass_DifferentFile()
+    public async Task GetHashCodeRefersToMutableMember_PartialClass_DifferentFile()
     {
         var file1 = @"
 partial class ClassX
@@ -417,6 +418,6 @@ partial class ClassX
     public string Code { get; set; }
 }";
 
-        VerifyDiagnostic(new string[] { file1, file2 }, "GetHashCode() refers to mutable property Code");
+        await VerifyDiagnostic(new string[] { file1, file2 }, "GetHashCode() refers to mutable property Code");
     }
 }

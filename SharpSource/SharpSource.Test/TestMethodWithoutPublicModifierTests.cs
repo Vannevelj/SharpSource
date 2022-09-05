@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new TestMethodWithoutPublicModifierCodeFix();
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithPublicModifierAndTestAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndTestAttribute()
     {
         var test = @"
     using System;
@@ -33,11 +34,11 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(test);
+        await VerifyDiagnostic(test);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithPublicModifierAndTestMethodAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndTestMethodAttributeAsync()
     {
         var original = @"
     using System;
@@ -56,11 +57,11 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithPublicModifierAndFactAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndFactAttributeAsync()
     {
         var original = @"
     using System;
@@ -78,11 +79,11 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttributeAsync()
     {
         var original = @"
 using System;
@@ -118,12 +119,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttributeAsync()
     {
         var original = @"
 using System;
@@ -159,12 +160,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttributeAsync()
     {
         var original = @"
 using System;
@@ -198,12 +199,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributes()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributesAsync()
     {
         var original = @"
 using System;
@@ -219,11 +220,11 @@ public class MyClass
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttributeAsync()
     {
         var original = @"
 using System;
@@ -259,12 +260,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithMultipleModifiersAndTestMethodAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithMultipleModifiersAndTestMethodAttributeAsync()
     {
         var original = @"
 using System;
@@ -300,12 +301,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithoutModifierAndTestAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithoutModifierAndTestAttributeAsync()
     {
         var original = @"
 using System;
@@ -341,12 +342,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void TestMethodWithoutPublicModifier_WithoutTestAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithoutTestAttributeAsync()
     {
         var original = @"
     using System;
@@ -362,6 +363,6 @@ namespace ConsoleApplication1
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

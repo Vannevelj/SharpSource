@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new StringPlaceHoldersInWrongOrderCodeFix();
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrence()
+    public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrenceAsync()
     {
         var original = @"
     using System;
@@ -30,11 +31,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InCorrectOrder_WithMultipleOccurrences()
+    public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithMultipleOccurrencesAsync()
     {
         var original = @"
     using System;
@@ -50,11 +51,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultipleOccurrences()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultipleOccurrencesAsync()
     {
         var original = @"
     using System;
@@ -86,12 +87,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSingleOccurrence()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSingleOccurrenceAsync()
     {
         var original = @"
     using System;
@@ -123,12 +124,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithUnusedPlaceholder()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithUnusedPlaceholderAsync()
     {
         var original = @"
     using System;
@@ -160,12 +161,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultiplePlaceholders()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultiplePlaceholdersAsync()
     {
         var original = @"
     using System;
@@ -197,12 +198,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSinglePlaceholder()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSinglePlaceholderAsync()
     {
         var original = @"
     using System;
@@ -219,11 +220,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithFormatDefinedSeparately()
+    public async Task StringPlaceholdersInWrongOrder_WithFormatDefinedSeparatelyAsync()
     {
         var original = @"
     using System;
@@ -240,11 +241,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithInterpolatedString()
+    public async Task StringPlaceholdersInWrongOrder_WithInterpolatedStringAsync()
     {
         var original = @"
     using System;
@@ -261,11 +262,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormattedString()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormattedStringAsync()
     {
         var original = @"
     using System;
@@ -299,12 +300,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormatProvider()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormatProviderAsync()
     {
         var original = @"
     using System;
@@ -338,12 +339,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithEscapedCurlyBrace()
+    public async Task StringPlaceholdersInWrongOrder_WithEscapedCurlyBraceAsync()
     {
         var original = @"
     using System;
@@ -359,11 +360,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithDoubleEscapedCurlyBrace()
+    public async Task StringPlaceholdersInWrongOrder_WithDoubleEscapedCurlyBraceAsync()
     {
         var original = @"
     using System;
@@ -394,12 +395,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithNestedCurlyBraces()
+    public async Task StringPlaceholdersInWrongOrder_WithNestedCurlyBracesAsync()
     {
         var original = @"
     using System;
@@ -430,12 +431,12 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithCommentedPlaceholder_AlsoUsedValidly()
+    public async Task StringPlaceholdersInWrongOrder_WithCommentedPlaceholder_AlsoUsedValidlyAsync()
     {
         var original = @"
     using System;
@@ -451,11 +452,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithInvalidIndex()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithInvalidIndexAsync()
     {
         var original = @"
     using System;
@@ -471,11 +472,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithDifferentMethodName()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithDifferentMethodNameAsync()
     {
         var original = @"
     using System;
@@ -495,11 +496,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_WithReusedPlaceholderInDescendingOrder()
+    public async Task StringPlaceholdersInWrongOrder_WithReusedPlaceholderInDescendingOrderAsync()
     {
         var original = @"
     using System;
@@ -515,11 +516,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_StringsAreVariables()
+    public async Task StringPlaceholdersInWrongOrder_StringsAreVariablesAsync()
     {
         var original = @"
     using System;
@@ -539,11 +540,11 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormat()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormatAsync()
     {
         var original = @"
 using System;
@@ -559,6 +560,6 @@ class MyClass
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }
