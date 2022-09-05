@@ -286,7 +286,7 @@ public abstract class DiagnosticVerifier
         return newProject;
     }
 
-    internal async Task VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, params string[] allowedNewCompilerDiagnosticsId)
+    internal async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0, params string[] allowedNewCompilerDiagnosticsId)
     {
         if (allowedNewCompilerDiagnosticsId == null || !allowedNewCompilerDiagnosticsId.Any())
         {
@@ -326,7 +326,7 @@ public abstract class DiagnosticVerifier
     ///     A bool controlling whether or not the test will fail if the CodeFix
     ///     introduces other warnings after being applied
     /// </param>
-    private async Task VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+    private async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
     {
         if (CodeFixProvider == null)
         {
@@ -349,13 +349,7 @@ public abstract class DiagnosticVerifier
                 break;
             }
 
-            if (codeFixIndex != null)
-            {
-                document = await ApplyFix(document, actions.ElementAt(codeFixIndex.Value));
-                break;
-            }
-
-            document = await ApplyFix(document, actions.ElementAt(0));
+            document = await ApplyFix(document, actions, codeFixIndex);
             analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer, document);
 
             var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
@@ -398,8 +392,9 @@ public abstract class DiagnosticVerifier
     /// <param name="document">The Document to apply the fix on</param>
     /// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
     /// <returns>A Document with the changes from the CodeAction</returns>
-    private static async Task<Document> ApplyFix(Document document, CodeAction codeAction)
+    private static async Task<Document> ApplyFix(Document document, List<CodeAction> codeActions, int codeActionIndex = 0)
     {
+        var codeAction = codeActions.ElementAt(codeActionIndex);
         var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
         var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
         var newDocument = solution.GetDocument(document.Id);
