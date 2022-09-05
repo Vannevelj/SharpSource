@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -95,6 +96,7 @@ public static class Extensions
         typeSymbol.MetadataName == type.Name &&
         typeSymbol.ContainingAssembly.MetadataName == type.Assembly.GetName().Name;
 
+    [SuppressMessage("Correctness", "SS018:Add cases for missing enum member.", Justification = "Too many SyntaxKind enum members")]
     public static bool IsCommentTrivia(this SyntaxTrivia trivia)
     {
         switch (trivia.Kind())

@@ -18,6 +18,11 @@ public static class TestHelpers
             return;
         }
 
+        if (diffStyle == DiffStyle.None)
+        {
+            throw new InvalidOperationException("Specify a diff style");
+        }
+
         output.WriteLine("  Idx Expected    Actual");
         output.WriteLine("-------------------------");
         var maxLen = Math.Max(actualValue.Length, expectedValue.Length);
@@ -74,6 +79,7 @@ public static class TestHelpers
 
 public enum DiffStyle
 {
-    Full,
-    Minimal
+    None = 0,
+    Full = 1,
+    Minimal = 2
 }

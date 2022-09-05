@@ -68,6 +68,8 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
                         context.ReportDiagnostic(Diagnostic.Create(PropertyRule, node.GetLocation(), symbol.Name));
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
