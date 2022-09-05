@@ -1,21 +1,21 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
-using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AsyncOverloadsAvailableTests : CSharpCodeFixVerifier
+public class AsyncOverloadsAvailableTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AsyncOverloadsAvailableAnalyzer();
 
     protected override CodeFixProvider CodeFixProvider => new AsyncOverloadsAvailableCodeFix();
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_WithOverload_InAsyncContext()
+    public async Task AsyncOverloadsAvailable_WithOverload_InAsyncContext()
     {
         var original = @"
 using System;
@@ -47,12 +47,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_WithOverload_InSyncContext()
+    public async Task AsyncOverloadsAvailable_WithOverload_InSyncContext()
     {
         var original = @"
 using System;
@@ -69,11 +69,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_WithoutOverload_InAsyncContext()
+    public async Task AsyncOverloadsAvailable_WithoutOverload_InAsyncContext()
     {
         var original = @"
 using System;
@@ -90,11 +90,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_AsyncMethod_InAsyncContext()
+    public async Task AsyncOverloadsAvailable_AsyncMethod_InAsyncContext()
     {
         var original = @"
 using System;
@@ -111,11 +111,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
-    public void AsyncOverloadsAvailable_DifferentReturnType()
+    public async Task AsyncOverloadsAvailable_DifferentReturnType()
     {
         var original = @"
 using System;
@@ -136,11 +136,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
-    public void AsyncOverloadsAvailable_InCurrentType()
+    public async Task AsyncOverloadsAvailable_InCurrentType()
     {
         var original = @"
 using System;
@@ -180,12 +180,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
-    public void AsyncOverloadsAvailable_Void()
+    public async Task AsyncOverloadsAvailable_Void()
     {
         var original = @"
 using System;
@@ -225,12 +225,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Async overload available for MyClass.Do");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Do");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/25")]
-    public void AsyncOverloadsAvailable_DifferentParameters()
+    public async Task AsyncOverloadsAvailable_DifferentParameters()
     {
         var original = @"
 using System;
@@ -251,11 +251,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_DifferentParameters_OptionalCancellationToken()
+    public async Task AsyncOverloadsAvailable_DifferentParameters_OptionalCancellationToken()
     {
         var original = @"
 using System;
@@ -297,12 +297,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/24")]
-    public void AsyncOverloadsAvailable_GenericMethod()
+    public async Task AsyncOverloadsAvailable_GenericMethod()
     {
         var original = @"
 using System;
@@ -321,11 +321,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_GenericOverload()
+    public async Task AsyncOverloadsAvailable_GenericOverload()
     {
         var original = @"
 using System;
@@ -365,12 +365,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/26")]
-    public void AsyncOverloadsAvailable_OverloadWithLessParameters()
+    public async Task AsyncOverloadsAvailable_OverloadWithLessParameters()
     {
         var original = @"
 using System;
@@ -390,11 +390,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/88")]
-    public void AsyncOverloadsAvailable_WithOverload_AccessingReturnValue()
+    public async Task AsyncOverloadsAvailable_WithOverload_AccessingReturnValue()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -424,12 +424,12 @@ class Test
     }
 }";
 
-        VerifyDiagnostic(original, "Async overload available for Test.DoThing");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for Test.DoThing");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/97")]
-    public void AsyncOverloadsAvailable_WithOverload_OnlyIfOverloadIsFound()
+    public async Task AsyncOverloadsAvailable_WithOverload_OnlyIfOverloadIsFound()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -447,11 +447,11 @@ class Test
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/103")]
-    public void AsyncOverloadsAvailable_WithOverload_GlobalStatement()
+    public async Task AsyncOverloadsAvailable_WithOverload_GlobalStatement()
     {
         var original = @"
 using System.IO;
@@ -463,12 +463,12 @@ using System.IO;
 
 await new StringWriter().WriteAsync(string.Empty);";
 
-        VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/104")]
-    public void AsyncOverloadsAvailable_WithOverload_Nullability()
+    public async Task AsyncOverloadsAvailable_WithOverload_Nullability()
     {
         var original = @"
 #nullable enable
@@ -483,11 +483,11 @@ class Test
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/110")]
-    public void AsyncOverloadsAvailable_DifferentReturnType_ValueTask()
+    public async Task AsyncOverloadsAvailable_DifferentReturnType_ValueTask()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -504,11 +504,11 @@ class MyClass
     async ValueTask<int> GetAsync() => 5;
 }";
 
-        VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
-    public void AsyncOverloadsAvailable_DoesNotSuggestItself()
+    public async Task AsyncOverloadsAvailable_DoesNotSuggestItself()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -524,11 +524,11 @@ class Test
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
-    public void AsyncOverloadsAvailable_SyncLambda()
+    public async Task AsyncOverloadsAvailable_SyncLambda()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -546,11 +546,11 @@ class Test
 	}
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_AsyncLambda_WithMatch()
+    public async Task AsyncOverloadsAvailable_AsyncLambda_WithMatch()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -568,11 +568,11 @@ class Test
 	}
 }";
 
-        VerifyDiagnostic(original, "Async overload available for Test.DoThing");
+        await VerifyDiagnostic(original, "Async overload available for Test.DoThing");
     }
 
     [TestMethod]
-    public void AsyncOverloadsAvailable_AsyncLambda_WithoutMatch()
+    public async Task AsyncOverloadsAvailable_AsyncLambda_WithoutMatch()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -590,6 +590,6 @@ class Test
 	}
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

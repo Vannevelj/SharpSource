@@ -1,20 +1,21 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class NewGuidTests : CSharpCodeFixVerifier
+public class NewGuidTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new NewGuidAnalyzer();
 
     protected override CodeFixProvider CodeFixProvider => new NewGuidCodeFix();
 
     [TestMethod]
-    public void NewGuid_Constructor_NewGuid()
+    public async Task NewGuid_Constructor_NewGuidAsync()
     {
         var original = @"
 using System;
@@ -42,12 +43,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        await VerifyFix(original, result, codeFixIndex: 0);
     }
 
     [TestMethod]
-    public void NewGuid_Constructor_NewGuid_FullName()
+    public async Task NewGuid_Constructor_NewGuid_FullNameAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -73,12 +74,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        await VerifyFix(original, result, codeFixIndex: 0);
     }
 
     [TestMethod]
-    public void NewGuid_Constructor_EmptyGuid()
+    public async Task NewGuid_Constructor_EmptyGuidAsync()
     {
         var original = @"
 using System;
@@ -106,12 +107,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        VerifyFix(original, result, codeFixIndex: 1);
+        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        await VerifyFix(original, result, codeFixIndex: 1);
     }
 
     [TestMethod]
-    public void NewGuid_Constructor_EmptyGuid_FullName()
+    public async Task NewGuid_Constructor_EmptyGuid_FullNameAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -137,12 +138,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        VerifyFix(original, result, codeFixIndex: 1);
+        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        await VerifyFix(original, result, codeFixIndex: 1);
     }
 
     [TestMethod]
-    public void NewGuid_Constructor_AsExpression()
+    public async Task NewGuid_Constructor_AsExpressionAsync()
     {
         var original = @"
 using System;
@@ -170,12 +171,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        await VerifyFix(original, result, codeFixIndex: 0);
     }
 
     [TestMethod]
-    public void NewGuid_GuidNewGuid()
+    public async Task NewGuid_GuidNewGuidAsync()
     {
         var original = @"
 using System;
@@ -190,11 +191,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void NewGuid_GuidEmpty()
+    public async Task NewGuid_GuidEmptyAsync()
     {
         var original = @"
 using System;
@@ -209,11 +210,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void NewGuid_Default()
+    public async Task NewGuid_DefaultAsync()
     {
         var original = @"
 using System;
@@ -228,11 +229,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void NewGuid_OverloadedConstructor()
+    public async Task NewGuid_OverloadedConstructorAsync()
     {
         var original = @"
 using System;
@@ -247,6 +248,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

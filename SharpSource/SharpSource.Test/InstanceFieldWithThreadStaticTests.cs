@@ -1,12 +1,13 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class InstanceFieldWithThreadStaticTests : CSharpDiagnosticVerifier
+public class InstanceFieldWithThreadStaticTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new InstanceFieldWithThreadStaticAnalyzer();
 
@@ -14,7 +15,7 @@ public class InstanceFieldWithThreadStaticTests : CSharpDiagnosticVerifier
     [DataRow("[ThreadStatic]")]
     [DataRow("[ThreadStaticAttribute]")]
     [DataRow("[System.ThreadStaticAttribute]")]
-    public void InstanceFieldWithThreadStatic_InstanceField(string attribute)
+    public async Task InstanceFieldWithThreadStatic_InstanceFieldAsync(string attribute)
     {
         var original = $@"
 using System;
@@ -25,11 +26,11 @@ class MyClass
     int _field;
 }}";
 
-        VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static");
+        await VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static");
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_InstanceField_Static()
+    public async Task InstanceFieldWithThreadStatic_InstanceField_StaticAsync()
     {
         var original = @"
 using System;
@@ -40,11 +41,11 @@ class MyClass
     static int _field;
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_OtherModifiers()
+    public async Task InstanceFieldWithThreadStatic_OtherModifiersAsync()
     {
         var original = @"
 using System;
@@ -55,11 +56,11 @@ class MyClass
     public readonly int _field;
 }";
 
-        VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static");
+        await VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static");
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_OtherAttribute()
+    public async Task InstanceFieldWithThreadStatic_OtherAttributeAsync()
     {
         var original = @"
 using System;
@@ -70,11 +71,11 @@ class MyClass
     int _field;
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_OtherAttribute_OnProperty()
+    public async Task InstanceFieldWithThreadStatic_OtherAttribute_OnPropertyAsync()
     {
         var original = @"
 using System;
@@ -85,11 +86,11 @@ class MyClass
     int _field => 5;
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_IgnoresConst()
+    public async Task InstanceFieldWithThreadStatic_IgnoresConstAsync()
     {
         var original = @"
 using System;
@@ -100,11 +101,11 @@ class MyClass
     const int _field = 5;
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_MultipleDeclarators()
+    public async Task InstanceFieldWithThreadStatic_MultipleDeclaratorsAsync()
     {
         var original = @"
 using System;
@@ -115,11 +116,11 @@ class MyClass
     int _field, _field2;
 }";
 
-        VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static", "Field _field2 is marked as [ThreadStatic] but is not static");
+        await VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static", "Field _field2 is marked as [ThreadStatic] but is not static");
     }
 
     [TestMethod]
-    public void InstanceFieldWithThreadStatic_MultipleAttributes()
+    public async Task InstanceFieldWithThreadStatic_MultipleAttributesAsync()
     {
         var original = @"
 using System;
@@ -131,6 +132,6 @@ class MyClass
     int _field;
 }";
 
-        VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static");
+        await VerifyDiagnostic(original, "Field _field is marked as [ThreadStatic] but is not static");
     }
 }

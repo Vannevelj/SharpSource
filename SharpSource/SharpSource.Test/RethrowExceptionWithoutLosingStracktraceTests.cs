@@ -1,20 +1,21 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class RethrowExceptionWithoutLosingStracktraceTests : CSharpCodeFixVerifier
+public class RethrowExceptionWithoutLosingStracktraceTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RethrowExceptionWithoutLosingStacktraceAnalyzer();
 
     protected override CodeFixProvider CodeFixProvider => new RethrowExceptionWithoutLosingStacktraceCodeFix();
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgumentAsync()
     {
         var original = @"
 using System;
@@ -60,12 +61,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.MessageFormat.ToString());
-        VerifyFix(original, result, allowNewCompilerDiagnostics: true); // Removing the argument will remove all usages of the e parameter. This will cause a CS0168 warning.
+        await VerifyDiagnostic(original, RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_ThrowsANewException()
+    public async Task RethrowExceptionWithoutLosingStracktrace_ThrowsANewExceptionAsync()
     {
         var original = @"
 using System;
@@ -89,11 +90,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_WithRethrows()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowsAsync()
     {
         var original = @"
 using System;
@@ -117,11 +118,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_ThrowingANewPredefinedException()
+    public async Task RethrowExceptionWithoutLosingStracktrace_ThrowingANewPredefinedExceptionAsync()
     {
         var original = @"
 using System;
@@ -146,11 +147,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_WithThrowStatementOutsideCatchClause()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithThrowStatementOutsideCatchClauseAsync()
     {
         var original = @"
 using System;
@@ -167,11 +168,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument_AndNoIdentifier()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument_AndNoIdentifierAsync()
     {
         var original = @"
 using System;
@@ -195,11 +196,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RethrowExceptionWithoutLosingStracktrace_WithRethrow_AndNoIdentifier()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrow_AndNoIdentifierAsync()
     {
         var original = @"
 using System;
@@ -222,6 +223,6 @@ namespace ConsoleApplication1
         }
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

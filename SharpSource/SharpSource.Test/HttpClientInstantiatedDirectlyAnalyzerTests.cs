@@ -1,17 +1,18 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class HttpClientInstantiatedDirectlyAnalyzerTests : CSharpDiagnosticVerifier
+public class HttpClientInstantiatedDirectlyAnalyzerTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpClientInstantiatedDirectlyAnalyzer();
 
     [TestMethod]
-    public void HttpClientInstantiatedDirectly_Constructor()
+    public async Task HttpClientInstantiatedDirectly_Constructor()
     {
         var original = @"
 using System.Net.Http;
@@ -19,21 +20,21 @@ using System.Net.Http;
 var g = new HttpClient();
 ";
 
-        VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
+        await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
     }
 
     [TestMethod]
-    public void HttpClientInstantiatedDirectly_FullName()
+    public async Task HttpClientInstantiatedDirectly_FullNameAsync()
     {
         var original = @"
 var g = new System.Net.Http.HttpClient();
 ";
 
-        VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
+        await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
     }
 
     [TestMethod]
-    public void HttpClientInstantiatedDirectly_HttpClient_SelfDefined()
+    public async Task HttpClientInstantiatedDirectly_HttpClient_SelfDefinedAsync()
     {
         var original = @"
 class HttpClient { }
@@ -47,11 +48,11 @@ class MyClass
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void HttpClientInstantiatedDirectly_HttpClient_AsUsed()
+    public async Task HttpClientInstantiatedDirectly_HttpClient_AsUsedAsync()
     {
         var original = @"
 using System.Net.Http;
@@ -64,6 +65,6 @@ class MyClass
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

@@ -112,8 +112,8 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
 
             if (methodName == "Dispose")
             {
-                var arity = method.ParameterList.Parameters.Count;
-                context.ReportDiagnostic(Diagnostic.Create(DisposeRule, warningLocation, arity == 0 ? "Dispose()" : "Dispose(bool)", containingType.Name));
+                var numberOfParameters = method.ParameterList.Parameters.Count;
+                context.ReportDiagnostic(Diagnostic.Create(DisposeRule, warningLocation, numberOfParameters == 0 ? "Dispose()" : "Dispose(bool)", containingType.Name));
                 return;
             }
 

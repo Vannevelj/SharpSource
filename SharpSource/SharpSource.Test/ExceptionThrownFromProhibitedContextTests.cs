@@ -1,18 +1,18 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
-using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ExceptionThrownFromProhibitedContextTests : CSharpDiagnosticVerifier
+public class ExceptionThrownFromProhibitedContextTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ExceptionThrownFromProhibitedContextAnalyzer();
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_ImplicitOperator_ToType()
+    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ToTypeAsync()
     {
         var original = @"
 using System;
@@ -29,11 +29,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from implicit operator MyClass in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from implicit operator MyClass in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_ImplicitOperator_FromType()
+    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_FromTypeAsync()
     {
         var original = @"
 using System;
@@ -50,11 +50,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from implicit operator double in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from implicit operator double in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_ImplicitOperator_ExplicitOperator()
+    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ExplicitOperatorAsync()
     {
         var original = @"
 using System;
@@ -71,11 +71,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_PropertyGetter()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetterAsync()
     {
         var original = @"
 using System;
@@ -99,11 +99,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_PropertyGetter_Setter()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_SetterAsync()
     {
         var original = @"
 using System;
@@ -127,11 +127,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_PropertyGetter_AutoProperty()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_AutoPropertyAsync()
     {
         var original = @"
 using System;
@@ -145,11 +145,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_PropertyGetter_ExpressionBodiedProperty()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_ExpressionBodiedPropertyAsync()
     {
         var original = @"
 using System;
@@ -163,11 +163,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_PropertyGetter_NoSetter()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_NoSetterAsync()
     {
         var original = @"
 using System;
@@ -187,11 +187,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_StaticConstructor_Class()
+    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_ClassAsync()
     {
         var original = @"
 using System;
@@ -208,11 +208,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from MyClass its static constructor");
+        await VerifyDiagnostic(original, "An exception is thrown from MyClass its static constructor");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_StaticConstructor_Struct()
+    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_StructAsync()
     {
         var original = @"
 using System;
@@ -229,11 +229,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from MyStruct its static constructor");
+        await VerifyDiagnostic(original, "An exception is thrown from MyStruct its static constructor");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_StaticConstructor_InstanceConstructor()
+    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_InstanceConstructorAsync()
     {
         var original = @"
 using System;
@@ -250,11 +250,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_FinallyBlock()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlockAsync()
     {
         var original = @"
 using System;
@@ -263,11 +263,11 @@ using System.Text;
 try { } finally { throw new ArgumentException(); }
 ";
 
-        VerifyDiagnostic(original, "An exception is thrown from a finally block");
+        await VerifyDiagnostic(original, "An exception is thrown from a finally block");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_FinallyBlock_Nested()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NestedAsync()
     {
         var original = @"
 using System;
@@ -276,11 +276,11 @@ using System.Text;
 try { } finally { try { } catch { throw new ArgumentException(); } }
 ";
 
-        VerifyDiagnostic(original, "An exception is thrown from a finally block");
+        await VerifyDiagnostic(original, "An exception is thrown from a finally block");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_FinallyBlock_NoException()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NoExceptionAsync()
     {
         var original = @"
 using System;
@@ -289,11 +289,11 @@ using System.Text;
 try { } finally { }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_FinallyBlock_NoFinally()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NoFinallyAsync()
     {
         var original = @"
 using System;
@@ -302,7 +302,7 @@ using System.Text;
 try { } catch { }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
@@ -310,7 +310,7 @@ try { } catch { }
     [DataRow("NotSupportedException")]
     [DataRow("System.NotImplementedException")]
     [DataRow("System.NotSupportedException")]
-    public void ExceptionThrownFromProhibitedContext_FinallyBlock_AllowedExceptions(string exception)
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_AllowedExceptionsAsync(string exception)
     {
         var original = $@"
 using System;
@@ -319,11 +319,11 @@ using System.Text;
 try {{ }} finally {{ throw new {exception}(); }}
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_EqualityOperator_EqualOperator()
+    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_EqualOperatorAsync()
     {
         var original = @"
 using System;
@@ -345,11 +345,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the == operator between double and MyClass in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the == operator between double and MyClass in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_EqualityOperator_NotEqualOperator()
+    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_NotEqualOperatorAsync()
     {
         var original = @"
 using System;
@@ -371,11 +371,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the != operator between double and MyClass in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the != operator between double and MyClass in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_EqualityOperator_NoThrow()
+    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_NoThrowAsync()
     {
         var original = @"
 using System;
@@ -397,11 +397,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Dispose()
+    public async Task ExceptionThrownFromProhibitedContext_DisposeAsync()
     {
         var original = @"
 using System;
@@ -418,11 +418,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the Dispose() method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the Dispose() method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Dispose_BoolArgument()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose_BoolArgumentAsync()
     {
         var original = @"
 using System;
@@ -444,11 +444,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the Dispose(bool) method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the Dispose(bool) method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Dispose_NoIDisposable()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose_NoIDisposableAsync()
     {
         var original = @"
 using System;
@@ -465,11 +465,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the Dispose() method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the Dispose() method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Dispose_DifferentMethod()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose_DifferentMethodAsync()
     {
         var original = @"
 using System;
@@ -490,11 +490,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Finalize()
+    public async Task ExceptionThrownFromProhibitedContext_FinalizeAsync()
     {
         var original = @"
 using System;
@@ -511,11 +511,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the finalizer method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the finalizer method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Finalize_NoThrow()
+    public async Task ExceptionThrownFromProhibitedContext_Finalize_NoThrowAsync()
     {
         var original = @"
 using System;
@@ -532,11 +532,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_GetHashCode()
+    public async Task ExceptionThrownFromProhibitedContext_GetHashCodeAsync()
     {
         var original = @"
 using System;
@@ -553,11 +553,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the GetHashCode() method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the GetHashCode() method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_GetHashCode_NoThrow()
+    public async Task ExceptionThrownFromProhibitedContext_GetHashCode_NoThrowAsync()
     {
         var original = @"
 using System;
@@ -574,11 +574,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_GetHashCode_HidingMember()
+    public async Task ExceptionThrownFromProhibitedContext_GetHashCode_HidingMemberAsync()
     {
         var original = @"
 using System;
@@ -592,11 +592,11 @@ class MyClass
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Equals()
+    public async Task ExceptionThrownFromProhibitedContext_EqualsAsync()
     {
         var original = @"
 using System;
@@ -610,7 +610,7 @@ class MyClass
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
     }
 
     [TestMethod]
@@ -618,7 +618,7 @@ class MyClass
     [DataRow("NotSupportedException")]
     [DataRow("System.NotImplementedException")]
     [DataRow("System.NotSupportedException")]
-    public void ExceptionThrownFromProhibitedContext_Equals_AllowedExceptions(string exception)
+    public async Task ExceptionThrownFromProhibitedContext_Equals_AllowedExceptionsAsync(string exception)
     {
         var original = $@"
 using System;
@@ -632,11 +632,11 @@ class MyClass
     }}
 }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Equals_IEquatable()
+    public async Task ExceptionThrownFromProhibitedContext_Equals_IEquatableAsync()
     {
         var original = @"
 using System;
@@ -650,11 +650,11 @@ public class MyClass : IEquatable<MyClass>
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the Equals(MyClass) method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the Equals(MyClass) method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Equals_NoThrow()
+    public async Task ExceptionThrownFromProhibitedContext_Equals_NoThrowAsync()
     {
         var original = @"
 using System;
@@ -669,11 +669,11 @@ public class MyClass
 }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Equals_HidingMember()
+    public async Task ExceptionThrownFromProhibitedContext_Equals_HidingMemberAsync()
     {
         var original = @"
 using System;
@@ -687,11 +687,11 @@ public class MyClass
     }
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
+        await VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
     }
 
     [TestMethod]
-    public void ExceptionThrownFromProhibitedContext_Indexer()
+    public async Task ExceptionThrownFromProhibitedContext_IndexerAsync()
     {
         var original = @"
 using System;
@@ -709,11 +709,11 @@ class MyClass
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/118")]
-    public void ExceptionThrownFromProhibitedContext_EmptyThrow()
+    public async Task ExceptionThrownFromProhibitedContext_EmptyThrowAsync()
     {
         var original = @"
 using System;
@@ -733,11 +733,11 @@ class MyClass
 	}
 }";
 
-        VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/117")]
-    public void ExceptionThrownFromProhibitedContext_MemberAccessExpression()
+    public async Task ExceptionThrownFromProhibitedContext_MemberAccessExpressionAsync()
     {
         var original = @"
 using System;
@@ -759,6 +759,6 @@ static class Exceptions
 }
 ";
 
-        VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
     }
 }

@@ -1,20 +1,20 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
-using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AsyncMethodWithVoidReturnTypeTests : CSharpCodeFixVerifier
+public class AsyncMethodWithVoidReturnTypeTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AsyncMethodWithVoidReturnTypeAnalyzer();
     protected override CodeFixProvider CodeFixProvider => new AsyncMethodWithVoidReturnTypeCodeFix();
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncAndTask()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncAndTask()
     {
         var original = @"
 using System;
@@ -32,11 +32,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_NoAsync()
+    public async Task AsyncMethodWithVoidReturnType_NoAsync()
     {
         var original = @"
 using System;
@@ -54,11 +54,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncAndTaskGeneric()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncAndTaskGeneric()
     {
         var original = @"
 using System;
@@ -76,11 +76,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncAndEventHandlerArguments()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncAndEventHandlerArguments()
     {
         var original = @"
 using System;
@@ -98,11 +98,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncAndEventHandlerSubClassArguments()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncAndEventHandlerSubClassArguments()
     {
         var original = @"
 using System;
@@ -125,11 +125,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncDelegate()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncDelegate()
     {
         var original = @"
 using System;
@@ -152,11 +152,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncVoidAndArbitraryArguments()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncVoidAndArbitraryArguments()
     {
         var original = @"
 using System;
@@ -190,12 +190,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyHandler is marked as async but has a void return type");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Method MyHandler is marked as async but has a void return type");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithAsyncAndVoid()
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncAndVoid()
     {
         var original = @"
 using System;
@@ -229,12 +229,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_WithPartialMethod()
+    public async Task AsyncMethodWithVoidReturnType_WithPartialMethod()
     {
         var original = @"
 using System;
@@ -257,11 +257,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/19")]
-    public void AsyncMethodWithVoidReturnType_AddsUsingStatement()
+    public async Task AsyncMethodWithVoidReturnType_AddsUsingStatement()
     {
         var original = @"
 using System;
@@ -294,12 +294,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method Method is marked as async but has a void return type");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Method Method is marked as async but has a void return type");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_TopLevel()
+    public async Task AsyncMethodWithVoidReturnType_TopLevel()
     {
         var original = @"
 using System;
@@ -319,12 +319,12 @@ async Task MyMethod()
     await Task.CompletedTask;
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public void AsyncMethodWithVoidReturnType_LocalFunction()
+    public async Task AsyncMethodWithVoidReturnType_LocalFunction()
     {
         var original = @"
 using System;
@@ -356,7 +356,7 @@ class Test
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
-        VerifyFix(original, result);
+        await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
+        await VerifyFix(original, result);
     }
 }

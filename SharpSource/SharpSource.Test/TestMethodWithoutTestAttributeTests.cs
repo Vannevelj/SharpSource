@@ -1,18 +1,18 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
-using SharpSource.Test.Helpers.Helpers.CSharp;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class TestMethodWithoutTestAttributeTests : CSharpDiagnosticVerifier
+public class TestMethodWithoutTestAttributeTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new TestMethodWithoutTestAttributeAnalyzer();
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_MSTest()
+    public async Task TestMethodWithoutTestAttribute_MSTestAsync()
     {
         var original = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -28,11 +28,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_NUnit()
+    public async Task TestMethodWithoutTestAttribute_NUnitAsync()
     {
         var original = @"
 using NUnit.Framework;
@@ -48,11 +48,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_XUnit_NoOtherMethodsWithAttribute()
+    public async Task TestMethodWithoutTestAttribute_XUnit_NoOtherMethodsWithAttributeAsync()
     {
         var original = @"
 using Xunit;
@@ -67,11 +67,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_XUnit_OtherMethodWithAttribute()
+    public async Task TestMethodWithoutTestAttribute_XUnit_OtherMethodWithAttributeAsync()
     {
         var original = @"
 using Xunit;
@@ -91,11 +91,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_TaskReturn()
+    public async Task TestMethodWithoutTestAttribute_TaskReturnAsync()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -113,11 +113,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_TaskTReturn()
+    public async Task TestMethodWithoutTestAttribute_TaskTReturnAsync()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -135,11 +135,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_OtherReturnType()
+    public async Task TestMethodWithoutTestAttribute_OtherReturnTypeAsync()
     {
         var original = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -156,11 +156,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void TestMethodWithoutTestAttribute_OtherAttribute()
+    public async Task TestMethodWithoutTestAttribute_OtherAttributeAsync()
     {
         var original = @"
 using System;
@@ -182,11 +182,11 @@ namespace ConsoleApplication1
 class SomethingElseAttribute : Attribute { }
 ";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/22")]
-    public void TestMethodWithoutTestAttribute_PrivateMethod()
+    public async Task TestMethodWithoutTestAttribute_PrivateMethodAsync()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -204,14 +204,14 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/91")]
     [DataRow("record")]
     [DataRow("record class")]
     [DataRow("record struct")]
-    public void TestMethodWithoutTestAttribute_Record(string record)
+    public async Task TestMethodWithoutTestAttribute_RecordAsync(string record)
     {
         var original = $@"
 {record} Test
@@ -219,11 +219,11 @@ namespace ConsoleApplication1
     public void MyMethod() {{ }}
 }}";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/98")]
-    public void TestMethodWithoutTestAttribute_Dispose()
+    public async Task TestMethodWithoutTestAttribute_DisposeAsync()
     {
         var original = @"
 using System;
@@ -235,6 +235,6 @@ class Test : IDisposable
     public void Dispose() { }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }

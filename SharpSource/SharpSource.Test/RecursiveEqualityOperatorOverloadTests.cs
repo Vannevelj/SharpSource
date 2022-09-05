@@ -1,17 +1,18 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class RecursiveEqualityOperatorOverloadTests : CSharpDiagnosticVerifier
+public class RecursiveEqualityOperatorOverloadTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RecursiveOperatorOverloadAnalyzer();
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithEqualityOperators()
+    public async Task RecursiveEqualityOperatorOverload_WithEqualityOperatorsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -30,11 +31,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithEquals()
+    public async Task RecursiveEqualityOperatorOverload_WithEqualsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -55,11 +56,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithDifferentComparison()
+    public async Task RecursiveEqualityOperatorOverload_WithDifferentComparisonAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -80,11 +81,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithDifferentOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithDifferentOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -108,11 +109,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithNullComparison()
+    public async Task RecursiveEqualityOperatorOverload_WithNullComparisonAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -131,11 +132,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithNullComparisonLeftHand()
+    public async Task RecursiveEqualityOperatorOverload_WithNullComparisonLeftHandAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -154,11 +155,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithIs()
+    public async Task RecursiveEqualityOperatorOverload_WithIsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -177,11 +178,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithReturnNull()
+    public async Task RecursiveEqualityOperatorOverload_WithReturnNullAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -200,11 +201,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithExpressionBody()
+    public async Task RecursiveEqualityOperatorOverload_WithExpressionBodyAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -215,11 +216,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithPlusOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithPlusOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -233,11 +234,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithUnaryPlusOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithUnaryPlusOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -251,11 +252,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithMinusOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithMinusOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -269,11 +270,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithUnaryMinusOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithUnaryMinusOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -287,11 +288,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithMultiplicationOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithMultiplicationOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -305,11 +306,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithDivisionOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithDivisionOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -323,11 +324,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithNotOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithNotOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -341,11 +342,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithBitwiseNotOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithBitwiseNotOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -359,11 +360,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithPostFixIncrementOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithPostFixIncrementOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -377,11 +378,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithPreFixIncrementOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithPreFixIncrementOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -395,11 +396,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithDecrementOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithDecrementOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -413,11 +414,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -442,11 +443,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBody()
+    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -459,11 +460,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyWithNestedConditionals()
+    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyWithNestedConditionalsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -476,11 +477,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithLeftShiftOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithLeftShiftOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -494,11 +495,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithRightShiftOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithRightShiftOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -512,11 +513,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithXorOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithXorOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -530,11 +531,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithOrOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithOrOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -548,11 +549,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithAndOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithAndOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -566,11 +567,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithModOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithModOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -584,11 +585,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithGreaterLesserThanEqualityOperators()
+    public async Task RecursiveEqualityOperatorOverload_WithGreaterLesserThanEqualityOperatorsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -607,11 +608,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithCastOperator()
+    public async Task RecursiveEqualityOperatorOverload_WithCastOperatorAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -625,11 +626,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void RecursiveEqualityOperatorOverload_WithMultipleOperators()
+    public async Task RecursiveEqualityOperatorOverload_WithMultipleOperatorsAsync()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -644,6 +645,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
     }
 }

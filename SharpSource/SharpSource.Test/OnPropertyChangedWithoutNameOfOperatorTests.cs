@@ -1,20 +1,21 @@
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers.Helpers.CSharp;
+using SharpSource.Test.Helpers;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class OnPropertyChangedWithoutNameOfOperatorTests : CSharpCodeFixVerifier
+public class OnPropertyChangedWithoutNameOfOperatorTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new OnPropertyChangedWithoutNameOfOperatorAnalyzer();
 
     protected override CodeFixProvider CodeFixProvider => new OnPropertyChangedWithoutNameOfOperatorCodeFix();
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithIdenticalString()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithIdenticalStringAsync()
     {
         var original = @"
 using System;
@@ -82,12 +83,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithDifferentlyCasedString()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentlyCasedStringAsync()
     {
         var original = @"
 using System;
@@ -155,12 +156,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndNoCorrespondingProperty()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndNoCorrespondingPropertyAsync()
     {
         var original = @"
 using System;
@@ -195,11 +196,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndCorrespondingProperty()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndCorrespondingPropertyAsync()
     {
         var original = @"
 using System;
@@ -289,12 +290,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsAnotherBoolean"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsAnotherBoolean"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithNameOfOperator()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithNameOfOperatorAsync()
     {
         var original = @"
 using System;
@@ -329,11 +330,11 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithMultipleArguments()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithMultipleArgumentsAsync()
     {
         var original = @"
 using System;
@@ -401,12 +402,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithPartialClass()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithPartialClassAsync()
     {
         var original = @"
 using System;
@@ -480,12 +481,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpression()
+    public async Task OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpressionAsync()
     {
         var original = @"
 using System;
@@ -553,12 +554,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_WithPartialClass_AndDifferentProperty()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithPartialClass_AndDifferentPropertyAsync()
     {
         var original = @"
 using System;
@@ -636,12 +637,12 @@ namespace ConsoleApplication1
     }
 }";
 
-        VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "OtherBoolean"));
-        VerifyFix(original, expected);
+        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "OtherBoolean"));
+        await VerifyFix(original, expected);
     }
 
     [TestMethod]
-    public void OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpression_WithNameof()
+    public async Task OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpression_WithNameofAsync()
     {
         var original = @"
 using System;
@@ -675,6 +676,6 @@ namespace ConsoleApplication1
         }                
     }
 }";
-        VerifyDiagnostic(original);
+        await VerifyDiagnostic(original);
     }
 }
