@@ -35,7 +35,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         }
 
         // Don't trigger this for IDisposable implementations
-        if (method is { Identifier.ValueText: "Dispose", Arity: 0 })
+        if (method is { Identifier.ValueText: "Dispose", ParameterList.Parameters.Count: 0 })
         {
             return;
         }

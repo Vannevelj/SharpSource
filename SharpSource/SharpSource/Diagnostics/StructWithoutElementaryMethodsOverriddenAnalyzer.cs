@@ -48,7 +48,6 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
                 objectEquals = method;
             }
 
-            // TODO: ARITY
             if (method is { MetadataName: nameof(GetHashCode), Parameters.Length: 0 })
             {
                 objectGetHashCode = method;
