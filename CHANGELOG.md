@@ -1,7 +1,7 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.7.2] - 2022-09-06
+## [1.7.2] - 2022-09-07
 - `AttributeMustSpecifyAttributeUsage`: correctly identify when the attribute has been added so it doesn't continue suggesting the change
 
 ## [1.7.1] - 2022-09-06
