@@ -1,5 +1,7 @@
 <Project>
   <PropertyGroup>
+    <Optimize>False</Optimize>
+    <DebugType>Full</DebugType>
     <Nullable>enable</Nullable>
     <LangVersion>10.0</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
