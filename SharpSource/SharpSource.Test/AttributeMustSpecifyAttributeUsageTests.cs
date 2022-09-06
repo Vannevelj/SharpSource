@@ -106,22 +106,4 @@ class MyAttribute : System.Attribute
         await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
         await VerifyFix(original, result);
     }
-
-//    [TestMethod]
-//    public async Task AttributeMustSpecifyAttributeUsage_Test()
-//    {
-//        var original = @"
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using System;
-
-//namespace SharpSource.Test.Helpers;
-
-//[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
-//public class BugVerificationTestAttribute : TestMethodAttribute
-//{
-//    public string? IssueUrl { get; set; }
-//}";
-
-//        await VerifyDiagnostic(original);
-//    }
 }
