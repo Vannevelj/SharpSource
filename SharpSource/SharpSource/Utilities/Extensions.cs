@@ -373,7 +373,8 @@ public static class Extensions
             symbol.ContainingAssembly.Name.StartsWith("Microsoft.");
 
     public static IEnumerable<AttributeSyntax> GetAttributesOfType(this SyntaxList<AttributeListSyntax> attributes, Type type, SemanticModel semanticModel) =>
-        attributes.SelectMany(x => x.Attributes).Where(a => {
+        attributes.SelectMany(x => x.Attributes).Where(a =>
+        {
             var symbol = semanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol;
             return symbol?.MetadataName == type.Name && symbol.IsDefinedInSystemAssembly();
         });
