@@ -29,11 +29,9 @@ public class NewGuidAnalyzer : DiagnosticAnalyzer
     {
         var expression = (ObjectCreationExpressionSyntax)context.Node;
         var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
-
-        if (symbol != null &&
-            symbol.Name == "Guid" &&
-            expression.ArgumentList?.Arguments.Any() != true &&
-            symbol.IsDefinedInSystemAssembly())
+        if (symbol is { Name: "Guid" } &&
+            symbol.IsDefinedInSystemAssembly() &&
+            expression.ArgumentList?.Arguments.Any() != true)
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
