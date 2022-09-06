@@ -100,7 +100,8 @@ public abstract class DiagnosticVerifier
         for (var i = 0; i < attempts; ++i)
         {
             var actions = new List<CodeAction>();
-            var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+            var diagnosticToFix = analyzerDiagnostics[0];
+            var context = new CodeFixContext(document, diagnosticToFix, (a, d) => actions.Add(a), CancellationToken.None);
             await CodeFixProvider.RegisterCodeFixesAsync(context);
 
             if (!actions.Any())
@@ -242,7 +243,7 @@ public abstract class DiagnosticVerifier
 
         if (expectedCount != actualCount)
         {
-            var diagnosticsOutput = results.Any() ? FormatDiagnostics(DiagnosticAnalyzer, results) : "NONE.";
+            var diagnosticsOutput = results.Any() ? FormatDiagnostics(results) : "NONE.";
             Assert.Fail($"Mismatch between number of diagnostics returned, expected \"{expectedCount}\" actual \"{actualCount}\"\r\n\r\nDiagnostics:\r\n{diagnosticsOutput}\r\n");
         }
 
@@ -253,7 +254,7 @@ public abstract class DiagnosticVerifier
 
             if (actual.GetMessage() != expected)
             {
-                Assert.Fail($"Expected diagnostic message to be \"{expected}\" was \"{actual.GetMessage()}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(DiagnosticAnalyzer, actual)}\r\n");
+                Assert.Fail($"Expected diagnostic message to be \"{expected}\" was \"{actual.GetMessage()}\"\r\n\r\nDiagnostic:\r\n{FormatDiagnostics(actual)}\r\n");
             }
         }
     }
@@ -377,15 +378,15 @@ public abstract class DiagnosticVerifier
     /// <param name="analyzer">The analyzer that this Verifer tests</param>
     /// <param name="diagnostics">The Diagnostics to be formatted</param>
     /// <returns>The Diagnostics formatted as a string</returns>
-    private static string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
+    private string FormatDiagnostics(params Diagnostic[] diagnostics)
     {
         var builder = new StringBuilder();
         for (var i = 0; i < diagnostics.Length; ++i)
         {
             builder.AppendLine("// " + diagnostics[i]);
 
-            var analyzerType = analyzer.GetType();
-            var rules = analyzer.SupportedDiagnostics;
+            var analyzerType = DiagnosticAnalyzer.GetType();
+            var rules = DiagnosticAnalyzer.SupportedDiagnostics;
 
             foreach (var rule in rules)
             {

@@ -55,6 +55,8 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             case GenericNameSyntax genericName:
                 CheckIfOverloadAvailable(genericName, context, surroundingDeclaration);
                 break;
+            default:
+                break;
         }
     }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -91,10 +92,7 @@ public static class Extensions
         return false;
     }
 
-    public static bool IsType(this ISymbol typeSymbol, Type type) =>
-        typeSymbol.MetadataName == type.Name &&
-        typeSymbol.ContainingAssembly.MetadataName == type.Assembly.GetName().Name;
-
+    [SuppressMessage("Correctness", "SS018:Add cases for missing enum member.", Justification = "Too many SyntaxKind enum members")]
     public static bool IsCommentTrivia(this SyntaxTrivia trivia)
     {
         switch (trivia.Kind())
@@ -375,7 +373,11 @@ public static class Extensions
             symbol.ContainingAssembly.Name.StartsWith("Microsoft.");
 
     public static IEnumerable<AttributeSyntax> GetAttributesOfType(this SyntaxList<AttributeListSyntax> attributes, Type type, SemanticModel semanticModel) =>
-        attributes.SelectMany(x => x.Attributes).Where(a => semanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol.IsType(type) == true);
+        attributes.SelectMany(x => x.Attributes).Where(a =>
+        {
+            var symbol = semanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol;
+            return symbol?.MetadataName == type.Name && symbol.IsDefinedInSystemAssembly();
+        });
 
     public static IMethodSymbol GetBaseDefinition(this IMethodSymbol method)
     {
