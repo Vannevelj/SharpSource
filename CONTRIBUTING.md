@@ -38,6 +38,7 @@ These come in no particular order of importance.
   * A declaration with multiple declarators (`int test, test2 = 5;`)
   * Methods with a body vs those with an expression bodied member
   * Methods? Local functions? Global statements? Lambdas? A statement can be contained within many different contexts, don't assume it's all inside a method
+* AST visualizers are your friends. I tend to use [LINQPad](https://www.linqpad.net/) to render an interactive AST tree but [Roslyn Quoter](http://roslynquoter.azurewebsites.net/) or the built-in [Syntax Visualizer](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/syntax-visualizer?tabs=csharp) are great alternatives as well.
 
 
 ## Troubleshooting
