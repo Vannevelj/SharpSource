@@ -38,3 +38,9 @@ These come in no particular order of importance.
   * A declaration with multiple declarators (`int test, test2 = 5;`)
   * Methods with a body vs those with an expression bodied member
   * Methods? Local functions? Global statements? Lambdas? A statement can be contained within many different contexts, don't assume it's all inside a method
+
+
+## Troubleshooting
+
+### Symbols aren't loaded when running the VSIX
+Open your Roslyn hive by running the VSIX. In the Visual Studio environment that opens, go to `Tools > Options > Text Editor > C# > Advanced` and uncheck **Run code analysis in separate process**. Stop the VSIX and try again -- you should now see symbols load and breakpoints will get hit again.
