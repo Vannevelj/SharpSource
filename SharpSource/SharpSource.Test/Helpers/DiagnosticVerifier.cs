@@ -346,10 +346,13 @@ public abstract class DiagnosticVerifier
             NunitReference
         };
 
+        var compilationOptions = new CSharpCompilationOptions(OutputKind.WindowsApplication).WithAllowUnsafe(true);
+
         var solution = new AdhocWorkspace()
             .CurrentSolution
             .AddProject(projectId, projectName, projectName, LanguageNames.CSharp)
-            .AddMetadataReferences(projectId, csharpReferences);
+            .AddMetadataReferences(projectId, csharpReferences)
+            .WithProjectCompilationOptions(projectId, compilationOptions);
 
         var key = new OptionKey(FormattingOptions.NewLine, LanguageNames.CSharp);
         var options = solution.Options.WithChangedOption(key, "\n");

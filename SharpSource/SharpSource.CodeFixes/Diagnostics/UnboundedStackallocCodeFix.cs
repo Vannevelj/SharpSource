@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -29,16 +28,37 @@ public class UnboundedStackallocCodeFix : CodeFixProvider
             return;
         }
 
-        var statement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
+        var stackallocCreation = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
+        var arraySizeIdentifier = stackallocCreation.DescendantNodes().OfType<ArrayRankSpecifierSyntax>().First().Sizes.First();
+        var arrayType = stackallocCreation.Type as ArrayTypeSyntax;
+        if (arrayType == default)
+        {
+            return;
+        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Add bounds check",
-                x => AddBoundsCheck(context.Document, root, statement), DiagnosticId.UnboundedStackalloc), diagnostic);
+                x => AddBoundsCheck(context.Document, root, stackallocCreation, arraySizeIdentifier, arrayType), DiagnosticId.UnboundedStackalloc), diagnostic);
     }
 
-    private Task<Document> AddBoundsCheck(Document document, SyntaxNode root, StackAllocArrayCreationExpressionSyntax statement)
+    private Task<Document> AddBoundsCheck(Document document, SyntaxNode root, StackAllocArrayCreationExpressionSyntax stackallocCreation, ExpressionSyntax arraySizeIdentifier, ArrayTypeSyntax arrayType)
     {
-        var newRoot = root.ReplaceNode(statement, SyntaxFactory.ParseExpression("System.DateTime.UtcNow").WithAdditionalAnnotations(Simplifier.Annotation));
-        return Task.FromResult(document.WithSyntaxRoot(root));
+        var binaryExpression = SyntaxFactory.BinaryExpression(
+                    SyntaxKind.LessThanExpression,
+                    arraySizeIdentifier,
+                    SyntaxFactory.LiteralExpression(
+                        SyntaxKind.NumericLiteralExpression,
+                        SyntaxFactory.Literal(1024)
+                    )
+                );
+
+        var ternary = SyntaxFactory.ConditionalExpression(
+            binaryExpression,
+            stackallocCreation,
+            SyntaxFactory.ArrayCreationExpression(arrayType)
+        );
+
+        var newRoot = root.ReplaceNode(stackallocCreation, ternary);
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }
