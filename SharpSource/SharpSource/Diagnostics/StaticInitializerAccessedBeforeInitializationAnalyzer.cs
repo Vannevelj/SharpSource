@@ -90,11 +90,6 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
-            if (identifier.SyntaxTree != fieldDeclaration.SyntaxTree)
-            {
-                continue;
-            }
-
             var referencedIdentifierDeclaration = referencedSymbol.DeclaringSyntaxReferences[0];
             if (fieldDeclaration.SpanStart > referencedIdentifierDeclaration.Span.Start)
             {
