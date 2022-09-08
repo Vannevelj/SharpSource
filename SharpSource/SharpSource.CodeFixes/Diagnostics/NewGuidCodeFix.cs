@@ -21,14 +21,14 @@ public class NewGuidCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
-        var diagnosticSpan = diagnostic.Location.SourceSpan;
-
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         if (root == default)
         {
             return;
         }
+
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
 

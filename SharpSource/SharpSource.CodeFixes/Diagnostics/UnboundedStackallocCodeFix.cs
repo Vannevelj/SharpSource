@@ -20,13 +20,14 @@ public class UnboundedStackallocCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
-        var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         if (root == default)
         {
             return;
         }
+
+        var diagnostic = context.Diagnostics.First();
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var stackallocCreation = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
         var arraySizeIdentifier = stackallocCreation.DescendantNodes().OfType<ArrayRankSpecifierSyntax>().First().Sizes.First();
