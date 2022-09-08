@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.8.0] - 2022-09-08
 - `StaticInitializerAccessedBeforeInitialization`: A `static` field relies on the value of another `static` field which is defined in the same type. `static` fields are initialized in order of appearance.
+- `UnboundedStackalloc`: An array is stack allocated without checking whether the length is within reasonable bounds. This can result in performance degradations and security risks
 
 ## [1.7.2] - 2022-09-07
 - `AttributeMustSpecifyAttributeUsage`: correctly identify when the attribute has been added so it doesn't continue suggesting the change

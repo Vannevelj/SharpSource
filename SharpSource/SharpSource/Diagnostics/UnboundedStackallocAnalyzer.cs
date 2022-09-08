@@ -14,7 +14,7 @@ public class UnboundedStackallocAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.UnboundedStackalloc,
-        "An array is stack allocated without checking the length. This can result in performance degradations and security risks",
+        "An array is stack allocated without checking whether the length is within reasonable bounds. This can result in performance degradations and security risks",
         "An array is stack allocated without checking the length. Explicitly check the length against a constant value",
         Categories.Performance,
         DiagnosticSeverity.Warning,

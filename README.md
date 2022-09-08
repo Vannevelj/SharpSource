@@ -52,8 +52,9 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 | SS041  | UnnecessaryEnumerableMaterialization  | An `IEnumerable` was materialized before a deferred execution call. This generally results in unnecessary work being done.  | Warning  | Yes  |
 | SS042  | InstanceFieldWithThreadStatic  | `[ThreadStatic]` can only be used on static fields. If used on an instance field the attribute will not have any effect and the subsequent multithreading behaviour will not be as intended.  | Error  | No  |
 | SS043  | MultipleFromBodyParameters  | A method specifies multiple `[FromBody]` parameters but only one is allowed. Specify a wrapper type or use `[FromForm]`, `[FromRoute]`, `[FromHeader]` and `[FromQuery]` instead.  | Error  | No  |
-| SS044  | AttributeMustSpecifyAttributeUsage  | An attribute was defined without specifying the `[AttributeUsage]`  | Warning  | Yes  |
+| SS044  | AttributeMustSpecifyAttributeUsage  | An attribute was defined without specifying the `[AttributeUsage]`.  | Warning  | Yes  |
 | SS045  | StaticInitializerAccessedBeforeInitialization  | A `static` field relies on the value of another `static` field which is defined in the same type. `static` fields are initialized in order of appearance.  | Error  | No  |
+| SS046  | UnboundedStackalloc  | An array is stack allocated without checking whether the length is within reasonable bounds. This can result in performance degradations and security risks. | Warning  | Yes  |
 
 ## Configuration
 Is a particular rule not to your liking? There are many ways to adjust their severity and even disable them altogether. For an overview of some of the options, check out [this document](https://docs.microsoft.com/en-gb/dotnet/fundamentals/code-analysis/suppress-warnings).
