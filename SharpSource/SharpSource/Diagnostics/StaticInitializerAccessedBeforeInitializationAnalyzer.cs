@@ -103,7 +103,6 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
 
 
             yield return isPartial ? (RuleForPartials, identifier) : (Rule, identifier);
-            ;
         }
     }
 }
