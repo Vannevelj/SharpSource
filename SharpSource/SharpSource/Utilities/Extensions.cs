@@ -224,12 +224,12 @@ public static class Extensions
     /// </summary>
     /// <param name="syntaxNode">The node to start from</param>
     /// <returns>The surrounding declaration node or null</returns>
-    public static SyntaxNode? GetEnclosingTypeNode(this SyntaxNode syntaxNode) =>
+    public static TypeDeclarationSyntax? GetEnclosingTypeNode(this SyntaxNode syntaxNode) =>
         syntaxNode.FirstAncestorOfType(
             SyntaxKind.ClassDeclaration,
             SyntaxKind.StructDeclaration,
             SyntaxKind.InterfaceDeclaration,
-            SyntaxKind.RecordDeclaration);
+            SyntaxKind.RecordDeclaration) as TypeDeclarationSyntax;
 
     public static IEnumerable<T> OfType<T>(this IEnumerable<SyntaxNode> enumerable, SyntaxKind kind) where T : SyntaxNode
     {
