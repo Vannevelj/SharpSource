@@ -31,7 +31,7 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
         true
     );
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleForPartials);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -96,6 +96,11 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
+            var invocationNode = identifier.FirstAncestorOfType(SyntaxKind.InvocationExpression);
+            if (invocationNode is InvocationExpressionSyntax invocation && invocation.IsNameofInvocation())
+            {
+                continue;
+            }
 
             yield return isPartial ? (RuleForPartials, identifier) : (Rule, identifier);
         }

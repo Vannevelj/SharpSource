@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -311,6 +310,32 @@ struct Test
 {
 	public static int FirstField = SecondField;
 	public static int SecondField = 32;
+}";
+
+        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/172")]
+    public async Task StaticInitializerAccessedBeforeInitialization_NameOf()
+    {
+        var original = @"
+struct Test
+{
+	static string FirstField = nameof(SecondField);
+    static int SecondField = 32;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StaticInitializerAccessedBeforeInitialization_NameOf_WithComputation()
+    {
+        var original = @"
+struct Test
+{
+    static string FirstField = nameof(Test) + SecondField;
+    static string SecondField = ""CF"";
 }";
 
         await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
