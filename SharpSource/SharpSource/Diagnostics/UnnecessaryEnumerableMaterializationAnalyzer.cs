@@ -45,12 +45,16 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var invokedFunction = expression.Name.Identifier.ValueText;
+        var isSuspiciousInvocation = DeferredExecutionOperations.Contains(invokedFunction) || MaterializingOperations.Contains(invokedFunction);
+        if (!isSuspiciousInvocation)
+        {
+            return;
+        }
+
         foreach (var materializingOperation in MaterializingOperations)
         {
-            var invokedFunction = expression.Name.Identifier.ValueText;
-            var isSuspiciousInvocation = DeferredExecutionOperations.Contains(invokedFunction) || MaterializingOperations.Contains(invokedFunction);
-            if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel) &&
-                isSuspiciousInvocation)
+            if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel))
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 properties.Add("operation", materializingOperation);
