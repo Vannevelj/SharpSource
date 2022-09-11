@@ -14,7 +14,7 @@ public class LinqTraversalBeforeFilterAnalyzer : DiagnosticAnalyzer
 {
     private static readonly string Message = "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?";
     private static readonly string Title =
-        "An IEnumerable extension method was used to traverse the collection and subsequently filtered using Where()." +
+        "An IEnumerable extension method was used to traverse the collection and is subsequently filtered using Where()." +
         "If the Where() filter is executed first, the traversal will have to iterate over fewer items which will result in better performance.";
 
     private static readonly HashSet<string> TraversalOperations = new(){
