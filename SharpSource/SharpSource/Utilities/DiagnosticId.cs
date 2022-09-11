@@ -45,4 +45,5 @@ public static class DiagnosticId
     public const string AttributeMustSpecifyAttributeUsage = "SS044";
     public const string StaticInitializerAccessedBeforeInitialization = "SS045";
     public const string UnboundedStackalloc = "SS046";
+    public const string LinqTraversalBeforeFilter = "SS047";
 }

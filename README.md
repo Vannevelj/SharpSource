@@ -55,6 +55,7 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 | SS044  | AttributeMustSpecifyAttributeUsage  | An attribute was defined without specifying the `[AttributeUsage]`.  | Warning  | Yes  |
 | SS045  | StaticInitializerAccessedBeforeInitialization  | A `static` field relies on the value of another `static` field which is defined in the same type. `static` fields are initialized in order of appearance.  | Error  | No  |
 | SS046  | UnboundedStackalloc  | An array is stack allocated without checking whether the length is within reasonable bounds. This can result in performance degradations and security risks. | Warning  | Yes  |
+| SS047  | LinqTraversalBeforeFilter  | An `IEnumerable` extension method was used to traverse the collection and subsequently filtered using `Where()`. If the `Where()` filter is executed first, the traversal will have to iterate over fewer items which will result in better performance. | Warning  | No  |
 
 ## Configuration
 Is a particular rule not to your liking? There are many ways to adjust their severity and even disable them altogether. For an overview of some of the options, check out [this document](https://docs.microsoft.com/en-gb/dotnet/fundamentals/code-analysis/suppress-warnings).

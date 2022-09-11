@@ -32,7 +32,7 @@ enum Test {
     }
 
     [TestMethod]
-    public async Task ExplicitEnumValues_SpecifiedAsync()
+    public async Task ExplicitEnumValues_Specified()
     {
         var original = @"
 enum Test {
