@@ -3,7 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.9.2] - 2022-09-12
 - `StaticInitializerAccessedBeforeInitialization`: now takes `nameof()` usage into account
-
+- `StaticInitializerAccessedBeforeInitialization`: no longer triggers for invocations of `static` functions
 
 ## [1.9.1] - 2022-09-12
 - Internal code cleanup to remove -Async suffixes on tests

@@ -340,4 +340,31 @@ struct Test
 
         await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/172")]
+    public async Task StaticInitializerAccessedBeforeInitialization_MethodInvocation()
+    {
+        var original = @"
+class Test
+{
+    static string FirstField = SomeFunction();
+    static string SomeFunction() => string.Empty;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StaticInitializerAccessedBeforeInitialization_AsArgumentToMethodInvocation()
+    {
+        var original = @"
+class Test
+{
+	static string FirstField = SomeFunction(SomeArg);
+	static string SomeFunction(string arg) => arg;
+	static string SomeArg = ""test"";
+}";
+
+        await VerifyDiagnostic(original, "FirstField accesses SomeArg but both are marked as static and SomeArg will not be initialized when it is used");
+    }
 }

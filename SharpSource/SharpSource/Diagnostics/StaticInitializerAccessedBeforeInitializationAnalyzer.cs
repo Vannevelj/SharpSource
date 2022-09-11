@@ -96,8 +96,15 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
+            // Don't trigger for nameof() calls, they are resolved at compile time
             var invocationNode = identifier.FirstAncestorOfType(SyntaxKind.InvocationExpression);
             if (invocationNode is InvocationExpressionSyntax invocation && invocation.IsNameofInvocation())
+            {
+                continue;
+            }
+
+            // We _can_ call static functions
+            if (invocationNode == identifier.Parent)
             {
                 continue;
             }
