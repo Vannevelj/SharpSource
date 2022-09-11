@@ -15,7 +15,7 @@ public class NewGuidTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new NewGuidCodeFix();
 
     [TestMethod]
-    public async Task NewGuid_Constructor_NewGuidAsync()
+    public async Task NewGuid_Constructor_NewGuid()
     {
         var original = @"
 using System;
@@ -48,7 +48,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_Constructor_NewGuid_FullNameAsync()
+    public async Task NewGuid_Constructor_NewGuid_FullName()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -79,7 +79,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_Constructor_EmptyGuidAsync()
+    public async Task NewGuid_Constructor_EmptyGuid()
     {
         var original = @"
 using System;
@@ -112,7 +112,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_Constructor_EmptyGuid_FullNameAsync()
+    public async Task NewGuid_Constructor_EmptyGuid_FullName()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -143,7 +143,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_Constructor_AsExpressionAsync()
+    public async Task NewGuid_Constructor_AsExpression()
     {
         var original = @"
 using System;
@@ -176,7 +176,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_GuidNewGuidAsync()
+    public async Task NewGuid_GuidNewGuid()
     {
         var original = @"
 using System;
@@ -195,7 +195,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_GuidEmptyAsync()
+    public async Task NewGuid_GuidEmpty()
     {
         var original = @"
 using System;
@@ -214,7 +214,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_DefaultAsync()
+    public async Task NewGuid_Default()
     {
         var original = @"
 using System;
@@ -233,7 +233,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task NewGuid_OverloadedConstructorAsync()
+    public async Task NewGuid_OverloadedConstructor()
     {
         var original = @"
 using System;

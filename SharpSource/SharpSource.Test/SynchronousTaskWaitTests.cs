@@ -15,7 +15,7 @@ public class SynchronousTaskWaitTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new SynchronousTaskWaitCodeFix();
 
     [TestMethod]
-    public async Task SynchronousTaskWait_AsyncContextAsync()
+    public async Task SynchronousTaskWait_AsyncContext()
     {
         var original = @"
 using System;
@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             Task.Delay(1).Wait();
@@ -41,7 +41,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             await Task.Delay(1);
@@ -54,7 +54,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_SyncContextAsync()
+    public async Task SynchronousTaskWait_SyncContext()
     {
         var original = @"
 using System;
@@ -64,7 +64,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void MyMethod()
         {
             Task.Delay(1).Wait();
@@ -76,7 +76,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_AsyncContext_VoidAsync()
+    public async Task SynchronousTaskWait_AsyncContext_Void()
     {
         var original = @"
 using System;
@@ -86,7 +86,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void MyMethod()
         {
             Task.Delay(1).Wait();
@@ -102,7 +102,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void MyMethod()
         {
             await Task.Delay(1);
@@ -115,7 +115,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_ExpressionBodiedMemberAsync()
+    public async Task SynchronousTaskWait_ExpressionBodiedMember()
     {
         var original = @"
 using System;
@@ -125,7 +125,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod() => Task.Delay(1).Wait();
     }
 }";
@@ -138,7 +138,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod() => await Task.Delay(1);
     }
 }";
@@ -148,7 +148,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_AsyncLambdaAsync()
+    public async Task SynchronousTaskWait_AsyncLambda()
     {
         var original = @"
 using System;
@@ -181,7 +181,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_SyncLambdaAsync()
+    public async Task SynchronousTaskWait_SyncLambda()
     {
         var original = @"
 using System;
@@ -200,7 +200,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_ConstructorAsync()
+    public async Task SynchronousTaskWait_Constructor()
     {
         var original = @"
 using System;
@@ -210,7 +210,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         MyClass()
         {
             Other().Wait();
@@ -224,7 +224,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_ChainedExpressionAsync()
+    public async Task SynchronousTaskWait_ChainedExpression()
     {
         var original = @"
 using System;
@@ -234,7 +234,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             Get.Wait();
@@ -252,7 +252,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             await Get;

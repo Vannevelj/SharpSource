@@ -14,7 +14,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherTests : DiagnosticVerifie
     protected override CodeFixProvider CodeFixProvider => new EqualsAndGetHashcodeNotImplementedTogetherCodeFix();
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarningAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarning()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -37,7 +37,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_EqualsImplementedAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_EqualsImplemented()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -73,7 +73,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplementedAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -109,7 +109,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_NeitherImplemented_NoWarningAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_NeitherImplemented_NoWarning()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -123,7 +123,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_NonOverridingEqualsImplemented_NoWarningAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_NonOverridingEqualsImplemented_NoWarning()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -141,7 +141,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_NonOverridingGetHashcodeImplemented_NoWarningAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_NonOverridingGetHashcodeImplemented_NoWarning()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -159,7 +159,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_EqualsImplemented_SimplifiesNameWhenUsingSystemAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_EqualsImplemented_SimplifiesNameWhenUsingSystem()
     {
         var original = @"
 using System;
@@ -197,7 +197,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_SimplifiesNameWhenUsingSystemAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_SimplifiesNameWhenUsingSystem()
     {
         var original = @"
 using System;
@@ -235,7 +235,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_BaseClassImplementsBothAsync()
+    public async Task EqualsAndGetHashcodeNotImplemented_GetHashcodeImplemented_BaseClassImplementsBoth()
     {
         var original = @"
 using System;

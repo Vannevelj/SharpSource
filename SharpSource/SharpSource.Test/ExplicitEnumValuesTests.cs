@@ -15,7 +15,7 @@ public class ExplicitEnumValuesTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new ExplicitEnumValuesCodeFix();
 
     [TestMethod]
-    public async Task ExplicitEnumValues_NotSpecifiedAsync()
+    public async Task ExplicitEnumValues_NotSpecified()
     {
         var original = @"
 enum Test {
@@ -32,7 +32,7 @@ enum Test {
     }
 
     [TestMethod]
-    public async Task ExplicitEnumValues_SpecifiedAsync()
+    public async Task ExplicitEnumValues_Specified()
     {
         var original = @"
 enum Test {
@@ -43,7 +43,7 @@ enum Test {
     }
 
     [TestMethod]
-    public async Task ExplicitEnumValues_SomeSpecifiedAsync()
+    public async Task ExplicitEnumValues_SomeSpecified()
     {
         var original = @"
 enum Test {
@@ -62,7 +62,7 @@ enum Test {
     }
 
     [TestMethod]
-    public async Task ExplicitEnumValues_SpecifiedWithReferenceAsync()
+    public async Task ExplicitEnumValues_SpecifiedWithReference()
     {
         var original = @"
 enum Test {
@@ -74,7 +74,7 @@ enum Test {
     }
 
     [TestMethod]
-    public async Task ExplicitEnumValues_SpecifiedWithCalculationAsync()
+    public async Task ExplicitEnumValues_SpecifiedWithCalculation()
     {
         var original = @"
 enum Test {
@@ -85,7 +85,7 @@ enum Test {
     }
 
     [TestMethod]
-    public async Task ExplicitEnumValues_NotSpecifiedWithMultipleAsync()
+    public async Task ExplicitEnumValues_NotSpecifiedWithMultiple()
     {
         var original = @"
 enum Test {

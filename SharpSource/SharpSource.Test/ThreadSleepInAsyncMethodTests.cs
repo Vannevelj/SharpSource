@@ -15,7 +15,7 @@ public class ThreadSleepInAsyncMethodTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new ThreadSleepInAsyncMethodCodeFix();
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleepAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep()
     {
         var original = @"
 using System;
@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             Thread.Sleep(5000);
@@ -43,7 +43,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             await Task.Delay(5000);
@@ -56,7 +56,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_StaticImportAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_StaticImport()
     {
         var original = @"
 using System;
@@ -67,7 +67,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             Sleep(5000);
@@ -84,7 +84,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             await Task.Delay(5000);
@@ -97,7 +97,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_GenericAsyncMethod_AndThreadSleepAsync()
+    public async Task ThreadSleepInAsyncMethod_GenericAsyncMethod_AndThreadSleep()
     {
         var original = @"
 using System;
@@ -108,7 +108,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task<int> MyMethod()
         {
             Thread.Sleep(5000);
@@ -126,7 +126,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task<int> MyMethod()
         {
             await Task.Delay(5000);
@@ -140,7 +140,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncVoidMethod_AndThreadSleepAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncVoidMethod_AndThreadSleep()
     {
         var original = @"
 using System;
@@ -151,7 +151,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void MyMethod()
         {
             Thread.Sleep(5000);
@@ -168,7 +168,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void MyMethod()
         {
             await Task.Delay(5000);
@@ -181,7 +181,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_VoidMethod_AndThreadSleepAsync()
+    public async Task ThreadSleepInAsyncMethod_VoidMethod_AndThreadSleep()
     {
         var original = @"
 using System;
@@ -192,7 +192,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void MyMethod()
         {
             Thread.Sleep(5000);
@@ -204,7 +204,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_TaskMethod_AndThreadSleep_NoFixAsync()
+    public async Task ThreadSleepInAsyncMethod_TaskMethod_AndThreadSleep_NoFix()
     {
         var original = @"
 using System;
@@ -215,7 +215,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         Task MyMethod()
         {
             Thread.Sleep(5000);
@@ -233,7 +233,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         Task MyMethod()
         {
             Thread.Sleep(5000);
@@ -247,7 +247,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_Constructor_AndThreadSleepAsync()
+    public async Task ThreadSleepInAsyncMethod_Constructor_AndThreadSleep()
     {
         var original = @"
 using System;
@@ -258,7 +258,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         MyClass()
         {
             Thread.Sleep(5000);
@@ -270,7 +270,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AliasAsync()
+    public async Task ThreadSleepInAsyncMethod_Alias()
     {
         var original = @"
 using System;
@@ -281,7 +281,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             MyThread.Sleep(5000);
@@ -298,7 +298,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod()
         {
             await Task.Delay(5000);
@@ -311,7 +311,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AddsUsingAsync()
+    public async Task ThreadSleepInAsyncMethod_AddsUsing()
     {
         var original = @"
 using System;
@@ -321,7 +321,7 @@ using System.Threading;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void MyMethod()
         {
             Thread.Sleep(5000);
@@ -338,7 +338,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void MyMethod()
         {
             await Task.Delay(5000);
@@ -351,7 +351,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_ArrowSyntaxAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_ArrowSyntax()
     {
         var original = @"
 using System;
@@ -362,7 +362,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod() => Thread.Sleep(5000);
     }
 }";
@@ -376,7 +376,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async Task MyMethod() => await Task.Delay(5000);
     }
 }";
@@ -386,7 +386,7 @@ namespace ConsoleApplication1
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/23")]
-    public async Task ThreadSleepInAsyncMethod_GenericMethodAsync()
+    public async Task ThreadSleepInAsyncMethod_GenericMethod()
     {
         var original = @"
 using System;
@@ -397,7 +397,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         async void Method()
         {
             this.Other<string>();
@@ -411,7 +411,7 @@ namespace ConsoleApplication1
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/112")]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_Async_ValueTaskAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_Async_ValueTask()
     {
         var original = @"
 using System.Threading;
@@ -442,7 +442,7 @@ class Test
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/112")]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_Sync_ValueTaskAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_Sync_ValueTask()
     {
         var original = @"
 using System.Threading;
@@ -475,7 +475,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_TopLevelAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_TopLevel()
     {
         var original = @"
 using System;
@@ -500,7 +500,7 @@ await MyMethod();
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_LocalFunctionAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_LocalFunction()
     {
         var original = @"
 using System;
@@ -529,7 +529,7 @@ async Task Method()
     }
 
     [TestMethod]
-    public async Task ThreadSleepInAsyncMethod_AsyncMethod_LambdaAsync()
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_Lambda()
     {
         var original = @"
 using System;

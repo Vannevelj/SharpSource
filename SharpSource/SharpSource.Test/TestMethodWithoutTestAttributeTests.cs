@@ -12,7 +12,7 @@ public class TestMethodWithoutTestAttributeTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new TestMethodWithoutTestAttributeAnalyzer();
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_MSTestAsync()
+    public async Task TestMethodWithoutTestAttribute_MSTest()
     {
         var original = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +32,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_NUnitAsync()
+    public async Task TestMethodWithoutTestAttribute_NUnit()
     {
         var original = @"
 using NUnit.Framework;
@@ -52,7 +52,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_XUnit_NoOtherMethodsWithAttributeAsync()
+    public async Task TestMethodWithoutTestAttribute_XUnit_NoOtherMethodsWithAttribute()
     {
         var original = @"
 using Xunit;
@@ -71,7 +71,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_XUnit_OtherMethodWithAttributeAsync()
+    public async Task TestMethodWithoutTestAttribute_XUnit_OtherMethodWithAttribute()
     {
         var original = @"
 using Xunit;
@@ -95,7 +95,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_TaskReturnAsync()
+    public async Task TestMethodWithoutTestAttribute_TaskReturn()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -117,7 +117,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_TaskTReturnAsync()
+    public async Task TestMethodWithoutTestAttribute_TaskTReturn()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -139,7 +139,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_OtherReturnTypeAsync()
+    public async Task TestMethodWithoutTestAttribute_OtherReturnType()
     {
         var original = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -160,7 +160,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_OtherAttributeAsync()
+    public async Task TestMethodWithoutTestAttribute_OtherAttribute()
     {
         var original = @"
 using System;
@@ -186,7 +186,7 @@ class SomethingElseAttribute : Attribute { }
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/22")]
-    public async Task TestMethodWithoutTestAttribute_PrivateMethodAsync()
+    public async Task TestMethodWithoutTestAttribute_PrivateMethod()
     {
         var original = @"
 using System.Threading.Tasks;
@@ -199,7 +199,7 @@ namespace ConsoleApplication1
     {
         private void MyMethod()
         {
-            
+
         }
     }
 }";
@@ -223,7 +223,7 @@ namespace ConsoleApplication1
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/98")]
-    public async Task TestMethodWithoutTestAttribute_DisposeAsync()
+    public async Task TestMethodWithoutTestAttribute_Dispose()
     {
         var original = @"
 using System;

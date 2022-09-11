@@ -109,7 +109,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InCondition_DoWhileAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InCondition_DoWhile()
     {
         var original = @"
 class Test
@@ -127,7 +127,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InCondition_TernaryAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InCondition_Ternary()
     {
         var original = @"
 class Test
@@ -143,7 +143,7 @@ class Test
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/82")]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_SeparateVariableDefinitionAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_SeparateVariableDefinition()
     {
         var original = @"
 class Test
@@ -160,7 +160,7 @@ class Test
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/83")]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_AsArgumentAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_AsArgument()
     {
         var original = @"
 class Test
@@ -178,12 +178,12 @@ class Test
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/85")]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_AsReturnValueAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_AsReturnValue()
     {
         var original = @"
 class Test
 {
-    public bool Validate(string id) 
+    public bool Validate(string id)
     {
 	    return !string.IsNullOrWhiteSpace(id);
     }
@@ -194,7 +194,7 @@ class Test
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/81")]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InLambdaAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_InLambda()
     {
         var original = @"
 using System.Linq;
@@ -215,7 +215,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task UnusedResultOnImmutableObjectTests_UsedResult_NullCoalescingAsync()
+    public async Task UnusedResultOnImmutableObjectTests_UsedResult_NullCoalescing()
     {
         var original = @"
 string Method() => string.Empty ?? """".Trim();

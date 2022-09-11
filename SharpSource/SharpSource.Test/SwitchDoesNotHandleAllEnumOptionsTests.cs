@@ -14,7 +14,7 @@ public class SwitchDoesNotHandleAllEnumOptionsTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new SwitchDoesNotHandleAllEnumOptionsCodeFix();
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatementAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -69,7 +69,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_AllEnumStatementsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_AllEnumStatements()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -99,7 +99,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_CaseStatementsNotEnumAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_CaseStatementsNotEnum()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -123,7 +123,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_CaseHasDefaultStatement_NewStatementsAreAddedAboveDefaultAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_CaseHasDefaultStatement_NewStatementsAreAddedAboveDefault()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -180,7 +180,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_MultipleSectionsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_MultipleSections()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -237,7 +237,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatementsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatements()
     {
         var original = @"
 using System.IO;
@@ -296,7 +296,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_AddsAllMissingStatementsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_AddsAllMissingStatements()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -355,7 +355,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_NoEnumStatementsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_NoEnumStatements()
     {
         var original = @"
 using System.IO;
@@ -412,7 +412,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_MixedExpandedEnumStatementsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_MixedExpandedEnumStatements()
     {
         var original = @"
 using System.IO;
@@ -475,7 +475,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_AllExpandedEnumStatementsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_AllExpandedEnumStatements()
     {
         var original = @"
 using System.IO;
@@ -490,38 +490,6 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case FileOptions.Encrypted:
-                    break;
-                case FileOptions.SequentialScan:
-                    break;
-                case FileOptions.RandomAccess:
-                    break;
-            }
-        }
-    }
-}";
-
-        var result = @"
-using System.IO;
-using static System.IO.FileOptions;
-
-namespace ConsoleApplication1
-{
-    class MyClass
-    {
-        void Method()
-        {
-            var e = DeleteOnClose;
-            switch (e)
-            {
-                case DeleteOnClose:
-                    throw new System.NotImplementedException();
-                case Asynchronous:
-                    throw new System.NotImplementedException();
-                case WriteThrough:
-                    throw new System.NotImplementedException();
-                case None:
-                    throw new System.NotImplementedException();
                 case FileOptions.Encrypted:
                     break;
                 case FileOptions.SequentialScan:
@@ -533,12 +501,44 @@ namespace ConsoleApplication1
     }
 }";
 
+        var result = @"
+using System.IO;
+using static System.IO.FileOptions;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var e = DeleteOnClose;
+            switch (e)
+            {
+                case DeleteOnClose:
+                    throw new System.NotImplementedException();
+                case Asynchronous:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
+                    throw new System.NotImplementedException();
+                case None:
+                    throw new System.NotImplementedException();
+                case FileOptions.Encrypted:
+                    break;
+                case FileOptions.SequentialScan:
+                    break;
+                case FileOptions.RandomAccess:
+                    break;
+            }
+        }
+    }
+}";
+
         await VerifyDiagnostic(original, SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.MessageFormat.ToString());
         await VerifyFix(original, result);
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NoRedundantQualifierIfUsingSystemDirectiveExistsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NoRedundantQualifierIfUsingSystemDirectiveExists()
     {
         var original = @"
 using System;
@@ -595,7 +595,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_UsingAliasForSystemAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_UsingAliasForSystem()
     {
         var original = @"
 using Fizz = System;    // seriously...
@@ -652,7 +652,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenParentDirectiveNotIncludedAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenParentDirectiveNotIncluded()
     {
         var original = @"
 using static System.IO.FileOptions;
@@ -713,7 +713,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenUsingDirectiveIncludesWhitespaceAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_UsingStaticEnum_MissingEnumStatement_SimplifiesAllStatementsWhenUsingDirectiveIncludesWhitespace()
     {
         var original = @"
 using static System .       IO      . FileOptions;  // Happy maintaining
@@ -774,7 +774,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NestedEnumAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NestedEnum()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -829,7 +829,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatements_CaseValueIsCastToEnumTypeAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatements_CaseValueIsCastToEnumType()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -857,7 +857,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NoUsingsAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NoUsings()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -908,7 +908,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NormalUsingAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_NormalUsing()
     {
         var original = @"
 using System.IO;
@@ -963,7 +963,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_UsingStaticAsync()
+    public async Task SwitchDoesNotHandleAllEnumOptions_NoCaseStatements_UsingStatic()
     {
         var original = @"
 using static System.IO.FileOptions;

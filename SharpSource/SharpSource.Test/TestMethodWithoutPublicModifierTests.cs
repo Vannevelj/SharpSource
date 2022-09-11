@@ -25,11 +25,11 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     {
         [TestFixture]
         public class MyClass
-        {   
+        {
             [Test]
             public void Method()
             {
-                
+
             }
         }
     }";
@@ -38,7 +38,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndTestMethodAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndTestMethodAttribute()
     {
         var original = @"
     using System;
@@ -48,11 +48,11 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     {
         [TestClass]
         public class MyClass
-        {   
+        {
             [TestMethod]
             public void Method()
             {
-                
+
             }
         }
     }";
@@ -61,7 +61,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndFactAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndFactAttribute()
     {
         var original = @"
     using System;
@@ -70,11 +70,11 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     namespace ConsoleApplication1
     {
         public class MyClass
-        {   
+        {
             [Fact]
             public void Method()
             {
-                
+
             }
         }
     }";
@@ -83,7 +83,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttribute()
     {
         var original = @"
 using System;
@@ -93,11 +93,11 @@ namespace ConsoleApplication1
 {
     [TestFixture]
     public class MyClass
-    {   
+    {
         [Test]
         internal void Method()
         {
-                
+
         }
     }
 }";
@@ -110,11 +110,11 @@ namespace ConsoleApplication1
 {
     [TestFixture]
     public class MyClass
-    {   
+    {
         [Test]
         public void Method()
         {
-                
+
         }
     }
 }";
@@ -124,7 +124,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestMethodAttribute()
     {
         var original = @"
 using System;
@@ -165,7 +165,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
     {
         var original = @"
 using System;
@@ -178,7 +178,7 @@ namespace ConsoleApplication1
         [Fact]
         internal void Method()
         {
-                
+
         }
     }
 }";
@@ -194,7 +194,7 @@ namespace ConsoleApplication1
         [Fact]
         public void Method()
         {
-                
+
         }
     }
 }";
@@ -204,7 +204,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributesAsync()
+    public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndMultipleAttributes()
     {
         var original = @"
 using System;
@@ -216,7 +216,7 @@ public class MyClass
     [Fact]
     public void Method()
     {
-                
+
     }
 }";
 
@@ -224,7 +224,7 @@ public class MyClass
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithProtectedInternalModifierAndTestMethodAttribute()
     {
         var original = @"
 using System;
@@ -265,7 +265,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithMultipleModifiersAndTestMethodAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithMultipleModifiersAndTestMethodAttribute()
     {
         var original = @"
 using System;
@@ -306,7 +306,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithoutModifierAndTestAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithoutModifierAndTestAttribute()
     {
         var original = @"
 using System;
@@ -316,11 +316,11 @@ namespace ConsoleApplication1
 {
     [TestFixture]
     public class MyClass
-    {   
+    {
         [Test]
         void Method()
         {
-                
+
         }
     }
 }";
@@ -333,11 +333,11 @@ namespace ConsoleApplication1
 {
     [TestFixture]
     public class MyClass
-    {   
+    {
         [Test]
         public void Method()
         {
-                
+
         }
     }
 }";
@@ -347,7 +347,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithoutTestAttributeAsync()
+    public async Task TestMethodWithoutPublicModifier_WithoutTestAttribute()
     {
         var original = @"
     using System;
@@ -355,10 +355,10 @@ namespace ConsoleApplication1
     namespace ConsoleApplication1
     {
         public class MyClass
-        {   
+        {
             private static void Method()
             {
-                
+
             }
         }
     }";

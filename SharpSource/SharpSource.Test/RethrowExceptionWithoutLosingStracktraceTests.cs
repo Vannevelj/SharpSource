@@ -15,7 +15,7 @@ public class RethrowExceptionWithoutLosingStracktraceTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new RethrowExceptionWithoutLosingStacktraceCodeFix();
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgumentAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument()
     {
         var original = @"
 using System;
@@ -24,7 +24,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try
@@ -46,7 +46,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try
@@ -66,7 +66,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_ThrowsANewExceptionAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_ThrowsANewException()
     {
         var original = @"
 using System;
@@ -75,7 +75,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try
@@ -94,7 +94,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowsAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrows()
     {
         var original = @"
 using System;
@@ -103,7 +103,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try
@@ -122,7 +122,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_ThrowingANewPredefinedExceptionAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_ThrowingANewPredefinedException()
     {
         var original = @"
 using System;
@@ -131,7 +131,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try
@@ -151,7 +151,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_WithThrowStatementOutsideCatchClauseAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithThrowStatementOutsideCatchClause()
     {
         var original = @"
 using System;
@@ -160,7 +160,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             throw new Exception();
@@ -172,7 +172,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument_AndNoIdentifierAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument_AndNoIdentifier()
     {
         var original = @"
 using System;
@@ -181,7 +181,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try
@@ -200,7 +200,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrow_AndNoIdentifierAsync()
+    public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrow_AndNoIdentifier()
     {
         var original = @"
 using System;
@@ -209,7 +209,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             try

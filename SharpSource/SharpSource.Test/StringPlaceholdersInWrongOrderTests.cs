@@ -15,7 +15,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new StringPlaceHoldersInWrongOrderCodeFix();
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrenceAsync()
+    public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrence()
     {
         var original = @"
     using System;
@@ -35,7 +35,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithMultipleOccurrencesAsync()
+    public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithMultipleOccurrences()
     {
         var original = @"
     using System;
@@ -55,7 +55,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultipleOccurrencesAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultipleOccurrences()
     {
         var original = @"
     using System;
@@ -92,7 +92,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSingleOccurrenceAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSingleOccurrence()
     {
         var original = @"
     using System;
@@ -129,7 +129,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithUnusedPlaceholderAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithUnusedPlaceholder()
     {
         var original = @"
     using System;
@@ -166,7 +166,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultiplePlaceholdersAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithMultiplePlaceholders()
     {
         var original = @"
     using System;
@@ -203,7 +203,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSinglePlaceholderAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithSinglePlaceholder()
     {
         var original = @"
     using System;
@@ -224,7 +224,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithFormatDefinedSeparatelyAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithFormatDefinedSeparately()
     {
         var original = @"
     using System;
@@ -245,7 +245,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithInterpolatedStringAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithInterpolatedString()
     {
         var original = @"
     using System;
@@ -266,7 +266,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormattedStringAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormattedString()
     {
         var original = @"
     using System;
@@ -305,7 +305,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormatProviderAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithFormatProvider()
     {
         var original = @"
     using System;
@@ -344,7 +344,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithEscapedCurlyBraceAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithEscapedCurlyBrace()
     {
         var original = @"
     using System;
@@ -364,7 +364,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithDoubleEscapedCurlyBraceAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithDoubleEscapedCurlyBrace()
     {
         var original = @"
     using System;
@@ -400,7 +400,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithNestedCurlyBracesAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithNestedCurlyBraces()
     {
         var original = @"
     using System;
@@ -436,7 +436,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithCommentedPlaceholder_AlsoUsedValidlyAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithCommentedPlaceholder_AlsoUsedValidly()
     {
         var original = @"
     using System;
@@ -456,7 +456,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithInvalidIndexAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithInvalidIndex()
     {
         var original = @"
     using System;
@@ -476,7 +476,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithDifferentMethodNameAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithDifferentMethodName()
     {
         var original = @"
     using System;
@@ -500,7 +500,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_WithReusedPlaceholderInDescendingOrderAsync()
+    public async Task StringPlaceholdersInWrongOrder_WithReusedPlaceholderInDescendingOrder()
     {
         var original = @"
     using System;
@@ -520,7 +520,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_StringsAreVariablesAsync()
+    public async Task StringPlaceholdersInWrongOrder_StringsAreVariables()
     {
         var original = @"
     using System;
@@ -544,7 +544,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
     }
 
     [TestMethod]
-    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormatAsync()
+    public async Task StringPlaceholdersInWrongOrder_InIncorrectOrder_WithoutStringFormat()
     {
         var original = @"
 using System;

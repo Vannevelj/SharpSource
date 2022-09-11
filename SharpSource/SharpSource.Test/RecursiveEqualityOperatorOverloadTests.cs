@@ -12,14 +12,14 @@ public class RecursiveEqualityOperatorOverloadTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RecursiveOperatorOverloadAnalyzer();
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithEqualityOperatorsAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithEqualityOperators()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-	    public static A operator ==(A a1, A a2) 
+	    public static A operator ==(A a1, A a2)
 	    {
 		    return a1 == a2;
 	    }
@@ -35,14 +35,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithEqualsAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithEquals()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-        public static A operator ==(A a1, A a2) 
+        public static A operator ==(A a1, A a2)
         {
 	        var a = a1.Equals(a2);
 		    return a1;
@@ -60,14 +60,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithDifferentComparisonAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithDifferentComparison()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-        public static A operator ==(A a1, A a2) 
+        public static A operator ==(A a1, A a2)
         {
 	        var a = 1 == 1;
 		    return a1;
@@ -85,14 +85,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithDifferentOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithDifferentOperator()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-        public static A operator ==(A a1, A a2) 
+        public static A operator ==(A a1, A a2)
         {
 	        return a1 + a2;
         }
@@ -113,14 +113,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithNullComparisonAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithNullComparison()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-	    public static A operator ==(A a1, A a2) 
+	    public static A operator ==(A a1, A a2)
 	    {
 		    return a1 == null;
 	    }
@@ -136,14 +136,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithNullComparisonLeftHandAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithNullComparisonLeftHand()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-	    public static A operator ==(A a1, A a2) 
+	    public static A operator ==(A a1, A a2)
 	    {
 		    return null == a2;
 	    }
@@ -159,7 +159,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithIsAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithIs()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -182,7 +182,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithReturnNullAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithReturnNull()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -205,7 +205,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithExpressionBodyAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithExpressionBody()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -220,7 +220,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithPlusOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithPlusOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -238,7 +238,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithUnaryPlusOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithUnaryPlusOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -256,7 +256,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithMinusOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithMinusOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -274,7 +274,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithUnaryMinusOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithUnaryMinusOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -292,7 +292,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithMultiplicationOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithMultiplicationOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -310,7 +310,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithDivisionOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithDivisionOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -328,7 +328,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithNotOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithNotOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -346,7 +346,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithBitwiseNotOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithBitwiseNotOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -364,7 +364,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithPostFixIncrementOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithPostFixIncrementOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -382,7 +382,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithPreFixIncrementOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithPreFixIncrementOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -400,7 +400,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithDecrementOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithDecrementOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -418,7 +418,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -447,7 +447,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBody()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -464,7 +464,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyWithNestedConditionalsAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithTrueAndFalseOperatorAsExpressionBodyWithNestedConditionals()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -481,7 +481,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithLeftShiftOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithLeftShiftOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -499,7 +499,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithRightShiftOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithRightShiftOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -517,7 +517,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithXorOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithXorOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -535,7 +535,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithOrOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithOrOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -553,7 +553,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithAndOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithAndOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -571,7 +571,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithModOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithModOperator()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -589,14 +589,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithGreaterLesserThanEqualityOperatorsAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithGreaterLesserThanEqualityOperators()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-	    public static A operator >=(A a1, A a2) 
+	    public static A operator >=(A a1, A a2)
 	    {
 		    return a1 >= a2;
 	    }
@@ -612,14 +612,14 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithCastOperatorAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithCastOperator()
     {
         var original = @"
 namespace ConsoleApplication1
 {
     public class A
     {
-        public static implicit operator string(A a) 
+        public static implicit operator string(A a)
         {
 	        return ""test"";
         }
@@ -630,7 +630,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task RecursiveEqualityOperatorOverload_WithMultipleOperatorsAsync()
+    public async Task RecursiveEqualityOperatorOverload_WithMultipleOperators()
     {
         var original = @"
 namespace ConsoleApplication1

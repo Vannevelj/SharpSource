@@ -24,7 +24,7 @@ var g = new HttpClient();
     }
 
     [TestMethod]
-    public async Task HttpClientInstantiatedDirectly_FullNameAsync()
+    public async Task HttpClientInstantiatedDirectly_FullName()
     {
         var original = @"
 var g = new System.Net.Http.HttpClient();
@@ -34,7 +34,7 @@ var g = new System.Net.Http.HttpClient();
     }
 
     [TestMethod]
-    public async Task HttpClientInstantiatedDirectly_HttpClient_SelfDefinedAsync()
+    public async Task HttpClientInstantiatedDirectly_HttpClient_SelfDefined()
     {
         var original = @"
 class HttpClient { }
@@ -52,7 +52,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task HttpClientInstantiatedDirectly_HttpClient_AsUsedAsync()
+    public async Task HttpClientInstantiatedDirectly_HttpClient_AsUsed()
     {
         var original = @"
 using System.Net.Http;

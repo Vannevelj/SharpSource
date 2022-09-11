@@ -14,7 +14,7 @@ public class StructWithoutElementaryMethodsOverriddenTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new StructWithoutElementaryMethodsOverriddenCodeFix();
 
     [TestMethod]
-    public async Task StructWithoutElementaryMethodsOverridden_NoMethodsImplementedAsync()
+    public async Task StructWithoutElementaryMethodsOverridden_NoMethodsImplemented()
     {
         var original = @"
 struct X
@@ -45,7 +45,7 @@ struct X
     }
 
     [TestMethod]
-    public async Task StructWithoutElementaryMethodsOverridden_EqualsImplementedAsync()
+    public async Task StructWithoutElementaryMethodsOverridden_EqualsImplemented()
     {
         var original = @"
 struct X
@@ -80,7 +80,7 @@ struct X
     }
 
     [TestMethod]
-    public async Task StructWithoutElementaryMethodsOverridden_GetHashCodeImplementedAsync()
+    public async Task StructWithoutElementaryMethodsOverridden_GetHashCodeImplemented()
     {
         var original = @"
 struct X
@@ -115,7 +115,7 @@ struct X
     }
 
     [TestMethod]
-    public async Task StructWithoutElementaryMethodsOverridden_ToStringImplementedAsync()
+    public async Task StructWithoutElementaryMethodsOverridden_ToStringImplemented()
     {
         var original = @"
 struct X
@@ -150,7 +150,7 @@ struct X
     }
 
     [TestMethod]
-    public async Task StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplementedAsync()
+    public async Task StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplemented()
     {
         var original = @"
 struct X
@@ -190,7 +190,7 @@ struct X
     }
 
     [TestMethod]
-    public async Task StructWithoutElementaryMethodsOverridden_AllImplementedAsync()
+    public async Task StructWithoutElementaryMethodsOverridden_AllImplemented()
     {
         var original = @"
 struct X
@@ -226,7 +226,7 @@ partial struct X
         var file2 = @"
 partial struct X
 {
-    
+
 }";
 
         var file1Result = @"

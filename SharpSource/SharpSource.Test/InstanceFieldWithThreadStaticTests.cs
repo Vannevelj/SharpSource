@@ -30,7 +30,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_InstanceField_StaticAsync()
+    public async Task InstanceFieldWithThreadStatic_InstanceField_Static()
     {
         var original = @"
 using System;
@@ -45,7 +45,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_OtherModifiersAsync()
+    public async Task InstanceFieldWithThreadStatic_OtherModifiers()
     {
         var original = @"
 using System;
@@ -60,7 +60,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_OtherAttributeAsync()
+    public async Task InstanceFieldWithThreadStatic_OtherAttribute()
     {
         var original = @"
 using System;
@@ -75,7 +75,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_OtherAttribute_OnPropertyAsync()
+    public async Task InstanceFieldWithThreadStatic_OtherAttribute_OnProperty()
     {
         var original = @"
 using System;
@@ -90,7 +90,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_IgnoresConstAsync()
+    public async Task InstanceFieldWithThreadStatic_IgnoresConst()
     {
         var original = @"
 using System;
@@ -105,7 +105,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_MultipleDeclaratorsAsync()
+    public async Task InstanceFieldWithThreadStatic_MultipleDeclarators()
     {
         var original = @"
 using System;
@@ -120,7 +120,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task InstanceFieldWithThreadStatic_MultipleAttributesAsync()
+    public async Task InstanceFieldWithThreadStatic_MultipleAttributes()
     {
         var original = @"
 using System;
