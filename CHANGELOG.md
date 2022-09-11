@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.9.0] - 2022-09-11
 - `LinqTraversalBeforeFilter`: An `IEnumerable` extension method was used to traverse the collection and subsequently filtered using `Where()`. If the `Where()` filter is executed first, the traversal will have to iterate over fewer items which will result in better performance.
+- `LockingOnDiscouragedObject`: A `lock` was taken using an instance of a discouraged type. `System.String`, `System.Type` and `this` references can all lead to deadlocks and should be replaced with a `System.Object` instance instead.
 
 ## [1.8.0] - 2022-09-08
 - `StaticInitializerAccessedBeforeInitialization`: A `static` field relies on the value of another `static` field which is defined in the same type. `static` fields are initialized in order of appearance.
