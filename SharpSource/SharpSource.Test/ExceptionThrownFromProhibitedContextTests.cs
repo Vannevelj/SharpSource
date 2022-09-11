@@ -12,7 +12,7 @@ public class ExceptionThrownFromProhibitedContextTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ExceptionThrownFromProhibitedContextAnalyzer();
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ToTypeAsync()
+    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ToType()
     {
         var original = @"
 using System;
@@ -21,7 +21,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     public class MyClass
-    {   
+    {
         public static implicit operator MyClass(double d)
         {
             throw new ArgumentException();
@@ -33,7 +33,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_FromTypeAsync()
+    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_FromType()
     {
         var original = @"
 using System;
@@ -42,7 +42,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     public class MyClass
-    {   
+    {
         public static implicit operator double(MyClass d)
         {
             throw new ArgumentException();
@@ -54,7 +54,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ExplicitOperatorAsync()
+    public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ExplicitOperator()
     {
         var original = @"
 using System;
@@ -63,7 +63,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     public class MyClass
-    {   
+    {
         public static explicit operator double(MyClass d)
         {
             throw new ArgumentException();
@@ -75,7 +75,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_PropertyGetterAsync()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter()
     {
         var original = @"
 using System;
@@ -93,7 +93,7 @@ namespace ConsoleApplication1
 		    }
 		    set
 		    {
-			    
+
 		    }
 	    }
     }
@@ -103,7 +103,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_SetterAsync()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_Setter()
     {
         var original = @"
 using System;
@@ -131,7 +131,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_AutoPropertyAsync()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_AutoProperty()
     {
         var original = @"
 using System;
@@ -149,7 +149,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_ExpressionBodiedPropertyAsync()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_ExpressionBodiedProperty()
     {
         var original = @"
 using System;
@@ -167,7 +167,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_NoSetterAsync()
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_NoSetter()
     {
         var original = @"
 using System;
@@ -191,7 +191,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_ClassAsync()
+    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_Class()
     {
         var original = @"
 using System;
@@ -212,7 +212,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_StructAsync()
+    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_Struct()
     {
         var original = @"
 using System;
@@ -233,7 +233,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_InstanceConstructorAsync()
+    public async Task ExceptionThrownFromProhibitedContext_StaticConstructor_InstanceConstructor()
     {
         var original = @"
 using System;
@@ -254,7 +254,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_FinallyBlockAsync()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock()
     {
         var original = @"
 using System;
@@ -267,7 +267,7 @@ try { } finally { throw new ArgumentException(); }
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NestedAsync()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_Nested()
     {
         var original = @"
 using System;
@@ -280,7 +280,7 @@ try { } finally { try { } catch { throw new ArgumentException(); } }
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NoExceptionAsync()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NoException()
     {
         var original = @"
 using System;
@@ -293,7 +293,7 @@ try { } finally { }
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NoFinallyAsync()
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_NoFinally()
     {
         var original = @"
 using System;
@@ -323,7 +323,7 @@ try {{ }} finally {{ throw new {exception}(); }}
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_EqualOperatorAsync()
+    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_EqualOperator()
     {
         var original = @"
 using System;
@@ -349,7 +349,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_NotEqualOperatorAsync()
+    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_NotEqualOperator()
     {
         var original = @"
 using System;
@@ -375,7 +375,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_NoThrowAsync()
+    public async Task ExceptionThrownFromProhibitedContext_EqualityOperator_NoThrow()
     {
         var original = @"
 using System;
@@ -401,7 +401,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_DisposeAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose()
     {
         var original = @"
 using System;
@@ -422,7 +422,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Dispose_BoolArgumentAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose_BoolArgument()
     {
         var original = @"
 using System;
@@ -432,7 +432,7 @@ namespace ConsoleApplication1
 {
     public class MyClass : IDisposable
     {
-        public void Dispose() 
+        public void Dispose()
         {
             Dispose(true);
         }
@@ -448,7 +448,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Dispose_NoIDisposableAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose_NoIDisposable()
     {
         var original = @"
 using System;
@@ -469,7 +469,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Dispose_DifferentMethodAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Dispose_DifferentMethod()
     {
         var original = @"
 using System;
@@ -494,7 +494,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_FinalizeAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Finalize()
     {
         var original = @"
 using System;
@@ -515,7 +515,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Finalize_NoThrowAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Finalize_NoThrow()
     {
         var original = @"
 using System;
@@ -527,7 +527,7 @@ namespace ConsoleApplication1
     {
 	    ~MyClass()
         {
-                
+
         }
     }
 }";
@@ -536,7 +536,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_GetHashCodeAsync()
+    public async Task ExceptionThrownFromProhibitedContext_GetHashCode()
     {
         var original = @"
 using System;
@@ -557,7 +557,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_GetHashCode_NoThrowAsync()
+    public async Task ExceptionThrownFromProhibitedContext_GetHashCode_NoThrow()
     {
         var original = @"
 using System;
@@ -578,7 +578,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_GetHashCode_HidingMemberAsync()
+    public async Task ExceptionThrownFromProhibitedContext_GetHashCode_HidingMember()
     {
         var original = @"
 using System;
@@ -596,7 +596,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_EqualsAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Equals()
     {
         var original = @"
 using System;
@@ -636,7 +636,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Equals_IEquatableAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Equals_IEquatable()
     {
         var original = @"
 using System;
@@ -654,7 +654,7 @@ public class MyClass : IEquatable<MyClass>
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Equals_NoThrowAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Equals_NoThrow()
     {
         var original = @"
 using System;
@@ -673,7 +673,7 @@ public class MyClass
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_Equals_HidingMemberAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Equals_HidingMember()
     {
         var original = @"
 using System;
@@ -691,7 +691,7 @@ public class MyClass
     }
 
     [TestMethod]
-    public async Task ExceptionThrownFromProhibitedContext_IndexerAsync()
+    public async Task ExceptionThrownFromProhibitedContext_Indexer()
     {
         var original = @"
 using System;
@@ -713,7 +713,7 @@ class MyClass
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/118")]
-    public async Task ExceptionThrownFromProhibitedContext_EmptyThrowAsync()
+    public async Task ExceptionThrownFromProhibitedContext_EmptyThrow()
     {
         var original = @"
 using System;
@@ -725,7 +725,7 @@ class MyClass
 		get
 		{
             try { }
-            catch { 
+            catch {
 			    throw;
             }
             return 5;
@@ -737,7 +737,7 @@ class MyClass
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/117")]
-    public async Task ExceptionThrownFromProhibitedContext_MemberAccessExpressionAsync()
+    public async Task ExceptionThrownFromProhibitedContext_MemberAccessExpression()
     {
         var original = @"
 using System;

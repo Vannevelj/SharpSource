@@ -12,7 +12,7 @@ public class GetHashCodeRefersToMutableMemberTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new GetHashCodeRefersToMutableMemberAnalyzer();
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_ConstantFieldAsync()
+    public async Task GetHashCodeRefersToMutableMember_ConstantField()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -32,7 +32,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_NonReadonlyFieldAsync()
+    public async Task GetHashCodeRefersToMutableMember_NonReadonlyField()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -52,7 +52,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_StaticFieldAsync()
+    public async Task GetHashCodeRefersToMutableMember_StaticField()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -72,7 +72,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_NonReadonlyStaticNonValueTypeFieldAsync()
+    public async Task GetHashCodeRefersToMutableMember_NonReadonlyStaticNonValueTypeField()
     {
         var original = @"
 using System;
@@ -93,7 +93,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_NonValueTypeNonStringFieldAsync()
+    public async Task GetHashCodeRefersToMutableMember_NonValueTypeNonStringField()
     {
         var original = @"
 using System;
@@ -114,7 +114,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_ImmutableMember_NoWarningAsync()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableMember_NoWarning()
     {
         var original = @"
 using System;
@@ -135,7 +135,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_ImmutableStringMember_NoWarningAsync()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableStringMember_NoWarning()
     {
         var original = @"
 using System;
@@ -156,7 +156,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_StaticReadonlyPropertyAsync()
+    public async Task GetHashCodeRefersToMutableMember_StaticReadonlyProperty()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -176,7 +176,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_NonValueTypeNonStringPropertyAsync()
+    public async Task GetHashCodeRefersToMutableMember_NonValueTypeNonStringProperty()
     {
         var original = @"
 using System;
@@ -197,7 +197,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_SettablePropertyAsync()
+    public async Task GetHashCodeRefersToMutableMember_SettableProperty()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -217,7 +217,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_PropertyWithBodiedGetterAsync()
+    public async Task GetHashCodeRefersToMutableMember_PropertyWithBodiedGetter()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -237,7 +237,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_StaticNonValueTypeSettablePropertyWithBodiedGetterAsync()
+    public async Task GetHashCodeRefersToMutableMember_StaticNonValueTypeSettablePropertyWithBodiedGetter()
     {
         var original = @"
 using System;
@@ -258,7 +258,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_PropertyWithExpressionBodiedGetterAsync()
+    public async Task GetHashCodeRefersToMutableMember_PropertyWithExpressionBodiedGetter()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -278,7 +278,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_ImmutableProperty_NoDiagnosticAsync()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableProperty_NoDiagnostic()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -298,7 +298,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_ImmutableStringProperty_NoDiagnosticAsync()
+    public async Task GetHashCodeRefersToMutableMember_ImmutableStringProperty_NoDiagnostic()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -318,7 +318,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_InOtherType_PropertyWithExpressionBodiedGetterAsync()
+    public async Task GetHashCodeRefersToMutableMember_InOtherType_PropertyWithExpressionBodiedGetter()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -339,7 +339,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_InOtherType_ImmutableProperty_NoDiagnosticAsync()
+    public async Task GetHashCodeRefersToMutableMember_InOtherType_ImmutableProperty_NoDiagnostic()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -360,7 +360,7 @@ namespace ConsoleApplication1
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/3")]
-    public async Task GetHashCodeRefersToMutableMember_CallsExternalPropertyAsync()
+    public async Task GetHashCodeRefersToMutableMember_CallsExternalProperty()
     {
         var original = @"
 using System.Text;
@@ -383,7 +383,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task GetHashCodeRefersToMutableMember_PartialClass_SameFileAsync()
+    public async Task GetHashCodeRefersToMutableMember_PartialClass_SameFile()
     {
         var original = @"
 partial class ClassX

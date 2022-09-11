@@ -12,7 +12,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsTests : DiagnosticVeri
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StringDotFormatWithDifferentAmountOfArgumentsAnalyzer();
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithValidScenarioAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithValidScenario()
     {
         var original = @"
 using System;
@@ -21,7 +21,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {1}"", 1, 2);
@@ -32,7 +32,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithRepeatedPlaceholdersAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithRepeatedPlaceholders()
     {
         var original = @"
 using System;
@@ -41,7 +41,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {0}"", 1);
@@ -52,7 +52,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExtraArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExtraArguments()
     {
         var original = @"
 using System;
@@ -61,7 +61,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {1}"", 1, 2, 3, 4, 5);
@@ -72,7 +72,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingArguments()
     {
         var original = @"
 using System;
@@ -81,7 +81,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {1}"", 1);
@@ -92,7 +92,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingArguments_AndSkippedPlaceholderIndexAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingArguments_AndSkippedPlaceholderIndex()
     {
         var original = @"
 using System;
@@ -101,7 +101,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {1}, def {2}"", 123, 456);
@@ -112,7 +112,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEqualAmountOfPlaceholdersAndArgumentsButDontMatchUpAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEqualAmountOfPlaceholdersAndArgumentsButDontMatchUp()
     {
         var original = @"
 using System;
@@ -121,7 +121,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {0}"", 1, 2);
@@ -132,7 +132,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEscapedPlaceholderAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEscapedPlaceholder()
     {
         var original = @"
 using System;
@@ -141,7 +141,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {{1}}"", 1);
@@ -152,7 +152,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithPlaceholderFormattingAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithPlaceholderFormatting()
     {
         var original = @"
 using System;
@@ -161,7 +161,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {1:00}, def {1}"", 1);
@@ -172,7 +172,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_InDifferentOrderAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_InDifferentOrder()
     {
         var original = @"
 using System;
@@ -181,7 +181,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {1}, def {0}"", 1);
@@ -192,7 +192,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutFormatLiteralAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutFormatLiteral()
     {
         var original = @"
 using System;
@@ -201,7 +201,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string format = ""abc {0}, def {1}"";
@@ -213,7 +213,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedStringAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedString()
     {
         var original = @"
 using System;
@@ -222,7 +222,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string name = ""Jeroen"";
@@ -234,7 +234,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedString_AndCultureInfoAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithInterpolatedString_AndCultureInfo()
     {
         var original = @"
 using System;
@@ -244,7 +244,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string name = ""Jeroen"";
@@ -256,7 +256,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProviderAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider()
     {
         var original = @"
 using System;
@@ -266,7 +266,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(CultureInfo.InvariantCulture, ""def {0} ghi {1}"", 1);
@@ -277,7 +277,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndFormat_AndNoArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndFormat_AndNoArguments()
     {
         var original = @"
 using System;
@@ -287,7 +287,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(CultureInfo.InvariantCulture, ""abc {0}"");
@@ -298,7 +298,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEscapedBracesAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithEscapedBraces()
     {
         var original = @"
 using System;
@@ -307,7 +307,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""def {0} ghi {{1}}"", 1);
@@ -318,7 +318,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNestedBracesAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNestedBraces()
     {
         var original = @"
 using System;
@@ -327,7 +327,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""{{def {0} ghi {1}}}"", 1);
@@ -339,7 +339,7 @@ namespace ConsoleApplication1
 
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongTypesAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongTypes()
     {
         var original = @"
 using System;
@@ -348,7 +348,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         MyClass()
         {
             Method(""{{def {0} ghi {1}}}"", 1);
@@ -363,7 +363,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithCorrectTypesAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithCorrectTypes()
     {
         var original = @"
 using System;
@@ -372,7 +372,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         MyClass()
         {
             Method(""{{def {0} ghi {1}}}"", 1);
@@ -387,7 +387,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongFormatParamNameAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_WithWrongFormatParamName()
     {
         var original = @"
 using System;
@@ -396,7 +396,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         MyClass()
         {
             Method(""{{def {0} ghi {1}}}"", 1);
@@ -411,7 +411,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutArguments()
     {
         var original = @"
 using System;
@@ -420,7 +420,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}, def {1}"");
@@ -431,7 +431,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutPlaceholdersAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithoutPlaceholders()
     {
         var original = @"
 using System;
@@ -440,7 +440,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc, def"");
@@ -451,7 +451,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArray()
     {
         var original = @"
 using System;
@@ -460,7 +460,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}"", new object[] {""hello""});
@@ -471,7 +471,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndLackingArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndLackingArguments()
     {
         var original = @"
 using System;
@@ -480,7 +480,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0} {1}"", new object[] {""hello""});
@@ -492,7 +492,7 @@ namespace ConsoleApplication1
 
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayMultipleArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayMultipleArguments()
     {
         var original = @"
 using System;
@@ -501,7 +501,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0} {1}"", new object[] {""hello"", ""bye""});
@@ -512,7 +512,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethodAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethod()
     {
         var original = @"
 using System;
@@ -521,7 +521,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             var args = getArgs();
@@ -538,7 +538,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethod_WithLackingArgsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughIdentifierReferencingAnotherMethod_WithLackingArgs()
     {
         var original = @"
 using System;
@@ -547,7 +547,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             var args = getArgs();
@@ -564,7 +564,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferenced()
     {
         var original = @"
 using System;
@@ -573,7 +573,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             object[] arr = new object[] {""hello"", ""bye""};
@@ -585,7 +585,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughMethodCallAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayReferencedThroughMethodCall()
     {
         var original = @"
 using System;
@@ -594,7 +594,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0} {1}"", getArguments());
@@ -610,7 +610,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndAdditionalArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithExplicitArrayAndAdditionalArguments()
     {
         var original = @"
 using System;
@@ -619,7 +619,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0} {1} {2}"", new object[] {""hello"", ""bye"", ""uhoh""}, ""test"");
@@ -630,7 +630,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArray()
     {
         var original = @"
 using System;
@@ -640,7 +640,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(CultureInfo.InvariantCulture, ""abc {0}"", new object[] {""hello""});
@@ -651,7 +651,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayWithLackingArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayWithLackingArguments()
     {
         var original = @"
 using System;
@@ -661,7 +661,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(CultureInfo.InvariantCulture, ""abc {0}{1}"", new object[] {""hello""});
@@ -672,7 +672,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughVariableAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughVariable()
     {
         var original = @"
 using System;
@@ -682,7 +682,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             var args = new object[] {""hello""};
@@ -694,7 +694,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughMethodAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithFormatProvider_AndExplicitArrayReferencedThroughMethod()
     {
         var original = @"
 using System;
@@ -704,7 +704,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(CultureInfo.InvariantCulture, ""abc {0}{1}"", getArgs());
@@ -720,7 +720,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConstantFormatAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConstantFormat()
     {
         var original = @"
 using System;
@@ -730,7 +730,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             const string format = ""{0}{1}"";
@@ -742,7 +742,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConstantConcatenationAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConstantConcatenation()
     {
         var original = @"
 using System;
@@ -752,7 +752,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             const string a = ""{0}"";
@@ -766,7 +766,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithStaticImportAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithStaticImport()
     {
         var original = @"
 using static System.String;
@@ -774,7 +774,7 @@ using static System.String;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             const string a = ""{0}"";
@@ -788,7 +788,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExpressionAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExpression()
     {
         var original = @"
 using System;
@@ -798,7 +798,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format((""{0}{1}""), ""arg"");
@@ -809,7 +809,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndSingleObjectAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndSingleObject()
     {
         var original = @"
 using System;
@@ -817,7 +817,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             Console.WriteLine(""{0}{1}"", ""arg"");
@@ -828,7 +828,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndParamsObjectAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndParamsObject()
     {
         var original = @"
 using System;
@@ -836,7 +836,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             Console.WriteLine(""{0}{1}{2}"", ""arg"", ""arg2"");
@@ -847,7 +847,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArrayAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArray()
     {
         var original = @"
 using System;
@@ -855,7 +855,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             Console.WriteLine(""{0}{1}{2}"", new object[] { ""arg"", ""arg2"" });
@@ -866,7 +866,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArrayReferenceAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConsoleWriteLine_AndObjectArrayReference()
     {
         var original = @"
 using System;
@@ -874,7 +874,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             var args = new object[] { ""arg"", ""arg2"" };
@@ -886,7 +886,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraParametersAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraParameters()
     {
         var original = @"
 using System;
@@ -894,7 +894,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             Other(""{0}{1}{2}"", new object[] { ""arg"", ""arg2"" }, 5);
@@ -909,7 +909,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraObjectArrayParametersAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithSimilarInvocation_AndExtraObjectArrayParameters()
     {
         var original = @"
 using System;
@@ -917,7 +917,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             Other(""{0}{1}{2}"", new object[] { ""arg"", ""arg2"" }, new object[] {});
@@ -932,7 +932,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithObjectArrayAsObjectAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithObjectArrayAsObject()
     {
         var original = @"
 using System;
@@ -940,7 +940,7 @@ using System;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             var args = new object[] { ""a"", ""b""};
@@ -952,7 +952,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArrayAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArray()
     {
         var original = @"
 using System;
@@ -961,7 +961,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}{1}"", (new[] { 5 }));
@@ -972,7 +972,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArray_WithValidScenarioAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithParenthesizedExplicitArray_WithValidScenario()
     {
         var original = @"
 using System;
@@ -981,7 +981,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}{1}"", (new[] { 5, 2 }));
@@ -992,7 +992,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithOneArgumentAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithOneArgument()
     {
         var original = @"
 using System;
@@ -1001,7 +1001,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}{1}"", Other());
@@ -1017,7 +1017,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_WithParenthesizedMethodCallAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_WithParenthesizedMethodCall()
     {
         var original = @"
 using System;
@@ -1026,7 +1026,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}{1}"", (Other()));
@@ -1042,7 +1042,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithTwoArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray_WithLackingArguments_WithTwoArguments()
     {
         var original = @"
 using System;
@@ -1051,7 +1051,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}{1}{2}"", Other(), Other());
@@ -1067,7 +1067,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArrayAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithMethod_ThatDoesNotReturnAnArray()
     {
         var original = @"
 using System;
@@ -1076,7 +1076,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string s = string.Format(""abc {0}{1}"", Other(), Another());
@@ -1097,7 +1097,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConcatArgsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithConcatArgs()
     {
         var original = @"
 using System;
@@ -1106,7 +1106,7 @@ using System.Linq;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string.Format(""{0}{1}"", new[] { 1 }.Concat(new[] {2}).ToArray());
@@ -1117,7 +1117,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingConcatArgsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithLackingConcatArgs()
     {
         var original = @"
 using System;
@@ -1126,7 +1126,7 @@ using System.Linq;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string.Format(""{0}{1}{2}"", new[] { 1 }.Concat(new[] {2}).ToArray());
@@ -1137,7 +1137,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithObjectInitializerAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithObjectInitializer()
     {
         var original = @"
 using System;
@@ -1146,7 +1146,7 @@ using System.Linq;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         void Method(string input)
         {
             string.Format(""{0}{1}"", new MyClass { Prop1 = 5, Prop2 = 6});
@@ -1160,7 +1160,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNonStringFormatTypeAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNonStringFormatType()
     {
         var original = @"
 using System;
@@ -1169,7 +1169,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         string Method(SymbolDisplayFormat format)
         {
             string s = Method(new SymbolDisplayFormat());
@@ -1179,14 +1179,14 @@ namespace ConsoleApplication1
 
     class SymbolDisplayFormat
     {
-        
+
     }
 }";
         await VerifyDiagnostic(original);
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNonStringLiteralFormatTypeAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithNonStringLiteralFormatType()
     {
         var original = @"
 using System;
@@ -1195,7 +1195,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         string Method(int format)
         {
             string s = Method(5);
@@ -1207,7 +1207,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormatAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormat()
     {
         var original = @"
 using System;
@@ -1216,7 +1216,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         string Method(string format = null)
         {
             string s = Method();
@@ -1228,7 +1228,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormatAndArgumentsAsync()
+    public async Task StringDotFormatWithDifferentAmountOfArguments_WithOptionalFormatAndArguments()
     {
         var original = @"
 using System;
@@ -1237,7 +1237,7 @@ using System.Text;
 namespace ConsoleApplication1
 {
     class MyClass
-    {   
+    {
         string Format(string format = null, object[] param = null)
         {
             string s = Format();

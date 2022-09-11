@@ -12,14 +12,14 @@ public class HttpContextStoredInFieldAnalyzerTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpContextStoredInFieldAnalyzer();
 
     [TestMethod]
-    public async Task HttpContextStoredInField_InFieldAsync()
+    public async Task HttpContextStoredInField_InField()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
 {
-    private HttpContext _context;    
+    private HttpContext _context;
 }
 ";
 
@@ -27,14 +27,14 @@ class Test
     }
 
     [TestMethod]
-    public async Task HttpContextStoredInField_CustomHttpContextClassAsync()
+    public async Task HttpContextStoredInField_CustomHttpContextClass()
     {
         var original = @"
 class HttpContext { }
 
 class Test
 {
-    private HttpContext _context;    
+    private HttpContext _context;
 }
 ";
 
@@ -42,14 +42,14 @@ class Test
     }
 
     [TestMethod]
-    public async Task HttpContextStoredInField_InPropertyAsync()
+    public async Task HttpContextStoredInField_InProperty()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
 {
-    private HttpContext Context { get; set; } 
+    private HttpContext Context { get; set; }
 }
 ";
 
@@ -57,7 +57,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task HttpContextStoredInField_AsVariableAsync()
+    public async Task HttpContextStoredInField_AsVariable()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
@@ -75,14 +75,14 @@ class Test
     }
 
     [TestMethod]
-    public async Task HttpContextStoredInField_InField_MultipleDeclaratorsAsync()
+    public async Task HttpContextStoredInField_InField_MultipleDeclarators()
     {
         var original = @"
 using Microsoft.AspNetCore.Http;
 
 class Test
 {
-    private HttpContext _context, _context2;    
+    private HttpContext _context, _context2;
 }
 ";
 

@@ -12,7 +12,7 @@ public class LoopedRandomInstantiationTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LoopedRandomInstantiationAnalyzer();
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_WhileLoopAsync()
+    public async Task LoopedRandomInstantiation_WhileLoop()
     {
         var original = @"
 using System;
@@ -35,7 +35,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_DoWhileLoopAsync()
+    public async Task LoopedRandomInstantiation_DoWhileLoop()
     {
         var original = @"
 using System;
@@ -58,7 +58,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_ForLoopAsync()
+    public async Task LoopedRandomInstantiation_ForLoop()
     {
         var original = @"
 using System;
@@ -81,7 +81,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_ForeachLoopAsync()
+    public async Task LoopedRandomInstantiation_ForeachLoop()
     {
         var original = @"
 using System;
@@ -106,7 +106,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_MultipleDeclaratorsInDeclarationAsync()
+    public async Task LoopedRandomInstantiation_MultipleDeclaratorsInDeclaration()
     {
         var original = @"
 using System;
@@ -130,7 +130,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_MultipleLevelsOfNestingAsync()
+    public async Task LoopedRandomInstantiation_MultipleLevelsOfNesting()
     {
         var original = @"
 using System;
@@ -156,7 +156,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_RandomInstanceNotInLoopAsync()
+    public async Task LoopedRandomInstantiation_RandomInstanceNotInLoop()
     {
         var original = @"
 using System;
@@ -177,7 +177,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_RandomNotSystemRandomAsync()
+    public async Task LoopedRandomInstantiation_RandomNotSystemRandom()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -197,7 +197,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_TypeIsObject_DoesNotCrashAnalyzerBecauseContainingNamespaceIsNullAsync()
+    public async Task LoopedRandomInstantiation_TypeIsObject_DoesNotCrashAnalyzerBecauseContainingNamespaceIsNull()
     {
         var original = @"
 namespace ConsoleApplication1
@@ -215,7 +215,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_StructAsync()
+    public async Task LoopedRandomInstantiation_Struct()
     {
         var original = @"
 using System;
@@ -238,7 +238,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task LoopedRandomInstantiation_NotInLoop_StructAsync()
+    public async Task LoopedRandomInstantiation_NotInLoop_Struct()
     {
         var original = @"
 using System;

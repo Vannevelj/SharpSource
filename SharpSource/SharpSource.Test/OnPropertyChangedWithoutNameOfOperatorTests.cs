@@ -15,7 +15,7 @@ public class OnPropertyChangedWithoutNameOfOperatorTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new OnPropertyChangedWithoutNameOfOperatorCodeFix();
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithIdenticalStringAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithIdenticalString()
     {
         var original = @"
 using System;
@@ -46,7 +46,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -79,7 +79,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -88,7 +88,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentlyCasedStringAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentlyCasedString()
     {
         var original = @"
 using System;
@@ -119,7 +119,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -152,7 +152,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -161,7 +161,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndNoCorrespondingPropertyAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndNoCorrespondingProperty()
     {
         var original = @"
 using System;
@@ -192,7 +192,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -200,7 +200,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndCorrespondingPropertyAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithDifferentStringAndCorrespondingProperty()
     {
         var original = @"
 using System;
@@ -242,7 +242,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -286,7 +286,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -295,7 +295,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithNameOfOperatorAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithNameOfOperator()
     {
         var original = @"
 using System;
@@ -326,7 +326,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -334,7 +334,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithMultipleArgumentsAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithMultipleArguments()
     {
         var original = @"
 using System;
@@ -365,7 +365,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -398,7 +398,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -407,7 +407,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithPartialClassAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithPartialClass()
     {
         var original = @"
 using System;
@@ -486,7 +486,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpressionAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpression()
     {
         var original = @"
 using System;
@@ -517,7 +517,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -550,7 +550,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
 
@@ -559,7 +559,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_WithPartialClass_AndDifferentPropertyAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_WithPartialClass_AndDifferentProperty()
     {
         var original = @"
 using System;
@@ -642,7 +642,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpression_WithNameofAsync()
+    public async Task OnPropertyChangedWithoutNameOfOperator_ParenthesizedExpression_WithNameof()
     {
         var original = @"
 using System;
@@ -673,7 +673,7 @@ namespace ConsoleApplication1
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
-        }                
+        }
     }
 }";
         await VerifyDiagnostic(original);

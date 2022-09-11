@@ -51,7 +51,7 @@ class Service {{ }}";
     }
 
     [TestMethod]
-    public async Task MultipleFromBodyParameters_SingleAsync()
+    public async Task MultipleFromBodyParameters_Single()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +66,7 @@ class MyController
     }
 
     [TestMethod]
-    public async Task MultipleFromBodyParameters_MultipleDifferentAsync()
+    public async Task MultipleFromBodyParameters_MultipleDifferent()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -81,7 +81,7 @@ class MyController
     }
 
     [TestMethod]
-    public async Task MultipleFromBodyParameters_DifferentAsync()
+    public async Task MultipleFromBodyParameters_Different()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -96,7 +96,7 @@ class MyController
     }
 
     [TestMethod]
-    public async Task MultipleFromBodyParameters_NoAttributesAsync()
+    public async Task MultipleFromBodyParameters_NoAttributes()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;
@@ -111,7 +111,7 @@ class MyController
     }
 
     [TestMethod]
-    public async Task MultipleFromBodyParameters_NoParametersAsync()
+    public async Task MultipleFromBodyParameters_NoParameters()
     {
         var original = @"
 using Microsoft.AspNetCore.Mvc;

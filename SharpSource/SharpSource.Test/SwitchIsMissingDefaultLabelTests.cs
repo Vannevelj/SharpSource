@@ -14,7 +14,7 @@ public class SwitchIsMissingDefaultLabelTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new SwitchIsMissingDefaultLabelCodeFix();
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnumAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnum()
     {
         var original = @"
 using System;
@@ -73,7 +73,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnString()
     {
         var original = @"
 using System;
@@ -122,7 +122,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteralAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnStringLiteral()
     {
         var original = @"
 using System;
@@ -169,7 +169,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteralAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnIntegerLiteral()
     {
         var original = @"
 using System;
@@ -216,7 +216,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_HasDefaultStatementAsync()
+    public async Task SwitchIsMissingDefaultLabel_HasDefaultStatement()
     {
         var original = @"
 using System;
@@ -243,7 +243,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatementAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_ParenthesizedStatement()
     {
         var original = @"
 using System;
@@ -257,7 +257,7 @@ namespace ConsoleApplication1
             var x = 5;
             switch ((x))
             {
-                case 5: 
+                case 5:
                 case 6:
                     break;
             }
@@ -277,7 +277,7 @@ namespace ConsoleApplication1
             var x = 5;
             switch ((x))
             {
-                case 5: 
+                case 5:
                 case 6:
                     break;
                 default:
@@ -292,7 +292,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteralAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedStringLiteral()
     {
         var original = @"
 using System;
@@ -339,7 +339,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteralAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteral()
     {
         var original = @"
 using System;
@@ -386,7 +386,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatementAsync()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_AddsUsingStatement()
     {
         var original = @"
 namespace ConsoleApplication1

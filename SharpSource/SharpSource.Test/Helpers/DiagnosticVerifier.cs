@@ -115,7 +115,7 @@ public abstract class DiagnosticVerifier
             var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnostics(document));
             var interestingDiagnostics = newCompilerDiagnostics
                 .Where(x =>
-                    x.Id != "CS8019" && // Unnecessary using directive 
+                    x.Id != "CS8019" && // Unnecessary using directive
                     x.Id != "CS0168" // The variable is declared but never used
                 );
 

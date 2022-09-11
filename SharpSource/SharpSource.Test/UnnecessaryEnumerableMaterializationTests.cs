@@ -162,7 +162,7 @@ var test = Enumerable.Range(0, 100).{materialization}();
     }
 
     [TestMethod]
-    public async Task UnnecessaryEnumerableMaterialization_MultipleDeferred_NoMaterializationAsync()
+    public async Task UnnecessaryEnumerableMaterialization_MultipleDeferred_NoMaterialization()
     {
         var original = $@"
 using System.Linq;

@@ -15,7 +15,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoTests : DiagnosticVerifier
     protected override CodeFixProvider CodeFixProvider => new FlagsEnumValuesAreNotPowersOfTwoCodeFix();
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwoAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo()
     {
         var original = @"
 using System;
@@ -92,7 +92,7 @@ enum Foo : {type}
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwoAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo()
     {
         var original = @"
 using System;
@@ -111,7 +111,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_HexValuesAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_HexValues()
     {
         var original = @"
 using System;
@@ -144,7 +144,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_HexValuesAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_HexValues()
     {
         var original = @"
 using System;
@@ -163,7 +163,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_NegativeValuesAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_NegativeValues()
     {
         var original = @"
 using System;
@@ -180,7 +180,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_NoValuesAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_NoValues()
     {
         var original = @"
 using System;
@@ -199,7 +199,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_NotFlagsEnumAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_NotFlagsEnum()
     {
         var original = @"
 enum Foo
@@ -215,7 +215,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_FlagsEnum_WithSystemNamespaceAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_FlagsEnum_WithSystemNamespace()
     {
         var original = @"
 [System.Flags]
@@ -244,7 +244,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_BitShiftingAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_BitShifting()
     {
         var original = @"
 using System;
@@ -263,7 +263,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_ValuesOfOtherFlagsAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_ValuesOfOtherFlags()
     {
         var original = @"
 using System;
@@ -288,7 +288,7 @@ enum Days
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_CharValuesAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_CharValues()
     {
         var original = @"
 using System;
@@ -308,7 +308,7 @@ enum Foo
 
     [TestMethod]
     [Ignore("We need to support binary expressions on top of literals")]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_BinaryExpressionsAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_BinaryExpressions()
     {
         var original = @"
 using System;
@@ -359,7 +359,7 @@ enum Days
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitshiftedValuesNotPowersOfTwoAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitshiftedValuesNotPowersOfTwo()
     {
         var original = @"
 using System;
@@ -385,7 +385,7 @@ enum Days
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitOredValuesNotPowersOfTwoAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo_BitOredValuesNotPowersOfTwo()
     {
         var original = @"
 using System;
@@ -411,7 +411,7 @@ enum Days
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_WithoutExplicitValuesAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_WithoutExplicitValues()
     {
         var original = @"
 using System;
@@ -428,7 +428,7 @@ enum Foo
     }
 
     [TestMethod]
-    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_MultipleOptionsAsync()
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesArePowersOfTwo_MultipleOptions()
     {
         var original = @"
 [System.Flags]
