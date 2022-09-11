@@ -18,7 +18,7 @@ For example, initially `ElementaryMethodsOfTypeInCollectionNotOverridden` would 
 * Optionally: copy an [existing code fix](https://github.com/Vannevelj/SharpSource/tree/master/SharpSource/SharpSource.CodeFixes/Diagnostics) and adjust as necessary
 * Run `dotnet format` to fix any formatting issues
 
-If at any time you have questions, create an issue on Github to start a discussion.
+If at any time you have questions, create an issue on Github to start a discussion. If you're interested in learning more about Roslyn analyzers in general, I recommend reading through [this paper](https://www.dropbox.com/s/rc9edahndlog0je/MainPaper.pdf?dl=0) I wrote years ago.
 
 ## How do I get it released?
 CI will run to verify you've added the changelog and bumped the version. Once all tests pass and the code is approved, I'll merge it and a new release will be automatically distributed to all delivery platforms (NuGet, VS marketplace & Github packages).

@@ -18,7 +18,7 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
     public static DiagnosticDescriptor FieldRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Categories.Correctness, DiagnosticSeverity.Warning, true);
     public static DiagnosticDescriptor PropertyRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Categories.Correctness, DiagnosticSeverity.Warning, true);
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(PropertyRule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(FieldRule, PropertyRule);
 
     public override void Initialize(AnalysisContext context)
     {
