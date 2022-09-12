@@ -21,7 +21,13 @@ jobs:
           filters: |
             version:
               - 'SharpSource/SharpSource.Package/SharpSource.Package.csproj'
+            readme:
+              - 'README.md'
       
-      - name: Verify version changed
+      - name: Verify version changed in csproj
         run: |
           ${{ steps.changes.outputs.version == 'true' }} || exit 1
+      
+      - name: Verify version changed in README
+        run: |
+          ${{ steps.changes.outputs.readme == 'true' }} || exit 1
