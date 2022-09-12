@@ -1,4 +1,4 @@
-# SS001 - AsyncMethodWithVoidReturnType
+# SS036 - ExplicitEnumValues
 
 [![Generic badge](https://img.shields.io/badge/Severity-Warning-yellow.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/CodeFix-Yes-green.svg)](https://shields.io/)
 

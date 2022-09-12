@@ -1,11 +1,11 @@
-# SS001 - AsyncMethodWithVoidReturnType
+# SS003 - DivideIntegerByInteger
 
-[![Generic badge](https://img.shields.io/badge/Severity-Warning-yellow.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/CodeFix-Yes-green.svg)](https://shields.io/)
-
----
-
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+[![Generic badge](https://img.shields.io/badge/Severity-Warning-yellow.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/CodeFix-No-lightgrey.svg)](https://shields.io/)
 
 ---
 
-![](./attachments/SS001.gif)
+The operands of a divisive expression are both integers and result in an implicit rounding.
+
+---
+
+![](./attachments/SS003.gif)
