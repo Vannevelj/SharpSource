@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+An `IEnumerable` was materialized before a deferred execution call. This generally results in unnecessary work being done.
 
 ---
 

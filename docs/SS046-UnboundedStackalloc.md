@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+An array is stack allocated without checking whether the length is within reasonable bounds. This can result in performance degradations and security risks.
 
 ---
 

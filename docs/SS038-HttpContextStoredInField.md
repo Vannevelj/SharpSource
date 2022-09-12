@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+`HttpContext` was stored in a field. This can result in a previous context being used for subsequent requests. Use `IHttpContextAccessor` instead.
 
 ---
 

@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+Switch is missing a `default` label. Include this to provide fallback behaviour for any missing cases, including when the upstream API adds them later on.
 
 ---
 

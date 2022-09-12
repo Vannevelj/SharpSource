@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+Verifies whether a test method has the `public` modifier. Some test frameworks require this to discover unit tests.
 
 ---
 

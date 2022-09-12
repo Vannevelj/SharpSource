@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+An instance of type `System.Random` is created in a loop. `Random` uses a time-based seed so when used in a fast loop it will end up with multiple identical seeds for subsequent invocations.
 
 ---
 

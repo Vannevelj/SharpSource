@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+The result of an operation on a `string` is unused. At best this has no effect, at worst this means a desired `string` operation has not been performed.
 
 ---
 

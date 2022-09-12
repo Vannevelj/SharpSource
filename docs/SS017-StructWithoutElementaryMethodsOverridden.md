@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+Structs should implement `Equals()`, `GetHashCode()`, and `ToString()`. By default they use reflection which comes with performance penalties.
 
 ---
 

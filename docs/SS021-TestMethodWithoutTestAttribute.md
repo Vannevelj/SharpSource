@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+A method might be missing a test attribute. Helps ensure no unit tests are missing from your test runs.
 
 ---
 

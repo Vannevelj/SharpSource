@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+`[ThreadStatic]` can only be used on static fields. If used on an instance field the attribute will not have any effect and the subsequent multithreading behaviour will not be as intended.
 
 ---
 

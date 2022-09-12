@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+An exception is rethrown in a way that it loses the stacktrace. Use an empty `throw;` statement instead to preserve it.
 
 ---
 

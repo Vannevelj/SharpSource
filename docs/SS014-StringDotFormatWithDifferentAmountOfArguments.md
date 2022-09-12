@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+A `string.Format()` call lacks arguments and will cause a runtime exception.
 
 ---
 

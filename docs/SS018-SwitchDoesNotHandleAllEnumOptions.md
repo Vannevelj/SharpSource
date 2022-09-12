@@ -4,7 +4,7 @@
 
 ---
 
-Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.
+Add cases for missing enum member. That way you won't miss new behaviour in the consuming API since it will be explicitly handled.
 
 ---
 
