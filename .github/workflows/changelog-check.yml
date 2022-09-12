@@ -2,10 +2,6 @@ name: Changelog Check
 
 on:
   pull_request:
-  push:
-    branches:
-      - "*" # matches every branch
-      - "!master" # excludes master
 
 concurrency:
   group: ${{ github.head_ref }}-changelog

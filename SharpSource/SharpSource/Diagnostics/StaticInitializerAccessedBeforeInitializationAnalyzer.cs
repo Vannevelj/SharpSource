@@ -31,7 +31,7 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
         true
     );
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleForPartials);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -44,6 +44,12 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
     {
         var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
         if (!fieldDeclaration.Modifiers.Contains(SyntaxKind.StaticKeyword))
+        {
+            return;
+        }
+
+        var fieldType = context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+        if (fieldType is { TypeKind: TypeKind.Delegate })
         {
             return;
         }
@@ -96,6 +102,18 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
+            // Don't trigger for nameof() calls, they are resolved at compile time
+            var invocationNode = identifier.FirstAncestorOfType(SyntaxKind.InvocationExpression);
+            if (invocationNode is InvocationExpressionSyntax invocation && invocation.IsNameofInvocation())
+            {
+                continue;
+            }
+
+            // We _can_ call static functions
+            if (invocationNode == identifier.Parent)
+            {
+                continue;
+            }
 
             yield return isPartial ? (RuleForPartials, identifier) : (Rule, identifier);
         }

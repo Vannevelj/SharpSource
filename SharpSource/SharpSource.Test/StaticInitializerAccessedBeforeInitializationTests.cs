@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
@@ -314,5 +313,88 @@ struct Test
 }";
 
         await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/172")]
+    public async Task StaticInitializerAccessedBeforeInitialization_NameOf()
+    {
+        var original = @"
+struct Test
+{
+	static string FirstField = nameof(SecondField);
+    static int SecondField = 32;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StaticInitializerAccessedBeforeInitialization_NameOf_WithComputation()
+    {
+        var original = @"
+struct Test
+{
+    static string FirstField = nameof(Test) + SecondField;
+    static string SecondField = ""CF"";
+}";
+
+        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/171")]
+    public async Task StaticInitializerAccessedBeforeInitialization_MethodInvocation()
+    {
+        var original = @"
+class Test
+{
+    static string FirstField = SomeFunction();
+    static string SomeFunction() => string.Empty;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StaticInitializerAccessedBeforeInitialization_AsArgumentToMethodInvocation()
+    {
+        var original = @"
+class Test
+{
+	static string FirstField = SomeFunction(SomeArg);
+	static string SomeFunction(string arg) => arg;
+	static string SomeArg = ""test"";
+}";
+
+        await VerifyDiagnostic(original, "FirstField accesses SomeArg but both are marked as static and SomeArg will not be initialized when it is used");
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/173")]
+    public async Task StaticInitializerAccessedBeforeInitialization_Action()
+    {
+        var original = @"
+using System;
+
+class Test
+{
+	static Action<int> FirstField = DoThing;
+	static void DoThing(int i) { }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/173")]
+    public async Task StaticInitializerAccessedBeforeInitialization_Func()
+    {
+        var original = @"
+using System;
+
+class Test
+{
+	static Func<int> FirstField = DoThing;
+	static int DoThing() => 32;
+}";
+
+        await VerifyDiagnostic(original);
     }
 }

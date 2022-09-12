@@ -2,9 +2,6 @@ name: Version Bump Check
 
 on:
   pull_request:
-  push:
-    branches:
-      - "*" # matches every branch
 
 concurrency:
   group: ${{ github.head_ref }}-version
