@@ -29,7 +29,7 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 ---
  
 
-| Code   | Name  | <div style="width:600px">Description</div>  | Level   | Provides Code Fix?  |
+| Code   | Name  | Description  | Level   | Provides Code Fix?  |
 |---|---|---|---|---|
 | SS001  | AsyncMethodWithVoidReturnType  | Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished an exceptions go unhandled.  | Warning  | Yes  |
 | SS002  | DateTimeNow  | Use `DateTime.UtcNow` to get a locale-independent value. `DateTime.Now` uses the system's local timezone which often means unexpected behaviour when working with global teams/deployments.  | Warning  | Yes  |
