@@ -48,6 +48,12 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
             return;
         }
 
+        var fieldType = context.SemanticModel.GetTypeInfo(fieldDeclaration.Declaration.Type).Type;
+        if (fieldType is { TypeKind: TypeKind.Delegate })
+        {
+            return;
+        }
+
         var declarators = fieldDeclaration.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList();
         var assignments = declarators.Where(d => d.Initializer is not null);
 
