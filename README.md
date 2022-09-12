@@ -31,7 +31,7 @@ Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 
 | Code   | Name  | Description  | Level   | Provides Code Fix?  |
 |---|---|---|---|---|
-| SS001  | AsyncMethodWithVoidReturnType  | Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished an exceptions go unhandled.  | Warning  | Yes  |
+| SS001  | AsyncMethodWithVoidReturnType  | Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.  | Warning  | Yes  |
 | SS002  | DateTimeNow  | Use `DateTime.UtcNow` to get a locale-independent value. `DateTime.Now` uses the system's local timezone which often means unexpected behaviour when working with global teams/deployments.  | Warning  | Yes  |
 | SS003  | DivideIntegerByInteger  | The operands of a divisive expression are both integers and result in an implicit rounding.  | Warning  | No  |
 | SS004  | ElementaryMethodsOfTypeInCollectionNotOverridden  | Implement `Equals()` and `GetHashcode()` methods for a type used in a collection. Collections use these to fetch objects but by default they use reference equality. Depending on where your objects come from, they might be missed in the lookup.  | Warning  | No  |
