@@ -1,5 +1,25 @@
 [![Nuget Downloads](https://img.shields.io/nuget/dt/SharpSource)](https://www.nuget.org/packages/SharpSource/) [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/JeroenVannevel.sharpsource)](https://marketplace.visualstudio.com/items?itemName=JeroenVannevel.sharpsource)
 
+## Quickstart
+
+Install it through the command line:
+
+```powershell
+Install-Package SharpSource
+```
+
+or add a reference yourself:
+
+```xml
+<ItemGroup>
+    <PackageReference Include="SharpSource" Version="1.9.3" PrivateAssets="All" />
+</ItemGroup>
+```
+
+If you would like to install it as an extension instead, download it [from the marketplace](https://marketplace.visualstudio.com/items?itemName=JeroenVannevel.sharpsource).
+
+---
+
 This repo houses a collection of analyzers that aim to make some language features and framework types easier to work with. It does this by highlighting when you might be using something incorrectly in a way that would result in suboptimal performance, runtime exceptions or general unintended behaviour. 
 
 In other words, **this repo only contains analyzers for patterns that have a concrete potential to turn into a defect ticket**. It is not intended to help with general housekeeping tasks like formatting your code or providing productivity helpers. 
