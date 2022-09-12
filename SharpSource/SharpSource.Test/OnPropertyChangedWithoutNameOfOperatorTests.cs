@@ -83,7 +83,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "IsEnabled"));
         await VerifyFix(original, expected);
     }
 
@@ -156,7 +156,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "IsEnabled"));
         await VerifyFix(original, expected);
     }
 
@@ -290,7 +290,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsAnotherBoolean"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "IsAnotherBoolean"));
         await VerifyFix(original, expected);
     }
 
@@ -402,7 +402,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "IsEnabled"));
         await VerifyFix(original, expected);
     }
 
@@ -481,7 +481,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "IsEnabled"));
         await VerifyFix(original, expected);
     }
 
@@ -554,7 +554,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "IsEnabled"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "IsEnabled"));
         await VerifyFix(original, expected);
     }
 
@@ -637,7 +637,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.MessageFormat.ToString(), "OtherBoolean"));
+        await VerifyDiagnostic(original, string.Format("OnPropertyChanged({0}) can use the nameof() operator.", "OtherBoolean"));
         await VerifyFix(original, expected);
     }
 

@@ -119,7 +119,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyDiagnostic(original, string.Format("Test method \"{0}\" is not public.", "Method"));
         await VerifyFix(original, result);
     }
 
@@ -160,7 +160,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyDiagnostic(original, string.Format("Test method \"{0}\" is not public.", "Method"));
         await VerifyFix(original, result);
     }
 
@@ -199,7 +199,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyDiagnostic(original, string.Format("Test method \"{0}\" is not public.", "Method"));
         await VerifyFix(original, result);
     }
 
@@ -260,7 +260,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyDiagnostic(original, string.Format("Test method \"{0}\" is not public.", "Method"));
         await VerifyFix(original, result);
     }
 
@@ -301,7 +301,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyDiagnostic(original, string.Format("Test method \"{0}\" is not public.", "Method"));
         await VerifyFix(original, result);
     }
 
@@ -342,7 +342,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(TestMethodWithoutPublicModifierAnalyzer.Rule.MessageFormat.ToString(), "Method"));
+        await VerifyDiagnostic(original, string.Format("Test method \"{0}\" is not public.", "Method"));
         await VerifyFix(original, result);
     }
 

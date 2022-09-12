@@ -87,7 +87,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -124,7 +124,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -161,7 +161,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -198,7 +198,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -300,7 +300,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -339,7 +339,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -395,7 +395,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 
@@ -431,7 +431,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original, StringPlaceholdersInWrongOrderAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
         await VerifyFix(original, expected);
     }
 

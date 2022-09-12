@@ -88,7 +88,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -108,7 +108,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -168,7 +168,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -188,7 +188,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -273,7 +273,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -294,7 +294,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -334,7 +334,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
 
@@ -383,7 +383,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -427,7 +427,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -487,7 +487,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
 
@@ -626,7 +626,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -668,7 +668,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -738,7 +738,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -762,7 +762,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -784,7 +784,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -805,7 +805,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -824,7 +824,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -843,7 +843,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -862,7 +862,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -948,7 +948,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -968,7 +968,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -1013,7 +1013,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -1038,7 +1038,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -1063,7 +1063,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
@@ -1156,7 +1156,7 @@ namespace ConsoleApplication1
 	    public int Prop2 { get; set; }
     }
 }";
-        await VerifyDiagnostic(original, StringDotFormatWithDifferentAmountOfArgumentsAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
     }
 
     [TestMethod]
