@@ -8,4 +8,4 @@ An exception is thrown from a `static` constructor
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS024.gif)

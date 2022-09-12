@@ -8,4 +8,4 @@ A `string.Format()` call lacks arguments and will cause a runtime exception.
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS014.gif)

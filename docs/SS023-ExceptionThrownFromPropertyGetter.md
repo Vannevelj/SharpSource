@@ -8,4 +8,4 @@ An exception is thrown from a property getter
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS023.gif)

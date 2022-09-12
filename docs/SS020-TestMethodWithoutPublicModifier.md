@@ -8,4 +8,4 @@ Verifies whether a test method has the `public` modifier. Some test frameworks r
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS020.gif)

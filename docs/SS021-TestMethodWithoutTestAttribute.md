@@ -8,4 +8,4 @@ A method might be missing a test attribute. Helps ensure no unit tests are missi
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS021.gif)

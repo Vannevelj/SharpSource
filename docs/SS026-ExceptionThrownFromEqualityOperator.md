@@ -8,4 +8,4 @@ An exception is thrown from an equality operator
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS026.gif)

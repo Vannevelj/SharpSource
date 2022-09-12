@@ -8,4 +8,4 @@ An `IEnumerable` extension method was used to traverse the collection and is sub
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS047.gif)

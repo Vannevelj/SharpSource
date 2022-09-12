@@ -8,4 +8,4 @@ Add cases for missing enum member. That way you won't miss new behaviour in the 
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS018.gif)

@@ -8,4 +8,4 @@ An exception is thrown from a `GetHashCode()` method
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS029.gif)

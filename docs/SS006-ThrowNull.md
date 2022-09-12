@@ -8,4 +8,4 @@ Throwing `null` will always result in a runtime exception.
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS006.gif)

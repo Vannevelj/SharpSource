@@ -8,4 +8,4 @@ An instance of type `System.Random` is created in a loop. `Random` uses a time-b
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS009.gif)

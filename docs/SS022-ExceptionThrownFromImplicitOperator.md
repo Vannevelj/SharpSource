@@ -7,4 +7,4 @@
 An exception is thrown from an `implicit` operator
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS022.gif)

@@ -8,4 +8,4 @@ Orders the arguments of a `string.Format()` call in ascending order according to
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS015.gif)

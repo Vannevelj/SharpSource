@@ -8,4 +8,4 @@ Use the `nameof()` operator in conjunction with `OnPropertyChanged()` to avoid d
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS011.gif)

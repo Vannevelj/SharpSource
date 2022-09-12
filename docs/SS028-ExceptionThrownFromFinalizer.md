@@ -8,4 +8,4 @@ An exception is thrown from a finalizer method
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS028.gif)

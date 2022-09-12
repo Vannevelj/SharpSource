@@ -8,4 +8,4 @@ An exception is thrown from a `Dispose()` method
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS027.gif)

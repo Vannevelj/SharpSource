@@ -8,4 +8,4 @@ An exception is thrown from an `Equals() method`
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS030.gif)

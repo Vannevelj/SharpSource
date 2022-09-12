@@ -8,4 +8,4 @@ Recursively using overloaded operator will result in a stack overflow when attem
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS012.gif)

@@ -8,4 +8,4 @@ An empty GUID was created in an ambiguous manner. The default `Guid` constructor
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS010.gif)

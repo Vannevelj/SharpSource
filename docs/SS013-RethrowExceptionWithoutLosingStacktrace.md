@@ -8,4 +8,4 @@ An exception is rethrown in a way that it loses the stacktrace. Use an empty `th
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS013.gif)

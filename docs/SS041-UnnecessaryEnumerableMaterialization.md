@@ -8,4 +8,4 @@ An `IEnumerable` was materialized before a deferred execution call. This general
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS041.gif)

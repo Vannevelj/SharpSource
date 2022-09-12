@@ -8,4 +8,4 @@ A `lock` was taken using an instance of a discouraged type. `System.String`, `Sy
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS048.gif)

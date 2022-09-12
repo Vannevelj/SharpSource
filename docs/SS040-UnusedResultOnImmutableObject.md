@@ -8,4 +8,4 @@ The result of an operation on a `string` is unused. At best this has no effect, 
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS040.gif)

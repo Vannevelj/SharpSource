@@ -8,4 +8,4 @@ An enum should explicitly specify its values. Otherwise you risk serializing you
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS036.gif)

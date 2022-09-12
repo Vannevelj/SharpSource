@@ -8,4 +8,4 @@ A `static` field relies on the value of another `static` field which is defined 
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS045.gif)

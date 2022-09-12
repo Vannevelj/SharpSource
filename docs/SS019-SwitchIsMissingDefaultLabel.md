@@ -8,4 +8,4 @@ Switch is missing a `default` label. Include this to provide fallback behaviour 
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS019.gif)

@@ -8,4 +8,4 @@ Structs should implement `Equals()`, `GetHashCode()`, and `ToString()`. By defau
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS017.gif)

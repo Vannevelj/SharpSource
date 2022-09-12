@@ -8,4 +8,4 @@ An exception is thrown from a `finally` block
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS025.gif)

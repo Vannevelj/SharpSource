@@ -8,4 +8,4 @@ Synchronously sleeping a thread in an `async` method combines two threading mode
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS032.gif)

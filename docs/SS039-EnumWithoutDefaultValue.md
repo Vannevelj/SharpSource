@@ -8,4 +8,4 @@ An `enum` should specify a default value of 0 as "Unknown" or "None". When an in
 
 ---
 
-![](./attachments/SS001.gif)
+![](./attachments/SS039.gif)
