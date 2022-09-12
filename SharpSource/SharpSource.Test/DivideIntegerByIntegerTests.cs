@@ -26,7 +26,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "5 / 6"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -118,7 +118,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "5 / 6"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.");
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / 3"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / 3 are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -216,7 +216,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -240,7 +240,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "IntMethod() / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression IntMethod() / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -260,7 +260,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "5 / 6"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -280,7 +280,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -300,7 +300,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -320,7 +320,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -340,7 +340,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -360,7 +360,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -380,7 +380,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -400,7 +400,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 
     [TestMethod]
@@ -420,6 +420,6 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, string.Format("The operands in the divisive expression {0} are both integers and result in an implicit rounding.", "x / y"));
+        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
     }
 }
