@@ -61,7 +61,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.MessageFormat.ToString());
+        await VerifyDiagnostic(original, "Rethrown exception loses the stacktrace.");
         await VerifyFix(original, result);
     }
 

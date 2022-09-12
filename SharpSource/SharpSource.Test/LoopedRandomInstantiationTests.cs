@@ -31,7 +31,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
@@ -54,7 +54,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
@@ -77,7 +77,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
@@ -102,7 +102,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
@@ -125,8 +125,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"),
-                                   string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rind"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.", "Variable rind of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
@@ -152,7 +151,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
@@ -234,7 +233,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, string.Format(LoopedRandomInstantiationAnalyzer.Rule.MessageFormat.ToString(), "rand"));
+        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
     }
 
     [TestMethod]
