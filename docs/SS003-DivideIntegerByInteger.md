@@ -8,4 +8,4 @@ The operands of a divisive expression are both integers and result in an implici
 
 ---
 
-![](./attachments/SS003.gif)
+![](https://user-images.githubusercontent.com/2777107/189771394-391cfe72-80aa-46c8-a949-8d350eb145df.png)

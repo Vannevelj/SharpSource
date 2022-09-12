@@ -8,4 +8,4 @@ EqualsAndGetHashcodeNotImplementedTogether  | Implement `Equals()` and `GetHashc
 
 ---
 
-![](./attachments/SS005.gif)
+![](https://user-images.githubusercontent.com/2777107/189771957-d7056c12-b618-4137-ae8e-e3314ab3e687.gif)

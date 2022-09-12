@@ -8,4 +8,4 @@ ElementaryMethodsOfTypeInCollectionNotOverridden  | Implement `Equals()` and `Ge
 
 ---
 
-![](./attachments/SS004.gif)
+![](https://user-images.githubusercontent.com/2777107/189771685-228f30c7-1cc6-4f4b-9a56-9a4c230edaa0.png)
