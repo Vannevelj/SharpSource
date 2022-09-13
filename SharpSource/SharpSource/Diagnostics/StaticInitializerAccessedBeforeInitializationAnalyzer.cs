@@ -115,6 +115,18 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
+            var surroundingObjectCreation = identifier.FirstAncestorOfType(SyntaxKind.ObjectCreationExpression) as ObjectCreationExpressionSyntax;
+            if (surroundingObjectCreation != default)
+            {
+                var createdSymbol = semanticModel.GetSymbolInfo(surroundingObjectCreation.Type).Symbol;
+                if (referencedSymbol.Kind == SymbolKind.Method &&
+                    createdSymbol is INamedTypeSymbol { Name: "Lazy", Arity: 1 } lazySymbol &&
+                    lazySymbol.IsDefinedInSystemAssembly())
+                {
+                    continue;
+                }
+            }
+
             yield return isPartial ? (RuleForPartials, identifier) : (Rule, identifier);
         }
     }
