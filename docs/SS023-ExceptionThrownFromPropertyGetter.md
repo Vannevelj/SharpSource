@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from a property getter
+An exception is thrown from a property getter. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

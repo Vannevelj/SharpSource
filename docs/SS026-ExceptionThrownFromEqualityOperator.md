@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from an equality operator
+An exception is thrown from an equality operator. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

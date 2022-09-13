@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from an `Equals() method`
+An exception is thrown from an `Equals() method`. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

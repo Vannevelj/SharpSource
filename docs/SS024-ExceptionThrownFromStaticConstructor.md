@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from a `static` constructor
+An exception is thrown from a `static` constructor. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

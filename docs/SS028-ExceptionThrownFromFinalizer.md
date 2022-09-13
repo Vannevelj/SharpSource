@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from a finalizer method
+An exception is thrown from a finalizer method. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

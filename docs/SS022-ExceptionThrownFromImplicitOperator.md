@@ -4,7 +4,8 @@
 
 ---
 
-An exception is thrown from an `implicit` operator
+An exception is thrown from an `implicit` operator. This does not trigger for `NotImplementedException` and `NotSupportedException`.
+
 ---
 
 ## Violation

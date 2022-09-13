@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from a `finally` block
+An exception is thrown from a `finally` block. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

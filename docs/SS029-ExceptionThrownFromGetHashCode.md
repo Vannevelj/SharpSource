@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from a `GetHashCode()` method
+An exception is thrown from a `GetHashCode()` method. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 

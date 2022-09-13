@@ -4,7 +4,7 @@
 
 ---
 
-An exception is thrown from a `Dispose()` method
+An exception is thrown from a `Dispose()` method. This does not trigger for `NotImplementedException` and `NotSupportedException`.
 
 ---
 
