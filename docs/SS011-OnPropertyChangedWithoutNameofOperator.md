@@ -19,7 +19,7 @@ class MyClass : INotifyPropertyChanged
         set
         {
             _isEnabled = value;
-            OnPropertyChanged(""IsEnabled"");
+            OnPropertyChanged("IsEnabled");
         }
     }
 

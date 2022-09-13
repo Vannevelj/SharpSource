@@ -10,5 +10,5 @@ A `string.Format()` call lacks arguments and will cause a runtime exception.
 
 ## Violation
 ```cs
-string s = string.Format(""abc {0}, def {1}"", 1);
+string s = string.Format("abc {0}, def {1}", 1);
 ```

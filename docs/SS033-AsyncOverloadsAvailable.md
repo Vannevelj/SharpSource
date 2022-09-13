@@ -24,6 +24,6 @@ using System.IO;
 
 async void MyMethod()
 {
-    await new StringWriter().WriteAsync("""");
+    await new StringWriter().WriteAsync("");
 }
 ```
