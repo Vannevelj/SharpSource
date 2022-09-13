@@ -27,56 +27,58 @@ In other words, **this repo only contains analyzers for patterns that have a con
 Interested in contributing? Take a look at [the guidelines](./CONTRIBUTING.md)!
 
 ---
+
+Detailed explanations of each analyzer can be found in the documentation: https://github.com/Vannevelj/SharpSource/tree/master/docs
  
 
-| Code   | Name  | Description  | Level   | Provides Code Fix?  |
-|---|---|---|---|---|
-| SS001  | AsyncMethodWithVoidReturnType  | Async methods should return a `Task` to make them awaitable. Without it, execution continues before the asynchronous `Task` has finished and exceptions go unhandled.  | Warning  | Yes  |
-| SS002  | DateTimeNow  | Use `DateTime.UtcNow` to get a locale-independent value. `DateTime.Now` uses the system's local timezone which often means unexpected behaviour when working with global teams/deployments.  | Warning  | Yes  |
-| SS003  | DivideIntegerByInteger  | The operands of a divisive expression are both integers and result in an implicit rounding.  | Warning  | No  |
-| SS004  | ElementaryMethodsOfTypeInCollectionNotOverridden  | Implement `Equals()` and `GetHashcode()` methods for a type used in a collection. Collections use these to fetch objects but by default they use reference equality. Depending on where your objects come from, they might be missed in the lookup.  | Warning  | No  |
-| SS005  | EqualsAndGetHashcodeNotImplementedTogether  | Implement `Equals()` and `GetHashcode()` together. Implement both to ensure consistent behaviour around lookups.  | Warning  | Yes  |
-| SS006  | ThrowNull  | Throwing `null` will always result in a runtime exception.  | Error  | No  |
-| SS007  | FlagsEnumValuesAreNotPowersOfTwo  | `[Flags]` enum members need to be either powers of two, or bitwise OR expressions. This will fire if they are non-negative decimal literals that are not powers of two, and provide a code fix if the value can be achieved through a binary OR using other enum members. | Error  | Yes  |
-| SS008  | GetHashCodeRefersToMutableMember  | `GetHashCode(`) refers to mutable or static member. If the object is used in a collection and then is mutated, subsequent lookups will result in a different hash and might cause lookups to fail.   | Warning  | No  |
-| SS009  | LoopedRandomInstantiation  | An instance of type `System.Random` is created in a loop. `Random` uses a time-based seed so when used in a fast loop it will end up with multiple identical seeds for subsequent invocations.  | Warning  | No  |
-| SS010  | NewGuid  | An empty GUID was created in an ambiguous manner. The default `Guid` constructor creates an instance with an empty value which is rarely what you want.  | Error  | Yes   |
-| SS011  | OnPropertyChangedWithoutNameofOperator  | Use the `nameof()` operator in conjunction with `OnPropertyChanged()` to avoid divergence.  | Warning  | Yes  |
-| SS012  | RecursiveOperatorOverload  | Recursively using overloaded operator will result in a stack overflow when attempting to use it.  | Error  | No  |
-| SS013  | RethrowExceptionWithoutLosingStacktrace | An exception is rethrown in a way that it loses the stacktrace. Use an empty `throw;` statement instead to preserve it.  | Warning  | Yes  |
-| SS014  | StringDotFormatWithDifferentAmountOfArguments  | A `string.Format()` call lacks arguments and will cause a runtime exception.  | Error  | Yes  |
-| SS015  | StringPlaceholdersInWrongOrder  | Orders the arguments of a `string.Format()` call in ascending order according to index. This reduces the likelihood of the resulting string having data in the wrong place.  | Warning  | Yes  |
-| SS017  | StructWithoutElementaryMethodsOverridden  | Structs should implement `Equals()`, `GetHashCode()`, and `ToString()`. By default they use reflection which comes with performance penalties.  | Warning  | Yes  |
-| SS018  | SwitchDoesNotHandleAllEnumOptions  | Add cases for missing enum member. That way you won't miss new behaviour in the consuming API since it will be explicitly handled.  | Warning  | Yes  |
-| SS019  | SwitchIsMissingDefaultLabel  | Switch is missing a `default` label. Include this to provide fallback behaviour for any missing cases, including when the upstream API adds them later on.  | Warning   | Yes  |
-| SS020  | TestMethodWithoutPublicModifier  | Verifies whether a test method has the `public` modifier. Some test frameworks require this to discover unit tests.  | Warning  | Yes  |
-| SS021  | TestMethodWithoutTestAttribute  | A method might be missing a test attribute. Helps ensure no unit tests are missing from your test runs.   | Warning  | No  |
-| SS022  | ExceptionThrownFromImplicitOperator  | An exception is thrown from an `implicit` operator  | Warning  | No  |
-| SS023  | ExceptionThrownFromPropertyGetter  | An exception is thrown from a property getter  |  Warning  | No  |
-| SS024  | ExceptionThrownFromStaticConstructor  | An exception is thrown from a `static` constructor  |  Warning  | No  |
-| SS025  | ExceptionThrownFromFinallyBlock  | An exception is thrown from a `finally` block  |  Warning  | No  |
-| SS026  | ExceptionThrownFromEqualityOperator  | An exception is thrown from an equality operator  |  Warning  | No  |
-| SS027  | ExceptionThrownFromDispose   | An exception is thrown from a `Dispose()` method  | Warning  | No  |
-| SS028  | ExceptionThrownFromFinalizer  | An exception is thrown from a finalizer method  |  Warning  | No  |
-| SS029  | ExceptionThrownFromGetHashCode | An exception is thrown from a `GetHashCode()` method  |  Warning  | No  |
-| SS030  | ExceptionThrownFromEquals  | An exception is thrown from an `Equals() method`  |  Warning  | No  |
-| SS032  | ThreadSleepInAsyncMethod  | Synchronously sleeping a thread in an `async` method combines two threading models and can lead to deadlocks.  | Warning  | Yes  |
-| SS033  | AsyncOverloadsAvailable  | An `async` overload is available. These overloads typically exist to provide better performing IO calls and should generally be preferred.  | Warning  | Yes  |
-| SS034  | AccessingTaskResultWithoutAwait  | Use `await` to get the result of an asynchronous operation. While accessing `.Result` is fine once the `Task` has been completed, this removes any ambiguity and helps prevent regressions if the code changes later on.  | Warning  | Yes  |
-| SS035  | SynchronousTaskWait  | Asynchronously `await` tasks instead of blocking them to avoid deadlocks.  | Warning  | Yes  |
-| SS036  | ExplicitEnumValues  | An enum should explicitly specify its values. Otherwise you risk serializing your enums into different numeric values if you add a new member at any place other than the last line in the enum file.  | Warning  | Yes  |
-| SS037  | HttpClientInstantiatedDirectly  | `HttpClient` was instantiated directly. This can result in socket exhaustion and DNS issues in long-running scenarios. Use `IHttpClientFactory` instead.  | Warning  | No  |
-| SS038  | HttpContextStoredInField  | `HttpContext` was stored in a field. This can result in a previous context being used for subsequent requests. Use `IHttpContextAccessor` instead.  | Warning  | No  |
-| SS039  | EnumWithoutDefaultValue  | An `enum` should specify a default value of 0 as "Unknown" or "None". When an invalid enum value is marshalled or you receive a default value, many systems return it as `0`. This way you don't inadvertedly interpret it as a valid value.  | Warning  | No  |
-| SS040  | UnusedResultOnImmutableObject  | The result of an operation on a `string` is unused. At best this has no effect, at worst this means a desired `string` operation has not been performed.  | Warning  | No  |
-| SS041  | UnnecessaryEnumerableMaterialization  | An `IEnumerable` was materialized before a deferred execution call. This generally results in unnecessary work being done.  | Warning  | Yes  |
-| SS042  | InstanceFieldWithThreadStatic  | `[ThreadStatic]` can only be used on static fields. If used on an instance field the attribute will not have any effect and the subsequent multithreading behaviour will not be as intended.  | Error  | No  |
-| SS043  | MultipleFromBodyParameters  | A method specifies multiple `[FromBody]` parameters but only one is allowed. Specify a wrapper type or use `[FromForm]`, `[FromRoute]`, `[FromHeader]` and `[FromQuery]` instead.  | Error  | No  |
-| SS044  | AttributeMustSpecifyAttributeUsage  | An attribute was defined without specifying the `[AttributeUsage]`.  | Warning  | Yes  |
-| SS045  | StaticInitializerAccessedBeforeInitialization  | A `static` field relies on the value of another `static` field which is defined in the same type. `static` fields are initialized in order of appearance.  | Error  | No  |
-| SS046  | UnboundedStackalloc  | An array is stack allocated without checking whether the length is within reasonable bounds. This can result in performance degradations and security risks. | Warning  | Yes  |
-| SS047  | LinqTraversalBeforeFilter  | An `IEnumerable` extension method was used to traverse the collection and is subsequently filtered using `Where()`. If the `Where()` filter is executed first, the traversal will have to iterate over fewer items which will result in better performance. | Warning  | No  |
-| SS048  | LockingOnDiscouragedObject  | A `lock` was taken using an instance of a discouraged type. `System.String`, `System.Type` and `this` references can all lead to deadlocks and should be replaced with a `System.Object` instance instead. | Warning  | No  |
+| Code   | Name |
+|---|---|
+| SS001  | AsyncMethodWithVoidReturnType  |
+| SS002  | DateTimeNow  |
+| SS003  | DivideIntegerByInteger  |
+| SS004  | ElementaryMethodsOfTypeInCollectionNotOverridden | 
+| SS005  | EqualsAndGetHashcodeNotImplementedTogether  | 
+| SS006  | ThrowNull  |
+| SS007  | FlagsEnumValuesAreNotPowersOfTwo  | 
+| SS008  | GetHashCodeRefersToMutableMember  | 
+| SS009  | LoopedRandomInstantiation  | 
+| SS010  | NewGuid  | 
+| SS011  | OnPropertyChangedWithoutNameofOperator  | 
+| SS012  | RecursiveOperatorOverload  | 
+| SS013  | RethrowExceptionWithoutLosingStacktrace | 
+| SS014  | StringDotFormatWithDifferentAmountOfArguments  | 
+| SS015  | StringPlaceholdersInWrongOrder  | 
+| SS017  | StructWithoutElementaryMethodsOverridden  | 
+| SS018  | SwitchDoesNotHandleAllEnumOptions  |
+| SS019  | SwitchIsMissingDefaultLabel  |
+| SS020  | TestMethodWithoutPublicModifier  | 
+| SS021  | TestMethodWithoutTestAttribute  | 
+| SS022  | ExceptionThrownFromImplicitOperator  | 
+| SS023  | ExceptionThrownFromPropertyGetter  |
+| SS024  | ExceptionThrownFromStaticConstructor  | 
+| SS025  | ExceptionThrownFromFinallyBlock  | 
+| SS026  | ExceptionThrownFromEqualityOperator  |
+| SS027  | ExceptionThrownFromDispose   | 
+| SS028  | ExceptionThrownFromFinalizer  |
+| SS029  | ExceptionThrownFromGetHashCode |
+| SS030  | ExceptionThrownFromEquals  | 
+| SS032  | ThreadSleepInAsyncMethod  | 
+| SS033  | AsyncOverloadsAvailable  | 
+| SS034  | AccessingTaskResultWithoutAwait  |
+| SS035  | SynchronousTaskWait  | 
+| SS036  | ExplicitEnumValues  | 
+| SS037  | HttpClientInstantiatedDirectly  | 
+| SS038  | HttpContextStoredInField  | 
+| SS039  | EnumWithoutDefaultValue  | 
+| SS040  | UnusedResultOnImmutableObject  | 
+| SS041  | UnnecessaryEnumerableMaterialization  | 
+| SS042  | InstanceFieldWithThreadStatic  | 
+| SS043  | MultipleFromBodyParameters  | 
+| SS044  | AttributeMustSpecifyAttributeUsage  | 
+| SS045  | StaticInitializerAccessedBeforeInitialization  | 
+| SS046  | UnboundedStackalloc  | 
+| SS047  | LinqTraversalBeforeFilter  | 
+| SS048  | LockingOnDiscouragedObject  | 
 
 ## Configuration
 Is a particular rule not to your liking? There are many ways to adjust their severity and even disable them altogether. For an overview of some of the options, check out [this document](https://docs.microsoft.com/en-gb/dotnet/fundamentals/code-analysis/suppress-warnings).
