@@ -1,5 +1,7 @@
 [![Nuget Downloads](https://img.shields.io/nuget/dt/SharpSource)](https://www.nuget.org/packages/SharpSource/) [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/JeroenVannevel.sharpsource)](https://marketplace.visualstudio.com/items?itemName=JeroenVannevel.sharpsource)
 
+![Demonstration of an analyzer which removes unnecessary IEnumerable materializations](https://user-images.githubusercontent.com/2777107/190013653-edfcb61b-06a1-46d4-8b99-a71173beebb2.gif)
+
 ## Quickstart
 
 Install it through the command line:
