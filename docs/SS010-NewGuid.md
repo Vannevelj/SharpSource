@@ -8,4 +8,18 @@ An empty GUID was created in an ambiguous manner. The default `Guid` constructor
 
 ---
 
-![](./attachments/SS010.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

@@ -8,4 +8,18 @@ Asynchronously `await` tasks instead of blocking them to avoid deadlocks.
 
 ---
 
-![](./attachments/SS035.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

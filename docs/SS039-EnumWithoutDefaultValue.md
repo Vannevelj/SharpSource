@@ -8,4 +8,18 @@ An `enum` should specify a default value of 0 as "Unknown" or "None". When an in
 
 ---
 
-![](./attachments/SS039.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

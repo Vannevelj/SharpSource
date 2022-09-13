@@ -23,11 +23,3 @@ async Task WriteFile()
     await File.WriteAllTextAsync("c:/temp", "content")
 }
 ```
-
-```diff
--async void WriteFile()
-+async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```

@@ -8,4 +8,18 @@ A `static` field relies on the value of another `static` field which is defined 
 
 ---
 
-![](./attachments/SS045.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

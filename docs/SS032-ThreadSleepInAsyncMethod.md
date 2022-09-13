@@ -8,4 +8,18 @@ Synchronously sleeping a thread in an `async` method combines two threading mode
 
 ---
 
-![](./attachments/SS032.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

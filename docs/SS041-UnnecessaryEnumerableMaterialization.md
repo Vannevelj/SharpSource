@@ -8,4 +8,18 @@ An `IEnumerable` was materialized before a deferred execution call. This general
 
 ---
 
-![](./attachments/SS041.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

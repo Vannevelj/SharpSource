@@ -8,4 +8,18 @@ EqualsAndGetHashcodeNotImplementedTogether  | Implement `Equals()` and `GetHashc
 
 ---
 
-![](https://user-images.githubusercontent.com/2777107/189771957-d7056c12-b618-4137-ae8e-e3314ab3e687.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

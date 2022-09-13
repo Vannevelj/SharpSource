@@ -8,4 +8,18 @@ Use `DateTime.UtcNow` to get a locale-independent value. `DateTime.Now` uses the
 
 ---
 
-![](https://user-images.githubusercontent.com/2777107/189771444-02a62f31-76c0-4906-beff-6415c3ebb37e.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

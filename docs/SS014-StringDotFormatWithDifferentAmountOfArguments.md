@@ -8,4 +8,18 @@ A `string.Format()` call lacks arguments and will cause a runtime exception.
 
 ---
 
-![](./attachments/SS014.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

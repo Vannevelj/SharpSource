@@ -8,4 +8,18 @@ A method might be missing a test attribute. Helps ensure no unit tests are missi
 
 ---
 
-![](./attachments/SS021.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

@@ -8,4 +8,18 @@ The result of an operation on a `string` is unused. At best this has no effect, 
 
 ---
 
-![](./attachments/SS040.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

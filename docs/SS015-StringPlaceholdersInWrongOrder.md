@@ -8,4 +8,18 @@ Orders the arguments of a `string.Format()` call in ascending order according to
 
 ---
 
-![](./attachments/SS015.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

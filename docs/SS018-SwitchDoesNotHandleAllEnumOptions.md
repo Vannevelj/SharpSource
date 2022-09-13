@@ -8,4 +8,18 @@ Add cases for missing enum member. That way you won't miss new behaviour in the 
 
 ---
 
-![](./attachments/SS018.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

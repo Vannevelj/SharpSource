@@ -8,4 +8,18 @@ Recursively using overloaded operator will result in a stack overflow when attem
 
 ---
 
-![](./attachments/SS012.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

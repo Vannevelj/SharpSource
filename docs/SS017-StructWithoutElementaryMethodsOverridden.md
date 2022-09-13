@@ -8,4 +8,18 @@ Structs should implement `Equals()`, `GetHashCode()`, and `ToString()`. By defau
 
 ---
 
-![](./attachments/SS017.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

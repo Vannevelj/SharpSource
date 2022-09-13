@@ -8,4 +8,18 @@ An exception is rethrown in a way that it loses the stacktrace. Use an empty `th
 
 ---
 
-![](./attachments/SS013.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

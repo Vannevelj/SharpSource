@@ -7,4 +7,18 @@
 An exception is thrown from an `implicit` operator
 ---
 
-![](./attachments/SS022.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

@@ -8,4 +8,18 @@ An `async` overload is available. These overloads typically exist to provide bet
 
 ---
 
-![](./attachments/SS033.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```

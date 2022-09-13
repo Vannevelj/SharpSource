@@ -8,4 +8,18 @@ A `lock` was taken using an instance of a discouraged type. `System.String`, `Sy
 
 ---
 
-![](./attachments/SS048.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
