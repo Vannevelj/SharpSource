@@ -8,4 +8,26 @@ Async methods should return a `Task` to make them awaitable. Without it, executi
 
 ---
 
-![](https://user-images.githubusercontent.com/2777107/189770723-226e60e0-2e26-47f1-a4b5-b0a8cfbf753f.gif)
+## Violation
+```cs
+async void WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+## Fix
+```cs
+async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
+
+```diff
+-async void WriteFile()
++async Task WriteFile()
+{
+    await File.WriteAllTextAsync("c:/temp", "content")
+}
+```
