@@ -14,38 +14,6 @@ public class DateTimeNowTests : DiagnosticVerifier
 
     protected override CodeFixProvider CodeFixProvider => new DateTimeNowCodeFix();
 
-    [TestMethod]
-    public async Task DateTimeNow_Now()
-    {
-        var original = @"
-using System;
-namespace ConsoleApplication1
-{
-    class MyClass
-    {
-        void Method()
-        {
-            var date = DateTime.Now;
-        }
-    }
-}";
-
-        var result = @"
-using System;
-namespace ConsoleApplication1
-{
-    class MyClass
-    {
-        void Method()
-        {
-            var date = DateTime.UtcNow;
-        }
-    }
-}";
-
-        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-        await VerifyFix(original, result);
-    }
 
     [TestMethod]
     public async Task DateTimeNow_UtcNow()
@@ -125,6 +93,22 @@ namespace ConsoleApplication1
         }
     }
 }";
+
+        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
+        await VerifyFix(original, result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/179")]
+    public async Task DateTimeNow_TopLevelStatements()
+    {
+
+        var original = @"
+using System;
+var date = DateTime.Now;";
+
+        var result = @"
+using System;
+var date = DateTime.UtcNow;";
 
         await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
         await VerifyFix(original, result);

@@ -106,4 +106,18 @@ class MyAttribute : System.Attribute
         await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
         await VerifyFix(original, result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/169")]
+    public async Task AttributeMustSpecifyAttributeUsage_WithAttribute_InPreProcessorDirective()
+    {
+        var original = @"
+#if DOESNOTEXIST
+[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+class MyAttribute : Attribute
+{
+}
+#endif";
+
+        await VerifyDiagnostic(original);
+    }
 }

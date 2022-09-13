@@ -397,4 +397,50 @@ class Test
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
+    public async Task StaticInitializerAccessedBeforeInitialization_Lazy_WithInt()
+    {
+        var original = @"
+using System;
+
+class Test
+{
+    public static Lazy<int> FirstField = new(DoThing);
+    public static int DoThing = 32;
+}";
+
+        await VerifyDiagnostic(original, "FirstField accesses DoThing but both are marked as static and DoThing will not be initialized when it is used");
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
+    public async Task StaticInitializerAccessedBeforeInitialization_Lazy_WithMethod()
+    {
+        var original = @"
+using System;
+
+class Test
+{ 
+    public static Lazy<int> FirstField = new Lazy<int>(DoThing);
+    public static int DoThing() => 5;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
+    [Ignore]
+    public async Task StaticInitializerAccessedBeforeInitialization_Lazy_WithMethod_ShortHand()
+    {
+        var original = @"
+using System;
+
+class Test
+{ 
+    public static Lazy<int> FirstField = new(DoThing);
+    public static int DoThing() => 5;
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }
