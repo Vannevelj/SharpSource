@@ -10,16 +10,10 @@ An empty GUID was created in an ambiguous manner. The default `Guid` constructor
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var g = new Guid();
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var g = Guid.NewGuid();
 ```

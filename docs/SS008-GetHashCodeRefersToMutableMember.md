@@ -10,16 +10,13 @@
 
 ## Violation
 ```cs
-async void WriteFile()
+public class Foo
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+    private char _boo = '1';
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public override int GetHashCode()
+    {
+        return _boo.GetHashCode();
+    }
 }
 ```

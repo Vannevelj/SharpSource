@@ -10,16 +10,12 @@ An array is stack allocated without checking whether the length is within reason
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var len = new Random().Next();
+Span<int> values = stackalloc int[len];";
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var len = new Random().Next();
+Span<int> values = len < 1024 ? stackalloc int[len] : new int[len];
 ```

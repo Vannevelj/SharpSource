@@ -10,16 +10,16 @@ Asynchronously `await` tasks instead of blocking them to avoid deadlocks.
 
 ## Violation
 ```cs
-async void WriteFile()
+async Task MyMethod()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    Task.Delay(1).Wait();
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+async Task MyMethod()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    await Task.Delay(1);
 }
 ```

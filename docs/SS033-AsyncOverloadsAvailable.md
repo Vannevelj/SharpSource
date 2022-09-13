@@ -10,16 +10,20 @@ An `async` overload is available. These overloads typically exist to provide bet
 
 ## Violation
 ```cs
-async void WriteFile()
+using System.IO;
+
+async void MyMethod()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    new StringWriter().Write("");
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+using System.IO;
+
+async void MyMethod()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    await new StringWriter().WriteAsync("""");
 }
 ```

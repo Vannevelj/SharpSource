@@ -10,16 +10,5 @@ A `string.Format()` call lacks arguments and will cause a runtime exception.
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+string s = string.Format(""abc {0}, def {1}"", 1);
 ```

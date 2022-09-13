@@ -10,16 +10,16 @@ An enum should explicitly specify its values. Otherwise you risk serializing you
 
 ## Violation
 ```cs
-async void WriteFile()
+enum Test 
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    A
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+enum Test 
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    A = 0
 }
 ```

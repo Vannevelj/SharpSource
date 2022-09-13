@@ -10,16 +10,9 @@
 
 ## Violation
 ```cs
-async void WriteFile()
+class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    [ThreadStatic]
+    int _field;
 }
 ```

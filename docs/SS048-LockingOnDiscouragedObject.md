@@ -10,16 +10,16 @@ A `lock` was taken using an instance of a discouraged type. `System.String`, `Sy
 
 ## Violation
 ```cs
-async void WriteFile()
+class Test
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+    private Type _badLock1 = default;
+    private string _badLock1 = default;
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    void Method()
+    {
+        lock (_badLock1) { }
+        lock (_badLock2) { }
+        lock (this) { }
+    }
 }
 ```

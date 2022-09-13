@@ -10,16 +10,30 @@
 
 ## Violation
 ```cs
-async void WriteFile()
+using System;
+
+[Flags]
+enum Foo
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    Bar = 0,
+    Biz = 1,
+    Baz = 2,
+    Buz = 3,
+    Boz = 4
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+using System;
+
+[Flags]
+enum Foo
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    Bar = 0,
+    Biz = 1,
+    Baz = 2,
+    Buz = Biz | Baz,
+    Boz = 4
 }
 ```

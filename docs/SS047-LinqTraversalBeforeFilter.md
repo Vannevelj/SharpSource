@@ -10,16 +10,6 @@ An `IEnumerable` extension method was used to traverse the collection and is sub
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var users = GetUsers();
+users.OrderBy(x => x.Age).Where(x => x.IsEnabled);
 ```

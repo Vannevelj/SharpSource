@@ -10,16 +10,26 @@ Use `await` to get the result of an asynchronous operation. While accessing `.Re
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        var number = Other().Result;
+    }
+
+    async Task<int> Other() => 5;
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        var number = await Other();
+    }
+
+    async Task<int> Other() => 5;
 }
 ```

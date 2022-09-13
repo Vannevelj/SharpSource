@@ -10,16 +10,34 @@ Switch is missing a `default` label. Include this to provide fallback behaviour 
 
 ## Violation
 ```cs
-async void WriteFile()
+var e = MyEnum.Fizz;
+switch (e)
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    case MyEnum.Fizz:
+    case MyEnum.Buzz:
+        break;
+}
+
+enum MyEnum
+{
+    Fizz, Buzz, FizzBuzz
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+var e = MyEnum.Fizz;
+switch (e)
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    case MyEnum.Fizz:
+    case MyEnum.Buzz:
+        break;
+    default:
+        throw new ArgumentException("Unsupported value");
+}
+
+enum MyEnum
+{
+    Fizz, Buzz, FizzBuzz
 }
 ```

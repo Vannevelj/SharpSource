@@ -10,16 +10,16 @@ Recursively using overloaded operator will result in a stack overflow when attem
 
 ## Violation
 ```cs
-async void WriteFile()
+public class A
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+    public static A operator ==(A a1, A a2)
+    {
+        return a1 == a2;
+    }
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public static A operator !=(A a1, A a2)
+    {
+        return a1 != a2;
+    }
 }
 ```

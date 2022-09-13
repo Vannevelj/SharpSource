@@ -9,16 +9,11 @@ An exception is thrown from an `implicit` operator
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public static implicit operator MyClass(double d)
+    {
+        throw new ArgumentException();
+    }
 }
 ```

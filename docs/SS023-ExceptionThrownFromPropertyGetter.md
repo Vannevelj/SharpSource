@@ -10,16 +10,18 @@ An exception is thrown from a property getter
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+    public int MyProp
+    {
+        get
+        {
+            throw new ArgumentException();
+        }
+        set
+        {
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+        }
+    }
 }
 ```

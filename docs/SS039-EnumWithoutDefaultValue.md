@@ -10,16 +10,8 @@ An `enum` should specify a default value of 0 as "Unknown" or "None". When an in
 
 ## Violation
 ```cs
-async void WriteFile()
+enum Test 
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    A
 }
 ```

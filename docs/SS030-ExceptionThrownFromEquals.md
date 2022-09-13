@@ -10,16 +10,11 @@ An exception is thrown from an `Equals() method`
 
 ## Violation
 ```cs
-async void WriteFile()
+class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+	public override bool Equals(object o)
+    {
+        throw new ArgumentException();
+    }
 }
 ```

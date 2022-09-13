@@ -10,16 +10,16 @@ An exception is thrown from an equality operator
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+    public static bool operator ==(double d, MyClass mc)
+    {
+        return false;
+    }
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public static bool operator !=(double d, MyClass mc)
+    {
+        throw new ArgumentException();
+    }
 }
 ```

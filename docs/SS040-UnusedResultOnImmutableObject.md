@@ -10,16 +10,8 @@ The result of an operation on a `string` is unused. At best this has no effect, 
 
 ## Violation
 ```cs
-async void WriteFile()
+void Method() 
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    "test ".Trim();
 }
 ```

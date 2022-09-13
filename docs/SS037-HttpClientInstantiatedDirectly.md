@@ -10,16 +10,7 @@
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+using System.Net.Http;
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var client = new HttpClient();
 ```

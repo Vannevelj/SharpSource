@@ -10,16 +10,24 @@ An exception is rethrown in a way that it loses the stacktrace. Use an empty `th
 
 ## Violation
 ```cs
-async void WriteFile()
+try
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+
+}
+catch(Exception e)
+{
+    throw e;
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+try
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+
+}
+catch(Exception e)
+{
+    throw;
 }
 ```

@@ -10,16 +10,13 @@ A method might be missing a test attribute. Helps ensure no unit tests are missi
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-## Fix
-```cs
-async Task WriteFile()
+[TestClass]
+class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public void MyMethod()
+    {
+    }
 }
 ```

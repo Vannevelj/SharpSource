@@ -10,16 +10,11 @@ An exception is thrown from a `Dispose()` method
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass : IDisposable
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public void Dispose()
+    {
+        throw new ArgumentException();
+    }
 }
 ```

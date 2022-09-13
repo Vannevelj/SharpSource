@@ -10,16 +10,10 @@ A method specifies multiple `[FromBody]` parameters but only one is allowed. Spe
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+using Microsoft.AspNetCore.Mvc;
 
-## Fix
-```cs
-async Task WriteFile()
+class MyController
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    void DoThing([FromBody] string first, [FromBody] string second) { }
 }
 ```

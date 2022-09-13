@@ -10,16 +10,18 @@ An `IEnumerable` was materialized before a deferred execution call. This general
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { "test" };
+values.ToList().Take(1);
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { "test" };
+values.Take(1);
 ```

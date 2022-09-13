@@ -10,16 +10,11 @@ An exception is thrown from a `static` constructor
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    static MyClass()
+    {
+        throw new ArgumentException();
+    }
 }
 ```

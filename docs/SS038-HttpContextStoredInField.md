@@ -10,16 +10,10 @@
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+using Microsoft.AspNetCore.Http;
 
-## Fix
-```cs
-async Task WriteFile()
+class Test
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    private HttpContext _context;
 }
 ```

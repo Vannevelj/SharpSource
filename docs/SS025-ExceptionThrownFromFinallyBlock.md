@@ -10,16 +10,12 @@ An exception is thrown from a `finally` block
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+try 
+{ 
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+} 
+finally 
+{ 
+    throw new ArgumentException(); 
 }
 ```

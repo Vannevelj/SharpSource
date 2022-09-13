@@ -10,16 +10,10 @@ Use `DateTime.UtcNow` to get a locale-independent value. `DateTime.Now` uses the
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var date = DateTime.Now;
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var date = DateTime.UtcNow;
 ```

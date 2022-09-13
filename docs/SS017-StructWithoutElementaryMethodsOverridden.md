@@ -10,16 +10,28 @@ Structs should implement `Equals()`, `GetHashCode()`, and `ToString()`. By defau
 
 ## Violation
 ```cs
-async void WriteFile()
+struct X
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+struct X
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public override bool Equals(object obj)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override string ToString()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 ```

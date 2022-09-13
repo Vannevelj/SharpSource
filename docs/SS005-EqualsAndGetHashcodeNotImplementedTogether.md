@@ -10,16 +10,27 @@ EqualsAndGetHashcodeNotImplementedTogether  | Implement `Equals()` and `GetHashc
 
 ## Violation
 ```cs
-async void WriteFile()
+class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public override bool Equals(object obj)
+    {
+        throw new System.NotImplementedException();
+    }
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public override bool Equals(object obj)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 ```

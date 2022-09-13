@@ -4,22 +4,36 @@
 
 ---
 
-Verifies whether a test method has the `public` modifier. Some test frameworks require this to discover unit tests.
+Verifies whether a test method has the `public` modifier. Some test frameworks require this to discover unit tests. This works for xUnit, NUnit and MSTest.
 
 ---
 
 ## Violation
 ```cs
-async void WriteFile()
+using NUnit.Framework;
+
+[TestFixture]
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    [Test]
+    internal void Method()
+    {
+
+    }
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+using NUnit.Framework;
+
+[TestFixture]
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    [Test]
+    public void Method()
+    {
+
+    }
 }
 ```

@@ -10,16 +10,10 @@ Orders the arguments of a `string.Format()` call in ascending order according to
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+string s = string.Format("Hello {1}, my name is {0}. Yes you heard that right, {0}.", "Mr. Test", "Mr. Tester");
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+string s = string.Format("Hello {0}, my name is {1}. Yes you heard that right, {1}.", "Mr. Tester", "Mr. Test");
 ```

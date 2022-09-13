@@ -10,16 +10,8 @@ Throwing `null` will always result in a runtime exception.
 
 ## Violation
 ```cs
-async void WriteFile()
+void Method()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    throw null;
 }
 ```

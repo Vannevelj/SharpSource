@@ -10,16 +10,15 @@ An attribute was defined without specifying the `[AttributeUsage]`.
 
 ## Violation
 ```cs
-async void WriteFile()
+class MyAttribute : Attribute
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+class MyAttribute : Attribute
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
 }
 ```

@@ -10,16 +10,5 @@ The operands of a divisive expression are both integers and result in an implici
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+int result = 5 / 6;
 ```

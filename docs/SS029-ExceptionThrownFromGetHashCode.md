@@ -10,16 +10,11 @@ An exception is thrown from a `GetHashCode()` method
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    public override int GetHashCode()
+    {
+        throw new ArgumentException();
+    }
 }
 ```

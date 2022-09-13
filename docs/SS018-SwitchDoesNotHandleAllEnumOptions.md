@@ -10,16 +10,34 @@ Add cases for missing enum member. That way you won't miss new behaviour in the 
 
 ## Violation
 ```cs
-async void WriteFile()
+var e = MyEnum.Fizz;
+switch (e)
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    case MyEnum.Fizz:
+    case MyEnum.Buzz:
+        break;
+}
+
+enum MyEnum
+{
+    Fizz, Buzz, FizzBuzz
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+var e = MyEnum.Fizz;
+switch (e)
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    case MyEnum.FizzBuzz:
+        throw new System.NotImplementedException();
+    case MyEnum.Fizz:
+    case MyEnum.Buzz:
+        break;
+}
+
+enum MyEnum
+{
+    Fizz, Buzz, FizzBuzz
 }
 ```

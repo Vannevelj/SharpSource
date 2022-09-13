@@ -10,16 +10,8 @@ ElementaryMethodsOfTypeInCollectionNotOverridden  | Implement `Equals()` and `Ge
 
 ## Violation
 ```cs
-async void WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
+class MyCollectionItem { }
 
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
+var list = new List<MyCollectionItem>();
+var s = list.Contains(default);
 ```

@@ -10,16 +10,11 @@ An exception is thrown from a finalizer method
 
 ## Violation
 ```cs
-async void WriteFile()
+public class MyClass
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    ~MyClass()
+    {
+        throw new ArgumentException();
+    }
 }
 ```

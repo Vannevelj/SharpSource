@@ -10,16 +10,8 @@ An instance of type `System.Random` is created in a loop. `Random` uses a time-b
 
 ## Violation
 ```cs
-async void WriteFile()
+while (true)
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+    var rand = new Random();
 }
 ```

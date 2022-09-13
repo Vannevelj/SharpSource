@@ -10,16 +10,16 @@ Synchronously sleeping a thread in an `async` method combines two threading mode
 
 ## Violation
 ```cs
-async void WriteFile()
+async Task MyMethod()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    Thread.Sleep(5000);
 }
 ```
 
 ## Fix
 ```cs
-async Task WriteFile()
+async Task MyMethod()
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
+    await Task.Delay(5000);
 }
 ```

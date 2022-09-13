@@ -10,16 +10,9 @@ A `static` field relies on the value of another `static` field which is defined 
 
 ## Violation
 ```cs
-async void WriteFile()
+class Test
 {
-    await File.WriteAllTextAsync("c:/temp", "content")
-}
-```
-
-## Fix
-```cs
-async Task WriteFile()
-{
-    await File.WriteAllTextAsync("c:/temp", "content")
+	public static int FirstField = SecondField;
+	private static int SecondField = 5;
 }
 ```
