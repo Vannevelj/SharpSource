@@ -119,6 +119,12 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
+            var constantValue = semanticModel.GetConstantValue(identifier);
+            if (constantValue.HasValue)
+            {
+                continue;
+            }
+
             var surroundingObjectCreation = identifier.FirstAncestorOfType(SyntaxKind.ObjectCreationExpression) as ObjectCreationExpressionSyntax;
             if (surroundingObjectCreation != default)
             {

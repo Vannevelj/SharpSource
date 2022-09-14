@@ -443,4 +443,19 @@ class Test
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/183")]
+    public async Task StaticInitializerAccessedBeforeInitialization_Const()
+    {
+        var original = @"
+using System;
+
+class Test
+{
+	public static readonly int FirstField = SecondField;
+	public const int SecondField = 5;
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }
