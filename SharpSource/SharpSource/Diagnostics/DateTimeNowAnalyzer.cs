@@ -11,10 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class DateTimeNowAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Use DateTime.UtcNow to get a locale-independent value";
-    private static readonly string Title = "DateTime.Now was referenced";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.DateTimeNow, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.DateTimeNow,
+        "DateTime.Now was referenced",
+        "Use DateTime.UtcNow to get a locale-independent value",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS002-DateTimeNow.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

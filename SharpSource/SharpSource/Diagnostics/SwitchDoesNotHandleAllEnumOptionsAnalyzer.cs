@@ -12,11 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Missing enum member in switched cases.";
-    private static readonly string Title = "Add cases for missing enum member.";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.SwitchDoesNotHandleAllEnumOptions, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.SwitchDoesNotHandleAllEnumOptions,
+        "Add cases for missing enum member.",
+        "Missing enum member in switched cases.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS018-SwitchDoesNotHandleAllEnumOptions.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

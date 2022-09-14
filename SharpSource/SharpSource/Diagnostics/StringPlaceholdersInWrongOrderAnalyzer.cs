@@ -12,11 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "string.Format() Placeholders are not in ascending order.";
-    private static readonly string Title = "Orders the arguments of a string.Format() call in ascending order according to index.";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.StringPlaceholdersInWrongOrder, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.StringPlaceholdersInWrongOrder,
+        "Orders the arguments of a string.Format() call in ascending order according to index.",
+        "string.Format() Placeholders are not in ascending order.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS015-StringPlaceholdersInWrongOrder.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -14,11 +14,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "A string.Format() call lacks arguments and will cause a runtime exception";
-    private static readonly string Title = "A string.Format() call lacks arguments and will cause a runtime exception.";
-
-    public static DiagnosticDescriptor Rule =>
-        new(DiagnosticId.StringDotFormatWithDifferentAmountOfArguments, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.StringDotFormatWithDifferentAmountOfArguments,
+        "A string.Format() call lacks arguments and will cause a runtime exception.",
+         "A string.Format() call lacks arguments and will cause a runtime exception",
+        Categories.Correctness,
+        DiagnosticSeverity.Error,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS014-StringDotFormatWithDifferentAmountOfArguments.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

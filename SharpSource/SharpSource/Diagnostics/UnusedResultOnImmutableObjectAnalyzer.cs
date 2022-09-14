@@ -12,13 +12,16 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "The result of an operation on an immutable object is unused";
-    private static readonly string Title = "The result of an operation on an immutable object is unused";
-
     private static readonly HashSet<string> AllowedInvocations = new() { "CopyTo", "TryCopyTo" };
 
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.UnusedResultOnImmutableObject, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.UnusedResultOnImmutableObject,
+        "The result of an operation on an immutable object is unused",
+        "The result of an operation on an immutable object is unused",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS040-UnusedResultOnImmutableObject.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

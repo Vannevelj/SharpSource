@@ -13,10 +13,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "{0} should specify how the attribute can be used";
-    private static readonly string Title = "An attribute was defined without specifying the [AttributeUsage]";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.AttributeMustSpecifyAttributeUsage, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.AttributeMustSpecifyAttributeUsage,
+        "An attribute was defined without specifying the [AttributeUsage]",
+        "{0} should specify how the attribute can be used",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS044-AttributeMustSpecifyAttributeUsage.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -12,11 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Recursively using overloaded operator";
-    private static readonly string Title = "Recursively using overloaded operator";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.RecursiveOperatorOverload, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.RecursiveOperatorOverload,
+        "Recursively using overloaded operator",
+        "Recursively using overloaded operator",
+        Categories.Correctness,
+        DiagnosticSeverity.Error,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS012-RecursiveOperatorOverload.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -13,10 +13,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Method {0} is marked as async but has a void return type";
-    private static readonly string Title = "Async methods should return a Task to make them awaitable";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.AsyncMethodWithVoidReturnType, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.AsyncMethodWithVoidReturnType,
+        "Async methods should return a Task to make them awaitable",
+        "Method {0} is marked as async but has a void return type",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS001-AsyncMethodWithVoidReturnType.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

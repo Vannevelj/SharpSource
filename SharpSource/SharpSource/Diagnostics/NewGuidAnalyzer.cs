@@ -11,10 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class NewGuidAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "An empty guid was created in an ambiguous manner";
-    private static readonly string Title = "Attempted to create empty guid";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.NewGuid, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.NewGuid,
+        "Attempted to create empty guid",
+        "An empty guid was created in an ambiguous manner",
+        Categories.Correctness,
+        DiagnosticSeverity.Error,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS010-NewGuid.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

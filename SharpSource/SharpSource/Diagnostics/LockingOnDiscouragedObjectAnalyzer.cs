@@ -19,7 +19,8 @@ public class LockingOnDiscouragedObjectAnalyzer : DiagnosticAnalyzer
         "A lock was used on an object of type {0} which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead.",
         Categories.Correctness,
         DiagnosticSeverity.Warning,
-        true);
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS048-LockingOnDiscouragedObject.md");
 
     public static DiagnosticDescriptor RuleThis => new(
         DiagnosticId.LockingOnDiscouragedObject,
@@ -27,7 +28,8 @@ public class LockingOnDiscouragedObjectAnalyzer : DiagnosticAnalyzer
         "A lock was used referencing 'this' which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead.",
         Categories.Correctness,
         DiagnosticSeverity.Warning,
-        true);
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS048-LockingOnDiscouragedObject.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleThis);
 

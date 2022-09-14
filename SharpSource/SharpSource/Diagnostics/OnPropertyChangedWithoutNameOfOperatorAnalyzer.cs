@@ -15,10 +15,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "OnPropertyChanged({0}) can use the nameof() operator.";
-    private static readonly string Title = "Use the nameof() operator in conjunction with OnPropertyChanged()";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.OnPropertyChangedWithoutNameofOperator, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.OnPropertyChangedWithoutNameofOperator,
+        "Use the nameof() operator in conjunction with OnPropertyChanged()",
+        "OnPropertyChanged({0}) can use the nameof() operator.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS011-OnPropertyChangedWithoutNameofOperator.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

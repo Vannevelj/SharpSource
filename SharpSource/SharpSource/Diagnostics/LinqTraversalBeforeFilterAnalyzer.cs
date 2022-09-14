@@ -21,7 +21,14 @@ public class LinqTraversalBeforeFilterAnalyzer : DiagnosticAnalyzer
         "OrderBy", "OrderByDescending", "Chunk", "Reverse", "Take", "TakeLast", "TakeWhile"
     };
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.LinqTraversalBeforeFilter, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.LinqTraversalBeforeFilter,
+        Title,
+        Message,
+        Categories.Performance,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS047-LinqTraversalBeforeFilter.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

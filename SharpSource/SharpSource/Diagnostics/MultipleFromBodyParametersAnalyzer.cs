@@ -11,10 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Method {0} specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.";
-    private static readonly string Title = "A method was defined with multiple [FromBody] parameters but ASP.NET only supports a single one.";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.MultipleFromBodyParameters, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.MultipleFromBodyParameters,
+        "A method was defined with multiple [FromBody] parameters but ASP.NET only supports a single one.",
+        "Method {0} specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.",
+        Categories.Correctness,
+        DiagnosticSeverity.Error,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS043-MultipleFromBodyParameters.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

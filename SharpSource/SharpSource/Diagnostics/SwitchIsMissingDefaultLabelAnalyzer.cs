@@ -11,11 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Switch should have default label.";
-    private static readonly string Title = "Switch is missing a default label.";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.SwitchIsMissingDefaultLabel, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.SwitchIsMissingDefaultLabel,
+        "Switch should have default label.",
+        "Switch should have default label.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS019-SwitchIsMissingDefaultLabel.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

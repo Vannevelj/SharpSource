@@ -16,9 +16,6 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Type {0} is used in a collection lookup but does not override Equals() and GetHashCode()";
-    private static readonly string Title = "Implement Equals() and GetHashcode() methods for a type used in a collection.";
-
     private static readonly (Type type, string method)[] SupportedLookups = new[] {
         (typeof(List<>), "Contains"),
         (typeof(HashSet<>), "Contains"),
@@ -34,7 +31,14 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         (typeof(Dictionary<,>), "Item") // indexer
     };
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.ElementaryMethodsOfTypeInCollectionNotOverridden,
+        "Implement Equals() and GetHashcode() methods for a type used in a collection.",
+        "Type {0} is used in a collection lookup but does not override Equals() and GetHashCode()",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS004-ElementaryMethodsOfTypeInCollectionNotOverridden.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

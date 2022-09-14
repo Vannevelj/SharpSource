@@ -12,10 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class InstanceFieldWithThreadStaticAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Field {0} is marked as [ThreadStatic] but is not static";
-    private static readonly string Title = "[ThreadStatic] can only be used on static fields";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.InstanceFieldWithThreadStatic, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.InstanceFieldWithThreadStatic,
+        "[ThreadStatic] can only be used on static fields",
+        "Field {0} is marked as [ThreadStatic] but is not static",
+        Categories.Correctness,
+        DiagnosticSeverity.Error,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS042-InstanceFieldWithThreadStatic.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

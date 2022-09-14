@@ -13,22 +13,26 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticAnalyzer
 {
+    private const string Title = "A static field relies on the value of another static field which is defined in the same type. Static fields are initialized in order of appearance.";
+
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.StaticInitializerAccessedBeforeInitialization,
-        "A static field relies on the value of another static field which is defined in the same type. Static fields are initialized in order of appearance.",
+        Title,
         "{0} accesses {1} but both are marked as static and {1} will not be initialized when it is used",
         Categories.Correctness,
         DiagnosticSeverity.Error,
-        true
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS045-StaticInitializerAccessedBeforeInitialization.md"
     );
 
     public static DiagnosticDescriptor RuleForPartials => new(
         DiagnosticId.StaticInitializerAccessedBeforeInitialization,
-        "A static field relies on the value of another static field which is defined in the same type. Static fields are initialized in order of appearance.",
+        Title,
         "{0} accesses {1} but both are marked as static and {1} might not be initialized when it is used",
         Categories.Correctness,
         DiagnosticSeverity.Error,
-        true
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS045-StaticInitializerAccessedBeforeInitialization.md"
     );
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleForPartials);

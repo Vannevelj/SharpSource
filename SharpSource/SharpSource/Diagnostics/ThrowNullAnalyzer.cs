@@ -11,11 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ThrowNullAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Throwing null will always result in a runtime exception";
-    private static readonly string Title = "Throwing null will always result in a runtime exception";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.ThrowNull, Title, Message, Categories.Correctness, DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.ThrowNull,
+        "Throwing null will always result in a runtime exception",
+        "Throwing null will always result in a runtime exception",
+        Categories.Correctness,
+        DiagnosticSeverity.Error,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS006-ThrowNull.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

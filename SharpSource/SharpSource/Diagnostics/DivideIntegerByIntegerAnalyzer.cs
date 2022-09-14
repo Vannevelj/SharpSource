@@ -18,11 +18,14 @@ public class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
         SpecialType.System_SByte, SpecialType.System_UInt16, SpecialType.System_UInt32, SpecialType.System_UInt64
     };
 
-    private static readonly string Message = "The operands in the divisive expression {0} are both integers and result in an implicit rounding.";
-    private static readonly string Title = "The operands of a divisive expression are both integers and result in an implicit rounding.";
-
-    public static DiagnosticDescriptor Rule =>
-            new(DiagnosticId.DivideIntegerByInteger, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.DivideIntegerByInteger,
+        "The operands of a divisive expression are both integers and result in an implicit rounding.",
+        "The operands in the divisive expression {0} are both integers and result in an implicit rounding.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS003-DivideIntegerByInteger.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

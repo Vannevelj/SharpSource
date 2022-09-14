@@ -13,12 +13,16 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Enum {0} should specify a default value of 0 as \"Unknown\" or \"None\"";
-    private static readonly string Title = "An enum should specify a default value";
-
     private static readonly string[] AcceptedNames = new[] { "Unknown", "None" };
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.EnumWithoutDefaultValue, Title, Message, Categories.ApiDesign, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.EnumWithoutDefaultValue,
+        "An enum should specify a default value",
+        "Enum {0} should specify a default value of 0 as \"Unknown\" or \"None\"",
+        Categories.ApiDesign,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS039-EnumWithoutDefaultValue.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

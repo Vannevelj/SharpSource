@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Net.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,10 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "HttpClient was instantiated directly. Use IHttpClientFactory instead";
-    private static readonly string Title = "HttpClient was instantiated directly";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpClientInstantiatedDirectly, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.HttpClientInstantiatedDirectly,
+        "HttpClient was instantiated directly",
+        "HttpClient was instantiated directly. Use IHttpClientFactory instead",
+        Categories.Performance,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS037-HttpClientInstantiatedDirectly.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
