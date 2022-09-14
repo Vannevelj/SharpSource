@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.10.0] - 2022-09-15
+- All analyzers and code fixes now have help codes that link back to the individual documentation
+
 ## [1.9.4] - 2022-09-13
 - `StaticInitializerAccessedBeforeInitialization`: no longer triggers for `Lazy<T>` invocations when a method is passed as argument
 - Added documentation for all analyzers to the repo
