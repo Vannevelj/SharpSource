@@ -12,10 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Async overload available for {0}";
-    private static readonly string Title = "An async overload is available";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.AsyncOverloadsAvailable, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.AsyncOverloadsAvailable,
+        "An async overload is available",
+        "Async overload available for {0}",
+        Categories.Performance,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS033-AsyncOverloadsAvailable.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

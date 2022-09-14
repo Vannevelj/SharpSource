@@ -11,12 +11,25 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string FieldMessage = "GetHashCode() refers to mutable field {0}";
-    private static readonly string PropertyMessage = "GetHashCode() refers to mutable property {0}";
-    private static readonly string Title = "GetHashCode() refers to mutable or static member";
+    private const string Title = "GetHashCode() refers to mutable or static member";
 
-    public static DiagnosticDescriptor FieldRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, FieldMessage, Categories.Correctness, DiagnosticSeverity.Warning, true);
-    public static DiagnosticDescriptor PropertyRule => new(DiagnosticId.GetHashCodeRefersToMutableMember, Title, PropertyMessage, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor FieldRule => new(
+        DiagnosticId.GetHashCodeRefersToMutableMember,
+        Title,
+        "GetHashCode() refers to mutable field {0}",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS008-GetHashCodeRefersToMutableMember.md");
+
+    public static DiagnosticDescriptor PropertyRule => new(
+        DiagnosticId.GetHashCodeRefersToMutableMember,
+        Title,
+        "GetHashCode() refers to mutable property {0}",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS008-GetHashCodeRefersToMutableMember.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(FieldRule, PropertyRule);
 

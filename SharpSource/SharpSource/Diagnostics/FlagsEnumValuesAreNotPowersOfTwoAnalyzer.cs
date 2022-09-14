@@ -13,17 +13,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Enum {0}.{1} is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.";
-    private static readonly string Title = "[Flags] enum members need to be either powers of two, or bitwise OR expressions.";
-
-    public static DiagnosticDescriptor Rule
-        => new(
+    public static DiagnosticDescriptor Rule => new(
             DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo,
-            Title,
-            Message,
+            "[Flags] enum members need to be either powers of two, or bitwise OR expressions.",
+            "Enum {0}.{1} is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
             Categories.Correctness,
             DiagnosticSeverity.Error,
-            true);
+            true,
+            helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS007-FlagsEnumValuesAreNotPowersOfTwo.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

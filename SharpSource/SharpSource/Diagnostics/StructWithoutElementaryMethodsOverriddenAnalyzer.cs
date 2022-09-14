@@ -13,11 +13,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Implement Equals(), GetHashCode() and ToString() methods on struct {0}.";
-    private static readonly string Title = "Structs should implement Equals(), GetHashCode(), and ToString().";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.StructWithoutElementaryMethodsOverridden, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.StructWithoutElementaryMethodsOverridden,
+        "Structs should implement Equals(), GetHashCode(), and ToString().",
+        "Implement Equals(), GetHashCode() and ToString() methods on struct {0}.",
+        Categories.Performance,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS017-StructWithoutElementaryMethodsOverridden.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -18,8 +18,8 @@ public class UnboundedStackallocAnalyzer : DiagnosticAnalyzer
         "An array is stack allocated without checking the length. Explicitly check the length against a constant value",
         Categories.Performance,
         DiagnosticSeverity.Warning,
-        true
-    );
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS046-UnboundedStackalloc.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

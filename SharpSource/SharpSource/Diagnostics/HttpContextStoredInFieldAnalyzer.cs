@@ -10,10 +10,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "HttpContext was stored in a field. Use IHttpContextAccessor instead";
-    private static readonly string Title = "HttpContext was stored in a field";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.HttpContextStoredInField, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.HttpContextStoredInField,
+        "HttpContext was stored in a field",
+        "HttpContext was stored in a field. Use IHttpContextAccessor instead",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS038-HttpContextStoredInField.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -12,11 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Test method \"{0}\" is not public.";
-    private static readonly string Title = "Verifies whether a test method has the public modifier.";
-
-    public static DiagnosticDescriptor Rule
-        => new(DiagnosticId.TestMethodWithoutPublicModifier, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.TestMethodWithoutPublicModifier,
+        "Verifies whether a test method has the public modifier.",
+        "Test method \"{0}\" is not public.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS020-TestMethodWithoutPublicModifier.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Runtime.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,10 +13,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Synchronously sleeping thread in an async method";
-    private static readonly string Title = "Synchronously sleeping a thread in an async method";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.ThreadSleepInAsyncMethod, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.ThreadSleepInAsyncMethod,
+        "Synchronously sleeping a thread in an async method",
+        "Synchronously sleeping thread in an async method",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS032-ThreadSleepInAsyncMethod.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

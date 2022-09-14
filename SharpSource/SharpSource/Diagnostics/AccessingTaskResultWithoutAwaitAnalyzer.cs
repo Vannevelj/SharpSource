@@ -12,10 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Use await to get the result of a Task.";
-    private static readonly string Title = "Use await to get the result of an asynchronous operation";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.AccessingTaskResultWithoutAwait, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.AccessingTaskResultWithoutAwait,
+        "Use await to get the result of an asynchronous operation",
+        "Use await to get the result of a Task.",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS034-AccessingTaskResultWithoutAwait.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

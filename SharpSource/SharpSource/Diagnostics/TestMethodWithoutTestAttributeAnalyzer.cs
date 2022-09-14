@@ -12,9 +12,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Method {0} might be missing a test attribute";
-    private static readonly string Title = "A method might be missing a test attribute.";
-    private static DiagnosticDescriptor Rule => new(DiagnosticId.TestMethodWithoutTestAttribute, Title, Message, Categories.Correctness, DiagnosticSeverity.Warning, true);
+    private static DiagnosticDescriptor Rule => new(
+        DiagnosticId.TestMethodWithoutTestAttribute,
+        "A method might be missing a test attribute.",
+        "Method {0} might be missing a test attribute",
+        Categories.Correctness,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS021-TestMethodWithoutTestAttribute.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

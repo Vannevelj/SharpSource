@@ -13,9 +13,6 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "{0} is unnecessarily materializing the IEnumerable and can be omitted";
-    private static readonly string Title = "An IEnumerable was materialized before a deferred execution call";
-
     private static readonly HashSet<string> MaterializingOperations = new(){
         "ToList", "ToArray", "ToHashSet"
     };
@@ -26,7 +23,14 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
         "DistinctBy", "DefaultIfEmpty", "Concat", "Cast"
     };
 
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.UnnecessaryEnumerableMaterialization, Title, Message, Categories.Performance, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.UnnecessaryEnumerableMaterialization,
+        "An IEnumerable was materialized before a deferred execution call",
+        "{0} is unnecessarily materializing the IEnumerable and can be omitted",
+        Categories.Performance,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS041-UnnecessaryEnumerableMaterialization.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

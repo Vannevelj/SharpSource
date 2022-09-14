@@ -11,10 +11,14 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ExplicitEnumValuesAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Option {0} on enum {1} should explicitly specify its value";
-    private static readonly string Title = "An enum should explicitly specify its values";
-
-    public static DiagnosticDescriptor Rule => new(DiagnosticId.ExplicitEnumValues, Title, Message, Categories.ApiDesign, DiagnosticSeverity.Warning, true);
+    public static DiagnosticDescriptor Rule => new(
+        DiagnosticId.ExplicitEnumValues,
+        "An enum should explicitly specify its values",
+        "Option {0} on enum {1} should explicitly specify its value",
+        Categories.ApiDesign,
+        DiagnosticSeverity.Warning,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS036-ExplicitEnumValues.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
