@@ -429,7 +429,6 @@ class Test
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
-    [Ignore]
     public async Task StaticInitializerAccessedBeforeInitialization_Lazy_WithMethod_ShortHand()
     {
         var original = @"

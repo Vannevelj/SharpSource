@@ -24,6 +24,18 @@ var g = new HttpClient();
     }
 
     [TestMethod]
+    public async Task HttpClientInstantiatedDirectly_ImplicitConstructor()
+    {
+        var original = @"
+using System.Net.Http;
+
+HttpClient g = new();
+";
+
+        await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
+    }
+
+    [TestMethod]
     public async Task HttpClientInstantiatedDirectly_FullName()
     {
         var original = @"

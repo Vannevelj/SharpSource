@@ -48,6 +48,27 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task NewGuid_Constructor_NewGuid_Implicit()
+    {
+        var original = @"
+using System;
+void Method()
+{
+    Guid g = new();
+}";
+
+        var result = @"
+using System;
+void Method()
+{
+    Guid g = Guid.NewGuid();
+}";
+
+        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
+        await VerifyFix(original, result, codeFixIndex: 0);
+    }
+
+    [TestMethod]
     public async Task NewGuid_Constructor_NewGuid_FullName()
     {
         var original = @"

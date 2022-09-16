@@ -26,15 +26,15 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression);
     }
 
     private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        var expression = (ObjectCreationExpressionSyntax)context.Node;
-        var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
+        var expression = (BaseObjectCreationExpressionSyntax)context.Node;
+        var symbol = expression.GetCreatedType(context.SemanticModel);
 
-        if (symbol?.Name == "HttpClient" && ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Net.Http" ))
+        if (symbol?.Name == "HttpClient" && symbol.IsDefinedInSystemAssembly())
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }

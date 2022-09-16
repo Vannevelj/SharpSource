@@ -393,4 +393,12 @@ public static class Extensions
 
         return method;
     }
+
+    public static ISymbol? GetCreatedType(this BaseObjectCreationExpressionSyntax expression, SemanticModel semanticModel) =>
+        expression switch
+        {
+            ObjectCreationExpressionSyntax objectCreation => semanticModel.GetSymbolInfo(objectCreation.Type).Symbol,
+            ImplicitObjectCreationExpressionSyntax implicitObjectCreation => semanticModel.GetSymbolInfo(implicitObjectCreation).Symbol?.ContainingSymbol,
+            _ => default
+        };
 }
