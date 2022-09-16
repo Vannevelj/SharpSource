@@ -34,7 +34,7 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
         var expression = (ObjectCreationExpressionSyntax)context.Node;
         var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
 
-        if (symbol?.Name == "HttpClient" && ( symbol.ContainingAssembly.Name == "mscorlib" || symbol.ContainingAssembly.Name == "System.Net.Http" ))
+        if (symbol?.Name == "HttpClient" && symbol.IsDefinedInSystemAssembly())
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
