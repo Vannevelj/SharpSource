@@ -26,16 +26,17 @@ public class NewGuidAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression);
     }
 
     private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        var expression = (ObjectCreationExpressionSyntax)context.Node;
-        var symbol = context.SemanticModel.GetSymbolInfo(expression.Type).Symbol;
+        var objectCreationExpression = (BaseObjectCreationExpressionSyntax)context.Node;
+        var symbol = objectCreationExpression.GetCreatedType(context.SemanticModel);
+
         if (symbol is { Name: "Guid" } &&
             symbol.IsDefinedInSystemAssembly() &&
-            expression.ArgumentList?.Arguments.Any() != true)
+            objectCreationExpression.ArgumentList?.Arguments.Any() != true)
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }

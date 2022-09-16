@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.10.1] - 2022-09-16
+- `StaticInitializerAccessedBeforeInitialization`: supports implicit object creation expressions
+- `NewGuid`: supports implicit object creation expressions
+- `HttpClientInstantiatedDirectly`: supports implicit object creation expressions
+
 ## [1.10.0] - 2022-09-15
 - All analyzers and code fixes now have help codes that link back to the individual documentation
 - `StaticInitializerAccessedBeforeInitialization`: don't trigger if the referenced field is marked as `const`

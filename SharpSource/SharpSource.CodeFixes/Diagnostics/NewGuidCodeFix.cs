@@ -30,7 +30,7 @@ public class NewGuidCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
+        var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<BaseObjectCreationExpressionSyntax>().First();
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Guid.NewGuid()",
@@ -41,7 +41,7 @@ public class NewGuidCodeFix : CodeFixProvider
                 x => UseEmptyGuid(context.Document, root, statement), $"{NewGuidAnalyzer.Rule.Id}B"), diagnostic);
     }
 
-    private Task<Document> UseNewGuid(Document document, SyntaxNode root, ObjectCreationExpressionSyntax statement)
+    private Task<Document> UseNewGuid(Document document, SyntaxNode root, BaseObjectCreationExpressionSyntax statement)
     {
         // We're not adding the simplifier in this route because it doesn't seem to work
         // It works when putting it on the root node but that has too many consequences for other code
@@ -56,7 +56,7 @@ public class NewGuidCodeFix : CodeFixProvider
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 
-    private Task<Document> UseEmptyGuid(Document document, SyntaxNode root, ObjectCreationExpressionSyntax statement)
+    private Task<Document> UseEmptyGuid(Document document, SyntaxNode root, BaseObjectCreationExpressionSyntax statement)
     {
         var newRoot = root.ReplaceNode(statement, SyntaxFactory.ParseExpression("System.Guid.Empty").WithAdditionalAnnotations(Simplifier.Annotation));
         return Task.FromResult(document.WithSyntaxRoot(newRoot));

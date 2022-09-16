@@ -125,10 +125,10 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
-            var surroundingObjectCreation = identifier.FirstAncestorOfType(SyntaxKind.ObjectCreationExpression) as ObjectCreationExpressionSyntax;
+            var surroundingObjectCreation = identifier.FirstAncestorOfType(SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression) as BaseObjectCreationExpressionSyntax;
             if (surroundingObjectCreation != default)
             {
-                var createdSymbol = semanticModel.GetSymbolInfo(surroundingObjectCreation.Type).Symbol;
+                var createdSymbol = surroundingObjectCreation.GetCreatedType(semanticModel);
                 if (referencedSymbol.Kind == SymbolKind.Method &&
                     createdSymbol is INamedTypeSymbol { Name: "Lazy", Arity: 1 } lazySymbol &&
                     lazySymbol.IsDefinedInSystemAssembly())
