@@ -104,7 +104,7 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var ancestor = throwStatement.FirstAncestorOfType(
+        var ancestor = throwStatement.FirstAncestorOrSelfOfType(
             SyntaxKind.MethodDeclaration,
             SyntaxKind.GetAccessorDeclaration,
             SyntaxKind.FinallyClause,

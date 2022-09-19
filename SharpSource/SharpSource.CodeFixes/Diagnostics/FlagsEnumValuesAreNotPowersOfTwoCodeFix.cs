@@ -25,7 +25,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var enumMember = root?.FindNode(diagnosticSpan)?.FirstAncestorOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
+        var enumMember = root?.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
         var semanticModel = await context.Document.GetSemanticModelAsync();
         if (root == default || enumMember == default || semanticModel == default)
         {
@@ -38,7 +38,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
             return;
         }
 
-        var enumDeclaration = enumMember.FirstAncestorOfType(SyntaxKind.EnumDeclaration);
+        var enumDeclaration = enumMember.FirstAncestorOrSelfOfType(SyntaxKind.EnumDeclaration);
         if (enumDeclaration == default)
         {
             return;

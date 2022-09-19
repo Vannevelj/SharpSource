@@ -46,7 +46,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var (found, returnType, modifiers) = context.Node.FirstAncestorOfType(
+        var (found, returnType, modifiers) = context.Node.FirstAncestorOrSelfOfType(
             SyntaxKind.MethodDeclaration,
             SyntaxKind.LocalFunctionStatement,
             SyntaxKind.ParenthesizedLambdaExpression) switch

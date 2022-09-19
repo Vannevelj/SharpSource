@@ -107,7 +107,7 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
             }
 
             // Don't trigger for nameof() calls, they are resolved at compile time
-            var invocationNode = identifier.FirstAncestorOfType(SyntaxKind.InvocationExpression);
+            var invocationNode = identifier.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression);
             if (invocationNode is InvocationExpressionSyntax invocation && invocation.IsNameofInvocation())
             {
                 continue;
@@ -125,7 +125,7 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
-            var surroundingObjectCreation = identifier.FirstAncestorOfType(SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression) as BaseObjectCreationExpressionSyntax;
+            var surroundingObjectCreation = identifier.FirstAncestorOrSelfOfType(SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression) as BaseObjectCreationExpressionSyntax;
             if (surroundingObjectCreation != default)
             {
                 var createdSymbol = surroundingObjectCreation.GetCreatedType(semanticModel);

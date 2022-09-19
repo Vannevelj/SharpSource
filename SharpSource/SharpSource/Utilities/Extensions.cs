@@ -225,7 +225,7 @@ public static class Extensions
     /// <param name="syntaxNode">The node to start from</param>
     /// <returns>The surrounding declaration node or null</returns>
     public static TypeDeclarationSyntax? GetEnclosingTypeNode(this SyntaxNode syntaxNode) =>
-        syntaxNode.FirstAncestorOfType(
+        syntaxNode.FirstAncestorOrSelfOfType(
             SyntaxKind.ClassDeclaration,
             SyntaxKind.StructDeclaration,
             SyntaxKind.InterfaceDeclaration,
@@ -352,9 +352,9 @@ public static class Extensions
         return compilation;
     }
 
-    public static SyntaxNode? FirstAncestorOfType(this SyntaxNode node, params SyntaxKind[] kinds)
+    public static SyntaxNode? FirstAncestorOrSelfOfType(this SyntaxNode node, params SyntaxKind[] kinds)
     {
-        var parent = node.Parent;
+        var parent = node;
         while (parent != default)
         {
             if (parent.IsAnyKind(kinds))

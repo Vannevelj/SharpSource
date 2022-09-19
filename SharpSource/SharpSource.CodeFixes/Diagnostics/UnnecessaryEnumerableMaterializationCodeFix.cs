@@ -35,7 +35,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
         var invocation = invocations.First(x => x.IsAnInvocationOf(typeof(Enumerable), operation, semanticModel));
         var surroundingMemberAccess = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
         var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
-        if (nestedMemberAccess == null || surroundingMemberAccess == null)
+        if (nestedMemberAccess == default || surroundingMemberAccess == default)
         {
             return;
         }
