@@ -447,7 +447,7 @@ public static class Extensions
 
 
             var surroundingInvocation = nestedInvocation.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node == invocation);
-            if (surroundingInvocation == default || surroundingInvocation == nestedInvocation)
+            if (surroundingInvocation == default || invocation == nestedInvocation)
             {
                 return newExpression;
             }
