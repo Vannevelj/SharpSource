@@ -62,7 +62,8 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
             return;
         }
 
-        if (!SupportedLookups.Any(lookup => context.Node.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
+        if (context.Node is InvocationExpressionSyntax invocationExpression &&
+            !SupportedLookups.Any(lookup => invocationExpression.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
         {
             return;
         }
