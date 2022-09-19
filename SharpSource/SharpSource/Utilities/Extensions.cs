@@ -429,7 +429,7 @@ public static class Extensions
                 // s1!.ToLower()
                 MemberAccessExpressionSyntax memberAccessSuppressing when
                     memberAccessSuppressing.Expression is PostfixUnaryExpressionSyntax postfixUnary &&
-                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary.Operand,
+                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary,
 
                 // s1.ToLower()
                 MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
@@ -447,7 +447,7 @@ public static class Extensions
 
 
             var surroundingInvocation = nestedInvocation.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node == invocation);
-            if (surroundingInvocation == default)
+            if (surroundingInvocation == default || surroundingInvocation == nestedInvocation)
             {
                 return newExpression;
             }
