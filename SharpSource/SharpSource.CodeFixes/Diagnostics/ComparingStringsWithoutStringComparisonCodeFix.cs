@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -30,21 +31,37 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        //var stackallocCreation = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
+        var expression = root.FindNode(diagnosticSpan).FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression) as BinaryExpressionSyntax;
+        if (expression == default)
+        {
+            return;
+        }        
+
+        var isOrdinal = diagnostic.Properties["comparison"] == "ordinal";
+        var stringComparison = isOrdinal ? "OrdinalIgnoreCase" : "InvariantCultureIgnoreCase";
 
         context.RegisterCodeFix(
             CodeAction.Create("Use StringComparison.OrdinalIgnoreCase",
-                x => UseOrdinalIgnoreCase(context.Document, root),
+                x => UseStringComparison(context.Document, root, expression, stringComparison),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
 
         context.RegisterCodeFix(
             CodeAction.Create("Use StringComparison.InvariantCultureIgnoreCase",
-                x => UseInvariantCultureIgnoreCase(context.Document, root),
+                x => UseStringComparison(context.Document, root, expression, stringComparison),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
     }
 
-    private Task<Document> UseOrdinalIgnoreCase(Document document, SyntaxNode root) => Task.FromResult(document);
-    private Task<Document> UseInvariantCultureIgnoreCase(Document document, SyntaxNode root) => Task.FromResult(document);
+    private Task<Document> UseStringComparison(Document document, SyntaxNode root, BinaryExpressionSyntax binaryExpression, string stringComparison)
+    {
+        var newLeftSideExpression = (binaryExpression.Left.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax)?.RemoveInvocation();
+        var newRightSideExpression = ( binaryExpression.Right.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation();
+
+        var negation = binaryExpression.IsKind(SyntaxKind.NotEqualsExpression) ? "!" : "";
+
+        var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({newLeftSideExpression}, {newRightSideExpression}, StringComparison.{stringComparison})");
+        var newRoot = root.ReplaceNode(binaryExpression, newNode);
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
+    }
 }

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -32,10 +32,45 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
 
     private static void Analyze(SyntaxNodeAnalysisContext context)
     {
-        var equalsExpression = (BinaryExpressionSyntax)context.Node;
-        if (equalsExpression.Left.IsAnInvocationOf(typeof(string), "ToLower", context.SemanticModel))
+        var expressionsToCheck = context.Node switch
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, equalsExpression.GetLocation()));
+            BinaryExpressionSyntax binaryExpression => new[] { binaryExpression.Left, binaryExpression.Right },
+            IsPatternExpressionSyntax isPatternExpression => new[] { isPatternExpression.Expression },
+            _ => Array.Empty<ExpressionSyntax>()
+        };
+
+        foreach (var expression in expressionsToCheck)
+        {
+            var capitalizationFunction = StringCapitalizationFunction(expression, context.SemanticModel);
+            if (capitalizationFunction != CapitalizationFunction.None)
+            {
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                properties.Add("comparison", capitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
+                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation(), properties.ToImmutable()));
+                break;
+            }
         }
     }
+
+    private static CapitalizationFunction StringCapitalizationFunction(ExpressionSyntax expression, SemanticModel semanticModel)
+    {
+        if (expression.IsAnInvocationOf(typeof(string), "ToLower", semanticModel) ||
+            expression.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel)) {
+            return CapitalizationFunction.Ordinal;
+        }
+
+        if (expression.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel) ||
+            expression.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel)) {
+            return CapitalizationFunction.Invariant;
+        }
+
+        return CapitalizationFunction.None;
+    }
+}
+
+internal enum CapitalizationFunction
+{
+    None = 0,
+    Ordinal = 1,
+    Invariant = 2
 }

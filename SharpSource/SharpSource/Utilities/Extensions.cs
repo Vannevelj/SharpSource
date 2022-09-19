@@ -401,4 +401,24 @@ public static class Extensions
             ImplicitObjectCreationExpressionSyntax implicitObjectCreation => semanticModel.GetSymbolInfo(implicitObjectCreation).Symbol?.ContainingSymbol,
             _ => default
         };
+
+    public static ExpressionSyntax RemoveInvocation(this InvocationExpressionSyntax invocation)
+    {
+        var parentExpression = invocation.Parent;
+        var functionBeingInvokedThatWeWantToRemove = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
+        if (functionBeingInvokedThatWeWantToRemove == default)
+        {
+            return invocation;
+        }
+
+        var newExpression = functionBeingInvokedThatWeWantToRemove.Expression;
+
+        //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
+
+        //var newExpression = subsequentlyInvokedFunctionChain == default ?
+        //    functionBeingInvokedThatWeWantToRemove :
+        //    functionBeingInvokedThatWeWantToRemove.ReplaceNode(functionBeingInvokedThatWeWantToRemove.Expression, subsequentlyInvokedFunctionChain.Expression);
+
+        return newExpression;
+    }
 }
