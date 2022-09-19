@@ -108,7 +108,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = string.Equals(s1.Trim(), s2.Trim(), StringComparison.{expectedStringComparison});";
+bool result = string.Equals(s1?.Trim(), s2?.Trim(), StringComparison.{expectedStringComparison});";
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
@@ -134,6 +134,31 @@ using System;
 string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_ForceNotNullableChained(string call, string expectedStringComparison)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = s1!.{call}() == s2!.{call}();";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1!.ToLower(), s2!.ToLower(), StringComparison.{expectedStringComparison});";
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
@@ -184,7 +209,7 @@ bool result = string.Equals(s1, ""TeSt"", StringComparison.{expectedStringCompar
     [DataRow("ToUpper", "OrdinalIgnoreCase")]
     [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
     [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
-    public async Task ComparingStringsWithoutStringComparison_WithAdditionalCalls(string call, string expectedStringComparison)
+    public async Task ComparingStringsWithoutStringComparison_WithPostfixedCalls(string call, string expectedStringComparison)
     {
         var original = @$"
 using System;

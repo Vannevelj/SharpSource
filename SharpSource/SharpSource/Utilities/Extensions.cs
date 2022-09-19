@@ -426,17 +426,42 @@ public static class Extensions
 
             var newExpression = nestedInvocation.Expression switch
             {
-                MemberAccessExpressionSyntax memberAccessSuppressing
-                    when memberAccessSuppressing.Expression is PostfixUnaryExpressionSyntax postfixUnary
-                    && postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary.Operand,
+                // s1!.ToLower()
+                MemberAccessExpressionSyntax memberAccessSuppressing when
+                    memberAccessSuppressing.Expression is PostfixUnaryExpressionSyntax postfixUnary &&
+                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary.Operand,
+
+                // s1.ToLower()
                 MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
-                MemberBindingExpressionSyntax when nestedInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
+
+                // s1?.ToLower()
+                MemberBindingExpressionSyntax when
+                    nestedInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
                 _ => default
             };
+
             if (newExpression == default)
             {
                 continue;
             }
+
+
+            var surroundingInvocation = parentExpression.Parent?.FirstAncestorOrSelf<InvocationExpressionSyntax>();
+            if (surroundingInvocation == default)
+            {
+                return newExpression;
+            }
+
+            var newNode = surroundingInvocation.ReplaceNode(nestedInvocation, newExpression);
+            if (newNode != default)
+            {
+                return newNode;
+            }
+
+            //if (surroundingInvocation != parentExpression)
+            //{
+            //    newExpression = parentExpression.ReplaceNode(nestedInvocation, newExpression);
+            //}
 
             //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
 

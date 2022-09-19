@@ -67,9 +67,8 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
     private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, BinaryExpressionSyntax binaryExpression, string stringComparison, string invokedFunction, SemanticModel semanticModel)
     {
-        var invocationKinds = new[] { SyntaxKind.InvocationExpression, SyntaxKind.ConditionalAccessExpression };
-        var newLeftSideExpression = binaryExpression.Left.FirstAncestorOrSelfOfType(invocationKinds)?.RemoveInvocation(typeof(string), invokedFunction, semanticModel) ?? binaryExpression.Left;
-        var newRightSideExpression = binaryExpression.Right.FirstAncestorOrSelfOfType(invocationKinds)?.RemoveInvocation(typeof(string), invokedFunction, semanticModel) ?? binaryExpression.Right;
+        var newLeftSideExpression = binaryExpression.Left.RemoveInvocation(typeof(string), invokedFunction, semanticModel);
+        var newRightSideExpression = binaryExpression.Right.RemoveInvocation(typeof(string), invokedFunction, semanticModel);
         var negation = binaryExpression.IsKind(SyntaxKind.NotEqualsExpression);
 
         return UseStringComparison(document, root, binaryExpression, newLeftSideExpression, newRightSideExpression, stringComparison, negation);
@@ -77,7 +76,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
     private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, IsPatternExpressionSyntax isPatternExpression, string stringComparison, string invokedFunction, SemanticModel semanticModel)
     {
-        var newLeftSideExpression = isPatternExpression.Expression.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression)?.RemoveInvocation(typeof(string), invokedFunction, semanticModel) ?? isPatternExpression.Expression;
+        var newLeftSideExpression = isPatternExpression.Expression.RemoveInvocation(typeof(string), invokedFunction, semanticModel);
         var newPattern = isPatternExpression.Pattern;
         var negation = false;
         if (isPatternExpression.Pattern is UnaryPatternSyntax { RawKind: (int)SyntaxKind.NotPattern } notPattern)
