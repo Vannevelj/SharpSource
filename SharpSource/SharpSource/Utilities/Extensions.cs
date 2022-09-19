@@ -437,7 +437,7 @@ public static class Extensions
                 // s1?.ToLower()
                 MemberBindingExpressionSyntax when
                     nestedInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
-                _ => default
+                _ => nestedInvocation.Expression
             };
 
             if (newExpression == default)
@@ -446,13 +446,13 @@ public static class Extensions
             }
 
 
-            var surroundingInvocation = parentExpression.Parent?.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node != invocation);
+            var surroundingInvocation = nestedInvocation.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node == invocation);
             if (surroundingInvocation == default)
             {
                 return newExpression;
             }
 
-            var newNode = surroundingInvocation.ReplaceNode(nestedInvocation, newExpression);
+            var newNode = invocation.ReplaceNode(nestedInvocation, newExpression);
             if (newNode != default)
             {
                 return newNode;
@@ -491,15 +491,15 @@ public static class Extensions
         var parent = node;
         while (parent != default)
         {
+            if (parent is TNode)
+            {
+                return (TNode?)parent;
+            }
+
             if (predicate(node))
             {
                 return default;
-            }
-
-            if (parent is TNode)
-            {
-                return (TNode?) parent;
-            }
+            }            
 
             parent = parent.Parent;
         }
