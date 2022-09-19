@@ -409,9 +409,15 @@ public static class Extensions
             _ => default
         };
 
-    public static SyntaxNode RemoveInvocation(this SyntaxNode invocation, Type type, string method, SemanticModel semanticModel)
+    public static SyntaxNode RemoveInvocation(this SyntaxNode invocationOrConditionalAccess, Type type, string method, SemanticModel semanticModel)
     {
-        foreach (InvocationExpressionSyntax nestedInvocation in invocation.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression))
+        var parentAboveAll = invocationOrConditionalAccess.Parent;
+        if (parentAboveAll == default)
+        {
+            return invocationOrConditionalAccess;
+        }
+
+        foreach (InvocationExpressionSyntax nestedInvocation in invocationOrConditionalAccess.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression))
         {
             if (!nestedInvocation.IsAnInvocationOf(type, method, semanticModel))
             {
@@ -424,6 +430,14 @@ public static class Extensions
                 continue;
             }
 
+            // s1?.ToLower()
+            if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
+            {
+                var conditionalExpression = conditionalAccess.Expression;
+
+                return conditionalExpression;
+            }
+
             var newExpression = nestedInvocation.Expression switch
             {
                 // s1!.ToLower()
@@ -434,9 +448,6 @@ public static class Extensions
                 // s1.ToLower()
                 MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
 
-                // s1?.ToLower()
-                MemberBindingExpressionSyntax when
-                    nestedInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
                 _ => nestedInvocation.Expression
             };
 
@@ -445,13 +456,13 @@ public static class Extensions
                 continue;
             }
 
-            var surroundingInvocation = nestedInvocation.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node == invocation);
-            if (surroundingInvocation == default || invocation == nestedInvocation)
+            var surroundingInvocation = nestedInvocation.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node == invocationOrConditionalAccess);
+            if (surroundingInvocation == default || invocationOrConditionalAccess == nestedInvocation)
             {
                 return newExpression;
             }
 
-            var newNode = invocation.ReplaceNode(nestedInvocation, newExpression);
+            var newNode = invocationOrConditionalAccess.ReplaceNode(nestedInvocation, newExpression);
             if (newNode != default)
             {
                 return newNode;
@@ -471,7 +482,7 @@ public static class Extensions
             return newExpression;
         }
 
-        return invocation;
+        return invocationOrConditionalAccess;
     }
 
     public static IEnumerable<SyntaxNode> DescendantNodesAndSelfOfType(this SyntaxNode node, params SyntaxKind[] kinds)
