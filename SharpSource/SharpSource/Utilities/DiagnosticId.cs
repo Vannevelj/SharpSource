@@ -47,4 +47,5 @@ public static class DiagnosticId
     public const string UnboundedStackalloc = "SS046";
     public const string LinqTraversalBeforeFilter = "SS047";
     public const string LockingOnDiscouragedObject = "SS048";
+    public const string ComparingStringsWithoutStringComparison = "SS049";
 }
