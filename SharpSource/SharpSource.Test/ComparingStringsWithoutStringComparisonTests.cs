@@ -310,11 +310,10 @@ class Test
 string s1 = ""first"";
 bool result = s1.ToLower() is ""test"";";
 
-        var result = @$"
-using System;
+        var result = @$"using System;
 
 string s1 = ""first"";
-bool result = string.Equals(""first"", ""test"", StringComparison.OrdinalIgnoreCase);";
+bool result = string.Equals(s1, ""test"", StringComparison.OrdinalIgnoreCase);";
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);

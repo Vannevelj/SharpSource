@@ -23,7 +23,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        if (root == default)
+        if (root is not CompilationUnitSyntax compilation)
         {
             return;
         }
@@ -31,7 +31,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var expression = root.FindNode(diagnosticSpan).FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
+        var expression = compilation.FindNode(diagnosticSpan).FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
         if (expression == default)
         {
             return;
@@ -43,21 +43,21 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         context.RegisterCodeFix(
             CodeAction.Create("Use StringComparison.OrdinalIgnoreCase",
                 x => expression is BinaryExpressionSyntax binaryExpression
-                    ? UseStringComparison(context.Document, root, binaryExpression, stringComparison)
-                    : UseStringComparison(context.Document, root, (IsPatternExpressionSyntax) expression, stringComparison),
+                    ? UseStringComparison(context.Document, compilation, binaryExpression, stringComparison)
+                    : UseStringComparison(context.Document, compilation, (IsPatternExpressionSyntax) expression, stringComparison),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
 
         context.RegisterCodeFix(
             CodeAction.Create("Use StringComparison.InvariantCultureIgnoreCase",
                 x => expression is BinaryExpressionSyntax binaryExpression
-                    ? UseStringComparison(context.Document, root, binaryExpression, stringComparison)
-                    : UseStringComparison(context.Document, root, (IsPatternExpressionSyntax)expression, stringComparison),
+                    ? UseStringComparison(context.Document, compilation, binaryExpression, stringComparison)
+                    : UseStringComparison(context.Document, compilation, (IsPatternExpressionSyntax)expression, stringComparison),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
     }
 
-    private Task<Document> UseStringComparison(Document document, SyntaxNode root, BinaryExpressionSyntax binaryExpression, string stringComparison)
+    private Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, BinaryExpressionSyntax binaryExpression, string stringComparison)
     {
         var newLeftSideExpression = (binaryExpression.Left.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax)?.RemoveInvocation() ?? binaryExpression.Left;
         var newRightSideExpression = ( binaryExpression.Right.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? binaryExpression.Right;
@@ -69,7 +69,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 
-    private Task<Document> UseStringComparison(Document document, SyntaxNode root, IsPatternExpressionSyntax isPatternExpression, string stringComparison)
+    private Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, IsPatternExpressionSyntax isPatternExpression, string stringComparison)
     {
         var newLeftSideExpression = ( isPatternExpression.Expression.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? isPatternExpression.Expression;
 
@@ -82,7 +82,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         }
 
         var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({newLeftSideExpression}, {newPattern}, StringComparison.{stringComparison})");
-        var newRoot = root.ReplaceNode(isPatternExpression, newNode);
+        var newRoot = root.ReplaceNode(isPatternExpression, newNode).AddUsingStatementIfMissing("System");
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }
