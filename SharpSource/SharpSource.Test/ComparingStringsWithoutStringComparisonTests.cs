@@ -209,6 +209,31 @@ bool result = string.Equals(s1.Trim(), s2.Trim(), StringComparison.{expectedStri
     [DataRow("ToUpper", "OrdinalIgnoreCase")]
     [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
     [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_WithPrefixedCalls(string call, string expectedStringComparison)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = s1.Trim().{call}() == s2.Trim().{call}();";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1.Trim(), s2.Trim(), StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
     public async Task ComparingStringsWithoutStringComparison_Is(string call, string expectedStringComparison)
     {
         var original = @$"
