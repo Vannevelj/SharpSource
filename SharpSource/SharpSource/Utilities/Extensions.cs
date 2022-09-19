@@ -409,9 +409,10 @@ public static class Extensions
             _ => default
         };
 
-    public static ExpressionSyntax RemoveInvocation(this InvocationExpressionSyntax invocation)
+    public static SyntaxNode RemoveInvocation(this SyntaxNode invocation)
     {
         var parentExpression = invocation.Parent;
+        // member binding syntax?
         var functionBeingInvokedThatWeWantToRemove = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
         if (functionBeingInvokedThatWeWantToRemove == default)
         {

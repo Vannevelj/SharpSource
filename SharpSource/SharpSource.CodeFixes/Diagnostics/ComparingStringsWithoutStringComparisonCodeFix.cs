@@ -60,30 +60,33 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
     private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, BinaryExpressionSyntax binaryExpression, string stringComparison)
     {
-        var newLeftSideExpression = (binaryExpression.Left.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax)?.RemoveInvocation() ?? binaryExpression.Left;
-        var newRightSideExpression = ( binaryExpression.Right.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? binaryExpression.Right;
+        var invocationKinds = new[] { SyntaxKind.InvocationExpression, SyntaxKind.ConditionalAccessExpression };
+        var newLeftSideExpression = binaryExpression.Left.FirstAncestorOrSelfOfType(invocationKinds)?.RemoveInvocation() ?? binaryExpression.Left;
+        var newRightSideExpression = binaryExpression.Right.FirstAncestorOrSelfOfType(invocationKinds)?.RemoveInvocation() ?? binaryExpression.Right;
+        var negation = binaryExpression.IsKind(SyntaxKind.NotEqualsExpression);
 
-        var negation = binaryExpression.IsKind(SyntaxKind.NotEqualsExpression) ? "!" : "";
-
-        var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({newLeftSideExpression}, {newRightSideExpression}, StringComparison.{stringComparison})");
-        var newRoot = root.ReplaceNode(binaryExpression, newNode);
-        return Task.FromResult(document.WithSyntaxRoot(newRoot));
+        return UseStringComparison(document, root, binaryExpression, newLeftSideExpression, newRightSideExpression, stringComparison, negation);
     }
 
     private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, IsPatternExpressionSyntax isPatternExpression, string stringComparison)
     {
         var newLeftSideExpression = ( isPatternExpression.Expression.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? isPatternExpression.Expression;
-
         var newPattern = isPatternExpression.Pattern;
-        var negation = "";
+        var negation = false;
         if (isPatternExpression.Pattern is UnaryPatternSyntax { RawKind: (int)SyntaxKind.NotPattern } notPattern)
         {
-            negation = "!";
+            negation = true;
             newPattern = notPattern.Pattern;
         }
 
-        var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({newLeftSideExpression}, {newPattern}, StringComparison.{stringComparison})");
-        var newRoot = root.ReplaceNode(isPatternExpression, newNode).AddUsingStatementIfMissing("System");
+        return UseStringComparison(document, root, isPatternExpression, newLeftSideExpression, newPattern, stringComparison, negation);
+    }
+
+    private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, SyntaxNode expressionToReplace, SyntaxNode firstArgument, SyntaxNode secondArgument, string stringComparison, bool useNegation)
+    {
+        var negation = useNegation ? "!" : "";
+        var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({firstArgument}, {secondArgument}, StringComparison.{stringComparison})");
+        var newRoot = root.ReplaceNode(expressionToReplace, newNode).AddUsingStatementIfMissing("System");
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }
