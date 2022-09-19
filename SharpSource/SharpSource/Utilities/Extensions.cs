@@ -446,7 +446,7 @@ public static class Extensions
             }
 
 
-            var surroundingInvocation = parentExpression.Parent?.FirstAncestorOrSelf<InvocationExpressionSyntax>();
+            var surroundingInvocation = parentExpression.Parent?.FirstAncestorOrSelfUntil<InvocationExpressionSyntax>(node => node != invocation);
             if (surroundingInvocation == default)
             {
                 return newExpression;
@@ -484,5 +484,26 @@ public static class Extensions
                 yield return descendant;
             }
         }
+    }
+
+    public static TNode? FirstAncestorOrSelfUntil<TNode>(this SyntaxNode node, Func<SyntaxNode, bool> predicate) where TNode : SyntaxNode
+    {
+        var parent = node;
+        while (parent != default)
+        {
+            if (predicate(node))
+            {
+                return default;
+            }
+
+            if (parent is TNode)
+            {
+                return (TNode?) parent;
+            }
+
+            parent = parent.Parent;
+        }
+
+        return default;
     }
 }
