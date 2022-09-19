@@ -82,12 +82,12 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         var implementsGetHashCode = false;
         foreach (var member in invokedType.GetMembers())
         {
-            if (member.Name == nameof(Equals))
+            if (member.Name == WellKnownMemberNames.ObjectEquals)
             {
                 implementsEquals = true;
             }
 
-            if (member.Name == nameof(GetHashCode))
+            if (member.Name == WellKnownMemberNames.ObjectGetHashCode)
             {
                 implementsGetHashCode = true;
             }
