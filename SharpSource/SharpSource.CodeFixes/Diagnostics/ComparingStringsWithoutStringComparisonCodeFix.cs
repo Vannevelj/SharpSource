@@ -31,7 +31,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var expression = root.FindNode(diagnosticSpan).FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression) as BinaryExpressionSyntax;
+        var expression = root.FindNode(diagnosticSpan).FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
         if (expression == default)
         {
             return;
@@ -42,13 +42,17 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use StringComparison.OrdinalIgnoreCase",
-                x => UseStringComparison(context.Document, root, expression, stringComparison),
+                x => expression is BinaryExpressionSyntax binaryExpression
+                    ? UseStringComparison(context.Document, root, binaryExpression, stringComparison)
+                    : UseStringComparison(context.Document, root, (IsPatternExpressionSyntax) expression, stringComparison),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
 
         context.RegisterCodeFix(
             CodeAction.Create("Use StringComparison.InvariantCultureIgnoreCase",
-                x => UseStringComparison(context.Document, root, expression, stringComparison),
+                x => expression is BinaryExpressionSyntax binaryExpression
+                    ? UseStringComparison(context.Document, root, binaryExpression, stringComparison)
+                    : UseStringComparison(context.Document, root, (IsPatternExpressionSyntax)expression, stringComparison),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
     }
@@ -62,6 +66,23 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
         var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({newLeftSideExpression}, {newRightSideExpression}, StringComparison.{stringComparison})");
         var newRoot = root.ReplaceNode(binaryExpression, newNode);
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
+    }
+
+    private Task<Document> UseStringComparison(Document document, SyntaxNode root, IsPatternExpressionSyntax isPatternExpression, string stringComparison)
+    {
+        var newLeftSideExpression = ( isPatternExpression.Expression.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? isPatternExpression.Expression;
+
+        var newPattern = isPatternExpression.Pattern;
+        var negation = "";
+        if (isPatternExpression.Pattern is UnaryPatternSyntax { RawKind: (int)SyntaxKind.NotPattern } notPattern)
+        {
+            negation = "!";
+            newPattern = notPattern.Pattern;
+        }
+
+        var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({newLeftSideExpression}, {newPattern}, StringComparison.{stringComparison})");
+        var newRoot = root.ReplaceNode(isPatternExpression, newNode);
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }
