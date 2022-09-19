@@ -195,9 +195,16 @@ public static class Extensions
 
     // TODO: tests
     // NOTE: string.Format() vs Format() (current/external type)
-    public static bool IsAnInvocationOf(this InvocationExpressionSyntax invocation, Type type, string method, SemanticModel semanticModel)
+    public static bool IsAnInvocationOf(this SyntaxNode invocation, Type type, string method, SemanticModel semanticModel)
     {
-        var invokedMethod = semanticModel.GetSymbolInfo(invocation);
+        var invokedExpression = invocation switch
+        {
+            ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.WhenNotNull,
+            PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
+            InvocationExpressionSyntax invocationExpression => invocationExpression,
+            _ => invocation
+        };
+        var invokedMethod = semanticModel.GetSymbolInfo(invokedExpression);
         var invokedType = invokedMethod.Symbol?.ContainingType;
 
         return invokedType?.MetadataName == type.Name &&
