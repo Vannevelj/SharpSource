@@ -409,35 +409,55 @@ public static class Extensions
             _ => default
         };
 
-    public static SyntaxNode RemoveInvocation(this SyntaxNode invocation)
+    public static SyntaxNode RemoveInvocation(this SyntaxNode invocation, Type type, string method, SemanticModel semanticModel)
     {
-        var parentExpression = invocation.Parent;
-        var actualInvocation = invocation.DescendantNodesAndSelf().FirstOfKind<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression);
-        var functionBeingInvokedThatWeWantToRemove = actualInvocation.Expression switch
+        foreach (InvocationExpressionSyntax nestedInvocation in invocation.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression))
         {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
-            MemberBindingExpressionSyntax when actualInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
-            _ => default
-        };
+            if (!nestedInvocation.IsAnInvocationOf(type, method, semanticModel))
+            {
+                continue;
+            }
 
-        if (functionBeingInvokedThatWeWantToRemove == default)
-        {
-            return invocation;
+            var parentExpression = nestedInvocation.Parent;
+            if (parentExpression == default)
+            {
+                continue;
+            }
+
+            var newExpression = nestedInvocation.Expression switch
+            {
+                MemberAccessExpressionSyntax memberAccessSuppressing
+                    when memberAccessSuppressing.Expression is PostfixUnaryExpressionSyntax postfixUnary
+                    && postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary.Operand,
+                MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
+                MemberBindingExpressionSyntax when nestedInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
+                _ => default
+            };
+            if (newExpression == default)
+            {
+                continue;
+            }
+
+            //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
+
+            //var newExpression = subsequentlyInvokedFunctionChain == default ?
+            //    functionBeingInvokedThatWeWantToRemove :
+            //    functionBeingInvokedThatWeWantToRemove.ReplaceNode(functionBeingInvokedThatWeWantToRemove.Expression, subsequentlyInvokedFunctionChain.Expression);
+
+            return newExpression;
         }
 
-        var newExpression = functionBeingInvokedThatWeWantToRemove switch
+        return invocation;
+    }
+
+    public static IEnumerable<SyntaxNode> DescendantNodesAndSelfOfType(this SyntaxNode node, params SyntaxKind[] kinds)
+    {
+        foreach (var descendant in node.DescendantNodesAndSelf())
         {
-            ConditionalAccessExpressionSyntax conditionalAccess => conditionalAccess.WhenNotNull,
-            PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
-            _ => functionBeingInvokedThatWeWantToRemove
-        };
-
-        //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
-
-        //var newExpression = subsequentlyInvokedFunctionChain == default ?
-        //    functionBeingInvokedThatWeWantToRemove :
-        //    functionBeingInvokedThatWeWantToRemove.ReplaceNode(functionBeingInvokedThatWeWantToRemove.Expression, subsequentlyInvokedFunctionChain.Expression);
-
-        return newExpression;
+            if (descendant.IsAnyKind(kinds))
+            {
+                yield return descendant;
+            }
+        }
     }
 }

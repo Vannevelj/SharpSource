@@ -41,30 +41,44 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
 
         foreach (var expression in expressionsToCheck)
         {
-            var capitalizationFunction = StringCapitalizationFunction(expression, context.SemanticModel);
+            var (capitalizationFunction, invokedFunction) = StringCapitalizationFunction(expression, context.SemanticModel);
             if (capitalizationFunction != CapitalizationFunction.None)
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 properties.Add("comparison", capitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
+                properties.Add("function", invokedFunction);
                 context.ReportDiagnostic(Diagnostic.Create(Rule, expression.GetLocation(), properties.ToImmutable()));
                 break;
             }
         }
     }
 
-    private static CapitalizationFunction StringCapitalizationFunction(ExpressionSyntax expression, SemanticModel semanticModel)
+    private static (CapitalizationFunction, string?) StringCapitalizationFunction(ExpressionSyntax expression, SemanticModel semanticModel)
     {
-        if (expression.IsAnInvocationOf(typeof(string), "ToLower", semanticModel) ||
-            expression.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel)) {
-            return CapitalizationFunction.Ordinal;
+        foreach (var invocation in expression.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression, SyntaxKind.ConditionalAccessExpression))
+        {
+            if (invocation.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
+            {
+                return (CapitalizationFunction.Ordinal, "ToLower");
+            }
+
+            if (invocation.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel))
+            {
+                return (CapitalizationFunction.Ordinal, "ToUpper");
+            }
+
+            if (invocation.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel))
+            {
+                return (CapitalizationFunction.Invariant, "ToLowerInvariant");
+            }
+
+            if (invocation.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel))
+            {
+                return (CapitalizationFunction.Invariant, "ToUpperInvariant");
+            }
         }
 
-        if (expression.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel) ||
-            expression.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel)) {
-            return CapitalizationFunction.Invariant;
-        }
-
-        return CapitalizationFunction.None;
+        return (CapitalizationFunction.None, default);
     }
 }
 
