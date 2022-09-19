@@ -412,18 +412,24 @@ public static class Extensions
     public static SyntaxNode RemoveInvocation(this SyntaxNode invocation)
     {
         var parentExpression = invocation.Parent;
-        // member binding syntax?
-        var functionBeingInvokedThatWeWantToRemove = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
+        var actualInvocation = invocation.DescendantNodesAndSelf().FirstOfKind<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression);
+        var functionBeingInvokedThatWeWantToRemove = actualInvocation.Expression switch
+        {
+            MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
+            MemberBindingExpressionSyntax when actualInvocation.Parent is ConditionalAccessExpressionSyntax conditional => conditional.Expression,
+            _ => default
+        };
+
         if (functionBeingInvokedThatWeWantToRemove == default)
         {
             return invocation;
         }
 
-        var newExpression = functionBeingInvokedThatWeWantToRemove.Expression switch
+        var newExpression = functionBeingInvokedThatWeWantToRemove switch
         {
             ConditionalAccessExpressionSyntax conditionalAccess => conditionalAccess.WhenNotNull,
             PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
-            _ => functionBeingInvokedThatWeWantToRemove.Expression
+            _ => functionBeingInvokedThatWeWantToRemove
         };
 
         //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
