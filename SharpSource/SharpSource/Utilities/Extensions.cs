@@ -429,7 +429,7 @@ public static class Extensions
                 // s1!.ToLower()
                 MemberAccessExpressionSyntax memberAccessSuppressing when
                     memberAccessSuppressing.Expression is PostfixUnaryExpressionSyntax postfixUnary &&
-                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary,
+                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary.Operand,
 
                 // s1.ToLower()
                 MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,

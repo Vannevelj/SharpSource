@@ -133,7 +133,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = string.Equals(s1!, s2!, StringComparison.{expectedStringComparison});";
+bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
@@ -158,7 +158,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = string.Equals(s1!, s2!, StringComparison.{expectedStringComparison});";
+bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
