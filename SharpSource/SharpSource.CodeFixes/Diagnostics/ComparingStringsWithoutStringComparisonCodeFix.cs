@@ -30,8 +30,9 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var diagnosticNode = compilation.FindNode(diagnosticSpan);
 
-        var expression = compilation.FindNode(diagnosticSpan).FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
+        var expression = diagnosticNode.FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
         if (expression == default)
         {
             return;
@@ -57,7 +58,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, BinaryExpressionSyntax binaryExpression, string stringComparison)
+    private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, BinaryExpressionSyntax binaryExpression, string stringComparison)
     {
         var newLeftSideExpression = (binaryExpression.Left.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax)?.RemoveInvocation() ?? binaryExpression.Left;
         var newRightSideExpression = ( binaryExpression.Right.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? binaryExpression.Right;
@@ -69,7 +70,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 
-    private Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, IsPatternExpressionSyntax isPatternExpression, string stringComparison)
+    private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, IsPatternExpressionSyntax isPatternExpression, string stringComparison)
     {
         var newLeftSideExpression = ( isPatternExpression.Expression.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? isPatternExpression.Expression;
 

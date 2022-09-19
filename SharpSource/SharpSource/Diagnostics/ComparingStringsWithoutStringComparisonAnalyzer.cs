@@ -46,7 +46,7 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 properties.Add("comparison", capitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation(), properties.ToImmutable()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, expression.GetLocation(), properties.ToImmutable()));
                 break;
             }
         }

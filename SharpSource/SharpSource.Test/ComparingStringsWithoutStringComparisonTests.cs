@@ -323,12 +323,16 @@ bool result = string.Equals(s1, ""test"", StringComparison.OrdinalIgnoreCase);";
     public async Task ComparingStringsWithoutStringComparison_PassedAsArgument()
     {
         var original = @$"
+using System;
+
 string s1 = ""first"";
-Method(s1 is ""test"");
+Method(s1.ToLower() is ""test"");
 
 void Method(bool b) {{ }}";
 
         var result = @$"
+using System;
+
 string s1 = ""first"";
 Method(string.Equals(s1, ""test"", StringComparison.OrdinalIgnoreCase));
 
