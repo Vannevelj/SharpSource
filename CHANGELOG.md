@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.11.0] - 2022-09-19
+- `UnnecessaryEnumerableMaterialization`: supports `?.` and `!.` operators
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: supports `?.` and `!.` operators
+
 ## [1.10.1] - 2022-09-16
 - `StaticInitializerAccessedBeforeInitialization`: supports implicit object creation expressions
 - `NewGuid`: supports implicit object creation expressions
