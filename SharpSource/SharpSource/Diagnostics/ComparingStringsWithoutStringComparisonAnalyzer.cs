@@ -55,26 +55,34 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
 
     private static (CapitalizationFunction, string?) StringCapitalizationFunction(ExpressionSyntax expression, SemanticModel semanticModel)
     {
-        foreach (var invocation in expression.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression, SyntaxKind.ConditionalAccessExpression))
+        foreach (var node in expression.DescendantNodesAndSelf())
         {
-            if (invocation.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
+            if (node is ArgumentSyntax)
             {
-                return (CapitalizationFunction.Ordinal, "ToLower");
+                break;
             }
 
-            if (invocation.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel))
+            if (node is InvocationExpressionSyntax or ConditionalAccessExpressionSyntax)
             {
-                return (CapitalizationFunction.Ordinal, "ToUpper");
-            }
+                if (node.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
+                {
+                    return (CapitalizationFunction.Ordinal, "ToLower");
+                }
 
-            if (invocation.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel))
-            {
-                return (CapitalizationFunction.Invariant, "ToLowerInvariant");
-            }
+                if (node.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel))
+                {
+                    return (CapitalizationFunction.Ordinal, "ToUpper");
+                }
 
-            if (invocation.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel))
-            {
-                return (CapitalizationFunction.Invariant, "ToUpperInvariant");
+                if (node.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel))
+                {
+                    return (CapitalizationFunction.Invariant, "ToLowerInvariant");
+                }
+
+                if (node.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel))
+                {
+                    return (CapitalizationFunction.Invariant, "ToUpperInvariant");
+                }
             }
         }
 

@@ -301,11 +301,11 @@ bool result = !string.Equals(s1, ""test"", StringComparison.{expectedStringCompa
     }
 
     [TestMethod]
-    [DataRow("ToLower", "OrdinalIgnoreCase")]
-    [DataRow("ToUpper", "OrdinalIgnoreCase")]
-    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
-    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
-    public async Task ComparingStringsWithoutStringComparison_WrappedInAnother(string call, string expectedStringComparison)
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    [DataRow("ToLowerInvariant")]
+    [DataRow("ToUpperInvariant")]
+    public async Task ComparingStringsWithoutStringComparison_WrappedInAnother(string call)
     {
         var original = @$"
 using System;
