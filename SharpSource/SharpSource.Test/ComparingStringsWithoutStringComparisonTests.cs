@@ -287,7 +287,7 @@ using System;
 class Test
 {{
     string _name;
-    bool IsValid() => this._name.ToLower() == this._name.ToLower();
+    bool IsValid() => this._name.{call}() == this._name.{call}();
 }}";
 
         var result = @$"
