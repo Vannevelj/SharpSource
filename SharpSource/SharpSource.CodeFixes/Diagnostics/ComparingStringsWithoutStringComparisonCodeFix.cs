@@ -55,8 +55,8 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
     private Task<Document> UseStringComparison(Document document, SyntaxNode root, BinaryExpressionSyntax binaryExpression, string stringComparison)
     {
-        var newLeftSideExpression = (binaryExpression.Left.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax)?.RemoveInvocation();
-        var newRightSideExpression = ( binaryExpression.Right.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation();
+        var newLeftSideExpression = (binaryExpression.Left.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax)?.RemoveInvocation() ?? binaryExpression.Left;
+        var newRightSideExpression = ( binaryExpression.Right.FirstAncestorOrSelfOfType(SyntaxKind.InvocationExpression) as InvocationExpressionSyntax )?.RemoveInvocation() ?? binaryExpression.Right;
 
         var negation = binaryExpression.IsKind(SyntaxKind.NotEqualsExpression) ? "!" : "";
 
