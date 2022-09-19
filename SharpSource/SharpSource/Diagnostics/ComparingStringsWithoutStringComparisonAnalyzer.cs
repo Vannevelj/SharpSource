@@ -32,6 +32,10 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
 
     private static void Analyze(SyntaxNodeAnalysisContext context)
     {
-        
+        var equalsExpression = (BinaryExpressionSyntax)context.Node;
+        if (equalsExpression.Left.IsAnInvocationOf(typeof(string), "ToLower", context.SemanticModel))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Rule, equalsExpression.GetLocation()));
+        }
     }
 }

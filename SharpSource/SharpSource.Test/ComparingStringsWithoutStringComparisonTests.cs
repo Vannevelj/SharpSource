@@ -94,6 +94,31 @@ bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison})
     [DataRow("ToUpper", "OrdinalIgnoreCase")]
     [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
     [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_ForceNotNullable(string call, string expectedStringComparison)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = s1!.{call}() == s2!.{call}();";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
     public async Task ComparingStringsWithoutStringComparison_AlreadyUsingStringComparison(string call, string expectedStringComparison)
     {
         var original = @$"
@@ -195,6 +220,84 @@ using System;
 
 string s1 = string.Empty;
 bool result = !string.Equals(s1, ""test"", StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_WrappedInAnother(string call, string expectedStringComparison)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = GetValue(s1.{call}()) == GetValue(s2.{call}());
+string GetValue(string s) => s;";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_ReferencingProperty(string call, string expectedStringComparison)
+    {
+        var original = @$"
+using System;
+
+bool result = T.Name.{call}() == T.Name.{call}();
+
+class T
+{{
+    public static string Name {{ get; set; }}
+}}";
+
+        var result = @$"
+using System;
+
+bool result = string.Equals(T.Name, T.Name, StringComparison.{expectedStringComparison});
+
+class T
+{{
+    public static string Name {{ get; set; }}
+}}";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_ReferencingThis(string call, string expectedStringComparison)
+    {
+        var original = @$"
+using System;
+
+class Test
+{{
+    string _name;
+    bool IsValid() => this._name.ToLower() == this._name.ToLower();
+}}";
+
+        var result = @$"
+using System;
+
+class Test
+{{
+    string _name;
+    bool IsValid() => string.Equals(this._name, this._name, StringComparison.{expectedStringComparison});
+}}";
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);

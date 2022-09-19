@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -29,37 +30,21 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var stackallocCreation = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
-        var arraySizeIdentifier = stackallocCreation.DescendantNodes().OfType<ArrayRankSpecifierSyntax>().First().Sizes.First();
-        var arrayType = stackallocCreation.Type as ArrayTypeSyntax;
-        if (arrayType == default)
-        {
-            return;
-        }
+        //var stackallocCreation = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
 
         context.RegisterCodeFix(
-            CodeAction.Create("Add bounds check",
-                x => AddBoundsCheck(context.Document, root, stackallocCreation, arraySizeIdentifier, arrayType), DiagnosticId.ComparingStringsWithoutStringComparison), diagnostic);
+            CodeAction.Create("Use StringComparison.OrdinalIgnoreCase",
+                x => UseOrdinalIgnoreCase(context.Document, root),
+                DiagnosticId.ComparingStringsWithoutStringComparison),
+            diagnostic);
+
+        context.RegisterCodeFix(
+            CodeAction.Create("Use StringComparison.InvariantCultureIgnoreCase",
+                x => UseInvariantCultureIgnoreCase(context.Document, root),
+                DiagnosticId.ComparingStringsWithoutStringComparison),
+            diagnostic);
     }
 
-    private Task<Document> AddBoundsCheck(Document document, SyntaxNode root, StackAllocArrayCreationExpressionSyntax stackallocCreation, ExpressionSyntax arraySizeIdentifier, ArrayTypeSyntax arrayType)
-    {
-        var binaryExpression = SyntaxFactory.BinaryExpression(
-                    SyntaxKind.LessThanExpression,
-                    arraySizeIdentifier,
-                    SyntaxFactory.LiteralExpression(
-                        SyntaxKind.NumericLiteralExpression,
-                        SyntaxFactory.Literal(1024)
-                    )
-                );
-
-        var ternary = SyntaxFactory.ConditionalExpression(
-            binaryExpression,
-            stackallocCreation,
-            SyntaxFactory.ArrayCreationExpression(arrayType)
-        );
-
-        var newRoot = root.ReplaceNode(stackallocCreation, ternary);
-        return Task.FromResult(document.WithSyntaxRoot(newRoot));
-    }
+    private Task<Document> UseOrdinalIgnoreCase(Document document, SyntaxNode root) => Task.FromResult(document);
+    private Task<Document> UseInvariantCultureIgnoreCase(Document document, SyntaxNode root) => Task.FromResult(document);
 }
