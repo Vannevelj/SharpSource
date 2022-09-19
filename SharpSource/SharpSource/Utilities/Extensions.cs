@@ -418,7 +418,12 @@ public static class Extensions
             return invocation;
         }
 
-        var newExpression = functionBeingInvokedThatWeWantToRemove.Expression;
+        var newExpression = functionBeingInvokedThatWeWantToRemove.Expression switch
+        {
+            ConditionalAccessExpressionSyntax conditionalAccess => conditionalAccess.WhenNotNull,
+            PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
+            _ => functionBeingInvokedThatWeWantToRemove.Expression
+        };
 
         //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
 
