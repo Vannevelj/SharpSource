@@ -66,8 +66,8 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
     private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, BinaryExpressionSyntax binaryExpression, string stringComparison, string invokedFunction, SemanticModel semanticModel)
     {
-        var newLeftSideExpression = binaryExpression.Left.RemoveInvocation(typeof(string), invokedFunction, semanticModel);
-        var newRightSideExpression = binaryExpression.Right.RemoveInvocation(typeof(string), invokedFunction, semanticModel);
+        var newLeftSideExpression = binaryExpression.Left.RemoveInvocation(typeof(string), invokedFunction, semanticModel, unwrapSuppress: true);
+        var newRightSideExpression = binaryExpression.Right.RemoveInvocation(typeof(string), invokedFunction, semanticModel, unwrapSuppress: true);
         var negation = binaryExpression.IsKind(SyntaxKind.NotEqualsExpression);
 
         return UseStringComparison(document, root, binaryExpression, newLeftSideExpression, newRightSideExpression, stringComparison, negation);
@@ -75,7 +75,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
     private static Task<Document> UseStringComparison(Document document, CompilationUnitSyntax root, IsPatternExpressionSyntax isPatternExpression, string stringComparison, string invokedFunction, SemanticModel semanticModel)
     {
-        var newLeftSideExpression = isPatternExpression.Expression.RemoveInvocation(typeof(string), invokedFunction, semanticModel);
+        var newLeftSideExpression = isPatternExpression.Expression.RemoveInvocation(typeof(string), invokedFunction, semanticModel, unwrapSuppress: true);
         var newPattern = isPatternExpression.Pattern;
         var negation = false;
         if (isPatternExpression.Pattern is UnaryPatternSyntax { RawKind: (int)SyntaxKind.NotPattern } notPattern)

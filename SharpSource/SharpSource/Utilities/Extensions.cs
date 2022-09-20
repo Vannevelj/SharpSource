@@ -409,7 +409,11 @@ public static class Extensions
             _ => default
         };
 
-    public static SyntaxNode RemoveInvocation(this SyntaxNode invocationOrConditionalAccess, Type type, string method, SemanticModel semanticModel)
+    /// <summary>
+    /// Removes the first instance of a particular method call from a chain of invocations
+    /// </summary>
+    /// <param name="unwrapSuppress">Turns <c>value!.ToString()</c> into <c>value</c> if set to <c>true</c>. Otherwise <c>value!</c></param>
+    public static SyntaxNode RemoveInvocation(this SyntaxNode invocationOrConditionalAccess, Type type, string method, SemanticModel semanticModel, bool unwrapSuppress = false)
     {
         ExpressionSyntax updateName(ExpressionSyntax subExpression, ExpressionSyntax nextInvocation)
         {
@@ -457,7 +461,7 @@ public static class Extensions
                 // s1!.ToLower()
                 MemberAccessExpressionSyntax memberAccessSuppressing when
                     memberAccessSuppressing.Expression is PostfixUnaryExpressionSyntax postfixUnary &&
-                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnary.Operand,
+                    postfixUnary.IsKind(SyntaxKind.SuppressNullableWarningExpression) => unwrapSuppress ? postfixUnary.Operand : postfixUnary,
 
                 // s1.ToLower()
                 MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,

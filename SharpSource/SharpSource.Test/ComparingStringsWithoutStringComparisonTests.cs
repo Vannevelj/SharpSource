@@ -194,17 +194,9 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1!.{call}() == s2!.{call}();";
+bool result = s1!.{call}().Trim() == s2!.{call}().Trim();";
 
-        var result = @$"
-using System;
-
-string s1 = string.Empty;
-string s2 = string.Empty;
-bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
-
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
