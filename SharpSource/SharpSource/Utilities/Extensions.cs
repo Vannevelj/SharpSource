@@ -411,6 +411,12 @@ public static class Extensions
 
     public static SyntaxNode RemoveInvocation(this SyntaxNode invocationOrConditionalAccess, Type type, string method, SemanticModel semanticModel)
     {
+        var parentAboveAll = invocationOrConditionalAccess.Parent;
+        if (parentAboveAll == default)
+        {
+            return invocationOrConditionalAccess;
+        }
+
         ExpressionSyntax updateName(ExpressionSyntax subExpression, ExpressionSyntax nextInvocation)
         {
             var nextInvocationName = nextInvocation switch
