@@ -436,26 +436,26 @@ public static class Extensions
             return newExpression;
         }
 
+        // s1?.ToLower()
+        if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
+        {
+            var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+            var firstInvocation = fullInvocation?.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+            if (firstInvocation == default || fullInvocation == default)
+            {
+                return conditionalAccess.Expression;
+            }
+
+            var subExpression = firstInvocation.Expression;
+            var nextInvocation = fullInvocation.Expression;
+            return conditionalAccess.WithWhenNotNull(fullInvocation.WithExpression(updateName(subExpression, nextInvocation)));
+        }
+
         foreach (InvocationExpressionSyntax nestedInvocation in invocationOrConditionalAccess.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression))
         {
             if (!nestedInvocation.IsAnInvocationOf(type, method, semanticModel))
             {
                 continue;
-            }
-
-            // s1?.ToLower()
-            if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
-            {
-                var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-                var firstInvocation = fullInvocation?.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-                if (firstInvocation == default || fullInvocation == default)
-                {
-                    return conditionalAccess.Expression;
-                }
-
-                var subExpression = firstInvocation.Expression;
-                var nextInvocation = fullInvocation.Expression;
-                return conditionalAccess.WithWhenNotNull(fullInvocation.WithExpression(updateName(subExpression, nextInvocation)));
             }
 
             var newExpression = nestedInvocation.Expression switch
