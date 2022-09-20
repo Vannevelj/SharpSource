@@ -417,6 +417,25 @@ public static class Extensions
             return invocationOrConditionalAccess;
         }
 
+        ExpressionSyntax updateName(ExpressionSyntax subExpression, ExpressionSyntax nextInvocation)
+        {
+            var nextInvocationName = nextInvocation switch
+            {
+                MemberAccessExpressionSyntax memberAccess => memberAccess.Name,
+                MemberBindingExpressionSyntax memberBinding => memberBinding.Name,
+                _ => throw new ArgumentException()
+            };
+
+
+            ExpressionSyntax newExpression = subExpression switch
+            {
+                MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(nextInvocationName),
+                MemberBindingExpressionSyntax memberBinding => memberBinding.WithName(nextInvocationName),
+                _ => throw new ArgumentException()
+            };
+            return newExpression;
+        }
+
         foreach (InvocationExpressionSyntax nestedInvocation in invocationOrConditionalAccess.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression))
         {
             if (!nestedInvocation.IsAnInvocationOf(type, method, semanticModel))
@@ -433,9 +452,19 @@ public static class Extensions
             // s1?.ToLower()
             if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
             {
-                var conditionalExpression = conditionalAccess.Expression;
+                //var surroundingMemberAccess = conditionalAccess.WhenNotNull.DescendantNodesAndSelf<MemberAccessExpressionSyntax>();
+                //var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
 
-                return conditionalExpression;
+                var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+                var firstInvocation = fullInvocation?.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+                if (firstInvocation == default || fullInvocation == default)
+                {
+                    return conditionalAccess.Expression;
+                }
+
+                var subExpression = firstInvocation.Expression;
+                var nextInvocation = fullInvocation.Expression;
+                return conditionalAccess.WithWhenNotNull(fullInvocation.WithExpression(updateName(subExpression, nextInvocation)));
             }
 
             var newExpression = nestedInvocation.Expression switch
