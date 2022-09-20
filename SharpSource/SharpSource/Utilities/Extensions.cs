@@ -452,9 +452,6 @@ public static class Extensions
             // s1?.ToLower()
             if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
             {
-                //var surroundingMemberAccess = conditionalAccess.WhenNotNull.DescendantNodesAndSelf<MemberAccessExpressionSyntax>();
-                //var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
-
                 var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
                 var firstInvocation = fullInvocation?.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
                 if (firstInvocation == default || fullInvocation == default)
@@ -497,17 +494,6 @@ public static class Extensions
                 return newNode;
             }
 
-            //if (surroundingInvocation != parentExpression)
-            //{
-            //    newExpression = parentExpression.ReplaceNode(nestedInvocation, newExpression);
-            //}
-
-            //var subsequentlyInvokedFunctionChain = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
-
-            //var newExpression = subsequentlyInvokedFunctionChain == default ?
-            //    functionBeingInvokedThatWeWantToRemove :
-            //    functionBeingInvokedThatWeWantToRemove.ReplaceNode(functionBeingInvokedThatWeWantToRemove.Expression, subsequentlyInvokedFunctionChain.Expression);
-
             return newExpression;
         }
 
@@ -544,5 +530,37 @@ public static class Extensions
         }
 
         return default;
+    }
+
+    public static bool HasASubsequentInvocation(this ExpressionSyntax node)
+    {
+        // If the invocation is wrapped in a nullable access, i.e. s1?.ToLower(), then the first visit will be the ConditionalAccessExpressionSyntax
+        // If we would return on the first invocation then we would exit as soon as we reach ToLower()
+        // For that reason we explicitly track the number of actual invocations we traverse
+        var visitedInvocations = 0;
+
+        var current = node;
+        while (current != default)
+        {
+            if (current is InvocationExpressionSyntax)
+            {
+                visitedInvocations++;
+            }
+
+            if (visitedInvocations > 1)
+            {
+                return true;
+            }
+
+            current = current switch
+            {
+                InvocationExpressionSyntax invocation => invocation.Expression,
+                ConditionalAccessExpressionSyntax conditional => conditional.WhenNotNull,
+                MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
+                _ => default
+            };
+        }
+
+        return false;
     }
 }

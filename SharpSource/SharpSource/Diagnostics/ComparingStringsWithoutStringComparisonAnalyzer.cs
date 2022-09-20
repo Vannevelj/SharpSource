@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -53,36 +54,28 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
         }
     }
 
-    private static (CapitalizationFunction, string?) StringCapitalizationFunction(ExpressionSyntax expression, SemanticModel semanticModel)
+    private static (CapitalizationFunction, string?) StringCapitalizationFunction(ExpressionSyntax node, SemanticModel semanticModel)
     {
-        foreach (var node in expression.DescendantNodesAndSelf())
-        {
-            if (node is ArgumentSyntax)
+        if (node is InvocationExpressionSyntax or ConditionalAccessExpressionSyntax && !node.HasASubsequentInvocation())
+        {            
+            if (node.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
             {
-                break;
+                return (CapitalizationFunction.Ordinal, "ToLower");
             }
 
-            if (node is InvocationExpressionSyntax or ConditionalAccessExpressionSyntax)
+            if (node.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel))
             {
-                if (node.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
-                {
-                    return (CapitalizationFunction.Ordinal, "ToLower");
-                }
+                return (CapitalizationFunction.Ordinal, "ToUpper");
+            }
 
-                if (node.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel))
-                {
-                    return (CapitalizationFunction.Ordinal, "ToUpper");
-                }
+            if (node.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel))
+            {
+                return (CapitalizationFunction.Invariant, "ToLowerInvariant");
+            }
 
-                if (node.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel))
-                {
-                    return (CapitalizationFunction.Invariant, "ToLowerInvariant");
-                }
-
-                if (node.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel))
-                {
-                    return (CapitalizationFunction.Invariant, "ToUpperInvariant");
-                }
+            if (node.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel))
+            {
+                return (CapitalizationFunction.Invariant, "ToUpperInvariant");
             }
         }
 
