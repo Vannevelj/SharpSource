@@ -443,12 +443,6 @@ public static class Extensions
                 continue;
             }
 
-            var parentExpression = nestedInvocation.Parent;
-            if (parentExpression == default)
-            {
-                continue;
-            }
-
             // s1?.ToLower()
             if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
             {
