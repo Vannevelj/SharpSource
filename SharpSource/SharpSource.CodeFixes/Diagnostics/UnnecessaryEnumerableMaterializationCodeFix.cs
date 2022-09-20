@@ -31,26 +31,21 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
         }
 
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var invocations = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>();
-        var invocation = invocations.First(x => x.IsAnInvocationOf(typeof(Enumerable), operation, semanticModel));
-        var surroundingMemberAccess = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
-        var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
-        if (nestedMemberAccess == default || surroundingMemberAccess == default)
-        {
-            return;
-        }
+        var invocations = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().ToList();
+        var invocation = invocations.Last();
 
         context.RegisterCodeFix(
             CodeAction.Create(
                 $"Remove unnecessary {operation} call",
-                x => RemoveMaterialization(context.Document, surroundingMemberAccess, nestedMemberAccess, root),
+                x => RemoveMaterialization(context.Document, invocation, operation, semanticModel, root),
                 UnnecessaryEnumerableMaterializationAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> RemoveMaterialization(Document document, MemberAccessExpressionSyntax surroundingMemberAccess, MemberAccessExpressionSyntax nestedMemberAccess, SyntaxNode root)
+    private Task<Document> RemoveMaterialization(Document document, InvocationExpressionSyntax surroundingInvocation, string operation, SemanticModel semanticModel, SyntaxNode root)
     {
-        var newRoot = root.ReplaceNode(surroundingMemberAccess.Expression, nestedMemberAccess.Expression);
+        var newInvocation = surroundingInvocation.RemoveInvocation(typeof(Enumerable), operation, semanticModel);
+        var newRoot = root.ReplaceNode(surroundingInvocation, newInvocation);
         var newDocument = document.WithSyntaxRoot(newRoot);
         return Task.FromResult(newDocument);
     }
