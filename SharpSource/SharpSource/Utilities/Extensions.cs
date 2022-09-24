@@ -516,7 +516,7 @@ public static class Extensions
             if (predicate(node))
             {
                 return default;
-            }            
+            }
 
             parent = parent.Parent;
         }

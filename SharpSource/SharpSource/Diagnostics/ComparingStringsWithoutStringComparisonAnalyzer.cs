@@ -56,7 +56,7 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
     private static (CapitalizationFunction, string?) StringCapitalizationFunction(ExpressionSyntax node, SemanticModel semanticModel)
     {
         if (node is InvocationExpressionSyntax or ConditionalAccessExpressionSyntax && !node.HasASubsequentInvocation())
-        {            
+        {
             if (node.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
             {
                 return (CapitalizationFunction.Ordinal, "ToLower");

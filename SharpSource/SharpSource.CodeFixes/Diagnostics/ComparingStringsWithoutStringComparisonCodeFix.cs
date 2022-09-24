@@ -36,7 +36,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
         if (expression == default)
         {
             return;
-        }        
+        }
 
         var isOrdinal = diagnostic.Properties["comparison"] == "ordinal";
         var invokedFunction = diagnostic.Properties["function"];
@@ -51,7 +51,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
             CodeAction.Create("Use StringComparison.OrdinalIgnoreCase",
                 x => expression is BinaryExpressionSyntax binaryExpression
                     ? UseStringComparison(context.Document, compilation, binaryExpression, stringComparison, invokedFunction, semanticModel)
-                    : UseStringComparison(context.Document, compilation, (IsPatternExpressionSyntax) expression, stringComparison, invokedFunction, semanticModel),
+                    : UseStringComparison(context.Document, compilation, (IsPatternExpressionSyntax)expression, stringComparison, invokedFunction, semanticModel),
                 DiagnosticId.ComparingStringsWithoutStringComparison),
             diagnostic);
 

@@ -200,10 +200,10 @@ bool result = s1!.{call}().Trim() == s2!.{call}().Trim();";
     }
 
     [TestMethod]
-    [DataRow( "OrdinalIgnoreCase")]
-    [DataRow( "OrdinalIgnoreCase")]
-    [DataRow( "InvariantCultureIgnoreCase")]
-    [DataRow( "InvariantCultureIgnoreCase")]
+    [DataRow("OrdinalIgnoreCase")]
+    [DataRow("OrdinalIgnoreCase")]
+    [DataRow("InvariantCultureIgnoreCase")]
+    [DataRow("InvariantCultureIgnoreCase")]
     public async Task ComparingStringsWithoutStringComparison_AlreadyUsingStringComparison(string expectedStringComparison)
     {
         var original = @$"
