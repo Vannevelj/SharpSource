@@ -2,7 +2,8 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.11.0] - 2022-09-19
-- `UnnecessaryEnumerableMaterialization`: supports `?.` and `!.` operators
+- `ComparingStringsWithoutStringComparison`: A `string` is being compared through allocating a new `string`, e.g. using `ToLower()` or `ToUpperInvariant()`. Use a case-insensitive comparison instead which does not allocate.
+- `UnnecessaryEnumerableMaterialization`: supports `!.` operator
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: supports `?.` and `!.` operators
 
 ## [1.10.1] - 2022-09-16
