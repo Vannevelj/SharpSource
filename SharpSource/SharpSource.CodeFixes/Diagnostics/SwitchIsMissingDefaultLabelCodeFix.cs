@@ -25,11 +25,12 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var statement = root?.FindNode(diagnosticSpan).FirstAncestorOrSelf<SwitchStatementSyntax>(x => x is not null);
+        var switchToken = root?.FindNode(diagnosticSpan);
+        var statement = switchToken?.DescendantNodesAndSelf().FirstOfKind<SwitchStatementSyntax>(SyntaxKind.SwitchStatement);
         if (root is not CompilationUnitSyntax compilation || statement == default)
         {
             return;

@@ -339,7 +339,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthsizedIntegerLiteral()
+    public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnParenthesizedIntegerLiteral()
     {
         var original = @"
 using System;
@@ -424,6 +424,35 @@ namespace ConsoleApplication1
         }
     }
 }";
+
+        await VerifyDiagnostic(original, "Switch should have default label.");
+        await VerifyFix(original, result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/167")]
+    public async Task SwitchIsMissingDefaultLabel_TopLevelStatement()
+    {
+        var original = @"
+using System;
+
+switch (Test.A)
+{
+    case Test.A: return;
+}
+
+enum Test { A, B }";
+
+        var result = @"
+using System;
+
+switch (Test.A)
+{
+    case Test.A: return;
+    default:
+        throw new ArgumentException(""Unsupported value"");
+}
+
+enum Test { A, B }";
 
         await VerifyDiagnostic(original, "Switch should have default label.");
         await VerifyFix(original, result);
