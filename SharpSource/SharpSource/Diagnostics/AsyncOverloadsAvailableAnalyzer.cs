@@ -33,7 +33,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
-        var surroundingDeclaration = invocation.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
+        var surroundingDeclaration = invocation.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
 
         var isInCorrectContext = surroundingDeclaration switch
         {

@@ -62,7 +62,8 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
             return;
         }
 
-        if (!SupportedLookups.Any(lookup => context.Node.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
+        if (context.Node is InvocationExpressionSyntax invocationExpression &&
+            !SupportedLookups.Any(lookup => invocationExpression.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
         {
             return;
         }
@@ -82,12 +83,12 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         var implementsGetHashCode = false;
         foreach (var member in invokedType.GetMembers())
         {
-            if (member.Name == nameof(Equals))
+            if (member.Name == WellKnownMemberNames.ObjectEquals)
             {
                 implementsEquals = true;
             }
 
-            if (member.Name == nameof(GetHashCode))
+            if (member.Name == WellKnownMemberNames.ObjectGetHashCode)
             {
                 implementsGetHashCode = true;
             }

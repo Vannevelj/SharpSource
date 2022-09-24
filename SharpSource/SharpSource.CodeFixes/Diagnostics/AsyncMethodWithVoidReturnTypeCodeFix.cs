@@ -29,7 +29,7 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var methodDeclaration =
-            root?.FindToken(diagnosticSpan.Start).Parent?.FirstAncestorOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
+            root?.FindToken(diagnosticSpan.Start).Parent?.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
 
         if (root == default || methodDeclaration == default)
         {

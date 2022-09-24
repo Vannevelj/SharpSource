@@ -62,8 +62,7 @@ public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
 
         foreach (var member in enumType.GetMembers())
         {
-            // skip `.ctor`
-            if (member.IsImplicitlyDeclared)
+            if (member.Name == WellKnownMemberNames.InstanceConstructorName)
             {
                 continue;
             }

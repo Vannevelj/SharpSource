@@ -457,4 +457,18 @@ class Test
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/187")]
+    public async Task StaticInitializerAccessedBeforeInitialization_ReferencesItself()
+    {
+        var original = @"
+using System.Linq;
+
+class Test
+{
+	public static int FirstField = Enumerable.Repeat(0, FirstField).First();
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }

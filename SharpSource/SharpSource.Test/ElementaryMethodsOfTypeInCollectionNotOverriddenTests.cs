@@ -512,4 +512,48 @@ class MyCollectionItem {{}}
 
         await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
+
+    [TestMethod]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithOptionalAccess()
+    {
+        var original = @"
+using System.Collections.Generic;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var list = new List<MyCollectionItem>();
+            var s = list?.Contains(default);
+        }
+    }
+
+    class MyCollectionItem {}
+}";
+
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
+
+    [TestMethod]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithSuppressAccess()
+    {
+        var original = @"
+using System.Collections.Generic;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var list = new List<MyCollectionItem>();
+            var s = list!.Contains(default);
+        }
+    }
+
+    class MyCollectionItem {}
+}";
+
+        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
 }

@@ -110,7 +110,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         labels.AddRange(caseLabels.OfType<IdentifierNameSyntax>().Select(l => l.Identifier.ValueText));
 
         // don't create members like ".ctor"
-        return enumType.GetMembers().Where(member => !labels.Contains(member.Name) && !member.IsImplicitlyDeclared).Select(member => member.Name);
+        return enumType.GetMembers().Where(member => !labels.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName).Select(member => member.Name);
     }
 
     private string GetQualifierForException(CompilationUnitSyntax root)

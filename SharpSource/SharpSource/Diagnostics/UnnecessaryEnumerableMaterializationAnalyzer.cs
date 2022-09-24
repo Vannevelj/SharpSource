@@ -49,6 +49,12 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var hasConditionalAccess = expression.FirstAncestorOrSelfOfType(SyntaxKind.ConditionalAccessExpression);
+        if (hasConditionalAccess != default)
+        {
+            return;
+        }
+
         var invokedFunction = expression.Name.Identifier.ValueText;
         var isSuspiciousInvocation = DeferredExecutionOperations.Contains(invokedFunction) || MaterializingOperations.Contains(invokedFunction);
         if (!isSuspiciousInvocation)

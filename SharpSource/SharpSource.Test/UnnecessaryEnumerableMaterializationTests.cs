@@ -200,4 +200,51 @@ values.Skip(1).Reverse().Take(1);
         await VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
         await VerifyFix(original, expected);
     }
+
+    [TestMethod]
+    public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values?.ToArray().ToList();";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values?.ToArray().ToList().AsEnumerable();";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task UnnecessaryEnumerableMaterialization_SuppressingAccess()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values!.ToArray().ToList();";
+
+        var expected = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values!.ToList();";
+
+        await VerifyDiagnostic(original, $"ToArray is unnecessarily materializing the IEnumerable and can be omitted");
+        await VerifyFix(original, expected);
+    }
 }

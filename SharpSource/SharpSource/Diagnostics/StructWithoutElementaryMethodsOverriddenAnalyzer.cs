@@ -46,17 +46,17 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
             }
 
             var method = (IMethodSymbol)symbol;
-            if (method is { MetadataName: nameof(Equals), Parameters.Length: 1 })
+            if (method is { MetadataName: WellKnownMemberNames.ObjectEquals, Parameters.Length: 1 })
             {
                 objectEquals = method;
             }
 
-            if (method is { MetadataName: nameof(GetHashCode), Parameters.Length: 0 })
+            if (method is { MetadataName: WellKnownMemberNames.ObjectGetHashCode, Parameters.Length: 0 })
             {
                 objectGetHashCode = method;
             }
 
-            if (method is { MetadataName: nameof(ToString), Parameters.Length: 0 })
+            if (method is { MetadataName: WellKnownMemberNames.ObjectToString, Parameters.Length: 0 })
             {
                 objectToString = method;
             }

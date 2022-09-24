@@ -104,7 +104,7 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var ancestor = throwStatement.FirstAncestorOfType(
+        var ancestor = throwStatement.FirstAncestorOrSelfOfType(
             SyntaxKind.MethodDeclaration,
             SyntaxKind.GetAccessorDeclaration,
             SyntaxKind.FinallyClause,
@@ -132,7 +132,11 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
                 var currentMethodSymbol = context.SemanticModel.GetDeclaredSymbol(method);
 
                 var objectSymbol = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
-                var objectGetHashCodeSymbol = objectSymbol.GetMembers("GetHashCode").Single();
+                var objectGetHashCodeSymbol = objectSymbol.GetMembers(WellKnownMemberNames.ObjectGetHashCode).SingleOrDefault();
+                if (objectGetHashCodeSymbol == default)
+                {
+                    return;
+                }
 
                 currentMethodSymbol = currentMethodSymbol?.GetBaseDefinition();
 
