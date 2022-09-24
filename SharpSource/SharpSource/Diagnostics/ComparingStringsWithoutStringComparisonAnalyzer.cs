@@ -35,7 +35,11 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
         var expressionsToCheck = context.Node switch
         {
             BinaryExpressionSyntax binaryExpression => new[] { binaryExpression.Left, binaryExpression.Right },
-            IsPatternExpressionSyntax isPatternExpression => new[] { isPatternExpression.Expression },
+            IsPatternExpressionSyntax isPatternExpression
+                when isPatternExpression.Pattern
+                    is ConstantPatternSyntax
+                    or UnaryPatternSyntax { RawKind: (int)SyntaxKind.NotPattern, Pattern: ConstantPatternSyntax }
+                        => new[] { isPatternExpression.Expression },
             _ => Array.Empty<ExpressionSyntax>()
         };
 

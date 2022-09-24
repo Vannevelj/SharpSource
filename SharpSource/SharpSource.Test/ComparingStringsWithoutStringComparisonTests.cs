@@ -324,6 +324,38 @@ bool result = !string.Equals(s1, ""test"", StringComparison.{expectedStringCompa
     [DataRow("ToUpper")]
     [DataRow("ToLowerInvariant")]
     [DataRow("ToUpperInvariant")]
+    public async Task ComparingStringsWithoutStringComparison_IsOr(string call)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+bool result = s1.{call}() is (""test"" or ""other"");";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    [DataRow("ToLowerInvariant")]
+    [DataRow("ToUpperInvariant")]
+    public async Task ComparingStringsWithoutStringComparison_IsNotOr(string call)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+bool result = s1.{call}() is not (""test"" or ""other"");";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    [DataRow("ToLowerInvariant")]
+    [DataRow("ToUpperInvariant")]
     public async Task ComparingStringsWithoutStringComparison_WrappedInAnother(string call)
     {
         var original = @$"
