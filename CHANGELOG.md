@@ -5,6 +5,7 @@ https://keepachangelog.com/en/1.0.0/
 - `ComparingStringsWithoutStringComparison`: A `string` is being compared through allocating a new `string`, e.g. using `ToLower()` or `ToUpperInvariant()`. Use a case-insensitive comparison instead which does not allocate.
 - `UnnecessaryEnumerableMaterialization`: supports `!.` operator
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: supports `?.` and `!.` operators
+- `StaticInitializerAccessedBeforeInitialization`: no longer triggers when referencing itself
 
 ## [1.10.1] - 2022-09-16
 - `StaticInitializerAccessedBeforeInitialization`: supports implicit object creation expressions

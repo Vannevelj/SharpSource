@@ -58,20 +58,18 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
             return;
         }
 
-        var declarators = fieldDeclaration.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList();
-        var assignments = declarators.Where(d => d.Initializer is not null);
-
-        foreach (var assignment in assignments)
+        var declarators = fieldDeclaration.DescendantNodes().OfType<VariableDeclaratorSyntax>().Where(d => d.Initializer is not null);
+        foreach (var declarator in declarators)
         {
-            var identifiersInAssignment = assignment.DescendantNodes().OfType<IdentifierNameSyntax>();
-            foreach (var (rule, identifier) in GetSuspectIdentifiers(identifiersInAssignment, context.SemanticModel, fieldDeclaration))
+            var identifiersInAssignment = declarator.DescendantNodes().OfType<IdentifierNameSyntax>();
+            foreach (var (rule, identifier) in GetSuspectIdentifiers(identifiersInAssignment, context.SemanticModel, fieldDeclaration, declarator))
             {
-                context.ReportDiagnostic(Diagnostic.Create(rule, identifier.GetLocation(), assignment.Identifier.ValueText, identifier.Identifier.ValueText));
+                context.ReportDiagnostic(Diagnostic.Create(rule, identifier.GetLocation(), declarator.Identifier.ValueText, identifier.Identifier.ValueText));
             }
         }
     }
 
-    private static IEnumerable<(DiagnosticDescriptor, IdentifierNameSyntax)> GetSuspectIdentifiers(IEnumerable<IdentifierNameSyntax> identifiers, SemanticModel semanticModel, FieldDeclarationSyntax fieldDeclaration)
+    private static IEnumerable<(DiagnosticDescriptor, IdentifierNameSyntax)> GetSuspectIdentifiers(IEnumerable<IdentifierNameSyntax> identifiers, SemanticModel semanticModel, FieldDeclarationSyntax fieldDeclaration, VariableDeclaratorSyntax variableDeclarator)
     {
         var enclosingType = fieldDeclaration.GetEnclosingTypeNode();
         if (enclosingType == default)
@@ -121,6 +119,12 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
 
             var constantValue = semanticModel.GetConstantValue(identifier);
             if (constantValue.HasValue)
+            {
+                continue;
+            }
+
+            var symbolOfDeclaredField = semanticModel.GetDeclaredSymbol(variableDeclarator);
+            if (referencedSymbol.Equals(symbolOfDeclaredField, SymbolEqualityComparer.Default))
             {
                 continue;
             }
