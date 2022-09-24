@@ -211,15 +211,20 @@ using System.Collections.Generic;
 IEnumerable<string> values = new [] { ""test"" };
 values?.ToArray().ToList();";
 
-        var expected = @"
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
+    {
+        var original = @"
 using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values?.ToList();";
+values?.ToArray().ToList().AsEnumerable();";
 
-        await VerifyDiagnostic(original, $"ToArray is unnecessarily materializing the IEnumerable and can be omitted");
-        await VerifyFix(original, expected);
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
