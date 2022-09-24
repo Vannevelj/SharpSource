@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.11.1] - 2022-09-25
 - `SwitchIsMissingDefaultLabel`: code fix now works in top-level statements
+- `AttributeMustSpecifyAttributeUsage`: correctly fires when the type is defined in the netstandard assembly
 
 ## [1.11.0] - 2022-09-24
 - `ComparingStringsWithoutStringComparison`: A `string` is being compared through allocating a new `string`, e.g. using `ToLower()` or `ToUpperInvariant()`. Use a case-insensitive comparison instead which does not allocate.
