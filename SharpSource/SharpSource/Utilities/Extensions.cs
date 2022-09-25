@@ -556,4 +556,20 @@ public static class Extensions
 
         return false;
     }
+
+    public static IEnumerable<SyntaxNode> GetStatements(this BaseMethodDeclarationSyntax methodDeclaration)
+    {
+        if (methodDeclaration.Body != default)
+        {
+            foreach (var statement in methodDeclaration.Body.Statements)
+            {
+                yield return statement;
+            }
+        }
+
+        if (methodDeclaration.ExpressionBody != default)
+        {
+            yield return methodDeclaration.ExpressionBody.Expression;
+        }
+    }
 }
