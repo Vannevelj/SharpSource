@@ -471,4 +471,24 @@ class Test
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/189")]
+    public async Task StaticInitializerAccessedBeforeInitialization_PassingFunctionReference()
+    {
+        var original = @"
+using System;
+
+class Test
+{
+	public static Other FirstField = new Other(DoThing);
+	private static void DoThing() {}
+}
+
+class Other 
+{
+	public Other(Action callback) { }
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }

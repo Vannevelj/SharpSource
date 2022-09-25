@@ -98,6 +98,11 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 continue;
             }
 
+            if (referencedSymbol is IMethodSymbol)
+            {
+                continue;
+            }
+
             var referencedIdentifierDeclaration = referencedSymbol.DeclaringSyntaxReferences[0];
             if (fieldDeclaration.SpanStart > referencedIdentifierDeclaration.Span.Start)
             {

@@ -467,4 +467,26 @@ void Method(bool b) {{ }}";
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/56")]
+    public async Task ComparingStringsWithoutStringComparison_WithOtherUsingStatements()
+    {
+        var original = @"
+using System.Text;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = s1.ToLower() == s2.ToLower();";
+
+        var result = @$"
+using System.Text;
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
 }
