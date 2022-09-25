@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.12.0] - 2022-09-25
+- `ParameterAssignedInConstructor`: A parameter was assigned in a constructor
+
 ## [1.11.2] - 2022-09-25
 - Fixed an issue where in some scenarios, necessary `using` statements were not getting added
 - `StaticInitializerAccessedBeforeInitialization`: no longer triggers when passing a method reference
