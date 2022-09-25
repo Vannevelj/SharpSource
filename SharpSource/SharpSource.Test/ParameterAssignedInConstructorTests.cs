@@ -12,7 +12,7 @@ public class ParameterAssignedInConstructorTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ParameterAssignedInConstructorAnalyzer();
 
-    //protected override CodeFixProvider CodeFixProvider => new ParameterAssignedInConstructorCodeFix();
+    protected override CodeFixProvider CodeFixProvider => new ParameterAssignedInConstructorCodeFix();
 
     [TestMethod]
     public async Task ParameterAssignedInConstructor_Property()
@@ -215,7 +215,7 @@ partial class Test
 }";
 
         await VerifyDiagnostic(new[] { file1, file2 }, "Suspicious assignment of parameter count in constructor of Test");
-        await VerifyFix(file2, result);
+        await VerifyFix(file2, result, additionalSources: new[] { file1 });
     }
 
     [TestMethod]
@@ -239,6 +239,20 @@ class Test
 
         await VerifyDiagnostic(original, "Suspicious assignment of parameter count in constructor of Test");
         await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task ParameterAssignedInConstructor_NotSimpleAssignment()
+    {
+        var original = @"
+class Test
+{
+    int Count { get; set; }
+
+    Test(int count) => count = count > 5 ? Count : 0;
+}";
+
+        await VerifyDiagnostic(original);
     }
 
     [TestMethod]
@@ -298,6 +312,57 @@ class Test
     int Count { get; set; }
 
     Test(out int count) => count = Count;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ParameterAssignedInConstructor_OtherStatements()
+    {
+        var original = @"
+using System;
+
+class Test
+{
+    int Count { get; set; }
+
+    Test(int count)
+    {
+        Console.Read();
+    }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ParameterAssignedInConstructor_WithoutFieldOrProperty()
+    {
+        var original = @"
+class Test
+{
+    Test(int count)
+    {
+        count = 5;
+    }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ParameterAssignedInConstructor_MoreThanSimpleAssignment()
+    {
+        var original = @"
+class Test
+{
+    int Count { get; set; }
+
+    Test(int count)
+    {
+        count = Count + Count;
+    }
 }";
 
         await VerifyDiagnostic(original);

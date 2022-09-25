@@ -32,6 +32,52 @@ public class ParameterAssignedInConstructorAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(SyntaxNodeAnalysisContext context)
     {
-        
+        var constructorDeclaration = (ConstructorDeclarationSyntax)context.Node;
+
+        if (constructorDeclaration.ParameterList.Parameters is not { Count: >= 1 })
+        {
+            return;
+        }
+
+        var parameterSymbols = constructorDeclaration.ParameterList.Parameters.Select(param => context.SemanticModel.GetDeclaredSymbol(param));
+
+        foreach (var statement in constructorDeclaration.GetStatements())
+        {
+            var assignment = statement switch
+            {
+                AssignmentExpressionSyntax assignmentExpression => assignmentExpression,
+                ExpressionStatementSyntax expressionStatement when expressionStatement.Expression is AssignmentExpressionSyntax assignmentExpression => assignmentExpression,
+                _ => default
+            };
+
+            if (assignment == default)
+            {
+                continue;
+            }
+
+            var leftAssignmentSymbol = context.SemanticModel.GetSymbolInfo(assignment.Left).Symbol;
+            if (leftAssignmentSymbol == default)
+            {
+                continue;
+            }
+
+            var correspondingParameter = parameterSymbols.FirstOrDefault(parameterSymbol => leftAssignmentSymbol.Equals(parameterSymbol, SymbolEqualityComparer.Default));
+            if (correspondingParameter == default)
+            {
+                continue;
+            }
+
+            if (correspondingParameter.RefKind is RefKind.Out or RefKind.Ref)
+            {
+                continue;
+            }
+
+            if (assignment.Right is not IdentifierNameSyntax)
+            {
+                continue;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, assignment.Left.GetLocation(), leftAssignmentSymbol.Name, correspondingParameter?.ContainingType.Name));
+        }
     }
 }
