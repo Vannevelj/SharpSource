@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.11.2] - 2022-09-25
 - Fixed an issue where in some scenarios, necessary `using` statements were not getting added
+- `StaticInitializerAccessedBeforeInitialization`: no longer triggers when passing a method reference
 
 ## [1.11.1] - 2022-09-25
 - `SwitchIsMissingDefaultLabel`: code fix now works in top-level statements
