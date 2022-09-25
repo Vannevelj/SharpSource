@@ -337,7 +337,7 @@ public static class Extensions
 
     public static CompilationUnitSyntax AddUsingStatementIfMissing(this CompilationUnitSyntax compilation, string import)
     {
-        if (!compilation.Usings.Any(x => x.Name.GetText().ToString().Contains(import)))
+        if (!compilation.Usings.Any(x => x.Name.GetText().ToString() == import))
         {
             var parts = import.Split('.').Select(x => SyntaxFactory.IdentifierName(x)).ToList();
             if (parts.Count == 1)
