@@ -85,14 +85,19 @@ public abstract class DiagnosticVerifier
     /// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
     /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
     /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-    protected async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0)
+    protected async Task VerifyFix(string oldSource, string newSource, int codeFixIndex = 0, string[]? additionalSources = null)
     {
         if (CodeFixProvider == null)
         {
             throw new InvalidOperationException(nameof(CodeFixProvider));
         }
 
-        var document = CreateProject(new[] { oldSource }).Documents.First();
+        IEnumerable<string> allSources = new[] { oldSource };
+        if (additionalSources is { Length: > 0 })
+        {
+            allSources = allSources.Concat(additionalSources);
+        }
+        var document = CreateProject(allSources).Documents.First();
         var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(document);
         var compilerDiagnostics = ( await GetCompilerDiagnostics(document) ).ToArray();
         var attempts = analyzerDiagnostics.Length;
