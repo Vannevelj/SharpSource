@@ -504,7 +504,23 @@ class MyClass
     async ValueTask<int> GetAsync() => 5;
 }";
 
+        var result = @"
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        await GetAsync();
+    }
+
+    int Get() => 5;
+
+    async ValueTask<int> GetAsync() => 5;
+}";
+
         await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
@@ -568,7 +584,24 @@ class Test
 	}
 }";
 
+        var result = @"
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+
+class Test
+{
+	public int DoThing() => 5;
+	public async Task<int> DoThingAsync() => 5;
+
+	async Task Method()
+	{
+		var obj = new List<Test>().Select(async t => await t.DoThingAsync());
+	}
+}";
+
         await VerifyDiagnostic(original, "Async overload available for Test.DoThing");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
