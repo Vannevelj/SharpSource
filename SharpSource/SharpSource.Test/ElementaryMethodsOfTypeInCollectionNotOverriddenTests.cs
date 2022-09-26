@@ -556,4 +556,28 @@ namespace ConsoleApplication1
 
         await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/198")]
+    [DataRow("int")]
+    [DataRow("uint")]
+    [DataRow("short")]
+    [DataRow("long")]
+    [DataRow("ulong")]
+    [DataRow("ushort")]
+    [DataRow("float")]
+    [DataRow("double")]
+    [DataRow("Guid")]
+    [DataRow("string")]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_BasicTypes(string type)
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+var x = new HashSet<{type}>();
+if (x.Contains(default)) {{ }}";
+
+        await VerifyDiagnostic(original);
+    }
 }
