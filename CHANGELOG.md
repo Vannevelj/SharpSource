@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.12.1] - 2022-09-26
+- `AttributeMustSpecifyAttributeUsage`: Takes definitions on base classes into account
+
 ## [1.12.0] - 2022-09-25
 - `ParameterAssignedInConstructor`: A parameter was assigned in a constructor
 

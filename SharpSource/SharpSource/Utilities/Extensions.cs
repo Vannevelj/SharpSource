@@ -387,6 +387,9 @@ public static class Extensions
             return symbol?.MetadataName == type.Name && symbol.IsDefinedInSystemAssembly();
         });
 
+    public static IEnumerable<INamedTypeSymbol> GetAttributesOfType(this IEnumerable<INamedTypeSymbol?> attributes, Type type) =>
+        attributes.Where(a => a?.MetadataName == type.Name && a.IsDefinedInSystemAssembly())!;
+
     public static IMethodSymbol GetBaseDefinition(this IMethodSymbol method)
     {
         if (!method.IsOverride)
