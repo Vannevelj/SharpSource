@@ -45,20 +45,15 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
 
     private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
     {
-        ExpressionSyntax newExpression;
-        if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+        ExpressionSyntax? newExpression = invocation.Expression switch
         {
-            newExpression = memberAccess.WithName(GetIdentifier(memberAccess.Name));
-        }
-        else if (invocation.Expression is IdentifierNameSyntax identifierName)
-        {
-            newExpression = GetIdentifier(identifierName);
-        }
-        else if (invocation.Expression is GenericNameSyntax genericName)
-        {
-            newExpression = genericName.WithIdentifier(GetIdentifier(genericName).Identifier);
-        }
-        else
+            MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(GetIdentifier(memberAccess.Name)),
+            IdentifierNameSyntax identifierName => GetIdentifier(identifierName),
+            GenericNameSyntax genericName => genericName.WithIdentifier(GetIdentifier(genericName).Identifier),
+            _ => default
+        };
+
+        if (newExpression == default)
         {
             return Task.FromResult(document);
         }
