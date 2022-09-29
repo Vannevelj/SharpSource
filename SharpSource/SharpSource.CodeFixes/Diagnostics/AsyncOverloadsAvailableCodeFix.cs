@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -9,7 +8,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -30,6 +28,12 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         }
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
+
+        var currentContextHasCancellationToken = diagnostic.Properties["currentContextHasCancellationToken"] == "true";
+        var currentInvocationHasCancellationToken = diagnostic.Properties["currentInvocationHasCancellationToken"] == "true";
+        var newInvocationAcceptsCancellationToken = diagnostic.Properties["newInvocationAcceptsCancellationToken"] == "true";
+        var currentContextHasOptionalCancellationToken = diagnostic.Properties["currentContextHasOptionalCancellationToken"] == "true";
+
         var invocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
         if (invocation == default)
         {
@@ -38,12 +42,16 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Async overload",
-                x => UseAsyncOverload(context.Document, invocation, root),
+                x => UseAsyncOverload(
+                    context.Document, invocation, root,
+                    currentContextHasCancellationToken, currentInvocationHasCancellationToken, newInvocationAcceptsCancellationToken, currentContextHasOptionalCancellationToken),
                 AsyncOverloadsAvailableAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
+    private Task<Document> UseAsyncOverload(
+        Document document, InvocationExpressionSyntax invocation, SyntaxNode root,
+        bool currentContextHasCancellationToken, bool currentInvocationHasCancellationToken, bool newInvocationAcceptsCancellationToken, bool currentContextHasOptionalCancellationToken)
     {
         ExpressionSyntax? newExpression = invocation.Expression switch
         {
@@ -59,6 +67,16 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         }
 
         var newInvocation = invocation.WithExpression(newExpression);
+        if (newInvocationAcceptsCancellationToken)
+        {
+            if (currentContextHasCancellationToken && !currentInvocationHasCancellationToken)
+            {
+                var cancellationToken = currentContextHasOptionalCancellationToken ? SyntaxFactory.ParseExpression("token ?? CancellationToken.None") : SyntaxFactory.IdentifierName("token");
+                var newArguments = newInvocation.ArgumentList.AddArguments(SyntaxFactory.Argument(cancellationToken));
+                newInvocation = newInvocation.WithArgumentList(newArguments);
+            }
+        }
+
         ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
 
         // If we're accessing the result of the method call, i.e. `DoThing().Property` then we need to wrap the `await` expression with parentheses

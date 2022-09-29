@@ -301,6 +301,32 @@ namespace ConsoleApplication1
         await VerifyFix(original, result);
     }
 
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DifferentParameters_MandatoryCancellationToken()
+    {
+        var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        async Task MyMethod()
+        {
+            Get();
+        }
+
+        string Get() => null;
+
+        async Task<string> GetAsync(CancellationToken token) => null;
+    }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/24")]
     public async Task AsyncOverloadsAvailable_GenericMethod()
     {
@@ -621,6 +647,212 @@ class Test
 	{
 		var obj = new List<Test>().Select(async t => t.DoThing());
 	}
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_PassesThroughCancellationToken()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        Get();
+    }
+
+    int Get() => 5;
+    async Task<int> GetAsync(CancellationToken token) => 5;
+}";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        await GetAsync(token);
+    }
+
+    int Get() => 5;
+    async Task<int> GetAsync(CancellationToken token) => 5;
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_PassesThroughCancellationToken_Optional()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken? token = null)
+    {
+        Get();
+    }
+
+    int Get() => 5;
+    async Task<int> GetAsync(CancellationToken token) => 5;
+}";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken? token = null)
+    {
+        await GetAsync(token ?? CancellationToken.None);
+    }
+
+    int Get() => 5;
+    async Task<int> GetAsync(CancellationToken token) => 5;
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_PassesThroughCancellationToken_OtherParameters()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        Get(5);
+    }
+
+    int Get(int i) => 5;
+    async Task<int> GetAsync(int x, CancellationToken token) => 5;
+}";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        await GetAsync(5, token);
+    }
+
+    int Get(int i) => 5;
+    async Task<int> GetAsync(int x, CancellationToken token) => 5;
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_MultipleParameters()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        Get(32, string.Empty, true);
+    }
+
+    int Get(int i, string y, bool z) => 5;
+    async Task<int> GetAsync(int i, string y, bool z) => 5;
+}";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        await GetAsync(32, string.Empty, true);
+    }
+
+    int Get(int i, string y, bool z) => 5;
+    async Task<int> GetAsync(int i, string y, bool z) => 5;
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_PassesThroughCancellationToken_AlreadyPassingThrough()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        Get(5, token);
+    }
+
+    int Get(int i, CancellationToken token) => 5;
+    async Task<int> GetAsync(int x, CancellationToken token) => 5;
+}";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        await GetAsync(5, token);
+    }
+
+    int Get(int i, CancellationToken token) => 5;
+    async Task<int> GetAsync(int x, CancellationToken token) => 5;
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_LocalFunction()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        int Get(int i, CancellationToken token) => 5;
+        async Task<int> GetAsync(int x, CancellationToken token) => 5;
+
+        Get(5, token);
+    }
 }";
 
         await VerifyDiagnostic(original);

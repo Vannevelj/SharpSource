@@ -575,4 +575,10 @@ public static class Extensions
             yield return methodDeclaration.ExpressionBody.Expression;
         }
     }
+
+    public static SyntaxNode? GetSurroundingContext(this SyntaxNode node)
+    {
+        var surroundingDeclaration = node.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
+        return surroundingDeclaration;
+    }
 }
