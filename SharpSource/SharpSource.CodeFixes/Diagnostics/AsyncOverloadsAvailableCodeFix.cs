@@ -58,17 +58,14 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
 
         var newInvocation = invocation.WithExpression(newExpression);
 
-        if (diagnostic.Properties["newInvocationAcceptsCancellationToken"] == "true")
+        var shouldAddCancellationToken = diagnostic.Properties["shouldAddCancellationToken"] == "true";
+        var cancellationTokenName = diagnostic.Properties["cancellationTokenName"];
+        if (shouldAddCancellationToken && cancellationTokenName != default)
         {
-            var cancellationTokenName = diagnostic.Properties["cancellationTokenName"];
-            var currentInvocationHasCancellationToken = diagnostic.Properties["currentInvocationHasCancellationToken"] == "true";
-            if (cancellationTokenName != default && !currentInvocationHasCancellationToken)
-            {
-                var cancellationTokenIsOptional = diagnostic.Properties["cancellationTokenIsOptional"] == "true";
-                var cancellationToken = cancellationTokenIsOptional ? SyntaxFactory.ParseExpression($"{cancellationTokenName} ?? CancellationToken.None") : SyntaxFactory.IdentifierName(cancellationTokenName);
-                var newArguments = newInvocation.ArgumentList.AddArguments(SyntaxFactory.Argument(cancellationToken));
-                newInvocation = newInvocation.WithArgumentList(newArguments);
-            }
+            var cancellationTokenIsOptional = diagnostic.Properties["cancellationTokenIsOptional"] == "true";
+            var cancellationToken = cancellationTokenIsOptional ? SyntaxFactory.ParseExpression($"{cancellationTokenName} ?? CancellationToken.None") : SyntaxFactory.IdentifierName(cancellationTokenName);
+            var newArguments = newInvocation.ArgumentList.AddArguments(SyntaxFactory.Argument(cancellationToken));
+            newInvocation = newInvocation.WithArgumentList(newArguments);
         }
 
         ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);

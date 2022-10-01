@@ -51,20 +51,20 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         switch (invocation.Expression)
         {
             case MemberAccessExpressionSyntax memberAccess:
-                CheckIfOverloadAvailable(memberAccess.Name, context, surroundingDeclaration);
+                CheckIfOverloadAvailable(memberAccess.Name, context, surroundingDeclaration, invocation);
                 break;
             case IdentifierNameSyntax identifierName:
-                CheckIfOverloadAvailable(identifierName, context, surroundingDeclaration);
+                CheckIfOverloadAvailable(identifierName, context, surroundingDeclaration, invocation);
                 break;
             case GenericNameSyntax genericName:
-                CheckIfOverloadAvailable(genericName, context, surroundingDeclaration);
+                CheckIfOverloadAvailable(genericName, context, surroundingDeclaration, invocation);
                 break;
             default:
                 break;
         }
     }
 
-    private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration)
+    private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration, InvocationExpressionSyntax invocation)
     {
         var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
         if (invokedSymbol?.ContainingType == default)
@@ -91,11 +91,14 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethodDeclaration.GetCancellationTokenFromParameters();
 
+                var currentInvocationPassesCancellationToken = invocation.PassesThroughCancellationToken(context.SemanticModel);
+                var newInvocationAcceptsCancellationToken = overload.GetCancellationTokenFromParameters() != default;
+
                 properties.Add("cancellationTokenName", cancellationTokenName);
                 properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
 
-                properties.Add("currentInvocationHasCancellationToken", invokedMethod.GetCancellationTokenFromParameters() != default ? "true" : "false");
-                properties.Add("newInvocationAcceptsCancellationToken", overload.GetCancellationTokenFromParameters() != default ? "true" : "false");
+                var shouldAddCancellationToken = cancellationTokenName != default && !currentInvocationPassesCancellationToken && newInvocationAcceptsCancellationToken;
+                properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
             }
         }
