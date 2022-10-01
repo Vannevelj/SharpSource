@@ -101,14 +101,6 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool HasOneAdditionalOptionalCancellationTokenParameter(IMethodSymbol invokedMethod, IMethodSymbol overload) =>
-        invokedMethod.Parameters.Length == overload.Parameters.Length - 1 &&
-        overload.GetCancellationTokenFromParameters().IsNullable == true;
-
-    private static bool HasOneAdditionalRequiredCancellationTokenParameter(IMethodSymbol invokedMethod, IMethodSymbol overload) =>
-        invokedMethod.Parameters.Length == overload.Parameters.Length - 1 &&
-        overload.GetCancellationTokenFromParameters().IsNullable == false;
-
     private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol? surroundingMethodDeclaration)
     {
         /**
@@ -124,11 +116,12 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
          **/
 
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
-        var hasOneAdditionalCancellationTokenParameter = HasOneAdditionalOptionalCancellationTokenParameter(invokedMethod, overload);
-        var hasACancellationTokenToPassThrough = HasOneAdditionalRequiredCancellationTokenParameter(invokedMethod, overload) && surroundingMethodDeclaration.GetCancellationTokenFromParameters() != default;
+        var hasOneAdditionalParameter = invokedMethod.Parameters.Length == overload.Parameters.Length - 1;
+        var hasOneAdditionalOptionalCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == true;
+        var hasOneAdditionalRequiredCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == false && surroundingMethodDeclaration.GetCancellationTokenFromParameters() != default;
 
         // We allow overloads to differ by providing a cancellationtoken
-        var isParameterCountOkay = hasExactSameNumberOfParameters || hasOneAdditionalCancellationTokenParameter || hasACancellationTokenToPassThrough;
+        var isParameterCountOkay = hasExactSameNumberOfParameters || hasOneAdditionalOptionalCancellationTokenParameter || hasOneAdditionalRequiredCancellationTokenParameter;
         if (!isParameterCountOkay)
         {
             return false;
