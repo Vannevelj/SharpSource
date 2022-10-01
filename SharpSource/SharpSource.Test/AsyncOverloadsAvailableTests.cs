@@ -913,22 +913,6 @@ class MyClass
     async Task<int> GetAsync(int x, CancellationToken token, int y) => 5;
 }";
 
-        var result = @"
-using System.Threading;
-using System.Threading.Tasks;
-
-class MyClass
-{   
-    async Task MyMethod(string i, CancellationToken token, int x)
-    {
-        await GetAsync(5, token, x);
-    }
-
-    int Get(int i, int x) => 5;
-    async Task<int> GetAsync(int x, CancellationToken token, int y) => 5;
-}";
-
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyDiagnostic(original);
     }
 }
