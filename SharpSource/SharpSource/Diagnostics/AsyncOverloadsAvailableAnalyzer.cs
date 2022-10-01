@@ -83,27 +83,46 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var surroundingMethodDeclaration = context.SemanticModel.GetDeclaredSymbol(surroundingDeclaration);
+        var surroundingMethodDeclaration = context.SemanticModel.GetDeclaredSymbol(surroundingDeclaration) as IMethodSymbol;
         foreach (var overload in relevantOverloads)
         {
             if (IsIdenticalOverload(invokedMethod, overload, surroundingMethodDeclaration))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), $"{invokedTypeName}.{invokedMethodName}"));
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethodDeclaration.GetCancellationTokenFromParameters();
+
+                properties.Add("cancellationTokenName", cancellationTokenName);
+                properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
+
+                properties.Add("currentInvocationHasCancellationToken", invokedMethod.GetCancellationTokenFromParameters() != default ? "true" : "false");
+                properties.Add("newInvocationAcceptsCancellationToken", overload.GetCancellationTokenFromParameters() != default ? "true" : "false");
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
             }
         }
     }
 
-    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, ISymbol? surroundingMethodDeclaration)
+    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol? surroundingMethodDeclaration)
     {
+        /**
+         * Three variables in play:
+         *  - The current context, i.e. the method surrounding our call
+         *  - The currently invoked function, i.e. Get()
+         *  - The potential overload, i.e. GetAsync()
+         * 
+         * If the current context doesn't provide a cancellationtoken, the overload must not require it either (no parameter or optional ctoken)
+         * If the current context does provide a cancellationtoken and the overload accepts one (optional or required), we pass it through
+         * If the current context does provide a cancellationtoken but the overload doesn't accept one, we don't pass it through
+         * If the current context does provide a cancellationtoken and the current invocation uses it but the overload doesn't accept it, we need to remove it         * 
+         **/
+
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
-        var hasOneAdditionalCancellationTokenParameter =
-            invokedMethod.Parameters.Length == overload.Parameters.Length - 1 &&
-            overload.Parameters.Last().Type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken &&
-            ctoken.TypeArguments.Single().Name == "CancellationToken";
+        var hasOneAdditionalParameter = invokedMethod.Parameters.Length == overload.Parameters.Length - 1;
+        var hasOneAdditionalOptionalCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == true;
+        var hasOneAdditionalRequiredCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == false && surroundingMethodDeclaration.GetCancellationTokenFromParameters() != default;
 
         // We allow overloads to differ by providing a cancellationtoken
-        var isParameterArityOkay = hasExactSameNumberOfParameters || hasOneAdditionalCancellationTokenParameter;
-        if (!isParameterArityOkay)
+        var isParameterCountOkay = hasExactSameNumberOfParameters || hasOneAdditionalOptionalCancellationTokenParameter || hasOneAdditionalRequiredCancellationTokenParameter;
+        if (!isParameterCountOkay)
         {
             return false;
         }

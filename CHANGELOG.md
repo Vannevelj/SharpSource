@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.13.0] - 2022-09-26
+- `AsyncOverloadsAvailable`: Now passes through a `CancellationToken` if there is one available in the current context
+- `AttributeMustSpecifyAttributeUsage`: Takes definitions on base classes into account
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Supports `HashSet.Add()` and `Dictionary.Add()`
+
 ## [1.12.0] - 2022-09-25
 - `ParameterAssignedInConstructor`: A parameter was assigned in a constructor
 

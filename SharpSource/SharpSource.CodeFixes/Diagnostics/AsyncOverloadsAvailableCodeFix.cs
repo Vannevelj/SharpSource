@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -9,7 +8,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -38,32 +36,41 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Async overload",
-                x => UseAsyncOverload(context.Document, invocation, root),
+                x => UseAsyncOverload(context.Document, invocation, root, diagnostic),
                 AsyncOverloadsAvailableAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
+    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
     {
-        ExpressionSyntax newExpression;
-        if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+        ExpressionSyntax? newExpression = invocation.Expression switch
         {
-            newExpression = memberAccess.WithName(GetIdentifier(memberAccess.Name));
-        }
-        else if (invocation.Expression is IdentifierNameSyntax identifierName)
-        {
-            newExpression = GetIdentifier(identifierName);
-        }
-        else if (invocation.Expression is GenericNameSyntax genericName)
-        {
-            newExpression = genericName.WithIdentifier(GetIdentifier(genericName).Identifier);
-        }
-        else
+            MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(GetIdentifier(memberAccess.Name)),
+            IdentifierNameSyntax identifierName => GetIdentifier(identifierName),
+            GenericNameSyntax genericName => genericName.WithIdentifier(GetIdentifier(genericName).Identifier),
+            _ => default
+        };
+
+        if (newExpression == default)
         {
             return Task.FromResult(document);
         }
 
         var newInvocation = invocation.WithExpression(newExpression);
+
+        if (diagnostic.Properties["newInvocationAcceptsCancellationToken"] == "true")
+        {
+            var cancellationTokenName = diagnostic.Properties["cancellationTokenName"];
+            var currentInvocationHasCancellationToken = diagnostic.Properties["currentInvocationHasCancellationToken"] == "true";
+            if (cancellationTokenName != default && !currentInvocationHasCancellationToken)
+            {
+                var cancellationTokenIsOptional = diagnostic.Properties["cancellationTokenIsOptional"] == "true";
+                var cancellationToken = cancellationTokenIsOptional ? SyntaxFactory.ParseExpression($"{cancellationTokenName} ?? CancellationToken.None") : SyntaxFactory.IdentifierName(cancellationTokenName);
+                var newArguments = newInvocation.ArgumentList.AddArguments(SyntaxFactory.Argument(cancellationToken));
+                newInvocation = newInvocation.WithArgumentList(newArguments);
+            }
+        }
+
         ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
 
         // If we're accessing the result of the method call, i.e. `DoThing().Property` then we need to wrap the `await` expression with parentheses

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -40,10 +41,33 @@ public class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var attributeUsage = classDeclaration.AttributeLists.GetAttributesOfType(typeof(AttributeUsageAttribute), context.SemanticModel).FirstOrDefault();
+        var attributeUsage = GetAttributeUsageAttribute(classSymbol);
         if (attributeUsage == default)
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier.ValueText));
         }
+    }
+
+    private static INamedTypeSymbol? GetAttributeUsageAttribute(INamedTypeSymbol classSymbol)
+    {
+        var currentSymbol = classSymbol;
+        while (currentSymbol != default)
+        {
+            if (currentSymbol.Name == "Attribute" && currentSymbol.IsDefinedInSystemAssembly())
+            {
+                return default;
+            }
+
+            var attributes = currentSymbol.GetAttributes().Select(a => a.AttributeClass);
+            var attribute = attributes.GetAttributesOfType(typeof(AttributeUsageAttribute)).FirstOrDefault();
+            if (attribute != default)
+            {
+                return attribute;
+            }
+
+            currentSymbol = currentSymbol.BaseType;
+        }
+
+        return default;
     }
 }

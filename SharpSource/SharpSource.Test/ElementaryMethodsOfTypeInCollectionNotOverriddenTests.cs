@@ -465,8 +465,7 @@ namespace ConsoleApplication1
 using System.Collections.Generic;
 
 var list = new List<{type}>();
-var s = list.Contains(default);
-";
+var s = list.Contains(default);";
 
         await VerifyDiagnostic(original);
     }
@@ -477,6 +476,8 @@ var s = list.Contains(default);
     [DataRow("new Dictionary<MyCollectionItem, int>()[new MyCollectionItem()]")]
     [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue(new MyCollectionItem(), out _)")]
     [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    [DataRow("new HashSet<MyCollectionItem>().Add(new MyCollectionItem())")]
+    [DataRow("new Dictionary<MyCollectionItem, int>(); x.Add(new MyCollectionItem(), 5)")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
     {
         var original = @$"
@@ -485,8 +486,7 @@ using System.Linq;
 
 var x = {invocation};
 
-class MyCollectionItem {{}}
-";
+class MyCollectionItem {{}}";
 
         await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
@@ -507,8 +507,7 @@ using System.Linq;
 
 var x = {invocation};
 
-class MyCollectionItem {{}}
-";
+class MyCollectionItem {{}}";
 
         await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
     }
@@ -555,5 +554,29 @@ namespace ConsoleApplication1
 }";
 
         await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/198")]
+    [DataRow("int")]
+    [DataRow("uint")]
+    [DataRow("short")]
+    [DataRow("long")]
+    [DataRow("ulong")]
+    [DataRow("ushort")]
+    [DataRow("float")]
+    [DataRow("double")]
+    [DataRow("Guid")]
+    [DataRow("string")]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_BasicTypes(string type)
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+var x = new HashSet<{type}>();
+if (x.Contains(default)) {{ }}";
+
+        await VerifyDiagnostic(original);
     }
 }

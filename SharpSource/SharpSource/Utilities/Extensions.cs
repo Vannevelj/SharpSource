@@ -387,6 +387,9 @@ public static class Extensions
             return symbol?.MetadataName == type.Name && symbol.IsDefinedInSystemAssembly();
         });
 
+    public static IEnumerable<INamedTypeSymbol> GetAttributesOfType(this IEnumerable<INamedTypeSymbol?> attributes, Type type) =>
+        attributes.Where(a => a?.MetadataName == type.Name && a.IsDefinedInSystemAssembly())!;
+
     public static IMethodSymbol GetBaseDefinition(this IMethodSymbol method)
     {
         if (!method.IsOverride)
@@ -571,5 +574,34 @@ public static class Extensions
         {
             yield return methodDeclaration.ExpressionBody.Expression;
         }
+    }
+
+    public static SyntaxNode? GetSurroundingContext(this SyntaxNode node)
+    {
+        var surroundingDeclaration = node.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
+        return surroundingDeclaration;
+    }
+
+    public static (string? Name, bool? IsNullable) GetCancellationTokenFromParameters(this IMethodSymbol? method)
+    {
+        if (method == default)
+        {
+            return default;
+        }
+
+        foreach (var parameter in method.Parameters)
+        {
+            if (parameter.Type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken && ctoken.TypeArguments.Single().Name == "CancellationToken")
+            {
+                return (parameter.Name, true);
+            }
+
+            if (parameter.Type is INamedTypeSymbol { Name: "CancellationToken" })
+            {
+                return (parameter.Name, false);
+            }
+        }
+
+        return default;
     }
 }

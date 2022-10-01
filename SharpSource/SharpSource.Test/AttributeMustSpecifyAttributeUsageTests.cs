@@ -120,4 +120,18 @@ class MyAttribute : Attribute
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/197")]
+    public async Task AttributeMustSpecifyAttributeUsage_WithoutAttribute_InDerivedClass()
+    {
+        var original = @"
+using System;
+
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+class MyAttribute : Attribute { }
+
+class DerivedAttribute : MyAttribute { }";
+
+        await VerifyDiagnostic(original);
+    }
 }
