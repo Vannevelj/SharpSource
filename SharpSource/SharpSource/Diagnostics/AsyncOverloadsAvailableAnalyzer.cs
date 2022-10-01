@@ -89,8 +89,11 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             if (IsIdenticalOverload(invokedMethod, overload, surroundingMethodDeclaration))
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                properties.Add("currentContextHasOptionalCancellationToken", IsOptionalCancellationToken(surroundingMethodDeclaration?.Parameters.LastOrDefault()?.Type) ? "true" : "false");
-                properties.Add("currentContextHasCancellationToken", MethodHasCancellationTokenAsLastParameter(surroundingMethodDeclaration) ? "true" : "false");
+                var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethodDeclaration.GetCancellationTokenFromParameters();
+
+                properties.Add("cancellationTokenName", cancellationTokenName);
+                properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
+
                 properties.Add("currentInvocationHasCancellationToken", MethodHasCancellationTokenAsLastParameter(invokedMethod) ? "true" : "false");
                 properties.Add("newInvocationAcceptsCancellationToken", MethodHasCancellationTokenAsLastParameter(overload) ? "true" : "false");
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
@@ -98,28 +101,20 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool IsOptionalCancellationToken(ITypeSymbol? type) =>
-        type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken &&
-        ctoken.TypeArguments.Single().Name == "CancellationToken";
-
-    private static bool IsRequiredCancellationToken(ITypeSymbol? type) =>
-        type is INamedTypeSymbol { Name: "CancellationToken" };
-
     private static bool HasOneAdditionalOptionalCancellationTokenParameter(IMethodSymbol invokedMethod, IMethodSymbol overload) =>
         invokedMethod.Parameters.Length == overload.Parameters.Length - 1 &&
-        IsOptionalCancellationToken(overload.Parameters.Last().Type);
+        overload.GetCancellationTokenFromParameters().IsNullable == true;
 
     private static bool HasOneAdditionaRequiredCancellationTokenParameter(IMethodSymbol invokedMethod, IMethodSymbol overload) =>
         invokedMethod.Parameters.Length == overload.Parameters.Length - 1 &&
-        IsRequiredCancellationToken(overload.Parameters.Last().Type); 
+        overload.GetCancellationTokenFromParameters().IsNullable == false; 
 
     private static bool MethodHasCancellationTokenAsLastParameter(IMethodSymbol? invokedMethod) =>
-        invokedMethod is { Parameters.Length: >= 1} &&
-        (   IsOptionalCancellationToken(invokedMethod.Parameters.Last().Type) ||
-            IsRequiredCancellationToken(invokedMethod.Parameters.Last().Type));
+        invokedMethod is { Parameters.Length: >= 1} && invokedMethod.GetCancellationTokenFromParameters() != default;
 
     private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol? surroundingMethodDeclaration)
     {
+        // TODO change this logic
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
         var hasOneAdditionalCancellationTokenParameter = HasOneAdditionalOptionalCancellationTokenParameter(invokedMethod, overload);
         var hasACancellationTokenToPassThrough = HasOneAdditionaRequiredCancellationTokenParameter(invokedMethod, overload) && MethodHasCancellationTokenAsLastParameter(surroundingMethodDeclaration);

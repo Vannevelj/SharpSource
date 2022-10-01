@@ -28,12 +28,6 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         }
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-
-        var currentContextHasCancellationToken = diagnostic.Properties["currentContextHasCancellationToken"] == "true";
-        var currentInvocationHasCancellationToken = diagnostic.Properties["currentInvocationHasCancellationToken"] == "true";
-        var newInvocationAcceptsCancellationToken = diagnostic.Properties["newInvocationAcceptsCancellationToken"] == "true";
-        var currentContextHasOptionalCancellationToken = diagnostic.Properties["currentContextHasOptionalCancellationToken"] == "true";
-
         var invocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
         if (invocation == default)
         {
@@ -42,16 +36,12 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Async overload",
-                x => UseAsyncOverload(
-                    context.Document, invocation, root,
-                    currentContextHasCancellationToken, currentInvocationHasCancellationToken, newInvocationAcceptsCancellationToken, currentContextHasOptionalCancellationToken),
+                x => UseAsyncOverload(context.Document, invocation, root, diagnostic),
                 AsyncOverloadsAvailableAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private Task<Document> UseAsyncOverload(
-        Document document, InvocationExpressionSyntax invocation, SyntaxNode root,
-        bool currentContextHasCancellationToken, bool currentInvocationHasCancellationToken, bool newInvocationAcceptsCancellationToken, bool currentContextHasOptionalCancellationToken)
+    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
     {
         ExpressionSyntax? newExpression = invocation.Expression switch
         {
@@ -67,11 +57,15 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         }
 
         var newInvocation = invocation.WithExpression(newExpression);
-        if (newInvocationAcceptsCancellationToken)
+
+        if (diagnostic.Properties["newInvocationAcceptsCancellationToken"] == "true")
         {
-            if (currentContextHasCancellationToken && !currentInvocationHasCancellationToken)
+            var cancellationTokenName = diagnostic.Properties["cancellationTokenName"];
+            var currentInvocationHasCancellationToken = diagnostic.Properties["currentInvocationHasCancellationToken"] == "true";
+            if (cancellationTokenName != default && !currentInvocationHasCancellationToken)
             {
-                var cancellationToken = currentContextHasOptionalCancellationToken ? SyntaxFactory.ParseExpression("token ?? CancellationToken.None") : SyntaxFactory.IdentifierName("token");
+                var cancellationTokenIsOptional = diagnostic.Properties["cancellationTokenIsOptional"] == "true";
+                var cancellationToken = cancellationTokenIsOptional ? SyntaxFactory.ParseExpression($"{cancellationTokenName} ?? CancellationToken.None") : SyntaxFactory.IdentifierName(cancellationTokenName);
                 var newArguments = newInvocation.ArgumentList.AddArguments(SyntaxFactory.Argument(cancellationToken));
                 newInvocation = newInvocation.WithArgumentList(newArguments);
             }

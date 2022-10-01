@@ -581,4 +581,27 @@ public static class Extensions
         var surroundingDeclaration = node.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
         return surroundingDeclaration;
     }
+
+    public static (string? Name, bool? IsNullable) GetCancellationTokenFromParameters(this IMethodSymbol? method)
+    {
+        if (method == default)
+        {
+            return default;
+        }
+
+        foreach (var parameter in method.Parameters)
+        {
+            if (parameter.Type is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken && ctoken.TypeArguments.Single().Name == "CancellationToken")
+            {
+                return (parameter.Name, true);
+            }
+
+            if (parameter.Type is INamedTypeSymbol { Name: "CancellationToken" })
+            {
+                return (parameter.Name, false);
+            }
+        }
+
+        return default;
+    }
 }
