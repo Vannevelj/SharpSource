@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -576,12 +577,6 @@ public static class Extensions
         }
     }
 
-    public static SyntaxNode? GetSurroundingContext(this SyntaxNode node)
-    {
-        var surroundingDeclaration = node.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
-        return surroundingDeclaration;
-    }
-
     public static (string? Name, bool? IsNullable) GetCancellationTokenFromParameters(this IMethodSymbol? method)
     {
         if (method == default)
@@ -603,5 +598,25 @@ public static class Extensions
         }
 
         return default;
+    }
+
+    public static bool PassesThroughCancellationToken(this InvocationExpressionSyntax invocation, SemanticModel semanticModel)
+    {
+        foreach (var argument in invocation.ArgumentList.Arguments)
+        {
+            var argumentType = semanticModel.GetTypeInfo(argument.Expression).Type;
+
+            if (argumentType is INamedTypeSymbol { Name: "Nullable", Arity: 1 } ctoken && ctoken.TypeArguments.Single().Name == "CancellationToken")
+            {
+                return true;
+            }
+
+            if (argumentType is INamedTypeSymbol { Name: "CancellationToken" })
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

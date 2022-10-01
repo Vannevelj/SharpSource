@@ -915,4 +915,41 @@ class MyClass
 
         await VerifyDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_PassesThroughCancellationToken_SyncOverloadAcceptsCancellationToken()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        Get();
+    }
+
+    int Get(CancellationToken? token = null) => 5;
+    async Task<int> GetAsync(CancellationToken? token = null) => 5;
+}";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken token)
+    {
+        await GetAsync(token);
+    }
+
+    int Get(CancellationToken? token = null) => 5;
+    async Task<int> GetAsync(CancellationToken? token = null) => 5;
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
+        await VerifyFix(original, result);
+    }
 }
