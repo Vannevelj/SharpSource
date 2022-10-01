@@ -114,7 +114,18 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol? surroundingMethodDeclaration)
     {
-        // TODO change this logic
+        /**
+         * Three variables in play:
+         *  - The current context, i.e. the method surrounding our call
+         *  - The currently invoked function, i.e. Get()
+         *  - The potential overload, i.e. GetAsync()
+         * 
+         * If the current context doesn't provide a cancellationtoken, the overload must not require it either (no parameter or optional ctoken)
+         * If the current context does provide a cancellationtoken and the overload accepts one (optional or required), we pass it through
+         * If the current context does provide a cancellationtoken but the overload doesn't accept one, we don't pass it through
+         * If the current context does provide a cancellationtoken and the current invocation uses it but the overload doesn't accept it, we need to remove it         * 
+         **/
+
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
         var hasOneAdditionalCancellationTokenParameter = HasOneAdditionalOptionalCancellationTokenParameter(invokedMethod, overload);
         var hasACancellationTokenToPassThrough = HasOneAdditionaRequiredCancellationTokenParameter(invokedMethod, overload) && MethodHasCancellationTokenAsLastParameter(surroundingMethodDeclaration);
