@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.14.1] - 2022-10-16
+- `AccessingTaskResultWithoutAwait`: Now also works for top-level functions
+
 ## [1.14.0] - 2022-10-16
 - `LockingOnMutableReference`: A lock was obtained on a mutable field which can lead to deadlocks when a new value is assigned. Mark the field as `readonly` to prevent re-assignment after a lock is taken.
 - `ComparingStringsWithoutStringComparison`: Only suggest one code fix at a time

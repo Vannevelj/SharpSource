@@ -40,26 +40,20 @@ public class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var enclosingLambda = memberAccess.FirstAncestorOrSelf<LambdaExpressionSyntax>();
-        if (enclosingLambda != null)
+        var isAsyncContext = context.Node.FirstAncestorOrSelfOfType(
+            SyntaxKind.MethodDeclaration,
+            SyntaxKind.LocalFunctionStatement,
+            SyntaxKind.ParenthesizedLambdaExpression) switch
         {
-            if (enclosingLambda.AsyncKeyword == default)
-            {
-                return;
-            }
-        }
-        else
-        {
-            var enclosingMethod = memberAccess.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-            if (enclosingMethod == null)
-            {
-                return;
-            }
+            MethodDeclarationSyntax method => method.Modifiers.ContainsAny(SyntaxKind.AsyncKeyword),
+            LocalFunctionStatementSyntax local => local.Modifiers.ContainsAny(SyntaxKind.AsyncKeyword),
+            ParenthesizedLambdaExpressionSyntax lambda => lambda.AsyncKeyword != default,
+            _ => false
+        };
 
-            if (!enclosingMethod.Modifiers.Any(SyntaxKind.AsyncKeyword))
-            {
-                return;
-            }
+        if (!isAsyncContext) 
+        {
+            return;
         }
 
         if (invokedSymbol.Name == "Result" && invokedSymbol.ContainingType.IsTaskType())

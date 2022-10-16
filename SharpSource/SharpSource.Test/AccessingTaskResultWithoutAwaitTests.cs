@@ -415,4 +415,71 @@ namespace ConsoleApplication1
         await VerifyDiagnostic(original, "Use await to get the result of a Task.");
         await VerifyFix(original, result);
     }
+
+    [TestMethod]
+    public async Task AccessingTaskResultWithoutAwait_TopLevelFunction()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+await DoThing(File.Open("""", FileMode.Open));
+
+async Task DoThing(FileStream file) 
+{
+    var result = file.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result;
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+await DoThing(File.Open("""", FileMode.Open));
+
+async Task DoThing(FileStream file) 
+{
+    var result = await file.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None);
+}";
+
+        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        await VerifyFix(original, result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/146")]
+    [Ignore]
+    public async Task AccessingTaskResultWithoutAwait_NullableAccess_DoesNotSuggestFix()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+await DoThing(File.Open("""", FileMode.Open));
+
+async Task DoThing(FileStream? file) 
+{
+    var result = file?.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result;
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+await DoThing(File.Open("""", FileMode.Open));
+
+async Task DoThing(FileStream? file) 
+{
+    var result = file?.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result;
+}";
+
+        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
+        await VerifyFix(original, result);
+    }
 }
