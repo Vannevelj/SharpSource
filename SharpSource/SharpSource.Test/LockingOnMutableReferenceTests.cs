@@ -144,13 +144,13 @@ partial class Test
     [TestMethod]
     public async Task LockingOnMutableReference_Partial_DifferentFiles()
     {
-        var originalOne = @"
+        var file1 = @"
 partial class Test
 {
     private object _lock = new object();
 }";
 
-        var originalTwo = @"
+        var file2 = @"
 partial class Test
 {
     void M()
@@ -159,13 +159,13 @@ partial class Test
     }
 }";
 
-        var expectedOne = @"
+        var result = @"
 partial class Test
 {
     private readonly object _lock = new object();
 }";
 
-        await VerifyDiagnostic(new[] { originalOne, originalTwo }, "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
-        await VerifyFix(originalOne, expectedOne, additionalSources: new[] { originalTwo });
+        await VerifyDiagnostic(new[] { file1, file2 }, "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
+        await VerifyFix(file1, result, additionalSources: new[] { file2 });
     }
 }
