@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -47,16 +46,10 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
             return;
         }
 
-        context.RegisterCodeFix(
-            CodeAction.Create("Use StringComparison.OrdinalIgnoreCase",
-                x => expression is BinaryExpressionSyntax binaryExpression
-                    ? UseStringComparison(context.Document, compilation, binaryExpression, stringComparison, invokedFunction, semanticModel)
-                    : UseStringComparison(context.Document, compilation, (IsPatternExpressionSyntax)expression, stringComparison, invokedFunction, semanticModel),
-                DiagnosticId.ComparingStringsWithoutStringComparison),
-            diagnostic);
+        var message = isOrdinal ? "Use StringComparison.OrdinalIgnoreCase" : "Use StringComparison.InvariantCultureIgnoreCase";
 
         context.RegisterCodeFix(
-            CodeAction.Create("Use StringComparison.InvariantCultureIgnoreCase",
+            CodeAction.Create(message,
                 x => expression is BinaryExpressionSyntax binaryExpression
                     ? UseStringComparison(context.Document, compilation, binaryExpression, stringComparison, invokedFunction, semanticModel)
                     : UseStringComparison(context.Document, compilation, (IsPatternExpressionSyntax)expression, stringComparison, invokedFunction, semanticModel),

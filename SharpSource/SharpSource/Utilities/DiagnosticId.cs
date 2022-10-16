@@ -49,4 +49,5 @@ public static class DiagnosticId
     public const string LockingOnDiscouragedObject = "SS048";
     public const string ComparingStringsWithoutStringComparison = "SS049";
     public const string ParameterAssignedInConstructor = "SS050";
+    public const string LockingOnMutableReference = "SS051";
 }

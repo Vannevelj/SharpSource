@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.14.0] - 2022-10-16
+- `LockingOnMutableReference`: A lock was obtained on a mutable field which can lead to deadlocks when a new value is assigned. Mark the field as `readonly` to prevent re-assignment after a lock is taken.
+- `ComparingStringsWithoutStringComparison`: Only suggest one code fix at a time
+- `UnusedResultOnImmutableObject`: Don't trigger for custom extension methods on the `string` type
+
 ## [1.13.1] - 2022-10-1
 - `AsyncOverloadsAvailable`: Correctly suggests passing through a `CancellationToken` if the sync overload accepts one as well
 
