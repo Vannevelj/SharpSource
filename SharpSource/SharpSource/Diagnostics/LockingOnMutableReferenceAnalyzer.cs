@@ -16,7 +16,7 @@ public class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
         "A lock was obtained on a mutable field which can lead to deadlocks when a new value is assigned. Mark the field as readonly to prevent re-assignment after a lock is taken.",
         "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.",
         Categories.Correctness,
-        DiagnosticSeverity.Error,
+        DiagnosticSeverity.Warning,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS051-LockingOnMutableReference.md");
 
