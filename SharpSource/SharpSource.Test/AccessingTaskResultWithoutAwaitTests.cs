@@ -450,7 +450,6 @@ async Task DoThing(FileStream file)
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/146")]
-    [Ignore]
     public async Task AccessingTaskResultWithoutAwait_NullableAccess_DoesNotSuggestFix()
     {
         var original = @"

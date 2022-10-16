@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
@@ -32,6 +33,11 @@ public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
             .SingleOrDefault(x => x.Name.Identifier.ValueText == "Result");
 
         if (root == default || taskResultExpression == default)
+        {
+            return;
+        }
+
+        if (taskResultExpression.FirstAncestorOrSelfOfType(SyntaxKind.ConditionalAccessExpression) != default) 
         {
             return;
         }
