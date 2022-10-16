@@ -37,7 +37,7 @@ public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
             return;
         }
 
-        if (taskResultExpression.FirstAncestorOrSelfOfType(SyntaxKind.ConditionalAccessExpression) != default) 
+        if (taskResultExpression.FirstAncestorOrSelfOfType(SyntaxKind.ConditionalAccessExpression) != default)
         {
             return;
         }

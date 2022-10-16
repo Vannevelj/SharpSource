@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -51,7 +50,7 @@ public class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
             _ => false
         };
 
-        if (!isAsyncContext) 
+        if (!isAsyncContext)
         {
             return;
         }
