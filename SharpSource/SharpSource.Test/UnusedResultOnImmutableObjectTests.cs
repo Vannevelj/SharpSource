@@ -237,4 +237,21 @@ using System;
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/86")]
+    public async Task UnusedResultOnImmutableObjectTests_CustomExtensionMethods()
+    {
+        var original = @"
+using System;
+
+"""".DoThing();
+
+static class Extensions
+{
+    public static void DoThing(this string obj) {}
+}
+";
+
+        await VerifyDiagnostic(original);
+    }
 }

@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.13.2] - 2022-10-16
 - `ComparingStringsWithoutStringComparison`: Only suggest one code fix at a time
+- `UnusedResultOnImmutableObject`: Don't trigger for custom extension methods on the `string` type
 
 ## [1.13.1] - 2022-10-1
 - `AsyncOverloadsAvailable`: Correctly suggests passing through a `CancellationToken` if the sync overload accepts one as well

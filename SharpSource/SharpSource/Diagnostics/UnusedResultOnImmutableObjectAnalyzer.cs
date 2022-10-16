@@ -51,6 +51,13 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var methodBeingInvoked = context.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol as IMethodSymbol;
+        if (methodBeingInvoked is null || 
+           (methodBeingInvoked.IsExtensionMethod && !methodBeingInvoked.IsDefinedInSystemAssembly()))
+        {
+            return;
+        }
+
         if (invocation.Parent is ExpressionStatementSyntax expressionStatement &&
             expressionStatement.Parent is BlockSyntax or GlobalStatementSyntax)
         {
