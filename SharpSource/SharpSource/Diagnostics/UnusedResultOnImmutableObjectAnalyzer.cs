@@ -51,9 +51,8 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var methodBeingInvoked = context.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol as IMethodSymbol;
-        if (methodBeingInvoked is null || 
-           (methodBeingInvoked.IsExtensionMethod && !methodBeingInvoked.IsDefinedInSystemAssembly()))
+        if (context.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol is not IMethodSymbol methodBeingInvoked ||
+           ( methodBeingInvoked.IsExtensionMethod && !methodBeingInvoked.IsDefinedInSystemAssembly() ))
         {
             return;
         }

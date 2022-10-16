@@ -162,7 +162,7 @@ partial class Test
         var result = @"
 partial class Test
 {
-    private readonly object _lock = new object();
+    private object _lock = new object();
 }";
 
         await VerifyDiagnostic(new[] { file1, file2 }, "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.");

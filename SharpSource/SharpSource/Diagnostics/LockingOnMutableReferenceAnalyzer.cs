@@ -31,14 +31,14 @@ public class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
 
     private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
     {
-        var lockStatement = (LockStatementSyntax) context.Node;
+        var lockStatement = (LockStatementSyntax)context.Node;
         var referencedSymbol = context.SemanticModel.GetSymbolInfo(lockStatement.Expression).Symbol as IFieldSymbol;
-        if (referencedSymbol == default) 
+        if (referencedSymbol == default)
         {
             return;
         }
 
-        if (referencedSymbol.IsReadOnly || referencedSymbol.IsConst) 
+        if (referencedSymbol.IsReadOnly || referencedSymbol.IsConst)
         {
             return;
         }

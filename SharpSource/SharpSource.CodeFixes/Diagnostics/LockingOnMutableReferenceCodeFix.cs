@@ -29,21 +29,30 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics.First();
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var stackallocCreation = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<StackAllocArrayCreationExpressionSyntax>().First();
-        var arraySizeIdentifier = stackallocCreation.DescendantNodes().OfType<ArrayRankSpecifierSyntax>().First().Sizes.First();
-        var arrayType = stackallocCreation.Type as ArrayTypeSyntax;
-        if (arrayType == default)
+        var lockStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<LockStatementSyntax>().First();
+        var semanticModel = await context.Document.GetSemanticModelAsync();
+        var referencedSymbol = semanticModel.GetSymbolInfo(lockStatement.Expression).Symbol;
+        if (referencedSymbol == default)
+        {
+            return;
+        }
+
+        var fieldReference = referencedSymbol.DeclaringSyntaxReferences.Single();
+
+        if (fieldReference.SyntaxTree != await context.Document.GetSyntaxTreeAsync() || ( await fieldReference.GetSyntaxAsync() ).FirstAncestorOrSelfOfType(SyntaxKind.FieldDeclaration) is not FieldDeclarationSyntax fieldSyntaxNode)
         {
             return;
         }
 
         context.RegisterCodeFix(
             CodeAction.Create("Prevent lock re-assignment",
-                x => AddReadonlyModifier(context.Document, root), DiagnosticId.LockingOnMutableReference), diagnostic);
+                x => AddReadonlyModifier(context.Document, root, fieldSyntaxNode), DiagnosticId.LockingOnMutableReference), diagnostic);
     }
 
-    private Task<Document> AddReadonlyModifier(Document document, SyntaxNode root)
+    private Task<Document> AddReadonlyModifier(Document document, SyntaxNode root, FieldDeclarationSyntax fieldDeclaration)
     {
-        return Task.FromResult(document);
+        var newFieldDeclaration = fieldDeclaration.AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+        var newRoot = root.ReplaceNode(fieldDeclaration, newFieldDeclaration);
+        return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }
