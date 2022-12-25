@@ -32,9 +32,9 @@ public class ThreadStaticWithInitializerAnalyzer : DiagnosticAnalyzer
 
     private void AnalyzeNode(SyntaxNodeAnalysisContext context)
     {
-        var field = (FieldDeclarationSyntax) context.Node;
+        var field = (FieldDeclarationSyntax)context.Node;
         var hasThreadStaticAttribute = field.AttributeLists.GetAttributesOfType(typeof(System.ThreadStaticAttribute), context.SemanticModel).Any();
-        
+
         if (!hasThreadStaticAttribute)
         {
             return;

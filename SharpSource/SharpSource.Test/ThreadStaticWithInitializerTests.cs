@@ -76,7 +76,7 @@ class MyClass
 }
 ";
 
-        await VerifyDiagnostic(original, 
+        await VerifyDiagnostic(original,
             "_random is marked as [ThreadStatic] so it cannot contain an initializer",
             "_random2 is marked as [ThreadStatic] so it cannot contain an initializer");
     }
