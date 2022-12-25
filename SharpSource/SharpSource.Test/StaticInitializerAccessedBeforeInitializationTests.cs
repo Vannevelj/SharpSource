@@ -491,4 +491,34 @@ class Other
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/188")]
+    public async Task StaticInitializerAccessedBeforeInitialization_WithNestedLambda()
+    {
+        var original = @"
+using System;
+
+class Test
+{ 
+    public static Lazy<int> FirstField = new Lazy<int>(() => SomeValue);
+    public static int SomeValue = 5;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StaticInitializerAccessedBeforeInitialization_Func_New()
+    {
+        var original = @"
+using System;
+
+class Test
+{ 
+    public static Func<int> FirstField = new Func<int>(() => SomeValue);
+    public static int SomeValue = 5;
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }

@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.15.0] - 2022-12-25
+- `ThreadStaticWithInitializer`: A field is marked as `[ThreadStatic]` so it cannot contain an initializer. The field initializer is only executed for the first thread.
+- `StaticInitializerAccessedBeforeInitialization`: When a reference is part of a lambda expression we no longer incorrectly mark it as an error
+
 ## [1.14.1] - 2022-10-16
 - `AccessingTaskResultWithoutAwait`: Now also works for top-level functions
 - `AccessingTaskResultWithoutAwait`: In null-conditional access scenarios such as `file?.ReadAsync().Result`, invalid code will no longer be suggested by the code fix

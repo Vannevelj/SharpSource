@@ -146,6 +146,12 @@ public class StaticInitializerAccessedBeforeInitializationAnalyzer : DiagnosticA
                 }
             }
 
+            // If it is wrapped in a lambda then static fields will be initialised by the time the lambda runs
+            if (identifier.FirstAncestorOrSelfOfType(SyntaxKind.ParenthesizedLambdaExpression) != default)
+            {
+                continue;
+            }
+
             yield return isPartial ? (RuleForPartials, identifier) : (Rule, identifier);
         }
     }
