@@ -63,13 +63,22 @@ Console.Write(collection.ToString());
     }
 
     [TestMethod]
-    public async Task PointlessCollectionToString_IEnumerableAsParam()
+    [DataRow("IEnumerable<int>")]
+    [DataRow("IList<int>")]
+    [DataRow("IDictionary<int, int>")]
+    [DataRow("ICollection<int>")]
+    [DataRow("IReadOnlyCollection<int>")]
+    [DataRow("IReadOnlyList<int>")]
+    [DataRow("IReadOnlySet<int>")]
+    [DataRow("ISet<int>")]
+    [DataRow("IReadOnlyDictionary<int, int>")]
+    public async Task PointlessCollectionToString_InterfaceAsParam(string interfaceParam)
     {
         var original = @$"
 using System;
 using System.Collections.Generic;
 
-void DoThing(IEnumerable<int> collection)
+void DoThing({interfaceParam} collection)
 {{
     Console.Write(collection.ToString());
 }}
@@ -118,5 +127,20 @@ Console.Write(collection.GetHashCode());
 ";
 
         await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task PointlessCollectionToString_Chained()
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+
+Console.Write(Get().ToString());
+
+List<int> Get() => new();
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
     }
 }

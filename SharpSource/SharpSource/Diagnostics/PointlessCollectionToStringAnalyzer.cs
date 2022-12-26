@@ -58,7 +58,15 @@ public class PointlessCollectionToStringAnalyzer : DiagnosticAnalyzer
                     "SortedSet" or
                     "LinkedList" or
                     "PriorityQueue" or
-                    "IEnumerable"
+                    "IEnumerable" or
+                    "IList" or
+                    "ISet" or
+                    "IDictionary" or
+                    "ICollection" or
+                    "IReadOnlyCollection" or
+                    "IReadOnlyList" or
+                    "IReadOnlySet" or
+                    "IReadOnlyDictionary"
             })
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Expression.GetLocation()));
