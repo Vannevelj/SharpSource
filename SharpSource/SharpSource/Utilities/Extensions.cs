@@ -198,6 +198,14 @@ public static class Extensions
     // NOTE: string.Format() vs Format() (current/external type)
     public static bool IsAnInvocationOf(this SyntaxNode invocation, Type type, string method, SemanticModel semanticModel)
     {
+        var (invokedType, invokedMethod) = invocation.GetInvocation(semanticModel);
+
+        return invokedType?.MetadataName == type.Name &&
+               invokedMethod?.MetadataName == method;
+    }
+
+    public static (INamedTypeSymbol? invokedType, ISymbol? invokedMethod) GetInvocation(this SyntaxNode invocation, SemanticModel semanticModel)
+    {
         var invokedExpression = invocation switch
         {
             ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.WhenNotNull,
@@ -205,14 +213,32 @@ public static class Extensions
             InvocationExpressionSyntax invocationExpression => invocationExpression,
             _ => invocation
         };
+
         var invokedMethod = semanticModel.GetSymbolInfo(invokedExpression);
         var invokedType = invokedMethod.Symbol?.ContainingType;
 
-        return invokedType?.MetadataName == type.Name &&
-               invokedMethod.Symbol?.MetadataName == method;
+        return (invokedType, invokedMethod.Symbol);
     }
 
-    // TODO: tests
+    public static ITypeSymbol? GetConcreteTypeOfInvocation(this SyntaxNode invocation, SemanticModel semanticModel)
+    {
+        ExpressionSyntax? invokedExpression = invocation switch
+        {
+            ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.WhenNotNull,
+            PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
+            InvocationExpressionSyntax invocationExpression => invocationExpression.Expression,
+            _ => default
+        };
+
+        if (invokedExpression is MemberAccessExpressionSyntax memberAccessExpression) 
+        {
+            var invokedType = semanticModel.GetTypeInfo(memberAccessExpression.Expression);
+            return invokedType.Type;
+        }
+
+        return default;
+    }
+
     public static bool IsNameofInvocation(this InvocationExpressionSyntax invocation)
     {
         if (invocation == null)
