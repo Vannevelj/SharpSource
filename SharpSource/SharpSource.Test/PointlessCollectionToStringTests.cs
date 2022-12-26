@@ -143,4 +143,34 @@ List<int> Get() => new();
 
         await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
     }
+
+    [TestMethod]
+    public async Task PointlessCollectionToString_Chained_NullConditional()
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+
+Console.Write(Get()?.ToString());
+
+List<int> Get() => new();
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
+
+    [TestMethod]
+    public async Task PointlessCollectionToString_Chained_NullSuppress()
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+
+Console.Write(Get()!.ToString());
+
+List<int> Get() => new();
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
 }
