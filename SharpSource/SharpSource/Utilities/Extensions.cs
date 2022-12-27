@@ -226,13 +226,13 @@ public static class Extensions
     /// </summary>
     public static ITypeSymbol? GetConcreteTypeOfInvocation(this SyntaxNode invocation, SemanticModel semanticModel)
     {
-        ExpressionSyntax? GetExpression(SyntaxNode node)
+        ExpressionSyntax? getExpression(SyntaxNode node)
         {
             var invokedExpression = node switch
             {
                 ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.Expression,
                 PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
-                InvocationExpressionSyntax memberBindingInvocation when memberBindingInvocation.Expression is MemberBindingExpressionSyntax && memberBindingInvocation.Parent is ExpressionSyntax parentExpression => GetExpression(parentExpression),
+                InvocationExpressionSyntax memberBindingInvocation when memberBindingInvocation.Expression is MemberBindingExpressionSyntax && memberBindingInvocation.Parent is ExpressionSyntax parentExpression => getExpression(parentExpression),
                 InvocationExpressionSyntax memberAccessInvocation => memberAccessInvocation.Expression,
                 _ => default
             };
@@ -240,7 +240,7 @@ public static class Extensions
             return invokedExpression;
         }
 
-        var invokedExpression = GetExpression(invocation);
+        var invokedExpression = getExpression(invocation);
         return invokedExpression switch
         {
             MemberAccessExpressionSyntax memberAccessExpression => semanticModel.GetTypeInfo(memberAccessExpression.Expression).Type,
