@@ -222,21 +222,28 @@ public static class Extensions
 
     public static ITypeSymbol? GetConcreteTypeOfInvocation(this SyntaxNode invocation, SemanticModel semanticModel)
     {
-        ExpressionSyntax? invokedExpression = invocation switch
+        ExpressionSyntax? GetExpression(SyntaxNode node)
         {
-            ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.WhenNotNull,
-            PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
-            InvocationExpressionSyntax invocationExpression => invocationExpression.Expression,
-            _ => default
-        };
+            ExpressionSyntax? invokedExpression = node switch
+            {
+                ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.Expression,
+                PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
+                InvocationExpressionSyntax memberAccessInvocation when memberAccessInvocation.Expression is MemberAccessExpressionSyntax => memberAccessInvocation.Expression,
+                InvocationExpressionSyntax memberBindingInvocation when memberBindingInvocation.Expression is MemberBindingExpressionSyntax && memberBindingInvocation.Parent is ExpressionSyntax parentExpression => GetExpression(parentExpression),
+                _ => default
+            };
 
-        if (invokedExpression is MemberAccessExpressionSyntax memberAccessExpression) 
-        {
-            var invokedType = semanticModel.GetTypeInfo(memberAccessExpression.Expression);
-            return invokedType.Type;
+            return invokedExpression;
         }
 
-        return default;
+        var invokedExpression = GetExpression(invocation);
+        return invokedExpression switch
+        {
+            MemberAccessExpressionSyntax memberAccessExpression => semanticModel.GetTypeInfo(memberAccessExpression.Expression).Type,
+            MemberBindingExpressionSyntax memberBindingExpression => semanticModel.GetTypeInfo(memberBindingExpression.Name).Type,
+            IdentifierNameSyntax identifierName => semanticModel.GetTypeInfo(identifierName).Type,
+            _ => default
+        };
     }
 
     public static bool IsNameofInvocation(this InvocationExpressionSyntax invocation)
