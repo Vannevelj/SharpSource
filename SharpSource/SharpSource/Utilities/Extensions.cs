@@ -230,7 +230,7 @@ public static class Extensions
                 PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
                 InvocationExpressionSyntax memberAccessInvocation when memberAccessInvocation.Expression is MemberAccessExpressionSyntax => memberAccessInvocation.Expression,
                 InvocationExpressionSyntax memberBindingInvocation when memberBindingInvocation.Expression is MemberBindingExpressionSyntax && memberBindingInvocation.Parent is ExpressionSyntax parentExpression => GetExpression(parentExpression),
-                _ => default
+                _ => node as ExpressionSyntax
             };
 
             return invokedExpression;
@@ -242,6 +242,7 @@ public static class Extensions
             MemberAccessExpressionSyntax memberAccessExpression => semanticModel.GetTypeInfo(memberAccessExpression.Expression).Type,
             MemberBindingExpressionSyntax memberBindingExpression => semanticModel.GetTypeInfo(memberBindingExpression.Name).Type,
             IdentifierNameSyntax identifierName => semanticModel.GetTypeInfo(identifierName).Type,
+            InvocationExpressionSyntax invocationExpression => semanticModel.GetTypeInfo(invocationExpression).Type,
             _ => default
         };
     }
