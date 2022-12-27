@@ -173,4 +173,61 @@ List<int> Get() => new();
 
         await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
     }
+
+    [TestMethod]
+    public async Task PointlessCollectionToString_Chained_Property()
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+
+Console.Write(Test.Get.ToString());
+
+class Test
+{{
+    public static List<int> Get => new();
+}}
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
+
+    [TestMethod]
+    public async Task PointlessCollectionToString_Long_Chained_Null()
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+
+Console.Write(Test.Get?.ToString());
+
+class Test
+{{
+    public static List<int> Get => new();
+}}
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
+
+    [TestMethod]
+    public async Task PointlessCollectionToString_Chained_Property_Null()
+    {
+        var original = @$"
+using System;
+using System.Collections.Generic;
+
+class Test
+{{
+    Test()
+    {{
+        Console.Write(Get?.ToString());
+    }}
+    
+    List<int> Get => new();
+}}
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
 }

@@ -224,7 +224,7 @@ public static class Extensions
     {
         ExpressionSyntax? GetExpression(SyntaxNode node)
         {
-            ExpressionSyntax? invokedExpression = node switch
+            var invokedExpression = node switch
             {
                 ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.Expression,
                 PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
