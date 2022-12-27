@@ -4,7 +4,7 @@
 
 ---
 
-A field is marked as [ThreadStatic] so it cannot contain an initializer. The field initializer is only executed for the first thread.
+A field is marked as `[ThreadStatic]` so it cannot contain an initializer. The field initializer is only executed for the first thread.
 
 ---
 

@@ -220,6 +220,10 @@ public static class Extensions
         return (invokedType, invokedMethod.Symbol);
     }
 
+    /// <summary>
+    /// Returns the type being accessed in an invocation. e.g. <c>List`1?.ToString()</c> will return <c>List`1</c>
+    /// Note: This doesn't work correctly in long invocation chains
+    /// </summary>
     public static ITypeSymbol? GetConcreteTypeOfInvocation(this SyntaxNode invocation, SemanticModel semanticModel)
     {
         ExpressionSyntax? GetExpression(SyntaxNode node)
