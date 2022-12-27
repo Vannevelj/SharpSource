@@ -202,6 +202,7 @@ values.Skip(1).Reverse().Take(1);
     }
 
     [TestMethod]
+    [Ignore("Not the intended behaviour, see https://github.com/Vannevelj/SharpSource/issues/191")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess()
     {
         var original = @"
@@ -215,6 +216,7 @@ values?.ToArray().ToList();";
     }
 
     [TestMethod]
+    [Ignore("Not the intended behaviour, see https://github.com/Vannevelj/SharpSource/issues/191")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
     {
         var original = @"

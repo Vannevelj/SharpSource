@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.0] - 2022-12-22
+- `PointlessCollectionToString`: `.ToString()` was called on a collection which results in impractical output. Considering using `string.Join()` to display the values instead.
+
 ## [1.15.0] - 2022-12-25
 - `ThreadStaticWithInitializer`: A field is marked as `[ThreadStatic]` so it cannot contain an initializer. The field initializer is only executed for the first thread.
 - `StaticInitializerAccessedBeforeInitialization`: When a reference is part of a lambda expression we no longer incorrectly mark it as an error
