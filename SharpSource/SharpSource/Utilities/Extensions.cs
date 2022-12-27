@@ -228,8 +228,8 @@ public static class Extensions
             {
                 ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.Expression,
                 PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
-                InvocationExpressionSyntax memberAccessInvocation when memberAccessInvocation.Expression is MemberAccessExpressionSyntax => memberAccessInvocation.Expression,
                 InvocationExpressionSyntax memberBindingInvocation when memberBindingInvocation.Expression is MemberBindingExpressionSyntax && memberBindingInvocation.Parent is ExpressionSyntax parentExpression => GetExpression(parentExpression),
+                InvocationExpressionSyntax memberAccessInvocation => memberAccessInvocation.Expression,
                 _ => node as ExpressionSyntax
             };
 
