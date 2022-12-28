@@ -33,23 +33,36 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
             var symbol = (INamedTypeSymbol)context.Symbol;
 
             // Collect potential symbols that shouldn't be referenced before initialized.
-            var ordered = symbol.GetMembers().Where(m => m.IsStatic && m is not IFieldSymbol { IsConst: true } && m.Kind is SymbolKind.Field or SymbolKind.Property).Select((s, index) => new { s.Name, index }).ToDictionary(x => x.Name, x => x.index);
+            var disallowedSymbolsInOrder = symbol.GetMembers()
+                                                 .Where(m => m.IsStatic && m is not IFieldSymbol { IsConst: true } && m.Kind is SymbolKind.Field or SymbolKind.Property)
+                                                 .Select((s, index) => new { s.Name, index })
+                                                 .ToDictionary(x => x.Name, x => x.index);
             context.RegisterOperationBlockStartAction(context =>
             {
                 var owningSymbol = context.OwningSymbol;
-                if (!owningSymbol.IsStatic || !ordered.TryGetValue(owningSymbol.Name, out var owningIndex))
+                if (!owningSymbol.IsStatic || !disallowedSymbolsInOrder.TryGetValue(owningSymbol.Name, out var owningIndex))
                 {
                     return;
                 }
 
                 context.RegisterOperationAction(context =>
                 {
-                    ISymbol referencedSymbol = context.Operation switch
+                    var referencedSymbol = context.Operation switch
                     {
                         IFieldReferenceOperation fieldReference => fieldReference.Field,
                         IPropertyReferenceOperation propertyReference => propertyReference.Property,
-                        _ => null!, // never happens.
+                        _ => default, // never happens.
                     };
+
+                    if (referencedSymbol == default)
+                    {
+                        return;
+                    }
+
+                    if (!referencedSymbol.IsStatic)
+                    {
+                        return;
+                    }
 
                     var operation = context.Operation.Parent;
                     while (operation is not null)
@@ -62,7 +75,7 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
                         operation = operation.Parent;
                     }
 
-                    if (referencedSymbol.IsStatic && ordered.TryGetValue(referencedSymbol.Name, out var referencedIndex) && owningIndex < referencedIndex)
+                    if (disallowedSymbolsInOrder.TryGetValue(referencedSymbol.Name, out var referencedIndex) && owningIndex < referencedIndex)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), owningSymbol.Name, referencedSymbol.Name));
                     }
