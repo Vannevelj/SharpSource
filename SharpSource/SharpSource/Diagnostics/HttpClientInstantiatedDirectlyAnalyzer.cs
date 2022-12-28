@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -26,17 +26,15 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression);
+        context.RegisterOperationAction(AnalyzeCreation, OperationKind.ObjectCreation);
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeCreation(OperationAnalysisContext context)
     {
-        var expression = (BaseObjectCreationExpressionSyntax)context.Node;
-        var symbol = expression.GetCreatedType(context.SemanticModel);
-
-        if (symbol?.Name == "HttpClient" && symbol.IsDefinedInSystemAssembly())
+        var objectCreation = (IObjectCreationOperation)context.Operation;
+        if (objectCreation is { Type: { Name: "HttpClient" } } && objectCreation.Type.IsDefinedInSystemAssembly())
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.Syntax.GetLocation()));
         }
     }
 }
