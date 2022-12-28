@@ -220,37 +220,6 @@ public static class Extensions
         return (invokedType, invokedMethod.Symbol);
     }
 
-    /// <summary>
-    /// Returns the type being accessed in an invocation. e.g. <c>List`1?.ToString()</c> will return <c>List`1</c>
-    /// Note: This doesn't work correctly in long invocation chains
-    /// </summary>
-    public static ITypeSymbol? GetConcreteTypeOfInvocation(this SyntaxNode invocation, SemanticModel semanticModel)
-    {
-        ExpressionSyntax? getExpression(SyntaxNode node)
-        {
-            var invokedExpression = node switch
-            {
-                ConditionalAccessExpressionSyntax conditionalAccessExpression => conditionalAccessExpression.Expression,
-                PostfixUnaryExpressionSyntax postfixUnaryExpression when postfixUnaryExpression.IsKind(SyntaxKind.SuppressNullableWarningExpression) => postfixUnaryExpression.Operand,
-                InvocationExpressionSyntax memberBindingInvocation when memberBindingInvocation.Expression is MemberBindingExpressionSyntax && memberBindingInvocation.Parent is ExpressionSyntax parentExpression => getExpression(parentExpression),
-                InvocationExpressionSyntax memberAccessInvocation => memberAccessInvocation.Expression,
-                _ => default
-            };
-
-            return invokedExpression;
-        }
-
-        var invokedExpression = getExpression(invocation);
-        return invokedExpression switch
-        {
-            MemberAccessExpressionSyntax memberAccessExpression => semanticModel.GetTypeInfo(memberAccessExpression.Expression).Type,
-            MemberBindingExpressionSyntax memberBindingExpression => semanticModel.GetTypeInfo(memberBindingExpression.Name).Type,
-            IdentifierNameSyntax identifierName => semanticModel.GetTypeInfo(identifierName).Type,
-            InvocationExpressionSyntax invocationExpression => semanticModel.GetTypeInfo(invocationExpression).Type,
-            _ => default
-        };
-    }
-
     public static bool IsNameofInvocation(this InvocationExpressionSyntax invocation)
     {
         if (invocation == null)

@@ -1,10 +1,7 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -12,8 +9,6 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class PointlessCollectionToStringAnalyzer : DiagnosticAnalyzer
 {
-    // private static readonly
-
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.PointlessCollectionToString,
         ".ToString() was called on a collection which results in impractical output. Considering using string.Join() to display the values instead.",
@@ -29,47 +24,39 @@ public class PointlessCollectionToStringAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+        context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private void AnalyzeInvocation(OperationAnalysisContext context)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-
-        // We only care about .ToString() calls without arguments
-        // We can't use the invokedType return value because the function is System.Object.ToString() but we want the concrete type instead
-        var (_, invokedMethod) = invocation.GetInvocation(context.SemanticModel);
-        if (invokedMethod == default || invokedMethod.Name != "ToString" || invocation is { ArgumentList: { Arguments: { Count: > 0 } } })
+        var invocation = (IInvocationOperation)context.Operation;
+        if (invocation is not { TargetMethod: { Name: "ToString" }, Arguments: { Length: 0 } })
         {
             return;
         }
 
-        var invokedType = invocation.GetConcreteTypeOfInvocation(context.SemanticModel);
-        if (invokedType is
-            {
-                Name:
-                    "List" or
-                    "HashSet" or
-                    "Dictionary" or
-                    "Queue" or
-                    "Stack" or
-                    "SortedDictionary" or
-                    "SortedList" or
-                    "SortedSet" or
-                    "LinkedList" or
-                    "PriorityQueue" or
-                    "IEnumerable" or
-                    "IList" or
-                    "ISet" or
-                    "IDictionary" or
-                    "ICollection" or
-                    "IReadOnlyCollection" or
-                    "IReadOnlyList" or
-                    "IReadOnlySet" or
-                    "IReadOnlyDictionary"
-            })
+        if (invocation.Instance?.Type?.Name is
+                "List" or
+                "HashSet" or
+                "Dictionary" or
+                "Queue" or
+                "Stack" or
+                "SortedDictionary" or
+                "SortedList" or
+                "SortedSet" or
+                "LinkedList" or
+                "PriorityQueue" or
+                "IEnumerable" or
+                "IList" or
+                "ISet" or
+                "IDictionary" or
+                "ICollection" or
+                "IReadOnlyCollection" or
+                "IReadOnlyList" or
+                "IReadOnlySet" or
+                "IReadOnlyDictionary")
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Expression.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
         }
     }
 }
