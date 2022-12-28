@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -26,19 +26,16 @@ public class NewGuidAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression);
+        context.RegisterOperationAction(AnalyzeCreation, OperationKind.ObjectCreation);
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeCreation(OperationAnalysisContext context)
     {
-        var objectCreationExpression = (BaseObjectCreationExpressionSyntax)context.Node;
-        var symbol = objectCreationExpression.GetCreatedType(context.SemanticModel);
-
-        if (symbol is { Name: "Guid" } &&
-            symbol.IsDefinedInSystemAssembly() &&
-            objectCreationExpression.ArgumentList?.Arguments.Any() != true)
+        var objectCreation = (IObjectCreationOperation)context.Operation;
+        if (objectCreation is { Type: { Name: "Guid" } type, Arguments: { IsEmpty: true } } &&
+            type.IsDefinedInSystemAssembly())
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation()));
         }
     }
 }
