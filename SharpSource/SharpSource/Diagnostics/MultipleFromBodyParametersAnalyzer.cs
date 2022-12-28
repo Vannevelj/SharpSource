@@ -1,8 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SharpSource.Utilities;
 
@@ -26,23 +24,19 @@ public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.MethodDeclaration);
+        context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private void AnalyzeMethod(SymbolAnalysisContext context)
     {
-        var methodDeclaration = (MethodDeclarationSyntax)context.Node;
-        var attributesOnParameters = methodDeclaration
-            .ParameterList
-            .Parameters
-            .SelectMany(p => p.AttributeLists)
-            .SelectMany(x => x.Attributes)
-            .Select(a => context.SemanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol)
-            .Count(s => s?.MetadataName is "FromBody" or "FromBodyAttribute" && s.IsDefinedInSystemAssembly());
+        var methodSymbol = (IMethodSymbol)context.Symbol;
+        var attributesOnParameters = methodSymbol.Parameters
+                                                 .SelectMany(p => p.GetAttributes())
+                                                 .Count(a => a.AttributeClass?.MetadataName is "FromBody" or "FromBodyAttribute" && a.AttributeClass?.IsDefinedInSystemAssembly() == true);
 
         if (attributesOnParameters > 1)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ValueText));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, methodSymbol.Locations[0], methodSymbol.Name));
         }
     }
 }
