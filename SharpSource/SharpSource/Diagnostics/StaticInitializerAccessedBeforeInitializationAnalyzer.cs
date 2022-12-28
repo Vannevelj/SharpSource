@@ -54,12 +54,7 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
                         _ => null, // never happens.
                     };
 
-                    if (referencedSymbol is null)
-                    {
-                        return;
-                    }
-
-                    if (!referencedSymbol.IsStatic)
+                    if (referencedSymbol is not { IsStatic: true })
                     {
                         return;
                     }
