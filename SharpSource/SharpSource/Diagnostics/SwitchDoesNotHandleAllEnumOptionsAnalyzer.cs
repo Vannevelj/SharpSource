@@ -1,16 +1,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
+public sealed class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.SwitchDoesNotHandleAllEnumOptions,
@@ -27,35 +25,29 @@ public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SwitchStatement);
+        context.RegisterOperationAction(AnalyzeSwitchOperation, OperationKind.Switch);
     }
 
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeSwitchOperation(OperationAnalysisContext context)
     {
-        var switchBlock = (SwitchStatementSyntax)context.Node;
-
-        if (context.SemanticModel.GetTypeInfo(switchBlock.Expression).Type is not INamedTypeSymbol enumType || enumType.TypeKind != TypeKind.Enum)
+        var switchOperation = (ISwitchOperation)context.Operation;
+        if (switchOperation.Value.Type is not INamedTypeSymbol { TypeKind: TypeKind.Enum } enumType)
         {
             return;
         }
 
         var labelSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-        foreach (var section in switchBlock.Sections)
+        foreach (var caseOperation in switchOperation.Cases)
         {
-            foreach (var label in section.Labels)
+            foreach (var caseClauseOperation in caseOperation.Clauses)
             {
-                if (label.IsKind(SyntaxKind.CaseSwitchLabel))
+                if (caseClauseOperation is ISingleValueCaseClauseOperation { Value: IFieldReferenceOperation enumReference })
                 {
-                    var switchLabel = (CaseSwitchLabelSyntax)label;
-                    var symbol = context.SemanticModel.GetSymbolInfo(switchLabel.Value).Symbol;
-                    if (symbol == null)
-                    {
-                        // potentially malformed case statement
-                        // or an integer being cast to an enum type
-                        return;
-                    }
-
-                    labelSymbols.Add(symbol);
+                    labelSymbols.Add(enumReference.Field);
+                }
+                else if (caseClauseOperation.CaseKind != CaseKind.Default)
+                {
+                    return;
                 }
             }
         }
@@ -69,7 +61,7 @@ public class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyzer
 
             if (!labelSymbols.Contains(member))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, switchBlock.Expression.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, switchOperation.Value.Syntax.GetLocation()));
                 return;
             }
         }
