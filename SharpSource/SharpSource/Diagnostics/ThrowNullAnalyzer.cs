@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -26,21 +27,15 @@ public class ThrowNullAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ThrowStatement);
+        context.RegisterOperationAction(AnalyzeThrow, OperationKind.Throw);
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private void AnalyzeThrow(OperationAnalysisContext context)
     {
-        var throwStatement = (ThrowStatementSyntax)context.Node;
-        if (throwStatement.Expression == null)
+        var throwOperation = (IThrowOperation)context.Operation;
+        if (throwOperation.Exception is IConversionOperation { Operand: ILiteralOperation { ConstantValue: { HasValue: true, Value: null } } })
         {
-            return;
-        }
-
-        var throwValue = context.SemanticModel.GetConstantValue(throwStatement.Expression);
-        if (throwValue.HasValue && throwValue.Value == null)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, throwStatement.Expression.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, throwOperation.Syntax.GetLocation()));
         }
     }
 }

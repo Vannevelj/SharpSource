@@ -14,20 +14,7 @@ public class ThrowNullTests : DiagnosticVerifier
     [TestMethod]
     public async Task ThrowNull_ThrowsNull()
     {
-        var original = @"
-    using System;
-    using System.Text;
-
-    namespace ConsoleApplication1
-    {
-        class MyClass
-        {
-            void Method(string input)
-            {
-                throw null;
-            }
-        }
-    }";
+        var original = @"throw null;";
 
         await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
     }
@@ -35,20 +22,7 @@ public class ThrowNullTests : DiagnosticVerifier
     [TestMethod]
     public async Task ThrowNull_DoesNotThrowNull()
     {
-        var original = @"
-    using System;
-    using System.Text;
-
-    namespace ConsoleApplication1
-    {
-        class MyClass
-        {
-            void Method(string input)
-            {
-                throw new Exception();
-            }
-        }
-    }";
+        var original = @"throw new System.Exception();";
 
         await VerifyDiagnostic(original);
     }
@@ -57,23 +31,11 @@ public class ThrowNullTests : DiagnosticVerifier
     public async Task ThrowNull_Rethrow()
     {
         var original = @"
-    using System;
-    using System.Text;
+try {
 
-    namespace ConsoleApplication1
-    {
-        class MyClass
-        {
-            void Method(string input)
-            {
-                try {
-
-                } catch (Exception) {
-                    throw;
-                }
-            }
-        }
-    }";
+} catch (System.Exception) {
+    throw;
+}";
 
         await VerifyDiagnostic(original);
     }
