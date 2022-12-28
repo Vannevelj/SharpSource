@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.2] - 2022-12-29
+- `SwitchDoesNotHandleAllEnumOptions`: Analyzer is rewritten to use operations. TODO: check performance improvement
+
 ## [1.16.1] - 2022-12-28
 - `StaticInitializerAccessedBeforeInitialization`: Complete rewrite of the analyzer to use operations. No functional difference but might be more performant
 
