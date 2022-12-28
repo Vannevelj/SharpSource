@@ -47,14 +47,14 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
 
                 context.RegisterOperationAction(context =>
                 {
-                    var referencedSymbol = context.Operation switch
+                    ISymbol? referencedSymbol = context.Operation switch
                     {
                         IFieldReferenceOperation fieldReference => fieldReference.Field,
                         IPropertyReferenceOperation propertyReference => propertyReference.Property,
-                        _ => default, // never happens.
+                        _ => null, // never happens.
                     };
 
-                    if (referencedSymbol == default)
+                    if (referencedSymbol is null)
                     {
                         return;
                     }
