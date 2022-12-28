@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -26,18 +26,15 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
+        context.RegisterOperationAction(AnalyzePropertyReferences, OperationKind.PropertyReference);
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzePropertyReferences(OperationAnalysisContext context)
     {
-        var expression = (MemberAccessExpressionSyntax)context.Node;
-
-        if (context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol is INamedTypeSymbol symbol &&
-            symbol.SpecialType == SpecialType.System_DateTime &&
-            expression.Name.Identifier.ValueText == "Now")
+        var propertyReference = (IPropertyReferenceOperation)context.Operation;
+        if (propertyReference is { Type: { SpecialType: SpecialType.System_DateTime }, Property: { Name: "Now" } })
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, propertyReference.Syntax.GetLocation()));
         }
     }
 }

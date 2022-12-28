@@ -35,7 +35,7 @@ public class NewGuidAnalyzer : DiagnosticAnalyzer
         if (objectCreation is { Type: { Name: "Guid" } type, Arguments: { IsEmpty: true } } &&
             type.IsDefinedInSystemAssembly())
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.Syntax.GetLocation()));
         }
     }
 }
