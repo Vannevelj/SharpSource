@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SharpSource.Utilities;
 
@@ -25,22 +23,15 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.FieldDeclaration);
+        context.RegisterSymbolAction(AnalyzeCreation, SymbolKind.Field);
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeCreation(SymbolAnalysisContext context)
     {
-        var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
-        var type = fieldDeclaration.Declaration?.Type;
-        if (type == default)
+        var fieldSymbol = (IFieldSymbol)context.Symbol;
+        if (fieldSymbol.Type is { Name: "HttpContext" } && fieldSymbol.Type.IsDefinedInSystemAssembly())
         {
-            return;
-        }
-
-        var symbol = context.SemanticModel.GetSymbolInfo(type).Symbol;
-        if (symbol is { Name: "HttpContext" } && symbol.IsDefinedInSystemAssembly())
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, fieldSymbol.Locations[0]));
         }
     }
 }
