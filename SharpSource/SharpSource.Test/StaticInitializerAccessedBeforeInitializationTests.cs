@@ -78,7 +78,7 @@ partial struct Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField might not be initialized when it is used");
+        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
     }
 
     [TestMethod]
@@ -95,7 +95,7 @@ partial class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField might not be initialized when it is used");
+        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
     }
 
     [TestMethod]
@@ -113,7 +113,7 @@ partial class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(new[] { file1, file2 }, "FirstField accesses SecondField but both are marked as static and SecondField might not be initialized when it is used");
+        await VerifyDiagnostic(new[] { file1, file2 }, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
     }
 
     [TestMethod]
@@ -517,6 +517,23 @@ class Test
 { 
     public static Func<int> FirstField = new Func<int>(() => SomeValue);
     public static int SomeValue = 5;
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StaticInitializerAccessedBeforeInitialization_PartialStruct_Good()
+    {
+        var original = @"
+partial struct Test
+{
+	public static int FirstField = 5;
+}
+
+partial struct Test
+{
+	private static int SecondField = FirstField;
 }";
 
         await VerifyDiagnostic(original);
