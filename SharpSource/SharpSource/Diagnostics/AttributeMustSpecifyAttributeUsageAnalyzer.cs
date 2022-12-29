@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
@@ -12,7 +8,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnalyzer
+public sealed class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.AttributeMustSpecifyAttributeUsage,
@@ -29,45 +25,51 @@ public class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.ClassDeclaration);
+        context.RegisterCompilationStartAction(context =>
+        {
+            var attributeSymbol = context.Compilation.GetTypeByMetadataName("System.Attribute");
+            var attributeUsageAttributeSymbol = context.Compilation.GetTypeByMetadataName("System.AttributeUsageAttribute");
+            if (attributeSymbol is not null && attributeUsageAttributeSymbol is not null)
+            {
+                context.RegisterSymbolAction(context => AnalyzeSymbol(context, attributeSymbol, attributeUsageAttributeSymbol), SymbolKind.NamedType);
+            }
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeSymbol(SymbolAnalysisContext context, INamedTypeSymbol attributeSymbol, INamedTypeSymbol attributeUsageAttributeSymbol)
     {
-        var classDeclaration = (ClassDeclarationSyntax)context.Node;
-        var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
-        if (classSymbol == null || !classSymbol.InheritsFrom(typeof(Attribute)))
+        var classSymbol = (INamedTypeSymbol)context.Symbol;
+        if (!classSymbol.InheritsFrom(attributeSymbol))
         {
             return;
         }
 
-        var attributeUsage = GetAttributeUsageAttribute(classSymbol);
-        if (attributeUsage == default)
+        var hasAttributeUsage = HasAttributeUsageAttribute(classSymbol, attributeSymbol, attributeUsageAttributeSymbol);
+        if (!hasAttributeUsage)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier.ValueText));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, classSymbol.Locations[0], classSymbol.Name));
         }
     }
 
-    private static INamedTypeSymbol? GetAttributeUsageAttribute(INamedTypeSymbol classSymbol)
+    private static bool HasAttributeUsageAttribute(INamedTypeSymbol classSymbol, INamedTypeSymbol attributeSymbol, INamedTypeSymbol attributeUsageAttributeSymbol)
     {
         var currentSymbol = classSymbol;
         while (currentSymbol != default)
         {
-            if (currentSymbol.Name == "Attribute" && currentSymbol.IsDefinedInSystemAssembly())
+            if (currentSymbol.Equals(attributeSymbol, SymbolEqualityComparer.Default))
             {
-                return default;
+                return false;
             }
 
-            var attributes = currentSymbol.GetAttributes().Select(a => a.AttributeClass);
-            var attribute = attributes.GetAttributesOfType(typeof(AttributeUsageAttribute)).FirstOrDefault();
-            if (attribute != default)
+            var hasAttributeUsage = currentSymbol.GetAttributes().Any(a => attributeUsageAttributeSymbol.Equals(a.AttributeClass, SymbolEqualityComparer.Default));
+            if (hasAttributeUsage)
             {
-                return attribute;
+                return true;
             }
 
             currentSymbol = currentSymbol.BaseType;
         }
 
-        return default;
+        return false;
     }
 }
