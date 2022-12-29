@@ -30,7 +30,7 @@ public class PointlessCollectionToStringAnalyzer : DiagnosticAnalyzer
     private void AnalyzeInvocation(OperationAnalysisContext context)
     {
         var invocation = (IInvocationOperation)context.Operation;
-        if (invocation is not { TargetMethod: { Name: "ToString" }, Arguments: { Length: 0 } })
+        if (invocation is not { TargetMethod.Name: "ToString", Arguments.Length: 0 })
         {
             return;
         }
