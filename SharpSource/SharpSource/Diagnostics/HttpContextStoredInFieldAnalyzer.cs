@@ -23,13 +23,21 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSymbolAction(AnalyzeCreation, SymbolKind.Field);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var httpContextSymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Http.HttpContext");
+            if (httpContextSymbol is not null)
+            {
+                compilationContext.RegisterSymbolAction(context => AnalyzeCreation(context, httpContextSymbol), SymbolKind.Field);
+            }
+        });
     }
 
-    private static void AnalyzeCreation(SymbolAnalysisContext context)
+    private static void AnalyzeCreation(SymbolAnalysisContext context, INamedTypeSymbol httpContextSymbol)
     {
         var fieldSymbol = (IFieldSymbol)context.Symbol;
-        if (fieldSymbol.Type is { Name: "HttpContext" } && fieldSymbol.Type.IsDefinedInSystemAssembly())
+        if (httpContextSymbol.Equals(fieldSymbol.Type, SymbolEqualityComparer.Default))
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, fieldSymbol.Locations[0]));
         }
