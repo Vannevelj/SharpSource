@@ -24,13 +24,21 @@ public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterOperationAction(Analyze, OperationKind.VariableDeclarator);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var randomSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Random");
+            if (randomSymbol is not null)
+            {
+                compilationContext.RegisterOperationAction(context => Analyze(context, randomSymbol), OperationKind.VariableDeclarator);
+            }
+        });
     }
 
-    private void Analyze(OperationAnalysisContext context)
+    private void Analyze(OperationAnalysisContext context, INamedTypeSymbol randomSymbol)
     {
         var declarator = (IVariableDeclaratorOperation)context.Operation;
-        if (declarator is not { Symbol: { Type: { Name: "Random" } type } } || !type.IsDefinedInSystemAssembly())
+        if (!randomSymbol.Equals(declarator.Symbol.Type, SymbolEqualityComparer.Default))
         {
             return;
         }
