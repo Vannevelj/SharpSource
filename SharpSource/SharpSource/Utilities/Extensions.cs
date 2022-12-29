@@ -12,66 +12,6 @@ namespace SharpSource.Utilities;
 
 public static class Extensions
 {
-    private static readonly Dictionary<string, string> AliasMapping = new()
-    {
-        { nameof(Int16), "short" },
-        { nameof(Int32), "int" },
-        { nameof(Int64), "long" },
-        { nameof(UInt16), "ushort" },
-        { nameof(UInt32), "uint" },
-        { nameof(UInt64), "ulong" },
-        { nameof(Object), "object" },
-        { nameof(Byte), "byte" },
-        { nameof(SByte), "sbyte" },
-        { nameof(Char), "char" },
-        { nameof(Boolean), "bool" },
-        { nameof(Single), "float" },
-        { nameof(Double), "double" },
-        { nameof(Decimal), "decimal" },
-        { nameof(String), "string" }
-    };
-
-    public static bool ImplementsInterfaceOrBaseClass(this INamedTypeSymbol typeSymbol, Type interfaceType)
-    {
-        if (typeSymbol == null)
-        {
-            return false;
-        }
-
-        if (typeSymbol.BaseType?.MetadataName == interfaceType.Name)
-        {
-            return true;
-        }
-
-        foreach (var @interface in typeSymbol.AllInterfaces)
-        {
-            if (@interface.MetadataName == interfaceType.Name)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static bool ImplementsInterface(this INamedTypeSymbol typeSymbol, Type interfaceType)
-    {
-        if (typeSymbol == null)
-        {
-            return false;
-        }
-
-        foreach (var @interface in typeSymbol.AllInterfaces)
-        {
-            if (@interface.MetadataName == interfaceType.Name)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static bool InheritsFrom(this ITypeSymbol symbol, ITypeSymbol candidateBaseType)
     {
         if (symbol == null || candidateBaseType == null)
@@ -85,107 +25,6 @@ public static class Extensions
             if (baseType.Equals(candidateBaseType, SymbolEqualityComparer.Default))
             {
                 return true;
-            }
-
-            baseType = baseType.BaseType;
-        }
-
-        return false;
-    }
-
-    [SuppressMessage("Correctness", "SS018:Add cases for missing enum member.", Justification = "Too many SyntaxKind enum members")]
-    public static bool IsCommentTrivia(this SyntaxTrivia trivia)
-    {
-        switch (trivia.Kind())
-        {
-            case SyntaxKind.SingleLineCommentTrivia:
-            case SyntaxKind.MultiLineCommentTrivia:
-            case SyntaxKind.DocumentationCommentExteriorTrivia:
-            case SyntaxKind.SingleLineDocumentationCommentTrivia:
-            case SyntaxKind.MultiLineDocumentationCommentTrivia:
-            case SyntaxKind.EndOfDocumentationCommentToken:
-            case SyntaxKind.XmlComment:
-            case SyntaxKind.XmlCommentEndToken:
-            case SyntaxKind.XmlCommentStartToken:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public static bool IsWhitespaceTrivia(this SyntaxTrivia trivia) => trivia.Kind() switch
-    {
-        SyntaxKind.WhitespaceTrivia or SyntaxKind.EndOfLineTrivia => true,
-        _ => false,
-    };
-
-    public static string ToAlias(this string type)
-    {
-        if (type == null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        if (AliasMapping.TryGetValue(type, out var foundValue))
-        {
-            return foundValue;
-        }
-
-        throw new ArgumentException("Could not find the type specified", nameof(type));
-    }
-
-    public static bool HasAlias(this string type, out string alias)
-    {
-        if (type == null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        return AliasMapping.TryGetValue(type, out alias);
-    }
-
-    /// <summary>
-    ///     Determines whether or not the specified <see cref="IMethodSymbol" /> is the symbol of an asynchronous method. This
-    ///     can be a method declared as async (e.g. returning <see cref="Task" /> or <see cref="Task{TResult}" />), or a method
-    ///     with an async implementation (using the <code>async</code> keyword).
-    /// </summary>
-    public static bool IsAsync(this IMethodSymbol methodSymbol) => methodSymbol.IsAsync ||
-               methodSymbol.ReturnType.MetadataName == typeof(Task).Name ||
-               methodSymbol.ReturnType.MetadataName == typeof(Task<>).Name;
-
-    public static bool IsDefinedInAncestor(this IMethodSymbol methodSymbol)
-    {
-        var containingType = methodSymbol.ContainingType;
-        if (containingType == null)
-        {
-            return false;
-        }
-
-        var interfaces = containingType.AllInterfaces;
-        foreach (var @interface in interfaces)
-        {
-            var interfaceMethods = @interface.GetMembers().Select(containingType.FindImplementationForInterfaceMember);
-
-            foreach (var method in interfaceMethods)
-            {
-                if (method != null && method.Equals(methodSymbol, SymbolEqualityComparer.Default))
-                {
-                    return true;
-                }
-            }
-        }
-
-        var baseType = containingType.BaseType;
-        while (baseType != null)
-        {
-            var baseMethods = baseType.GetMembers().OfType<IMethodSymbol>();
-
-            foreach (var method in baseMethods)
-            {
-                if (method.Equals(methodSymbol.OverriddenMethod, SymbolEqualityComparer.Default))
-                {
-                    return true;
-                }
             }
 
             baseType = baseType.BaseType;
@@ -594,22 +433,6 @@ public static class Extensions
         }
 
         return false;
-    }
-
-    public static IEnumerable<SyntaxNode> GetStatements(this BaseMethodDeclarationSyntax methodDeclaration)
-    {
-        if (methodDeclaration.Body != default)
-        {
-            foreach (var statement in methodDeclaration.Body.Statements)
-            {
-                yield return statement;
-            }
-        }
-
-        if (methodDeclaration.ExpressionBody != default)
-        {
-            yield return methodDeclaration.ExpressionBody.Expression;
-        }
     }
 
     public static (string? Name, bool? IsNullable) GetCancellationTokenFromParameters(this IMethodSymbol? method)

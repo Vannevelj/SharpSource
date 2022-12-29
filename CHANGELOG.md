@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.4] - 2022-12-29
+- `ParameterAssignedInConstructor`: Analyzer is rewritten to use `IOperation`
+
 ## [1.16.3] - 2022-12-29
 - `AsyncMethodWithVoidReturnType` and `AttributeMustSpecifyAttributeUsage`: Analyzer is rewritten to use `IOperation`
 
