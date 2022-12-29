@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
+public sealed class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.AsyncMethodWithVoidReturnType,
@@ -28,60 +24,65 @@ public class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);
+        context.RegisterCompilationStartAction(context =>
+        {
+            var eventArgsSymbol = context.Compilation.GetTypeByMetadataName("System.EventArgs");
+            if (eventArgsSymbol is not null)
+            {
+                context.RegisterSymbolAction(context => AnalyzeMethod(context, eventArgsSymbol), SymbolKind.Method);
+                context.RegisterOperationAction(context => AnalyzeLocalFunction(context, eventArgsSymbol), OperationKind.LocalFunction);
+            }
+        });
     }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeLocalFunction(OperationAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
     {
-        var (returnType, modifiers, parameterList, identifier) = context.Node switch
+        var localFunctionOperation = (ILocalFunctionOperation)context.Operation;
+        var method = localFunctionOperation.Symbol;
+        if (ShouldReportDiagnostic(method, eventArgsSymbol))
         {
-            MethodDeclarationSyntax method => (method.ReturnType, method.Modifiers, method.ParameterList, method.Identifier),
-            LocalFunctionStatementSyntax local => (local.ReturnType, local.Modifiers, local.ParameterList, local.Identifier),
-            _ => throw new NotSupportedException($"Unexpected node: {context.Node.GetType().Name}")
-        };
+            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
+        }
+    }
 
-        // Method has to return void
-        var returnTypeInfo = context.SemanticModel.GetTypeInfo(returnType).Type;
-        if (returnTypeInfo == null || returnTypeInfo.SpecialType != SpecialType.System_Void)
+    private static void AnalyzeMethod(SymbolAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
+    {
+        var method = (IMethodSymbol)context.Symbol;
+        if (ShouldReportDiagnostic(method, eventArgsSymbol))
         {
-            return;
+            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
+        }
+    }
+
+    private static bool ShouldReportDiagnostic(IMethodSymbol method, INamedTypeSymbol eventArgsSymbol)
+    {
+        if (method.ReturnType.SpecialType != SpecialType.System_Void)
+        {
+            return false;
         }
 
-        if (modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
+        if (method.PartialDefinitionPart is not null || method.PartialImplementationPart is not null)
         {
-            return;
+            return false;
         }
 
-        if (!modifiers.Any(m => m.IsKind(SyntaxKind.AsyncKeyword)))
+        if (!method.IsAsync)
         {
-            return;
+            return false;
         }
 
         // Event handlers can only have a void return type
-        if (parameterList?.Parameters.Count == 2)
+        if (method.Parameters.Length == 2)
         {
-            var parameters = parameterList.Parameters;
-            var firstType = parameters[0].Type;
-            var secondType = parameters[1].Type;
-            if (firstType is null || secondType is null)
+            var isFirstParameterObject = method.Parameters[0].Type.SpecialType == SpecialType.System_Object;
+            var isSecondParameterEventArgs = method.Parameters[1].Type.InheritsFrom(eventArgsSymbol);
+
+            if (isFirstParameterObject && isSecondParameterEventArgs)
             {
-                return;
-            }
-
-            var firstArgumentType = context.SemanticModel.GetTypeInfo(firstType);
-            var isFirstArgumentObject = firstArgumentType.Type != null &&
-                                        firstArgumentType.Type.SpecialType == SpecialType.System_Object;
-
-            var secondArgumentType = context.SemanticModel.GetTypeInfo(secondType);
-            var isSecondArgumentEventArgs = secondArgumentType.Type != null &&
-                                            secondArgumentType.Type.InheritsFrom(typeof(EventArgs));
-
-            if (isFirstArgumentObject && isSecondArgumentEventArgs)
-            {
-                return;
+                return false;
             }
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, returnType.GetLocation(), identifier.ValueText));
+        return true;
     }
 }

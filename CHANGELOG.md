@@ -1,8 +1,17 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.4] - 2022-12-29
+- `ParameterAssignedInConstructor`: Analyzer is rewritten to use `IOperation`
+
+## [1.16.3] - 2022-12-29
+- `AsyncMethodWithVoidReturnType` and `AttributeMustSpecifyAttributeUsage`: Analyzer is rewritten to use `IOperation`
+
+## [1.16.2] - 2022-12-29
+- `SwitchDoesNotHandleAllEnumOptions`: Analyzer is rewritten to use `IOperation`
+
 ## [1.16.1] - 2022-12-28
-- `StaticInitializerAccessedBeforeInitialization`: Complete rewrite of the analyzer to use operations. No functional difference but might be more performant
+- `StaticInitializerAccessedBeforeInitialization`: Complete rewrite of the analyzer to use `IOperation`. No functional difference but might be more performant
 
 ## [1.16.0] - 2022-12-27
 - `PointlessCollectionToString`: `.ToString()` was called on a collection which results in impractical output. Considering using `string.Join()` to display the values instead.
