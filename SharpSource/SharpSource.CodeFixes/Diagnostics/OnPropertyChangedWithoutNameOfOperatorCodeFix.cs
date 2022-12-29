@@ -11,7 +11,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.OnPropertyChangedWithoutNameofOperator + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds
@@ -41,7 +41,7 @@ public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
         var startLocation = int.Parse(diagnostic.Properties["startLocation"]);
 
         // We have to use LastOrDefault because encompassing nodes will have the same start location
-        // For example in our scenario of OnPropertyChanged("test"), the ArgumentSyntaxNode will have 
+        // For example in our scenario of OnPropertyChanged("test"), the ArgumentSyntaxNode will have
         // the same start location as the following LiteralExpressionNode
         // We are interested in the inner-most node therefore we need to take the last one with that start location
         var nodeToReplace = root.DescendantNodesAndSelf().LastOrDefault(x => x.SpanStart == startLocation);

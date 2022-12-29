@@ -13,7 +13,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.FlagsEnumValuesAreNotPowersOfTwo + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(FlagsEnumValuesAreNotPowersOfTwoAnalyzer.Rule.Id);

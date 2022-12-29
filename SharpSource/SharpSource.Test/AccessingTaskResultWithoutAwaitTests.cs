@@ -1,19 +1,15 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.AccessingTaskResultWithoutAwaitAnalyzer, SharpSource.Diagnostics.AccessingTaskResultWithoutAwaitCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AccessingTaskResultWithoutAwaitTests : DiagnosticVerifier
+public class AccessingTaskResultWithoutAwaitTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AccessingTaskResultWithoutAwaitAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new AccessingTaskResultWithoutAwaitCodeFix();
-
     [TestMethod]
     public async Task AccessingTaskResultWithoutAwait_AsyncContext()
     {
@@ -28,7 +24,7 @@ namespace ConsoleApplication1
     {   
         async Task MyMethod()
         {
-            var number = Other().Result;
+            var number = {|#0:Other().Result|};
         }
 
         async Task<int> Other() => 5;
@@ -52,9 +48,7 @@ namespace ConsoleApplication1
         async Task<int> Other() => 5;
     }
 }";
-
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -79,7 +73,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyCodeFixAsync(original, original);
     }
 
     [TestMethod]
@@ -96,7 +90,7 @@ namespace ConsoleApplication1
     {   
         async void MyMethod()
         {
-            var number = Other().Result;
+            var number = {|#0:Other().Result|};
         }
 
         async Task<int> Other() => 5;
@@ -121,8 +115,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -137,7 +130,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {   
-        async Task<int> MyMethod() => Other().Result;
+        async Task<int> MyMethod() => {|#0:Other().Result|};
 
         async Task<int> Other() => 5;
     }
@@ -158,8 +151,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -174,7 +166,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {   
-        async Task<int> MyMethod() => new MyClass().Other().Result;
+        async Task<int> MyMethod() => {|#0:new MyClass().Other().Result|};
 
         async Task<int> Other() => 5;
     }
@@ -195,8 +187,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -211,7 +202,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-	    Action MyMethod() => new Action(async () => Console.Write(Other().Result));
+	    Action MyMethod() => new Action(async () => Console.Write({|#0:Other().Result|}));
 
 	    async Task<int> Other() => 5;
     }
@@ -232,8 +223,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -254,7 +244,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyCodeFixAsync(original, original);
     }
 
     [TestMethod]
@@ -278,7 +268,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyCodeFixAsync(original, original);
     }
 
     [TestMethod]
@@ -297,7 +287,7 @@ namespace ConsoleApplication1
 
         async Task MyMethod()
         {
-            var number = Other().Result.SomeField;
+            var number = {|#0:Other().Result|}.SomeField;
         }
 
         async Task<MyClass> Other() => this;
@@ -324,8 +314,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -343,7 +332,7 @@ namespace ConsoleApplication1
 	    async Task MyMethod()
 	    {
 		    Console.Write(new {
-			    Prop = Get().Result
+			    Prop = {|#0:Get().Result|}
 		    });
 	    }
 	
@@ -371,8 +360,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/111")]
@@ -388,7 +376,7 @@ namespace ConsoleApplication1
     {   
         async Task MyMethod()
         {
-            var number = Other().Result;
+            var number = {|#0:Other().Result|};
         }
 
         async ValueTask<int> Other() => 5;
@@ -412,8 +400,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFixAsync(original, VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."), result);
     }
 
     [TestMethod]
@@ -429,7 +416,7 @@ await DoThing(File.Open("""", FileMode.Open));
 
 async Task DoThing(FileStream file) 
 {
-    var result = file.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result;
+    var result = {|#0:file.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result|};
 }";
 
         var result = @"
@@ -444,15 +431,27 @@ async Task DoThing(FileStream file)
 {
     var result = await file.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None);
 }";
-
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await new VerifyCS.Test
+        {
+            TestState =
+            {
+                Sources = { original },
+                OutputKind = OutputKind.ConsoleApplication,
+            },
+            FixedCode = result,
+            ExpectedDiagnostics =
+            {
+                VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."),
+            },
+        }.RunAsync();
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/146")]
     public async Task AccessingTaskResultWithoutAwait_NullableAccess_DoesNotSuggestFix()
     {
         var original = @"
+#nullable enable
+
 using System;
 using System.IO;
 using System.Threading;
@@ -462,23 +461,21 @@ await DoThing(File.Open("""", FileMode.Open));
 
 async Task DoThing(FileStream? file) 
 {
-    var result = file?.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result;
+    var result = file?{|#0:.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result|};
 }";
 
-        var result = @"
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-await DoThing(File.Open("""", FileMode.Open));
-
-async Task DoThing(FileStream? file) 
-{
-    var result = file?.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result;
-}";
-
-        await VerifyDiagnostic(original, "Use await to get the result of a Task.");
-        await VerifyFix(original, result);
+        await new VerifyCS.Test
+        {
+            TestState =
+            {
+                Sources = { original },
+                OutputKind = OutputKind.ConsoleApplication,
+            },
+            FixedCode = original,
+            ExpectedDiagnostics =
+            {
+                VerifyCS.Diagnostic().WithLocation(0).WithMessage("Use await to get the result of a Task."),
+            },
+        }.RunAsync();
     }
 }

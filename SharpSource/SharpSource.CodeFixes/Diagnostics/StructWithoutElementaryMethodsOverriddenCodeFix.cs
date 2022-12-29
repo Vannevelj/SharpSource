@@ -14,7 +14,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.StructWithoutElementaryMethodsOverridden + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds
