@@ -72,22 +72,22 @@ public static class Extensions
         return false;
     }
 
-    public static bool InheritsFrom(this ISymbol typeSymbol, Type type)
+    public static bool InheritsFrom(this ITypeSymbol symbol, ITypeSymbol candidateBaseType)
     {
-        if (typeSymbol == null || type == null)
+        if (symbol == null || candidateBaseType == null)
         {
             return false;
         }
 
-        var baseType = typeSymbol;
-        while (baseType != null && baseType.MetadataName != typeof(object).Name &&
-               baseType.MetadataName != typeof(ValueType).Name)
+        var baseType = symbol;
+        while (baseType != null)
         {
-            if (baseType.MetadataName == type.Name)
+            if (baseType.Equals(candidateBaseType, SymbolEqualityComparer.Default))
             {
                 return true;
             }
-            baseType = ( (ITypeSymbol)baseType ).BaseType;
+
+            baseType = baseType.BaseType;
         }
 
         return false;
@@ -425,9 +425,6 @@ public static class Extensions
             var symbol = semanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol;
             return symbol?.MetadataName == type.Name && symbol.IsDefinedInSystemAssembly();
         });
-
-    public static IEnumerable<INamedTypeSymbol> GetAttributesOfType(this IEnumerable<INamedTypeSymbol?> attributes, Type type) =>
-        attributes.Where(a => a?.MetadataName == type.Name && a.IsDefinedInSystemAssembly())!;
 
     public static IMethodSymbol GetBaseDefinition(this IMethodSymbol method)
     {
