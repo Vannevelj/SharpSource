@@ -24,15 +24,23 @@ public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var fromBodySymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.FromBodyAttribute");
+            if (fromBodySymbol is not null)
+            {
+                compilationContext.RegisterSymbolAction(context => Analyze(context, fromBodySymbol), SymbolKind.Method);
+            }
+        });
     }
 
-    private void AnalyzeMethod(SymbolAnalysisContext context)
+    private static void Analyze(SymbolAnalysisContext context, INamedTypeSymbol fromBodySymbol)
     {
         var methodSymbol = (IMethodSymbol)context.Symbol;
         var attributesOnParameters = methodSymbol.Parameters
                                                  .SelectMany(p => p.GetAttributes())
-                                                 .Count(a => a.AttributeClass?.MetadataName is "FromBody" or "FromBodyAttribute" && a.AttributeClass?.IsDefinedInSystemAssembly() == true);
+                                                 .Count(a => fromBodySymbol.Equals(a.AttributeClass, SymbolEqualityComparer.Default));
 
         if (attributesOnParameters > 1)
         {
