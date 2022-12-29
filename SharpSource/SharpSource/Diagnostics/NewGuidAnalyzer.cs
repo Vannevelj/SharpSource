@@ -24,14 +24,21 @@ public class NewGuidAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterOperationAction(AnalyzeCreation, OperationKind.ObjectCreation);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var guidSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Guid");
+            if (guidSymbol is not null)
+            {
+                compilationContext.RegisterOperationAction(context => AnalyzeCreation(context, guidSymbol), OperationKind.ObjectCreation);
+            }
+        });
     }
 
-    private static void AnalyzeCreation(OperationAnalysisContext context)
+    private static void AnalyzeCreation(OperationAnalysisContext context, INamedTypeSymbol guidSymbol)
     {
         var objectCreation = (IObjectCreationOperation)context.Operation;
-        if (objectCreation is { Type: { Name: "Guid" } type, Arguments: { IsEmpty: true } } &&
-            type.IsDefinedInSystemAssembly())
+        if (guidSymbol.Equals(objectCreation.Type, SymbolEqualityComparer.Default) && objectCreation is { Arguments.IsEmpty: true })
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.Syntax.GetLocation()));
         }
