@@ -46,11 +46,17 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        // The dictionary indexer is a reference to the "Item" property
-        context.RegisterOperationAction(Analyze, OperationKind.Invocation, OperationKind.PropertyReference);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var lookupWithSymbols = SupportedLookups.Select(lookup => (compilationContext.Compilation.GetTypeByMetadataName(lookup.type.FullName), lookup.method)).ToArray();
+
+            // The dictionary indexer is a reference to the "Item" property
+            compilationContext.RegisterOperationAction(context => Analyze(context, lookupWithSymbols), OperationKind.Invocation, OperationKind.PropertyReference);
+        });
     }
 
-    private void Analyze(OperationAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, (INamedTypeSymbol? typeSymbol, string methodName)[] supportedLookups)
     {
         var argument = context.Operation switch
         {
@@ -78,10 +84,9 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         }
 
         if (context.Operation is IInvocationOperation invocation &&
-            !SupportedLookups.Any(lookup =>
-                invocation.TargetMethod.ContainingType.MetadataName == lookup.type.Name &&
-                invocation.TargetMethod.ContainingType.IsDefinedInSystemAssembly() == true &&
-                invocation.TargetMethod.Name == lookup.method))
+            !supportedLookups.Any(lookup =>
+                lookup.typeSymbol?.Equals(invocation.TargetMethod.OriginalDefinition.ContainingType, SymbolEqualityComparer.Default) == true &&
+                invocation.TargetMethod.Name == lookup.methodName))
         {
             return;
         }
