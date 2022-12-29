@@ -113,4 +113,15 @@ var date = DateTime.UtcNow;";
         await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
         await VerifyFix(original, result);
     }
+
+    [TestMethod]
+    public async Task DateTimeNow_Nameof()
+    {
+
+        var original = @"
+using System;
+var date = nameof(DateTime.Now);";
+
+        await VerifyDiagnostic(original);
+    }
 }

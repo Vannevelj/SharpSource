@@ -40,6 +40,11 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
     private static void AnalyzePropertyReference(OperationAnalysisContext context, IPropertySymbol nowProperty)
     {
         var propertyReference = (IPropertyReferenceOperation)context.Operation;
+        if (propertyReference.Parent is INameOfOperation)
+        {
+            return;
+        }
+
         if (nowProperty.Equals(propertyReference.Property, SymbolEqualityComparer.Default))
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, propertyReference.Syntax.GetLocation()));
