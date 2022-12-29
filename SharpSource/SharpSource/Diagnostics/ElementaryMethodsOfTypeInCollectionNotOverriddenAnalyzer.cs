@@ -5,10 +5,8 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -48,42 +46,49 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression, SyntaxKind.ElementAccessExpression);
+        // The dictionary indexer is a reference to the "Item" property
+        context.RegisterOperationAction(Analyze, OperationKind.Invocation, OperationKind.PropertyReference);
     }
 
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private void Analyze(OperationAnalysisContext context)
     {
-        var argument = context.Node switch
+        var argument = context.Operation switch
         {
-            InvocationExpressionSyntax invocation => invocation.ArgumentList?.Arguments.FirstOrDefault(),
-            ElementAccessExpressionSyntax indexer => indexer.ArgumentList?.Arguments.FirstOrDefault(),
+            // Static methods (which includes extension methods) are methods where the instance is passed in as the first argument
+            IInvocationOperation invocationOperation => invocationOperation.TargetMethod.IsStatic
+                                                            ? invocationOperation.Arguments.Skip(1).FirstOrDefault()
+                                                            : invocationOperation.Arguments.FirstOrDefault(),
+            IPropertyReferenceOperation propertyReference => propertyReference.Arguments.FirstOrDefault(),
             _ => default
         };
-        if (argument == default)
+
+        var argumentType = argument?.Parameter?.Type;
+        if (argument == default || argumentType == default)
         {
             return;
         }
 
-        if (context.Node is InvocationExpressionSyntax invocationExpression &&
-            !SupportedLookups.Any(lookup => invocationExpression.IsAnInvocationOf(lookup.type, lookup.method, context.SemanticModel)))
+        if (argumentType.TypeKind is TypeKind.TypeParameter
+                                  or TypeKind.Interface
+                                  or TypeKind.Enum
+                                  or TypeKind.Array
+            || argumentType.IsDefinedInSystemAssembly())
         {
             return;
         }
 
-        var invokedType = context.SemanticModel.GetTypeInfo(argument.Expression).Type;
-        if (invokedType == null ||
-            invokedType.TypeKind == TypeKind.Interface ||
-            invokedType.TypeKind == TypeKind.TypeParameter ||
-            invokedType.TypeKind == TypeKind.Enum ||
-            invokedType.TypeKind == TypeKind.Array ||
-            invokedType.IsDefinedInSystemAssembly())
+        if (context.Operation is IInvocationOperation invocation &&
+            !SupportedLookups.Any(lookup =>
+                invocation.TargetMethod.ContainingType.MetadataName == lookup.type.Name &&
+                invocation.TargetMethod.ContainingType.IsDefinedInSystemAssembly() == true &&
+                invocation.TargetMethod.Name == lookup.method))
         {
             return;
         }
 
         var implementsEquals = false;
         var implementsGetHashCode = false;
-        foreach (var member in invokedType.GetMembers())
+        foreach (var member in argumentType.GetMembers())
         {
             if (member.Name == WellKnownMemberNames.ObjectEquals)
             {
@@ -98,7 +103,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         if (!implementsEquals || !implementsGetHashCode)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, argument.GetLocation(), invokedType.Name));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, argument.Syntax.GetLocation(), argumentType.Name));
         }
     }
 }
