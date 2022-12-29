@@ -49,14 +49,19 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         context.RegisterCompilationStartAction(compilationContext =>
         {
-            var lookupWithSymbols = SupportedLookups.Select(lookup => (compilationContext.Compilation.GetTypeByMetadataName(lookup.type.FullName), lookup.method)).ToArray();
+            var lookupWithMethodSymbols =
+                from lookup in SupportedLookups
+                let typeSymbol = compilationContext.Compilation.GetTypeByMetadataName(lookup.type.FullName)
+                let methodSymbol = typeSymbol.GetMembers(lookup.method).OfType<IMethodSymbol>().FirstOrDefault()
+                where typeSymbol != null && methodSymbol != null
+                select (typeSymbol, methodSymbol);
 
             // The dictionary indexer is a reference to the "Item" property
-            compilationContext.RegisterOperationAction(context => Analyze(context, lookupWithSymbols), OperationKind.Invocation, OperationKind.PropertyReference);
+            compilationContext.RegisterOperationAction(context => Analyze(context, lookupWithMethodSymbols.ToArray()), OperationKind.Invocation, OperationKind.PropertyReference);
         });
     }
 
-    private static void Analyze(OperationAnalysisContext context, (INamedTypeSymbol? typeSymbol, string methodName)[] supportedLookups)
+    private static void Analyze(OperationAnalysisContext context, (INamedTypeSymbol typeSymbol, IMethodSymbol methodSymbol)[] supportedLookups)
     {
         var argument = context.Operation switch
         {
@@ -85,8 +90,8 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         if (context.Operation is IInvocationOperation invocation &&
             !supportedLookups.Any(lookup =>
-                lookup.typeSymbol?.Equals(invocation.TargetMethod.OriginalDefinition.ContainingType, SymbolEqualityComparer.Default) == true &&
-                invocation.TargetMethod.Name == lookup.methodName))
+                lookup.typeSymbol.Equals(invocation.TargetMethod.OriginalDefinition.ContainingType, SymbolEqualityComparer.Default) &&
+                lookup.methodSymbol.Equals(invocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default)))
         {
             return;
         }
