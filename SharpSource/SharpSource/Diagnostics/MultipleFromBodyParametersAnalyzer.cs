@@ -1,8 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SharpSource.Utilities;
 
@@ -26,23 +24,27 @@ public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.MethodDeclaration);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var fromBodySymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.FromBodyAttribute");
+            if (fromBodySymbol is not null)
+            {
+                compilationContext.RegisterSymbolAction(context => Analyze(context, fromBodySymbol), SymbolKind.Method);
+            }
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void Analyze(SymbolAnalysisContext context, INamedTypeSymbol fromBodySymbol)
     {
-        var methodDeclaration = (MethodDeclarationSyntax)context.Node;
-        var attributesOnParameters = methodDeclaration
-            .ParameterList
-            .Parameters
-            .SelectMany(p => p.AttributeLists)
-            .SelectMany(x => x.Attributes)
-            .Select(a => context.SemanticModel.GetSymbolInfo(a.Name).Symbol?.ContainingSymbol)
-            .Count(s => s?.MetadataName is "FromBody" or "FromBodyAttribute" && s.IsDefinedInSystemAssembly());
+        var methodSymbol = (IMethodSymbol)context.Symbol;
+        var attributesOnParameters = methodSymbol.Parameters
+                                                 .SelectMany(p => p.GetAttributes())
+                                                 .Count(a => fromBodySymbol.Equals(a.AttributeClass, SymbolEqualityComparer.Default));
 
         if (attributesOnParameters > 1)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ValueText));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, methodSymbol.Locations[0], methodSymbol.Name));
         }
     }
 }

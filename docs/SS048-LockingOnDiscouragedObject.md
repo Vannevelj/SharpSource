@@ -13,7 +13,7 @@ A `lock` was taken using an instance of a discouraged type. `System.String`, `Sy
 class Test
 {
     private Type _badLock1 = default;
-    private string _badLock1 = default;
+    private string _badLock2 = default;
 
     void Method()
     {

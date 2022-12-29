@@ -1,9 +1,8 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -26,18 +25,29 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var dateTimeSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_DateTime);
+            var nowPropertySymbol = dateTimeSymbol.GetMembers("Now").OfType<IPropertySymbol>().FirstOrDefault();
+            if (nowPropertySymbol is not null)
+            {
+                compilationContext.RegisterOperationAction(context => AnalyzePropertyReference(context, nowPropertySymbol), OperationKind.PropertyReference);
+            }
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzePropertyReference(OperationAnalysisContext context, IPropertySymbol nowProperty)
     {
-        var expression = (MemberAccessExpressionSyntax)context.Node;
-
-        if (context.SemanticModel.GetSymbolInfo(expression.Expression).Symbol is INamedTypeSymbol symbol &&
-            symbol.SpecialType == SpecialType.System_DateTime &&
-            expression.Name.Identifier.ValueText == "Now")
+        var propertyReference = (IPropertyReferenceOperation)context.Operation;
+        if (propertyReference.Parent is INameOfOperation)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            return;
+        }
+
+        if (nowProperty.Equals(propertyReference.Property, SymbolEqualityComparer.Default))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Rule, propertyReference.Syntax.GetLocation()));
         }
     }
 }

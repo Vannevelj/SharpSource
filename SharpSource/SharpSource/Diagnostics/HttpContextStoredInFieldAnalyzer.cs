@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SharpSource.Utilities;
 
@@ -25,22 +23,23 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.FieldDeclaration);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var httpContextSymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Http.HttpContext");
+            if (httpContextSymbol is not null)
+            {
+                compilationContext.RegisterSymbolAction(context => AnalyzeCreation(context, httpContextSymbol), SymbolKind.Field);
+            }
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeCreation(SymbolAnalysisContext context, INamedTypeSymbol httpContextSymbol)
     {
-        var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
-        var type = fieldDeclaration.Declaration?.Type;
-        if (type == default)
+        var fieldSymbol = (IFieldSymbol)context.Symbol;
+        if (httpContextSymbol.Equals(fieldSymbol.Type, SymbolEqualityComparer.Default))
         {
-            return;
-        }
-
-        var symbol = context.SemanticModel.GetSymbolInfo(type).Symbol;
-        if (symbol is { Name: "HttpContext" } && symbol.IsDefinedInSystemAssembly())
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, fieldSymbol.Locations[0]));
         }
     }
 }

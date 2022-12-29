@@ -86,6 +86,8 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
+        await VerifyDiagnostic(original,
+            "HttpContext was stored in a field. Use IHttpContextAccessor instead",
+            "HttpContext was stored in a field. Use IHttpContextAccessor instead");
     }
 }
