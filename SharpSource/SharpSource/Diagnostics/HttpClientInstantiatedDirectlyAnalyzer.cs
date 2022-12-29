@@ -24,13 +24,21 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterOperationAction(AnalyzeCreation, OperationKind.ObjectCreation);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var httpClientSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Net.Http.HttpClient");
+            if (httpClientSymbol is not null)
+            {
+                compilationContext.RegisterOperationAction(context => AnalyzeCreation(context, httpClientSymbol), OperationKind.ObjectCreation);
+            }
+        });
     }
 
-    private static void AnalyzeCreation(OperationAnalysisContext context)
+    private static void AnalyzeCreation(OperationAnalysisContext context, INamedTypeSymbol httpClientSymbol)
     {
         var objectCreation = (IObjectCreationOperation)context.Operation;
-        if (objectCreation is { Type: { Name: "HttpClient" } } && objectCreation.Type.IsDefinedInSystemAssembly())
+        if (httpClientSymbol.Equals(objectCreation.Type, SymbolEqualityComparer.Default))
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.Syntax.GetLocation()));
         }
