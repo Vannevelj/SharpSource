@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -12,8 +9,6 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
 {
-    private readonly SyntaxKind[] _loopTypes = { SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement };
-
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.LoopedRandomInstantiation,
         "An instance of type System.Random is created in a loop.",
@@ -29,37 +24,23 @@ public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.VariableDeclaration);
+        context.RegisterOperationAction(Analyze, OperationKind.VariableDeclarator);
     }
 
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private void Analyze(OperationAnalysisContext context)
     {
-        var variableDeclaration = (VariableDeclarationSyntax)context.Node;
-
-        var type = variableDeclaration.Type;
-        if (type == null)
+        var declarator = (IVariableDeclaratorOperation)context.Operation;
+        if (declarator is not { Symbol: { Type: { Name: "Random" } type } } || !type.IsDefinedInSystemAssembly())
         {
             return;
         }
 
-        var typeInfo = context.SemanticModel.GetTypeInfo(type).Type;
-
-        if (typeInfo?.OriginalDefinition.ContainingNamespace == null ||
-            typeInfo.OriginalDefinition.ContainingNamespace.Name != nameof(System) ||
-            typeInfo.Name != nameof(Random))
+        IOperation? currentNode = declarator;
+        while (currentNode is not null)
         {
-            return;
-        }
-
-        SyntaxNode? currentNode = variableDeclaration;
-        while (currentNode is not null && !currentNode.IsAnyKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration))
-        {
-            if (_loopTypes.Contains(currentNode.Kind()))
+            if (currentNode is ILoopOperation)
             {
-                foreach (var declarator in variableDeclaration.Variables)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, declarator.GetLocation(), declarator.Identifier.Text));
-                }
+                context.ReportDiagnostic(Diagnostic.Create(Rule, declarator.Syntax.GetLocation(), declarator.Symbol.Name));
                 return;
             }
 
