@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -24,13 +25,22 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterOperationAction(AnalyzePropertyReferences, OperationKind.PropertyReference);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var dateTimeSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_DateTime);
+            var nowPropertySymbol = dateTimeSymbol.GetMembers("Now").OfType<IPropertySymbol>().FirstOrDefault();
+            if (nowPropertySymbol is not null)
+            {
+                compilationContext.RegisterOperationAction(context => AnalyzePropertyReference(context, nowPropertySymbol), OperationKind.PropertyReference);
+            }
+        });
     }
 
-    private static void AnalyzePropertyReferences(OperationAnalysisContext context)
+    private static void AnalyzePropertyReference(OperationAnalysisContext context, IPropertySymbol nowProperty)
     {
         var propertyReference = (IPropertyReferenceOperation)context.Operation;
-        if (propertyReference is { Type: { SpecialType: SpecialType.System_DateTime }, Property: { Name: "Now" } })
+        if (nowProperty.Equals(propertyReference.Property, SymbolEqualityComparer.Default))
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, propertyReference.Syntax.GetLocation()));
         }
