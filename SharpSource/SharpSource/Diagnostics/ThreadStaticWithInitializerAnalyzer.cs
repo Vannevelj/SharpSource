@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -27,22 +25,26 @@ public class ThreadStaticWithInitializerAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.FieldDeclaration);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var threadStaticSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.ThreadStaticAttribute");
+            if (threadStaticSymbol is not null)
+            {
+                compilationContext.RegisterOperationAction(context => Analyze(context, threadStaticSymbol), OperationKind.FieldInitializer);
+            }
+        });
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol threadStaticSymbol)
     {
-        var field = (FieldDeclarationSyntax)context.Node;
-        var hasThreadStaticAttribute = field.AttributeLists.GetAttributesOfType(typeof(System.ThreadStaticAttribute), context.SemanticModel).Any();
-
-        if (!hasThreadStaticAttribute)
+        var initializer = (IFieldInitializerOperation)context.Operation;
+        foreach (var field in initializer.InitializedFields)
         {
-            return;
-        }
-
-        foreach (var variableDeclaration in field.Declaration.Variables.Where(v => v.Initializer is not null))
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, variableDeclaration.Initializer?.GetLocation(), variableDeclaration.Identifier.ValueText));
+            if (field.GetAttributes().Any(a => threadStaticSymbol.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, initializer.Syntax.GetLocation(), field.Name));
+            }            
         }
     }
 }
