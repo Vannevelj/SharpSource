@@ -3,6 +3,8 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.16.6] - 2022-12-30
 - `ThreadStaticWithInitializer` and `InstanceFieldWithThreadStatic`: Analyzer is rewritten to use `IOperation`
+- Removed unused test project dependencies
+- Split up Test and Build workflows
 
 ## [1.16.5] - 2022-12-29
 - `DateTimeNow`: No longer incorrectly triggers for `nameof(DateTime.Now)` invocations
