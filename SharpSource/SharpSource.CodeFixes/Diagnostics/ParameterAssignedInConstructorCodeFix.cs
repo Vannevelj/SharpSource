@@ -27,7 +27,7 @@ public class ParameterAssignedInConstructorCodeFix : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var assignmentExpression = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
         if (assignmentExpression == default)
@@ -40,7 +40,7 @@ public class ParameterAssignedInConstructorCodeFix : CodeFixProvider
                 x => SwapAssignment(context.Document, root, assignmentExpression), DiagnosticId.ParameterAssignedInConstructor), diagnostic);
     }
 
-    private Task<Document> SwapAssignment(Document document, SyntaxNode root, AssignmentExpressionSyntax assignmentExpression)
+    private static Task<Document> SwapAssignment(Document document, SyntaxNode root, AssignmentExpressionSyntax assignmentExpression)
     {
         var newAssignment = SyntaxFactory.AssignmentExpression(assignmentExpression.Kind(), assignmentExpression.Right, assignmentExpression.Left);
         var newRoot = root.ReplaceNode(assignmentExpression, newAssignment.WithAdditionalAnnotations(Formatter.Annotation));

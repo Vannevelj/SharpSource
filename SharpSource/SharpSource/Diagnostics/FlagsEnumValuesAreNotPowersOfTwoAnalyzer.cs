@@ -64,7 +64,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private bool IsPowerOfTwo(object? value) =>
+    private static bool IsPowerOfTwo(object? value) =>
         value switch
         {
             int v => ( v & ( v - 1 ) ) == 0,

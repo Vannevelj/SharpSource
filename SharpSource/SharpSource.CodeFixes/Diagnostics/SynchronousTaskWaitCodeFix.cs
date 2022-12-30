@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -22,7 +21,7 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var synchronousWaitMethod = root?.FindToken(diagnosticSpan.Start)
             .Parent?
@@ -42,7 +41,7 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root)
+    private static Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root)
     {
         if (memberAccessExpression == null)
         {

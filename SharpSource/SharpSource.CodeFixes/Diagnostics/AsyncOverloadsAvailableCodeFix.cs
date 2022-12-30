@@ -26,7 +26,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         {
             return;
         }
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var invocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
         if (invocation == default)
@@ -82,5 +82,5 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         return Task.FromResult(newDocument);
     }
 
-    private IdentifierNameSyntax GetIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
+    private static IdentifierNameSyntax GetIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
 }

@@ -26,7 +26,7 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var lockStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<LockStatementSyntax>().First();
@@ -49,7 +49,7 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
                 x => AddReadonlyModifier(context.Document, root, fieldSyntaxNode), DiagnosticId.LockingOnMutableReference), diagnostic);
     }
 
-    private Task<Document> AddReadonlyModifier(Document document, SyntaxNode root, FieldDeclarationSyntax fieldDeclaration)
+    private static Task<Document> AddReadonlyModifier(Document document, SyntaxNode root, FieldDeclarationSyntax fieldDeclaration)
     {
         var newFieldDeclaration = fieldDeclaration.AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
         var newRoot = root.ReplaceNode(fieldDeclaration, newFieldDeclaration);
