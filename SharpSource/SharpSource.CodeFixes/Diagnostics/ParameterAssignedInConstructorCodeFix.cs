@@ -27,7 +27,7 @@ public class ParameterAssignedInConstructorCodeFix : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var assignmentExpression = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
         if (assignmentExpression == default)

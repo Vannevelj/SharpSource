@@ -21,7 +21,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var operation = diagnostic.Properties["operation"];
         var semanticModel = await context.Document.GetSemanticModelAsync();
 

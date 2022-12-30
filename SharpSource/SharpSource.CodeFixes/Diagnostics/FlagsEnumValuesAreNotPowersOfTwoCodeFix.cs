@@ -23,7 +23,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var enumMember = root?.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
         var semanticModel = await context.Document.GetSemanticModelAsync();

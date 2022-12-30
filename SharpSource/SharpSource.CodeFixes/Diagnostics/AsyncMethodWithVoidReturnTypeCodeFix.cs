@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -24,7 +23,7 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var methodDeclaration =
             root?.FindToken(diagnosticSpan.Start).Parent?.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.LocalFunctionStatement);

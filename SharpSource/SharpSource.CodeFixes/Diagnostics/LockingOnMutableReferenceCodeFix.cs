@@ -26,7 +26,7 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var lockStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<LockStatementSyntax>().First();
