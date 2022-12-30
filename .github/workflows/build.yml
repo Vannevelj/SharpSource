@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build
     runs-on: windows-latest
 
     steps:
