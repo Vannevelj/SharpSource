@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.14] - 2022-12-30
+- Internal code cleanup
+
 ## [1.16.13] - 2022-12-30
 - `LinqTraversalBeforeFilter`: Analyzer is rewritten to use `IOperation`
 
