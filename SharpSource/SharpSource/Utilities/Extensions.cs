@@ -56,20 +56,6 @@ public static class Extensions
         return (invokedType, invokedMethod.Symbol);
     }
 
-    public static bool IsNameofInvocation(this InvocationExpressionSyntax invocation)
-    {
-        if (invocation == null)
-        {
-            throw new ArgumentNullException(nameof(invocation));
-        }
-
-        var identifier = invocation.Expression.DescendantNodesAndSelf()
-                                   .OfType<IdentifierNameSyntax>()
-                                   .FirstOrDefault();
-
-        return identifier != null && identifier.Identifier.ValueText == "nameof";
-    }
-
     /// <summary>
     /// Gets the innermost surrounding class, struct or interface declaration
     /// </summary>

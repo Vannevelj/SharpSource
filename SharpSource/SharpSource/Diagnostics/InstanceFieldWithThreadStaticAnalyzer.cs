@@ -7,7 +7,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class InstanceFieldWithThreadStaticAnalyzer : DiagnosticAnalyzer
+public sealed class InstanceFieldWithThreadStaticAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.InstanceFieldWithThreadStatic,
@@ -38,7 +38,7 @@ public class InstanceFieldWithThreadStaticAnalyzer : DiagnosticAnalyzer
     private static void Analyze(SymbolAnalysisContext context, INamedTypeSymbol threadStaticSymbol)
     {
         var field = (IFieldSymbol)context.Symbol;
-        if (field is { IsConst: true } or { IsStatic: true })
+        if (field.IsStatic)
         {
             return;
         }
