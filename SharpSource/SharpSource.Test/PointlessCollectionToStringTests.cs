@@ -193,7 +193,6 @@ class Test
     }
 
     [TestMethod]
-    [Ignore("Doesn't work yet, see https://github.com/Vannevelj/SharpSource/issues/212")]
     public async Task PointlessCollectionToString_Long_Chained_Null()
     {
         var original = @$"

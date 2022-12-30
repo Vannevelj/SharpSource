@@ -1,15 +1,15 @@
-name: Build and Test
+name: Build
 
 on:
   pull_request:
 
 concurrency:
-  group: ${{ github.head_ref }}-test
+  group: ${{ github.head_ref }}-build
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build and Test
+    name: Build
     runs-on: windows-latest
 
     steps:
@@ -25,9 +25,6 @@ jobs:
         run: msbuild sharpsource.sln -t:rebuild -property:Configuration=Release
         env: 
           DeployExtension: False
-
-      - name: Run tests
-        run: dotnet test --verbosity normal
 
       - name: Collect artifacts - VSIX
         uses: actions/upload-artifact@v2

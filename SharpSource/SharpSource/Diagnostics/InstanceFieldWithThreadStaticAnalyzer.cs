@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SharpSource.Utilities;
 
@@ -27,35 +24,30 @@ public class InstanceFieldWithThreadStaticAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.FieldDeclaration);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var threadStaticSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.ThreadStaticAttribute");
+            if (threadStaticSymbol is not null)
+            {
+                compilationContext.RegisterSymbolAction(context => Analyze(context, threadStaticSymbol), SymbolKind.Field);
+            }
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void Analyze(SymbolAnalysisContext context, INamedTypeSymbol threadStaticSymbol)
     {
-        var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
-        var attribute = fieldDeclaration
-            .AttributeLists
-            .GetAttributesOfType(typeof(ThreadStaticAttribute), context.SemanticModel)
-            .FirstOrDefault();
-
-        if (attribute == default)
+        var field = (IFieldSymbol)context.Symbol;
+        if (field is { IsConst: true } or { IsStatic: true })
         {
             return;
         }
 
-        // const fields are pointless because they can't be changed anyway
-        if (fieldDeclaration.Modifiers.Any(SyntaxKind.ConstKeyword))
+        if (!field.GetAttributes().Any(a => threadStaticSymbol.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
-        if (!fieldDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
-        {
-            var declarators = fieldDeclaration.DescendantNodes().OfType<VariableDeclaratorSyntax>();
-            foreach (var declarator in declarators)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, attribute.GetLocation(), declarator.Identifier.ValueText));
-            }
-        }
+        context.ReportDiagnostic(Diagnostic.Create(Rule, field.Locations[0], field.Name));
     }
 }
