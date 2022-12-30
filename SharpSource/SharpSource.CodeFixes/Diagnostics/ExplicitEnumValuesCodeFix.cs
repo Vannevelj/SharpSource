@@ -40,7 +40,7 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
 
     private static async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
     {
-        var semanticModel = await document.GetSemanticModelAsync();
+        var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
         var symbol = semanticModel?.GetDeclaredSymbol(declaration, cancellationToken);
         var constantSymbolValue = symbol?.ConstantValue as int?;
         if (constantSymbolValue == null)

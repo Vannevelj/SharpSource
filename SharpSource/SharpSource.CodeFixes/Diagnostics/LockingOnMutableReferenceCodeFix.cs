@@ -20,7 +20,7 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == default)
         {
             return;
@@ -30,7 +30,7 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var lockStatement = root.FindNode(diagnosticSpan).AncestorsAndSelf().OfType<LockStatementSyntax>().First();
-        var semanticModel = await context.Document.GetSemanticModelAsync();
+        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
         var referencedSymbol = semanticModel.GetSymbolInfo(lockStatement.Expression).Symbol;
         if (referencedSymbol == default)
         {
@@ -39,7 +39,7 @@ public class LockingOnMutableReferenceCodeFix : CodeFixProvider
 
         var fieldReference = referencedSymbol.DeclaringSyntaxReferences.Single();
 
-        if (fieldReference.SyntaxTree != await context.Document.GetSyntaxTreeAsync() || ( await fieldReference.GetSyntaxAsync() ).FirstAncestorOrSelfOfType(SyntaxKind.FieldDeclaration) is not FieldDeclarationSyntax fieldSyntaxNode)
+        if (fieldReference.SyntaxTree != await context.Document.GetSyntaxTreeAsync().ConfigureAwait(false) || ( await fieldReference.GetSyntaxAsync().ConfigureAwait(false) ).FirstAncestorOrSelfOfType(SyntaxKind.FieldDeclaration) is not FieldDeclarationSyntax fieldSyntaxNode)
         {
             return;
         }
