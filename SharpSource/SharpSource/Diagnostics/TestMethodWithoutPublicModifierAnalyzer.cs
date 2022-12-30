@@ -34,8 +34,7 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
         if (method.DeclaredAccessibility != Accessibility.Public && method.GetAttributes().Any(
             a => a.AttributeClass?.Name is "TestAttribute" or "TestMethodAttribute" or "FactAttribute" or "TheoryAttribute"))
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0],
-                method.Name));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
         }
     }
 }
