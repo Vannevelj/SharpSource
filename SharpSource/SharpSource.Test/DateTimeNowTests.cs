@@ -68,6 +68,39 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task DateTimeNow_Now_Expression_UsingStatic()
+    {
+        var original = @"
+using static System.DateTime;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            System.Console.WriteLine(Now);
+        }
+    }
+}";
+
+        var result = @"
+using static System.DateTime;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            System.Console.WriteLine(UtcNow);
+        }
+    }
+}";
+
+        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
     public async Task DateTimeNow_FullName()
     {
         var original = @"

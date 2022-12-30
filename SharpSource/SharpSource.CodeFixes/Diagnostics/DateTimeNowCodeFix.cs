@@ -1,14 +1,11 @@
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
-using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
@@ -22,21 +19,21 @@ public class DateTimeNowCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         if (root == default)
         {
             return;
         }
 
-        var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().First();
+        var statement = root.FindNode(diagnosticSpan, getInnermostNodeForTie: true);
 
         context.RegisterCodeFix(
             CodeAction.Create("Use DateTime.UtcNow",
                 x => UseUtc(context.Document, root, statement), DateTimeNowAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Document> UseUtc(Document document, SyntaxNode root, MemberAccessExpressionSyntax statement)
+    private static Task<Document> UseUtc(Document document, SyntaxNode root, SyntaxNode statement)
     {
         var newRoot = root.ReplaceNode(statement, SyntaxFactory.ParseExpression("System.DateTime.UtcNow").WithAdditionalAnnotations(Simplifier.Annotation));
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
