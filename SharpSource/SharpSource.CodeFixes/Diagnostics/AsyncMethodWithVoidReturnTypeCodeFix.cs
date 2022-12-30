@@ -15,7 +15,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.AsyncMethodWithVoidReturnType + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds

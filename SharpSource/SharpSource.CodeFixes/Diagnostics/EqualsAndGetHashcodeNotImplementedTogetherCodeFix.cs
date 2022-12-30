@@ -13,7 +13,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id);
