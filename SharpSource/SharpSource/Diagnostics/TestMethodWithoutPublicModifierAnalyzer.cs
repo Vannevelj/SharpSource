@@ -1,8 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
@@ -10,7 +8,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
+public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.TestMethodWithoutPublicModifier,
@@ -27,17 +25,17 @@ public class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
+        context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeMethod(SymbolAnalysisContext context)
     {
-        var method = (MethodDeclarationSyntax)context.Node;
-
-        if (method.HasTestAttribute() && !method.Modifiers.Any(SyntaxKind.PublicKeyword))
+        var method = (IMethodSymbol)context.Symbol;
+        if (method.DeclaredAccessibility != Accessibility.Public && method.GetAttributes().Any(
+            a => a.AttributeClass?.Name is "TestAttribute" or "TestMethodAttribute" or "FactAttribute" or "TheoryAttribute"))
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(),
-                method.Identifier.Text));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0],
+                method.Name));
         }
     }
 }
