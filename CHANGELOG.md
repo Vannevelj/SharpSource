@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.15] - 2022-12-30
+- `DateTimeNow`: Correctly handles static imports
+
 ## [1.16.14] - 2022-12-30
 - Internal code cleanup
 
