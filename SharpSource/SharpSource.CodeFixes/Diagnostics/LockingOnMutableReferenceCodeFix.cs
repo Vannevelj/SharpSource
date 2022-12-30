@@ -11,7 +11,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.LockingOnMutableReference + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class LockingOnMutableReferenceCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.LockingOnMutableReference);

@@ -12,7 +12,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.RethrowExceptionWithoutLosingStacktrace + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds

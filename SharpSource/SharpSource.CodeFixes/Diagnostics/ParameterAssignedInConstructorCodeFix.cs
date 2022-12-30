@@ -12,7 +12,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.ParameterAssignedInConstructor + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class ParameterAssignedInConstructorCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ParameterAssignedInConstructor);

@@ -15,7 +15,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.SwitchIsMissingDefaultLabel + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds

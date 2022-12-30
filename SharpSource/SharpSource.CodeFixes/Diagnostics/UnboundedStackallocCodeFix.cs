@@ -11,7 +11,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.UnboundedStackalloc + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class UnboundedStackallocCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.UnboundedStackalloc);
