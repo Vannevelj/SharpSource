@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
@@ -10,7 +7,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ThrowNullAnalyzer : DiagnosticAnalyzer
+public sealed class ThrowNullAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.ThrowNull,
@@ -33,7 +30,7 @@ public class ThrowNullAnalyzer : DiagnosticAnalyzer
     private void AnalyzeThrow(OperationAnalysisContext context)
     {
         var throwOperation = (IThrowOperation)context.Operation;
-        if (throwOperation.Exception is IConversionOperation { Operand: ILiteralOperation { ConstantValue: { HasValue: true, Value: null } } })
+        if (throwOperation.Exception is { ConstantValue: { HasValue: true, Value: null } })
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, throwOperation.Syntax.GetLocation()));
         }

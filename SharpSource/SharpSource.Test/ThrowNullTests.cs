@@ -12,9 +12,27 @@ public class ThrowNullTests : DiagnosticVerifier
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ThrowNullAnalyzer();
 
     [TestMethod]
-    public async Task ThrowNull_ThrowsNull()
+    public async Task ThrowNull_ThrowsNullLiteral()
     {
         var original = @"throw null;";
+
+        await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
+    }
+
+    [TestMethod]
+    public async Task ThrowNull_ThrowsNullConstant()
+    {
+        var original = @"
+const System.Exception NullConst = null;
+throw NullConst;";
+
+        await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
+    }
+
+    [TestMethod]
+    public async Task ThrowNull_ThrowsNullCast()
+    {
+        var original = @"throw (System.Exception)null;";
 
         await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
     }
