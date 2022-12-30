@@ -11,7 +11,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
+public sealed class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
 {
     private static readonly HashSet<string> AllowedExceptions = new(new string[] { "NotImplementedException", "NotSupportedException" });
     private static DiagnosticDescriptor ImplicitOperatorRule

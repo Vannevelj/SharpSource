@@ -13,9 +13,7 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly HashSet<string> MaterializingOperations = new(){
-        "ToList", "ToArray", "ToHashSet"
-    };
+    private static readonly ImmutableArray<string> MaterializingOperations = ImmutableArray.Create("ToList", "ToArray", "ToHashSet");
 
     private static readonly HashSet<string> DeferredExecutionOperations = new() {
         "Select", "SelectMany", "Take", "Skip", "TakeWhile", "SkipWhile", "SkipLast", "Where", "GroupBy", "GroupJoin", "OrderBy", "OrderByDescending",

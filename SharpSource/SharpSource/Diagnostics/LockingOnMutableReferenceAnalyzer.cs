@@ -1,14 +1,13 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
+public sealed class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.LockingOnMutableReference,
@@ -25,14 +24,14 @@ public class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.LockStatement);
+        context.RegisterOperationAction(AnalyzeLockOperation, OperationKind.Lock);
     }
 
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeLockOperation(OperationAnalysisContext context)
     {
-        var lockStatement = (LockStatementSyntax)context.Node;
-        var referencedSymbol = context.SemanticModel.GetSymbolInfo(lockStatement.Expression).Symbol as IFieldSymbol;
-        if (referencedSymbol == default)
+        var lockOperation = (ILockOperation)context.Operation;
+        var referencedSymbol = (lockOperation.LockedValue as IFieldReferenceOperation)?.Field;
+        if (referencedSymbol is null)
         {
             return;
         }
@@ -42,6 +41,6 @@ public class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, lockStatement.Expression.GetLocation(), referencedSymbol.Name));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, lockOperation.LockedValue.Syntax.GetLocation(), referencedSymbol.Name));
     }
 }
