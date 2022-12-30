@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.16] - 2022-12-30
+- `TestMethodWithoutPublicModifier`: Analyzer is rewritten to use `IOperation`
+
 ## [1.16.15] - 2022-12-30
 - `DateTimeNow`: Correctly handles static imports
 
