@@ -61,7 +61,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var isAsync = modifiers.Contains(SyntaxKind.AsyncKeyword);
+        var isAsync = modifiers.Any(SyntaxKind.AsyncKeyword);
         var returnTypeInfo = context.SemanticModel.GetTypeInfo(returnType);
         var hasTaskReturnType = returnTypeInfo.Type?.IsTaskType();
 
