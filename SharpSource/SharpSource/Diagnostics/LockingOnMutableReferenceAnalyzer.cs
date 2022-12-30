@@ -30,7 +30,7 @@ public sealed class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
     private static void AnalyzeLockOperation(OperationAnalysisContext context)
     {
         var lockOperation = (ILockOperation)context.Operation;
-        var referencedSymbol = (lockOperation.LockedValue as IFieldReferenceOperation)?.Field;
+        var referencedSymbol = ( lockOperation.LockedValue as IFieldReferenceOperation )?.Field;
         if (referencedSymbol is null)
         {
             return;
