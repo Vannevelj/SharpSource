@@ -62,7 +62,7 @@ public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        
+
         if (argumentValue.ConstantValue.Value is not string argumentValueString)
         {
             return;
