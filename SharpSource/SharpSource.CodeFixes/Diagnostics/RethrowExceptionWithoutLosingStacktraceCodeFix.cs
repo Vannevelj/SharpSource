@@ -23,7 +23,7 @@ public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         if (root == default)
         {
@@ -38,7 +38,7 @@ public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
                 RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Solution> RemoveRethrowAsync(Document document, SyntaxNode root,
+    private static Task<Solution> RemoveRethrowAsync(Document document, SyntaxNode root,
                                               ThrowStatementSyntax throwStatement)
     {
         var newStatement = SyntaxFactory.ThrowStatement();

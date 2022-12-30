@@ -23,7 +23,7 @@ public class TestMethodWithoutPublicModifierCodeFix : CodeFixProvider
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var methodDeclaration =
@@ -40,7 +40,7 @@ public class TestMethodWithoutPublicModifierCodeFix : CodeFixProvider
                 TestMethodWithoutPublicModifierAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Solution> MakePublicAsync(Document document, SyntaxNode root, MethodDeclarationSyntax method)
+    private static Task<Solution> MakePublicAsync(Document document, SyntaxNode root, MethodDeclarationSyntax method)
     {
         var generator = SyntaxGenerator.GetGenerator(document);
         var newMethod = generator.WithAccessibility(method, Accessibility.Public);

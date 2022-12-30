@@ -209,7 +209,7 @@ public class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private bool ShouldWarnForExpression(ThrowStatementSyntax statement, SyntaxNodeAnalysisContext context)
+    private static bool ShouldWarnForExpression(ThrowStatementSyntax statement, SyntaxNodeAnalysisContext context)
     {
         if (statement.Expression == default)
         {

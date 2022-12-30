@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -26,7 +25,7 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var switchToken = root?.FindNode(diagnosticSpan);
@@ -42,7 +41,7 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
                 SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
+    private static Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
     {
         var argumentException =
             SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($"new ArgumentException(\"Unsupported value\")"))

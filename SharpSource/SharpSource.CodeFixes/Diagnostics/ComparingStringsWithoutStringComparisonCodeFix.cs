@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -27,7 +26,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var diagnosticNode = compilation.FindNode(diagnosticSpan);
 

@@ -64,7 +64,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration, InvocationExpressionSyntax invocation)
+    private static void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration, InvocationExpressionSyntax invocation)
     {
         var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
         if (invokedSymbol?.ContainingType == default)

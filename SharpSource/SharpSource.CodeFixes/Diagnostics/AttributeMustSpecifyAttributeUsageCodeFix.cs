@@ -21,7 +21,7 @@ public class AttributeMustSpecifyAttributeUsageCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var classDeclaration = root?.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
         if (root is not CompilationUnitSyntax compilation || classDeclaration == default)
@@ -36,7 +36,7 @@ public class AttributeMustSpecifyAttributeUsageCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> AddAttributeUsage(Document document, CompilationUnitSyntax root, ClassDeclarationSyntax classDeclaration)
+    private static Task<Document> AddAttributeUsage(Document document, CompilationUnitSyntax root, ClassDeclarationSyntax classDeclaration)
     {
         // Generates [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
         var arguments = new[]

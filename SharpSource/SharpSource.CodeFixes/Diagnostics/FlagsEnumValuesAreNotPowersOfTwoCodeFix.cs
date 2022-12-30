@@ -23,7 +23,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var enumMember = root?.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
         var semanticModel = await context.Document.GetSemanticModelAsync();
@@ -83,7 +83,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         }
     }
 
-    private Task<Document> UseBitwiseExpression(Document document, SyntaxNode root, EnumMemberDeclarationSyntax enumMember, SyntaxToken firstIdentifier, SyntaxToken secondIdentifier)
+    private static Task<Document> UseBitwiseExpression(Document document, SyntaxNode root, EnumMemberDeclarationSyntax enumMember, SyntaxToken firstIdentifier, SyntaxToken secondIdentifier)
     {
         var newValue = SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseOrExpression, SyntaxFactory.IdentifierName(firstIdentifier), SyntaxFactory.IdentifierName(secondIdentifier));
         var newMember = enumMember.WithEqualsValue(SyntaxFactory.EqualsValueClause(newValue)).WithAdditionalAnnotations(Formatter.Annotation);
@@ -92,7 +92,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         return Task.FromResult(newDocument);
     }
 
-    private bool IsCompatible(object? target, object? first, object? second) =>
+    private static bool IsCompatible(object? target, object? first, object? second) =>
         (target, first, second) switch
         {
             (int t, int f, int s) => ( f | s ) == t,

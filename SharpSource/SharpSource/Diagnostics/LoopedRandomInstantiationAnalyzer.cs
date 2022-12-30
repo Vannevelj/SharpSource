@@ -35,7 +35,7 @@ public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
         });
     }
 
-    private void Analyze(OperationAnalysisContext context, INamedTypeSymbol randomSymbol)
+    private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol randomSymbol)
     {
         var declarator = (IVariableDeclaratorOperation)context.Operation;
         if (!randomSymbol.Equals(declarator.Symbol.Type, SymbolEqualityComparer.Default))
