@@ -22,7 +22,7 @@ public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
 
         if (root == default)
         {
@@ -35,19 +35,12 @@ public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
                 OnPropertyChangedWithoutNameOfOperatorAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Solution> UseNameOfAsync(Document document, SyntaxNode root, Diagnostic diagnostic)
+    private static Task<Document> UseNameOfAsync(Document document, SyntaxNode root, Diagnostic diagnostic)
     {
-        var propertyName = diagnostic.Properties["parameterName"];
-        var startLocation = int.Parse(diagnostic.Properties["startLocation"]);
-
-        // We have to use LastOrDefault because encompassing nodes will have the same start location
-        // For example in our scenario of OnPropertyChanged("test"), the ArgumentSyntaxNode will have
-        // the same start location as the following LiteralExpressionNode
-        // We are interested in the inner-most node therefore we need to take the last one with that start location
-        var nodeToReplace = root.DescendantNodesAndSelf().LastOrDefault(x => x.SpanStart == startLocation);
-
+        var propertyName = diagnostic.Properties["parameterName"]!;
+        var nodeToReplace = root.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
         var newRoot = root.ReplaceNode(nodeToReplace, SyntaxFactory.ParseExpression($"nameof({propertyName})"));
         var newDocument = document.WithSyntaxRoot(newRoot);
-        return Task.FromResult(newDocument.Project.Solution);
+        return Task.FromResult(newDocument);
     }
 }
