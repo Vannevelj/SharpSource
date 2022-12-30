@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -57,20 +54,6 @@ public static class Extensions
         var invokedType = invokedMethod.Symbol?.ContainingType;
 
         return (invokedType, invokedMethod.Symbol);
-    }
-
-    public static bool IsNameofInvocation(this InvocationExpressionSyntax invocation)
-    {
-        if (invocation == null)
-        {
-            throw new ArgumentNullException(nameof(invocation));
-        }
-
-        var identifier = invocation.Expression.DescendantNodesAndSelf()
-                                   .OfType<IdentifierNameSyntax>()
-                                   .FirstOrDefault();
-
-        return identifier != null && identifier.Identifier.ValueText == "nameof";
     }
 
     /// <summary>

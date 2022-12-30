@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.8] - 2022-12-30
+- `OnPropertyChangedWithoutNameOf`: Analyzer is rewritten to use `IOperation`
+
 ## [1.16.7] - 2022-12-30
 - `ThrowNull`: Correctly triggers when a constant or casted `null` value is being thrown
 

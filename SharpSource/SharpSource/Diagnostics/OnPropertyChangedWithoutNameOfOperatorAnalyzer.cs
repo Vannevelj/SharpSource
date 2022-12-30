@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -30,59 +25,49 @@ public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.InvocationExpression);
+        context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
     }
 
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeInvocation(OperationAnalysisContext context)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
+        var invocation = (IInvocationOperation)context.Operation;
 
-        if (invocation.Expression is not IdentifierNameSyntax identifierExpression)
+
+        if (invocation.TargetMethod.Name != "OnPropertyChanged")
         {
             return;
         }
 
-        var identifier = identifierExpression.Identifier;
-        if (identifier.ValueText != "OnPropertyChanged")
+        if (invocation.Arguments.IsEmpty)
         {
             return;
         }
 
-        if (invocation.ArgumentList == null || !invocation.ArgumentList.Arguments.Any())
+        var invokedProperty = invocation.Arguments[0];
+        if (invokedProperty.ArgumentKind != ArgumentKind.Explicit)
         {
             return;
         }
 
-        var invokedProperty = invocation.ArgumentList.Arguments.FirstOrDefault();
-        if (invokedProperty == null)
+        var argumentValue = invokedProperty.Value;
+        while (argumentValue is IParenthesizedOperation parenthesizedOperation)
+        {
+            argumentValue = parenthesizedOperation.Operand;
+        }
+
+        if (argumentValue.Kind == OperationKind.NameOf)
         {
             return;
         }
 
-        // We use the descendent nodes in case it's wrapped in another level. For example: OnPropertyChanged(((nameof(MyProperty))))
-        foreach (var expression in invokedProperty.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression))
-        {
-            if (expression.IsNameofInvocation())
-            {
-                return;
-            }
-        }
 
-        var invocationArgument = context.SemanticModel.GetConstantValue(invokedProperty.Expression);
-        if (invocationArgument is not { Value: not null } argument)
+        if (argumentValue.ConstantValue.Value is not string argumentValueString)
         {
             return;
         }
 
-        // Get all the properties defined in this type
-        // We can't just get all the descendents of the classdeclaration because that would pass by some of a partial class' properties
-        var classDeclaration = invocation.Ancestors().OfType<ClassDeclarationSyntax>(SyntaxKind.ClassDeclaration).FirstOrDefault();
-        if (classDeclaration == null)
-        {
-            return;
-        }
 
-        var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
+        var classSymbol = context.ContainingSymbol.ContainingType;
         if (classSymbol == null)
         {
             return;
@@ -90,16 +75,10 @@ public class OnPropertyChangedWithoutNameOfOperatorAnalyzer : DiagnosticAnalyzer
 
         foreach (var property in classSymbol.GetMembers().OfType<IPropertySymbol>())
         {
-            if (string.Equals(property.Name, (string)argument.Value, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(property.Name, argumentValueString, StringComparison.OrdinalIgnoreCase))
             {
-                // The original Linq was `Last()`.  I used `LastOrDefault()` just because I didn't feel the need to implement a
-                // version to throw an `InvalidOperationException()` rather than a `NullReferenceException()` in this case.
-                var location = invokedProperty.Expression.DescendantNodesAndSelf().LastOrDefault().GetLocation();
-                var data = ImmutableDictionary.CreateRange(new KeyValuePair<string, string?>[]
-                {
-                    new ("parameterName", property.Name),
-                    new ("startLocation", location.SourceSpan.Start.ToString(CultureInfo.InvariantCulture))
-                });
+                var location = argumentValue.Syntax.GetLocation();
+                var data = ImmutableDictionary<string, string?>.Empty.Add("parameterName", property.Name);
                 context.ReportDiagnostic(Diagnostic.Create(Rule, location, data, property.Name));
             }
         }
