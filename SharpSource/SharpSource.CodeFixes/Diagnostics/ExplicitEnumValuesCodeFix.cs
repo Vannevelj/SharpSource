@@ -38,7 +38,7 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
                 x => SpecifyEnumValue(context.Document, root, statement, context.CancellationToken), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
     }
 
-    private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
+    private static async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
     {
         var semanticModel = await document.GetSemanticModelAsync();
         var symbol = semanticModel?.GetDeclaredSymbol(declaration, cancellationToken);

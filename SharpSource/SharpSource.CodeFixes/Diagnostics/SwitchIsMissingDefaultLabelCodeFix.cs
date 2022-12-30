@@ -42,7 +42,7 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
                 SwitchIsMissingDefaultLabelAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
+    private static Task<Document> AddDefaultCaseAsync(Document document, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
     {
         var argumentException =
             SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($"new ArgumentException(\"Unsupported value\")"))

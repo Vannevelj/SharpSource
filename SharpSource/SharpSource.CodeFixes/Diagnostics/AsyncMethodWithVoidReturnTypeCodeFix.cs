@@ -2,8 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -43,7 +41,7 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
+    private static Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
     {
         SyntaxNode newMethod = methodDeclaration switch
         {

@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
@@ -62,7 +61,7 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
     private static readonly MethodDeclarationSyntax GetHashCodeMethod = GetGetHashCodeMethod();
     private static readonly MethodDeclarationSyntax ToStringMethod = GetToStringMethod();
 
-    private Task<Document> AddMissingMethodsAsync(Document document, SyntaxNode root,
+    private static Task<Document> AddMissingMethodsAsync(Document document, SyntaxNode root,
         StructDeclarationSyntax statement, bool implementEquals, bool implementGetHashCode,
         bool implementToString)
     {
@@ -129,7 +128,7 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
                 .WithAdditionalAnnotations(Formatter.Annotation);
     }
 
-    private string FormatMissingMembers(Dictionary<string, bool> members)
+    private static string FormatMissingMembers(Dictionary<string, bool> members)
     {
         // if we get this far, there are at least 1 missing members
         var missingMemberCount = 0;

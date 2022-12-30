@@ -40,7 +40,7 @@ public class TestMethodWithoutPublicModifierCodeFix : CodeFixProvider
                 TestMethodWithoutPublicModifierAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Solution> MakePublicAsync(Document document, SyntaxNode root, MethodDeclarationSyntax method)
+    private static Task<Solution> MakePublicAsync(Document document, SyntaxNode root, MethodDeclarationSyntax method)
     {
         var generator = SyntaxGenerator.GetGenerator(document);
         var newMethod = generator.WithAccessibility(method, Accessibility.Public);

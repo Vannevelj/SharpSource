@@ -82,5 +82,5 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
         return Task.FromResult(newDocument);
     }
 
-    private IdentifierNameSyntax GetIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
+    private static IdentifierNameSyntax GetIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
 }

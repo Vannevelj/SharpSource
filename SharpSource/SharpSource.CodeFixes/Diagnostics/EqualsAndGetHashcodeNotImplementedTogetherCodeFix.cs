@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
@@ -68,7 +67,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         return newDocument.Project.Solution;
     }
 
-    private MethodDeclarationSyntax GetEqualsMethod()
+    private static MethodDeclarationSyntax GetEqualsMethod()
     {
         var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
@@ -84,7 +83,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
                 .WithAdditionalAnnotations(Formatter.Annotation);
     }
 
-    private MethodDeclarationSyntax GetGetHashCodeMethod()
+    private static MethodDeclarationSyntax GetGetHashCodeMethod()
     {
         var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);

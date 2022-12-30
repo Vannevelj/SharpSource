@@ -42,7 +42,7 @@ public class UnboundedStackallocCodeFix : CodeFixProvider
                 x => AddBoundsCheck(context.Document, root, stackallocCreation, arraySizeIdentifier, arrayType), DiagnosticId.UnboundedStackalloc), diagnostic);
     }
 
-    private Task<Document> AddBoundsCheck(Document document, SyntaxNode root, StackAllocArrayCreationExpressionSyntax stackallocCreation, ExpressionSyntax arraySizeIdentifier, ArrayTypeSyntax arrayType)
+    private static Task<Document> AddBoundsCheck(Document document, SyntaxNode root, StackAllocArrayCreationExpressionSyntax stackallocCreation, ExpressionSyntax arraySizeIdentifier, ArrayTypeSyntax arrayType)
     {
         var binaryExpression = SyntaxFactory.BinaryExpression(
                     SyntaxKind.LessThanExpression,

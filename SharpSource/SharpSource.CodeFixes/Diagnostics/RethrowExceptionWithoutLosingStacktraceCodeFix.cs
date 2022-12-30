@@ -38,7 +38,7 @@ public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
                 RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.Id), diagnostic);
     }
 
-    private Task<Solution> RemoveRethrowAsync(Document document, SyntaxNode root,
+    private static Task<Solution> RemoveRethrowAsync(Document document, SyntaxNode root,
                                               ThrowStatementSyntax throwStatement)
     {
         var newStatement = SyntaxFactory.ThrowStatement();

@@ -36,7 +36,7 @@ public class AttributeMustSpecifyAttributeUsageCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> AddAttributeUsage(Document document, CompilationUnitSyntax root, ClassDeclarationSyntax classDeclaration)
+    private static Task<Document> AddAttributeUsage(Document document, CompilationUnitSyntax root, ClassDeclarationSyntax classDeclaration)
     {
         // Generates [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
         var arguments = new[]

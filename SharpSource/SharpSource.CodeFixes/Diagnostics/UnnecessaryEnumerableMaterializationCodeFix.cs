@@ -48,7 +48,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> RemoveMaterialization(Document document, MemberAccessExpressionSyntax surroundingMemberAccess, MemberAccessExpressionSyntax nestedMemberAccess, SyntaxNode root)
+    private static Task<Document> RemoveMaterialization(Document document, MemberAccessExpressionSyntax surroundingMemberAccess, MemberAccessExpressionSyntax nestedMemberAccess, SyntaxNode root)
     {
         var newRoot = root.ReplaceNode(surroundingMemberAccess.Expression, nestedMemberAccess.Expression);
         var newDocument = document.WithSyntaxRoot(newRoot);

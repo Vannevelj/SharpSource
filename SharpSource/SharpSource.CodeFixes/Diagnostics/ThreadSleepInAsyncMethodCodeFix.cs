@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -46,7 +45,7 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
+    private static Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
     {
         ExpressionSyntax newExpression;
         if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
