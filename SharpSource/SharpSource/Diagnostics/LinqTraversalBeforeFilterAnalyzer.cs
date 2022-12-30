@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -12,19 +11,15 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class LinqTraversalBeforeFilterAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string Message = "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?";
-    private static readonly string Title =
-        "An IEnumerable extension method was used to traverse the collection and is subsequently filtered using Where()." +
-        "If the Where() filter is executed first, the traversal will have to iterate over fewer items which will result in better performance.";
-
     private static readonly HashSet<string> TraversalOperations = new(){
         "OrderBy", "OrderByDescending", "Chunk", "Reverse", "Take", "TakeLast", "TakeWhile"
     };
 
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.LinqTraversalBeforeFilter,
-        Title,
-        Message,
+        "An IEnumerable extension method was used to traverse the collection and is subsequently filtered using Where()." +
+        "If the Where() filter is executed first, the traversal will have to iterate over fewer items which will result in better performance.",
+        "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?",
         Categories.Performance,
         DiagnosticSeverity.Warning,
         true,
@@ -36,28 +31,41 @@ public class LinqTraversalBeforeFilterAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var enumerableSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Linq.Enumerable");
+            if (enumerableSymbol is null)
+            {
+                return;
+            }
+
+            var whereSymbols = enumerableSymbol.GetMembers("Where").OfType<IMethodSymbol>().ToArray();
+            var traversalOperationSymbols = TraversalOperations.SelectMany(op => enumerableSymbol.GetMembers(op).OfType<IMethodSymbol>()).ToArray();
+            compilationContext.RegisterOperationAction(context => Analyze(context, traversalOperationSymbols, whereSymbols), OperationKind.Invocation);
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, IMethodSymbol[] traversalOperationSymbols, IMethodSymbol[] whereSymbols)
     {
-        var expression = (MemberAccessExpressionSyntax)context.Node;
-        if (expression.Expression is not InvocationExpressionSyntax invocation)
+        var invocation = (IInvocationOperation)context.Operation;
+        if (!traversalOperationSymbols.Any(symbol => symbol.Equals(invocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
-        var firstInvokedFunctionSymbol = context.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
-        var firstInvokedFunction = firstInvokedFunctionSymbol?.Name;
-        var secondInvokedFunction = expression.Name.Identifier.ValueText;
-        if (firstInvokedFunction == default || secondInvokedFunction == default)
+        var operation = context.Operation.Parent;
+        while (operation != null)
         {
-            return;
-        }
-
-        if (secondInvokedFunction == "Where" && TraversalOperations.Contains(firstInvokedFunction))
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, expression.GetLocation()));
+            if (operation is IInvocationOperation previousInvocation)
+            {
+                if (whereSymbols.Any(symbol => symbol.Equals(previousInvocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default)))
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+                }
+                break;
+            }
+            operation = operation.Parent;
         }
     }
 }
