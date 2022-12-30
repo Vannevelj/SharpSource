@@ -14,7 +14,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.StringPlaceholdersInWrongOrder + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds
@@ -68,7 +68,7 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
         // This contains the order in which the placeholders appeared in the original format string.
         // For example if it had the string "{1} x {0} y {2} {2}" then this collection would contain the values 1-0-2.
         // You'll notice that we omitted the duplicate: we don't want to add an argument twice.
-        // Typically we'd do this by using a HashSet<T> but since we can't easily retrieve an item from the HashSet<T>, 
+        // Typically we'd do this by using a HashSet<T> but since we can't easily retrieve an item from the HashSet<T>,
         // we'll just check for duplicates upon inserting in the list.
         // Based on this we can then reconstruct the argument list by reordering the existing arguments.
         var placeholderIndexOrder = new List<int>();

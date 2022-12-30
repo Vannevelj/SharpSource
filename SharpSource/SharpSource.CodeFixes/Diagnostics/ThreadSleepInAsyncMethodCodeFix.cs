@@ -14,7 +14,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.ThreadSleepInAsyncMethod + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ThreadSleepInAsyncMethodAnalyzer.Rule.Id);

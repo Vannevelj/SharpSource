@@ -11,7 +11,7 @@ using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
-[ExportCodeFixProvider(DiagnosticId.OnPropertyChangedWithoutNameofOperator + "CF", LanguageNames.CSharp), Shared]
+[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds
