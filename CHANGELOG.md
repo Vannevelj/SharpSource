@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.7] - 2022-12-30
+- `ThrowNull`: Correctly triggers when a constant or casted `null` value is being thrown
+
 ## [1.16.6] - 2022-12-30
 - `ThreadStaticWithInitializer` and `InstanceFieldWithThreadStatic`: Analyzer is rewritten to use `IOperation`
 - Removed unused test project dependencies
