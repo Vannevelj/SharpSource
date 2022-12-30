@@ -27,7 +27,7 @@ public class NewGuidCodeFix : CodeFixProvider
             return;
         }
 
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var statement = root.FindNode(diagnosticSpan).DescendantNodesAndSelf().OfType<BaseObjectCreationExpressionSyntax>().First();
