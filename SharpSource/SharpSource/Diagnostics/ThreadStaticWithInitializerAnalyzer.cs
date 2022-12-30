@@ -44,7 +44,7 @@ public class ThreadStaticWithInitializerAnalyzer : DiagnosticAnalyzer
             if (field.GetAttributes().Any(a => threadStaticSymbol.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, initializer.Syntax.GetLocation(), field.Name));
-            }            
+            }
         }
     }
 }
