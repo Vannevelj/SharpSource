@@ -35,7 +35,6 @@ public sealed class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
             );
 
             context.RegisterOperationAction(context => AnalyzePropertyReference(context, resultProperties), OperationKind.PropertyReference);
-            
         });
     }
 
