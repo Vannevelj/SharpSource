@@ -41,12 +41,12 @@ public sealed class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
     private static void AnalyzePropertyReference(OperationAnalysisContext context, ImmutableArray<IPropertySymbol?> resultProperties)
     {
         var operation = context.Operation;
-        if (!resultProperties.Contains(((IPropertyReferenceOperation)operation).Property.OriginalDefinition, SymbolEqualityComparer.Default))
+        if (!resultProperties.Contains(( (IPropertyReferenceOperation)operation ).Property.OriginalDefinition, SymbolEqualityComparer.Default))
         {
             return;
         }
 
-        var isAsyncContext = (context.ContainingSymbol as IMethodSymbol)?.IsAsync ?? false;
+        var isAsyncContext = ( context.ContainingSymbol as IMethodSymbol )?.IsAsync ?? false;
         while (operation is not null)
         {
             if (operation is IAnonymousFunctionOperation anonymousFunctionOperation)
