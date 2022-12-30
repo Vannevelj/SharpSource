@@ -21,7 +21,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var operation = diagnostic.Properties["operation"];
         var semanticModel = await context.Document.GetSemanticModelAsync();
 
@@ -48,7 +48,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> RemoveMaterialization(Document document, MemberAccessExpressionSyntax surroundingMemberAccess, MemberAccessExpressionSyntax nestedMemberAccess, SyntaxNode root)
+    private static Task<Document> RemoveMaterialization(Document document, MemberAccessExpressionSyntax surroundingMemberAccess, MemberAccessExpressionSyntax nestedMemberAccess, SyntaxNode root)
     {
         var newRoot = root.ReplaceNode(surroundingMemberAccess.Expression, nestedMemberAccess.Expression);
         var newDocument = document.WithSyntaxRoot(newRoot);

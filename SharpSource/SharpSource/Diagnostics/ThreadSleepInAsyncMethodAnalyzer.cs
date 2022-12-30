@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -73,7 +72,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private bool IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
+    private static bool IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
     {
         var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
         return invokedSymbol is { ContainingType.Name: "Thread", Name: "Sleep" };

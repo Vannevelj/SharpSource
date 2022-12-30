@@ -87,7 +87,7 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private bool FieldIsMutable(IFieldSymbol field)
+    private static bool FieldIsMutable(IFieldSymbol field)
     {
         if (field.IsConst)
         {
@@ -102,5 +102,5 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
         return true;
     }
 
-    private bool PropertyIsMutable(IPropertySymbol property) => property.SetMethod != null;
+    private static bool PropertyIsMutable(IPropertySymbol property) => property.SetMethod != null;
 }

@@ -26,7 +26,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var semanticModel = await context.Document.GetSemanticModelAsync();
 
@@ -93,7 +93,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         return newDocument.Project.Solution;
     }
 
-    private IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
+    private static IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
     {
         if (enumType == default)
         {

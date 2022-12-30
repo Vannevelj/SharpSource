@@ -23,7 +23,7 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var diagnostic = context.Diagnostics.First();
+        var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         if (root == default)
@@ -38,7 +38,7 @@ public class ExplicitEnumValuesCodeFix : CodeFixProvider
                 x => SpecifyEnumValue(context.Document, root, statement, context.CancellationToken), ExplicitEnumValuesAnalyzer.Rule.Id), diagnostic);
     }
 
-    private async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
+    private static async Task<Document> SpecifyEnumValue(Document document, SyntaxNode root, EnumMemberDeclarationSyntax declaration, CancellationToken cancellationToken)
     {
         var semanticModel = await document.GetSemanticModelAsync();
         var symbol = semanticModel?.GetDeclaredSymbol(declaration, cancellationToken);
