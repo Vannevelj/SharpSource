@@ -1,6 +1,14 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.17] - 2022-12-30
+- `DivideIntegerByIntegerAnalyzer`: Analyzer is rewritten to use `IOperation`
+- `EnumWithoutDefaultValueAnalyzer`: Analyzer is rewritten to use `ISymbol`
+- `EqualsAndGetHashcodeNotImplementedTogetherAnalyzer`: Analyzer is rewritten to use `ISymbol`
+- `LockingOnDiscouragedObjectAnalyzer`: Analyzer is rewritten to use `IOperation`
+- `LockingOnMutableReferenceAnalyzer`: Analyzer is rewritten to use `IOperation`
+- `UnnecessaryEnumerableMaterializationAnalyzer`: Use array instead of hash set for searching for small number of elements
+
 ## [1.16.16] - 2022-12-30
 - `TestMethodWithoutPublicModifier`: Analyzer is rewritten to use `IOperation`
 

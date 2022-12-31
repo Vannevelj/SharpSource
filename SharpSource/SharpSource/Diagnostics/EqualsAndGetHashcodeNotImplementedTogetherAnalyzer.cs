@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
@@ -10,7 +8,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnalyzer
+public sealed class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.EqualsAndGetHashcodeNotImplementedTogether,
@@ -27,36 +25,16 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterCompilationStartAction((compilationContext) =>
+        context.RegisterCompilationStartAction(context =>
     {
-        var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
-        IMethodSymbol? objectEquals = null;
-        IMethodSymbol? objectGetHashCode = null;
+        var objectSymbol = context.Compilation.GetSpecialType(SpecialType.System_Object);
+        var objectEquals = objectSymbol.GetMembers(nameof(Equals)).OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.Length == 1);
+        var objectGetHashCode = objectSymbol.GetMembers(nameof(GetHashCode)).OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.IsEmpty);
 
-        foreach (var symbol in objectSymbol.GetMembers())
+        context.RegisterSymbolAction(context =>
         {
-            if (symbol is not IMethodSymbol)
-            {
-                continue;
-            }
-
-            var method = (IMethodSymbol)symbol;
-            if (method is { MetadataName: nameof(Equals), Parameters.Length: 1 })
-            {
-                objectEquals = method;
-            }
-
-            if (method is { MetadataName: nameof(GetHashCode), Parameters.Length: 0 })
-            {
-                objectGetHashCode = method;
-            }
-        }
-
-        compilationContext.RegisterSyntaxNodeAction((syntaxNodeContext) =>
-        {
-            var classDeclaration = (ClassDeclarationSyntax)syntaxNodeContext.Node;
-            var classSymbol = syntaxNodeContext.SemanticModel.GetDeclaredSymbol(classDeclaration);
-            if (classSymbol == null)
+            var classSymbol = (INamedTypeSymbol)context.Symbol;
+            if (classSymbol.TypeKind != TypeKind.Class)
             {
                 return;
             }
@@ -77,8 +55,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
                 {
                     equalsImplemented = true;
                 }
-
-                if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
+                else if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
                 {
                     getHashcodeImplemented = true;
                 }
@@ -86,10 +63,10 @@ public class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : DiagnosticAnal
 
             if (equalsImplemented ^ getHashcodeImplemented)
             {
-                var properties = ImmutableDictionary.CreateRange(new[] { new KeyValuePair<string, string?>("IsEqualsImplemented", equalsImplemented.ToString()) });
-                syntaxNodeContext.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), properties, classDeclaration.Identifier.ValueText));
+                var properties = ImmutableDictionary<string, string?>.Empty.Add("IsEqualsImplemented", equalsImplemented.ToString());
+                context.ReportDiagnostic(Diagnostic.Create(Rule, classSymbol.Locations[0], properties, classSymbol.Name));
             }
-        }, SyntaxKind.ClassDeclaration);
+        }, SymbolKind.NamedType);
     });
     }
 }
