@@ -46,7 +46,7 @@ public sealed class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (!membersOfInterest.Any(m => ( (IFieldSymbol)m ).ConstantValue is 0))
+        if (!membersOfInterest.Any(m => m is IFieldSymbol { ConstantValue: 0 }))
         {
             Report(symbol, context);
         }

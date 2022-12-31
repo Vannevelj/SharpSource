@@ -13,6 +13,7 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 {
+    // An array is used instead of a hash set since the number of elements is small. HashSet is likely to be slower for searching in this case.
     private static readonly ImmutableArray<string> MaterializingOperations = ImmutableArray.Create("ToList", "ToArray", "ToHashSet");
 
     private static readonly HashSet<string> DeferredExecutionOperations = new() {
