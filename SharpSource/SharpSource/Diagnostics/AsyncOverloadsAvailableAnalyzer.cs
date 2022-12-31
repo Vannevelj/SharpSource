@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -27,79 +25,56 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
-    }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
-    {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-        var surroundingDeclaration = invocation.FirstAncestorOrSelfOfType(SyntaxKind.MethodDeclaration, SyntaxKind.GlobalStatement, SyntaxKind.SimpleLambdaExpression);
-
-        var isInCorrectContext = surroundingDeclaration switch
+        context.RegisterCompilationStartAction(compilationContext =>
         {
-            MethodDeclarationSyntax method => method.Modifiers.Any(SyntaxKind.AsyncKeyword),
-            GlobalStatementSyntax => true,
-            SimpleLambdaExpressionSyntax lambda => lambda.Modifiers.Any(SyntaxKind.AsyncKeyword),
-            _ => false
-        };
-
-        if (!isInCorrectContext || surroundingDeclaration == default)
-        {
-            return;
-        }
-
-        switch (invocation.Expression)
-        {
-            case MemberAccessExpressionSyntax memberAccess:
-                CheckIfOverloadAvailable(memberAccess.Name, context, surroundingDeclaration, invocation);
-                break;
-            case IdentifierNameSyntax identifierName:
-                CheckIfOverloadAvailable(identifierName, context, surroundingDeclaration, invocation);
-                break;
-            case GenericNameSyntax genericName:
-                CheckIfOverloadAvailable(genericName, context, surroundingDeclaration, invocation);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private static void CheckIfOverloadAvailable(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context, SyntaxNode surroundingDeclaration, InvocationExpressionSyntax invocation)
-    {
-        var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
-        if (invokedSymbol?.ContainingType == default)
-        {
-            return;
-        }
-
-        var invokedMethodName = invokedSymbol.Name;
-        var invokedTypeName = invokedSymbol.ContainingType.Name;
-
-        var methodsInInvokedType = invokedSymbol.ContainingType.GetMembers().OfType<IMethodSymbol>();
-        var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
-
-        if (invokedSymbol is not IMethodSymbol invokedMethod)
-        {
-            return;
-        }
-
-        var surroundingMethodDeclaration = context.SemanticModel.GetDeclaredSymbol(surroundingDeclaration) as IMethodSymbol;
-        foreach (var overload in relevantOverloads)
-        {
-            if (IsIdenticalOverload(invokedMethod, overload, surroundingMethodDeclaration))
+            var cancellationTokenSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
+            if (cancellationTokenSymbol is not null)
             {
-                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethodDeclaration.GetCancellationTokenFromParameters();
+                compilationContext.RegisterOperationBlockAction(context => Analyze(context, cancellationTokenSymbol));
+            }
+        });
+    }
 
-                var currentInvocationPassesCancellationToken = invocation.PassesThroughCancellationToken(context.SemanticModel);
-                var newInvocationAcceptsCancellationToken = overload.GetCancellationTokenFromParameters() != default;
+    private static void Analyze(OperationBlockAnalysisContext context, INamedTypeSymbol cancellationTokenSymbol)
+    {
+        if (context.OwningSymbol is not IMethodSymbol surroundingMethod)
+        {
+            return;
+        }
 
-                properties.Add("cancellationTokenName", cancellationTokenName);
-                properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
+        if (surroundingMethod is { IsAsync: false })
+        {
+            return;
+        }
 
-                var shouldAddCancellationToken = cancellationTokenName != default && !currentInvocationPassesCancellationToken && newInvocationAcceptsCancellationToken;
-                properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invokedFunction.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
+        var invocations = context.OperationBlocks.SelectMany(block => block.Descendants().OfType<IInvocationOperation>());
+
+        foreach (var invocation in invocations)
+        {
+            var invokedMethodName = invocation.TargetMethod.Name;
+            var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
+
+            var methodsInInvokedType = invocation.TargetMethod.ContainingType.GetMembers().OfType<IMethodSymbol>();
+            var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
+
+            foreach (var overload in relevantOverloads)
+            {
+                if (IsIdenticalOverload(invocation.TargetMethod, overload, surroundingMethod))
+                {
+                    var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                    var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethod.GetCancellationTokenFromParameters();
+
+                    var currentInvocationPassesCancellationToken = invocation.PassesThroughCancellationToken(cancellationTokenSymbol);
+                    var newInvocationAcceptsCancellationToken = overload.GetCancellationTokenFromParameters() != default;
+
+                    properties.Add("cancellationTokenName", cancellationTokenName);
+                    properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
+
+                    var shouldAddCancellationToken = cancellationTokenName != default && !currentInvocationPassesCancellationToken && newInvocationAcceptsCancellationToken;
+                    properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
+                }
             }
         }
     }
@@ -115,7 +90,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
          * If the current context doesn't provide a cancellationtoken, the overload must not require it either (no parameter or optional ctoken)
          * If the current context does provide a cancellationtoken and the overload accepts one (optional or required), we pass it through
          * If the current context does provide a cancellationtoken but the overload doesn't accept one, we don't pass it through
-         * If the current context does provide a cancellationtoken and the current invocation uses it but the overload doesn't accept it, we need to remove it         * 
+         * If the current context does provide a cancellationtoken and the current invocation uses it but the overload doesn't accept it, we need to remove it
          **/
 
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;

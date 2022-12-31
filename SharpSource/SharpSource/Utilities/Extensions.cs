@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace SharpSource.Utilities;
 
@@ -201,23 +202,6 @@ public static class Extensions
         return default;
     }
 
-    public static bool PassesThroughCancellationToken(this InvocationExpressionSyntax invocation, SemanticModel semanticModel)
-    {
-        foreach (var argument in invocation.ArgumentList.Arguments)
-        {
-            var argumentType = semanticModel.GetTypeInfo(argument.Expression).Type;
-
-            if (argumentType is INamedTypeSymbol { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T } ctoken && ctoken.TypeArguments.Single().Name == "CancellationToken")
-            {
-                return true;
-            }
-
-            if (argumentType is INamedTypeSymbol { Name: "CancellationToken" })
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public static bool PassesThroughCancellationToken(this IInvocationOperation invocation, INamedTypeSymbol cancellationTokenSymbol)
+        => invocation.Arguments.Any(argument => cancellationTokenSymbol.Equals(argument.Parameter?.Type, SymbolEqualityComparer.Default));
 }
