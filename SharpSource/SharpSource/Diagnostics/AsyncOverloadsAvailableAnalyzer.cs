@@ -38,11 +38,13 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationBlockAnalysisContext context, INamedTypeSymbol cancellationTokenSymbol)
     {
+        // Problem: if the invocation is done inside a synchronous lambda, it still looks at the surrounding method declaration
         if (context.OwningSymbol is not IMethodSymbol surroundingMethod)
         {
             return;
         }
 
+        // Problem: If the surrounding method is a global statement is it considered as `IsAsync: false` even though async calls work
         if (surroundingMethod is { IsAsync: false })
         {
             return;
