@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.20] - 2023-01-01
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed a `NullReferenceException` when analysing `extern` declarations
+
 ## [1.16.19] - 2023-01-01
 - `AsyncOverloadsAvailableAnalyzer`: Analyzer is rewritten to use `IOperation`
 

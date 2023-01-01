@@ -579,4 +579,21 @@ if (x.Contains(default)) {{ }}";
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/243")]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithExternType()
+    {
+        var original = @"
+using System.Runtime.InteropServices;
+
+static class GlobalAssemblyCacheLocation
+{
+    [DllImport(""clr"", PreserveSig = true)]
+    private static extern unsafe void DoThing(string id, byte* path);
+
+    private static unsafe void Thing() => DoThing(""id"", null);
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }
