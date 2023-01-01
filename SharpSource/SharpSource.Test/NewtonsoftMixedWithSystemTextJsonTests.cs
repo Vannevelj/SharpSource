@@ -9,7 +9,7 @@ namespace SharpSource.Test;
 [TestClass]
 public class NewtonsoftMixedWithSystemTextJsonTests : DiagnosticVerifier
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DateTimeNowAnalyzer();
+    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new NewtonsoftMixedWithSystemTextJsonAnalyzer();
 
     [TestMethod]
     public async Task NewtonsoftMixedWithSystemTextJson_Serialize_SystemText_ThroughNewtonsoft()
