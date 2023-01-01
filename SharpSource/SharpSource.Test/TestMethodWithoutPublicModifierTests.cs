@@ -365,4 +365,43 @@ namespace ConsoleApplication1
 
         await VerifyDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task TestMethodWithoutPublicModifier_InheritedAttribute()
+    {
+        var original = @"
+using System;
+using NUnit.Framework;
+
+class MyOwnAttribute : TestAttribute {}
+
+[TestFixture]
+public class MyClass
+{
+    [MyOwnAttribute]
+    void Method()
+    {
+
+    }
+}";
+
+        var result = @"
+using System;
+using NUnit.Framework;
+
+class MyOwnAttribute : TestAttribute {}
+
+[TestFixture]
+public class MyClass
+{
+    [MyOwnAttribute]
+    public void Method()
+    {
+
+    }
+}";
+
+        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
+        await VerifyFix(original, result);
+    }
 }
