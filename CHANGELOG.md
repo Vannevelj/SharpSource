@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.18] - 2022-12-31
+- Unit tests target .NET 7 and test framework dependencies have been updated
+- Vsix build tools dependency is updated
+
 ## [1.16.17] - 2022-12-30
 - `DivideIntegerByIntegerAnalyzer`: Analyzer is rewritten to use `IOperation`
 - `EnumWithoutDefaultValueAnalyzer`: Analyzer is rewritten to use `ISymbol`
