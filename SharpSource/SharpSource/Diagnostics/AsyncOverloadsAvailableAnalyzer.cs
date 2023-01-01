@@ -63,8 +63,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             var invokedMethodName = invocation.TargetMethod.Name;
             var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
 
-            var methodsInInvokedType = invocation.TargetMethod.ContainingType.GetMembers().OfType<IMethodSymbol>();
-            var relevantOverloads = methodsInInvokedType.Where(x => x.Name == $"{invokedMethodName}Async");
+            var relevantOverloads = invocation.TargetMethod.ContainingType.GetMembers($"{invokedMethodName}Async").OfType<IMethodSymbol>();
 
             foreach (var overload in relevantOverloads)
             {
