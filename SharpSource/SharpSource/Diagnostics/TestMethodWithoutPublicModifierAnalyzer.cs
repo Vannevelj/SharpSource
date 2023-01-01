@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -31,10 +30,26 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
     private static void AnalyzeMethod(SymbolAnalysisContext context)
     {
         var method = (IMethodSymbol)context.Symbol;
-        if (method.DeclaredAccessibility != Accessibility.Public && method.GetAttributes().Any(
-            a => a.AttributeClass?.Name is "TestAttribute" or "TestMethodAttribute" or "FactAttribute" or "TheoryAttribute"))
+
+        if (method.DeclaredAccessibility == Accessibility.Public)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
+            return;
+        }
+
+        var attributes = method.GetAttributes();
+        foreach (var attribute in attributes)
+        {
+            var attributeType = attribute.AttributeClass;
+            while (attributeType is not null)
+            {
+                if (attributeType.Name is "TestAttribute" or "TestMethodAttribute" or "FactAttribute" or "TheoryAttribute")
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
+                    return;
+                }
+
+                attributeType = attributeType.BaseType;
+            }
         }
     }
 }

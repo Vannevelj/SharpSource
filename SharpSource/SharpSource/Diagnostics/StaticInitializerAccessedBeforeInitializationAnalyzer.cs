@@ -35,12 +35,12 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
             // Collect potential symbols that shouldn't be referenced before initialized.
             var disallowedSymbolsInOrder = symbol.GetMembers()
                                                  .Where(m => m.IsStatic && m is not IFieldSymbol { IsConst: true } && m.Kind is SymbolKind.Field or SymbolKind.Property)
-                                                 .Select((s, index) => new { s.Name, index })
-                                                 .ToDictionary(x => x.Name, x => x.index);
+                                                 .Select((s, index) => new { symbol = s, index })
+                                                 .ToDictionary(x => x.symbol, x => x.index, SymbolEqualityComparer.Default);
             context.RegisterOperationBlockStartAction(context =>
             {
                 var owningSymbol = context.OwningSymbol;
-                if (!owningSymbol.IsStatic || !disallowedSymbolsInOrder.TryGetValue(owningSymbol.Name, out var owningIndex))
+                if (!owningSymbol.IsStatic || !disallowedSymbolsInOrder.TryGetValue(owningSymbol, out var owningIndex))
                 {
                     return;
                 }
@@ -70,7 +70,7 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
                         operation = operation.Parent;
                     }
 
-                    if (disallowedSymbolsInOrder.TryGetValue(referencedSymbol.Name, out var referencedIndex) && owningIndex < referencedIndex)
+                    if (disallowedSymbolsInOrder.TryGetValue(referencedSymbol, out var referencedIndex) && owningIndex < referencedIndex)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), owningSymbol.Name, referencedSymbol.Name));
                     }

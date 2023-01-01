@@ -365,4 +365,86 @@ namespace ConsoleApplication1
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/236")]
+    public async Task TestMethodWithoutPublicModifier_InheritedAttribute_SingleLevel()
+    {
+        var original = @"
+using System;
+using NUnit.Framework;
+
+class MyOwnAttribute : TestAttribute {}
+
+[TestFixture]
+public class MyClass
+{
+    [MyOwnAttribute]
+    void Method()
+    {
+
+    }
+}";
+
+        var result = @"
+using System;
+using NUnit.Framework;
+
+class MyOwnAttribute : TestAttribute {}
+
+[TestFixture]
+public class MyClass
+{
+    [MyOwnAttribute]
+    public void Method()
+    {
+
+    }
+}";
+
+        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
+        await VerifyFix(original, result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/236")]
+    public async Task TestMethodWithoutPublicModifier_InheritedAttribute_MultipleLevels()
+    {
+        var original = @"
+using System;
+using NUnit.Framework;
+
+class MyOwnAttribute : TestAttribute {}
+class MySecondAttribute : MyOwnAttribute {}
+class MyThirdAttribute : MySecondAttribute {}
+
+[TestFixture]
+public class MyClass
+{
+    [MyThird]
+    void Method()
+    {
+
+    }
+}";
+
+        var result = @"
+using System;
+using NUnit.Framework;
+
+class MyOwnAttribute : TestAttribute {}
+class MySecondAttribute : MyOwnAttribute {}
+class MyThirdAttribute : MySecondAttribute {}
+
+[TestFixture]
+public class MyClass
+{
+    [MyThird]
+    public void Method()
+    {
+
+    }
+}";
+
+        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
+        await VerifyFix(original, result);
+    }
 }
