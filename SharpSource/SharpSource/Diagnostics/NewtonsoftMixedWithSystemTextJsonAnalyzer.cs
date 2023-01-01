@@ -58,45 +58,42 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
         {
             var argument = invocation.Arguments.FirstOrDefault();
             var passedArgument = argument?.SemanticModel?.GetTypeInfo((( ArgumentSyntax)argument.Syntax).Expression).Type;
-            if (passedArgument is not null)
-            {
-                Check(invocation, passedArgument, systemTextAttribute, "serialize", "System.Text.Json", "Newtonsoft.Json", context);
-            }
+            Check(invocation, passedArgument, systemTextAttribute, "serialize", "System.Text.Json", "Newtonsoft.Json", context);
+            return;
         }
 
         var invokedNewtonsoftDeserializer = newtonsoftDeserializers.FirstOrDefault(s => s.Equals(invocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default));
         if (invokedNewtonsoftDeserializer is not null)
         {
             var passedArgument = invocation.TargetMethod.TypeArguments.FirstOrDefault();
-            if (passedArgument is not null)
-            {
-                Check(invocation, passedArgument, systemTextAttribute, "deserialize", "System.Text.Json", "Newtonsoft.Json", context);
-            }
+            Check(invocation, passedArgument, systemTextAttribute, "deserialize", "System.Text.Json", "Newtonsoft.Json", context);
+            return;
         }
 
         var invokedSystemTextSerializer = systemTextSerializers.FirstOrDefault(s => s.Equals(invocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default));
         if (invokedSystemTextSerializer is not null)
         {
             var passedArgument = invocation.TargetMethod.TypeArguments.FirstOrDefault();
-            if (passedArgument is not null)
-            {
-                Check(invocation, passedArgument, newtonsoftAttribute, "serialize", "Newtonsoft.Json", "System.Text.Json", context);
-            }
+            Check(invocation, passedArgument, newtonsoftAttribute, "serialize", "Newtonsoft.Json", "System.Text.Json", context);
+            return;
         }
 
         var invokedSystemTextDeserializer = systemTextDeserializers.FirstOrDefault(s => s.Equals(invocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default));
         if (invokedSystemTextDeserializer is not null)
         {
             var passedArgument = invocation.TargetMethod.TypeArguments.FirstOrDefault();
-            if (passedArgument is not null)
-            {
-                Check(invocation, passedArgument, newtonsoftAttribute, "deserialize", "Newtonsoft.Json", "System.Text.Json", context);
-            }
+            Check(invocation, passedArgument, newtonsoftAttribute, "deserialize", "Newtonsoft.Json", "System.Text.Json", context);
+            return;
         }
     }
 
-    private static void Check(IInvocationOperation invocation, ITypeSymbol argument, INamedTypeSymbol opposingAttributeType, string operation, string serializer, string attribute, OperationAnalysisContext context)
+    private static void Check(IInvocationOperation invocation, ITypeSymbol? argument, INamedTypeSymbol opposingAttributeType, string operation, string serializer, string attribute, OperationAnalysisContext context)
     {
+        if (argument is null)
+        {
+            return;
+        }
+
         foreach (var member in argument.GetMembers())
         {
             if (member.GetAttributes().Any(a => opposingAttributeType.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
