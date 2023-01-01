@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.19] - 2023-01-01
+- `AsyncOverloadsAvailableAnalyzer`: Analyzer is rewritten to use `IOperation`
+
 ## [1.16.18] - 2022-12-31
 - Unit tests target .NET 7 and test framework dependencies have been updated
 - Vsix build tools dependency is updated
