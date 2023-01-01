@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.22] - 2023-01-01
+- Added `ConfigureAwait(false)` to all codefixes
+
 ## [1.16.21] - 2023-01-01
 - `StaticInitializerAccessedBeforeInitialization`: Doesn't trigger an error if a member with the same name but in a different type is referenced
 - `TestMethodWithoutPublicModifier`: Now supports custom attributes that inherit from a test attribute

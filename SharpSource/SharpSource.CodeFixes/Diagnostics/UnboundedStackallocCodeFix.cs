@@ -20,7 +20,7 @@ public class UnboundedStackallocCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root == default)
         {
             return;

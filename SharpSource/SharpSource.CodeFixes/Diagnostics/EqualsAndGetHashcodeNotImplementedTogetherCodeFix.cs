@@ -53,7 +53,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         var classDeclaration = (ClassDeclarationSyntax)statement;
 
         var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetEqualsMethod()));
-        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
+        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
         return newDocument.Project.Solution;
     }
 
@@ -62,7 +62,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         var classDeclaration = (ClassDeclarationSyntax)statement;
 
         var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetGetHashCodeMethod()));
-        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
+        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
         return newDocument.Project.Solution;
     }
 

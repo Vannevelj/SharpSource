@@ -28,7 +28,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var semanticModel = await context.Document.GetSemanticModelAsync();
+        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
 
         if (semanticModel == default || root == default)
         {
@@ -89,7 +89,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
             : switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation);
 
         var newRoot = root.ReplaceNode(switchBlock, newNode);
-        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot));
+        var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
         return newDocument.Project.Solution;
     }
 
