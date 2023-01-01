@@ -29,13 +29,13 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var cancellationTokenSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
-            compilationContext.RegisterOperationBlockAction(context => Analyze(context, cancellationTokenSymbol));
+            compilationContext.RegisterOperationAction((context) => Analyze(context, cancellationTokenSymbol), OperationKind.Invocation);
         });
     }
 
-    private static void Analyze(OperationBlockAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
+    private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
     {
-        if (context.OwningSymbol is not IMethodSymbol surroundingMethod)
+        if (context.ContainingSymbol is not IMethodSymbol surroundingMethod)
         {
             return;
         }
@@ -46,38 +46,35 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var invocations = context.OperationBlocks.SelectMany(block => block.Descendants().OfType<IInvocationOperation>());
+        var invocation = (IInvocationOperation)context.Operation;
 
-        foreach (var invocation in invocations)
+        var isInsideSyncLambda = invocation.Ancestors().Any(a => a is IAnonymousFunctionOperation { Symbol.IsAsync: false });
+        if (isInsideSyncLambda)
         {
-            var isInsideSyncLambda = invocation.Ancestors().Any(a => a is IAnonymousFunctionOperation { Symbol.IsAsync: false });
-            if (isInsideSyncLambda)
+            return;
+        }
+
+        var invokedMethodName = invocation.TargetMethod.Name;
+        var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
+
+        var relevantOverloads = invocation.TargetMethod.ContainingType.GetMembers($"{invokedMethodName}Async").OfType<IMethodSymbol>();
+
+        foreach (var overload in relevantOverloads)
+        {
+            if (IsIdenticalOverload(invocation.TargetMethod, overload, surroundingMethod))
             {
-                continue;
-            }
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethod.GetCancellationTokenFromParameters();
 
-            var invokedMethodName = invocation.TargetMethod.Name;
-            var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
+                var currentInvocationPassesCancellationToken = invocation.PassesThroughCancellationToken(cancellationTokenSymbol);
+                var newInvocationAcceptsCancellationToken = overload.GetCancellationTokenFromParameters() != default;
 
-            var relevantOverloads = invocation.TargetMethod.ContainingType.GetMembers($"{invokedMethodName}Async").OfType<IMethodSymbol>();
+                properties.Add("cancellationTokenName", cancellationTokenName);
+                properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
 
-            foreach (var overload in relevantOverloads)
-            {
-                if (IsIdenticalOverload(invocation.TargetMethod, overload, surroundingMethod))
-                {
-                    var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                    var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethod.GetCancellationTokenFromParameters();
-
-                    var currentInvocationPassesCancellationToken = invocation.PassesThroughCancellationToken(cancellationTokenSymbol);
-                    var newInvocationAcceptsCancellationToken = overload.GetCancellationTokenFromParameters() != default;
-
-                    properties.Add("cancellationTokenName", cancellationTokenName);
-                    properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
-
-                    var shouldAddCancellationToken = cancellationTokenName != default && !currentInvocationPassesCancellationToken && newInvocationAcceptsCancellationToken;
-                    properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
-                }
+                var shouldAddCancellationToken = cancellationTokenName != default && !currentInvocationPassesCancellationToken && newInvocationAcceptsCancellationToken;
+                properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
             }
         }
     }
