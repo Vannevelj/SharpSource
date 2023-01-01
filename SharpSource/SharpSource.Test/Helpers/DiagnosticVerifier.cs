@@ -41,6 +41,7 @@ public abstract class DiagnosticVerifier
     private static readonly MetadataReference NunitReference = MetadataReference.CreateFromFile(typeof(NUnit.Framework.TestFixtureAttribute).Assembly.Location);
     private static readonly MetadataReference MsTestReference = MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
     private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
+    private static readonly MetadataReference ImmutableReference = MetadataReference.CreateFromFile(typeof(ImmutableHashSet).Assembly.Location);
 
     private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath) ?? "", dllName);
 
@@ -348,7 +349,8 @@ public abstract class DiagnosticVerifier
             AspNetCoreMvc,
             XunitReference,
             MsTestReference,
-            NunitReference
+            NunitReference,
+            ImmutableReference
         };
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.WindowsApplication).WithAllowUnsafe(true);
