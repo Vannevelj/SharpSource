@@ -98,7 +98,13 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
             var incompatibleAttribute = member.GetAttributes().FirstOrDefault(a => opposingAttributeType.Equals(a.AttributeClass, SymbolEqualityComparer.Default));
             if (incompatibleAttribute is not null)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), operation, incompatibleAttribute.AttributeClass?.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), invocation.TargetMethod.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+                context.ReportDiagnostic(Diagnostic.Create(
+                    Rule,
+                    invocation.Syntax.GetLocation(),
+                    operation,
+                    incompatibleAttribute.AttributeClass?.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat),
+                    invocation.TargetMethod.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)
+                ));
             }
         }
     }
