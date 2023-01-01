@@ -366,7 +366,7 @@ namespace ConsoleApplication1
         await VerifyDiagnostic(original);
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/236")]
     public async Task TestMethodWithoutPublicModifier_InheritedAttribute_SingleLevel()
     {
         var original = @"
@@ -405,7 +405,7 @@ public class MyClass
         await VerifyFix(original, result);
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/236")]
     public async Task TestMethodWithoutPublicModifier_InheritedAttribute_MultipleLevels()
     {
         var original = @"
