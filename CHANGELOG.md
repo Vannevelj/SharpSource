@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.16.21] - 2023-01-01
 - `StaticInitializerAccessedBeforeInitialization`: Doesn't trigger an error if a member with the same name but in a different type is referenced
+- `TestMethodWithoutPublicModifier`: Now supports custom attributes that inherit from a test attribute
 
 ## [1.16.20] - 2023-01-01
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed a `NullReferenceException` when analysing `extern` declarations
