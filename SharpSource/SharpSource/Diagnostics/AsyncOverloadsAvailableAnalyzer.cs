@@ -29,14 +29,11 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var cancellationTokenSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
-            if (cancellationTokenSymbol is not null)
-            {
-                compilationContext.RegisterOperationBlockAction(context => Analyze(context, cancellationTokenSymbol));
-            }
+            compilationContext.RegisterOperationBlockAction(context => Analyze(context, cancellationTokenSymbol));
         });
     }
 
-    private static void Analyze(OperationBlockAnalysisContext context, INamedTypeSymbol cancellationTokenSymbol)
+    private static void Analyze(OperationBlockAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
     {
         if (context.OwningSymbol is not IMethodSymbol surroundingMethod)
         {

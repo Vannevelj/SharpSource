@@ -202,8 +202,8 @@ public static class Extensions
         return default;
     }
 
-    public static bool PassesThroughCancellationToken(this IInvocationOperation invocation, INamedTypeSymbol cancellationTokenSymbol)
-        => invocation.Arguments.Any(argument => cancellationTokenSymbol.Equals(argument.Parameter?.Type, SymbolEqualityComparer.Default));
+    public static bool PassesThroughCancellationToken(this IInvocationOperation invocation, INamedTypeSymbol? cancellationTokenSymbol)
+        => cancellationTokenSymbol != default && invocation.Arguments.Any(argument => cancellationTokenSymbol.Equals(argument.Parameter?.Type, SymbolEqualityComparer.Default));
 
     public static IEnumerable<IOperation?> Ancestors(this IOperation? operation)
     {
