@@ -567,6 +567,11 @@ namespace ConsoleApplication1
     [DataRow("double")]
     [DataRow("Guid")]
     [DataRow("string")]
+    [DataRow("nint")]
+    [DataRow("nuint")]
+    [DataRow("char")]
+    [DataRow("bool")]
+    [DataRow("decimal")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_BasicTypes(string type)
     {
         var original = @$"
