@@ -38,7 +38,6 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationBlockAnalysisContext context, INamedTypeSymbol cancellationTokenSymbol)
     {
-        // Problem: if the invocation is done inside a synchronous lambda, it still looks at the surrounding method declaration
         if (context.OwningSymbol is not IMethodSymbol surroundingMethod)
         {
             return;
@@ -54,6 +53,12 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
         foreach (var invocation in invocations)
         {
+            var isInsideSyncLambda = invocation.Ancestors().Any(a => a is IAnonymousFunctionOperation { Symbol.IsAsync: false });
+            if (isInsideSyncLambda)
+            {
+                continue;
+            }
+
             var invokedMethodName = invocation.TargetMethod.Name;
             var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
 
@@ -81,7 +86,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol? surroundingMethodDeclaration)
+    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol surroundingMethodDeclaration)
     {
         /**
          * Three variables in play:

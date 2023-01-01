@@ -204,4 +204,13 @@ public static class Extensions
 
     public static bool PassesThroughCancellationToken(this IInvocationOperation invocation, INamedTypeSymbol cancellationTokenSymbol)
         => invocation.Arguments.Any(argument => cancellationTokenSymbol.Equals(argument.Parameter?.Type, SymbolEqualityComparer.Default));
+
+    public static IEnumerable<IOperation?> Ancestors(this IOperation? operation)
+    {
+        while (operation is not null)
+        {
+            operation = operation.Parent;
+            yield return operation;
+        }
+    }
 }
