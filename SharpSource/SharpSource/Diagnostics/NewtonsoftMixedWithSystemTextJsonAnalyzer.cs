@@ -13,7 +13,7 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.NewtonsoftMixedWithSystemTextJson,
-        "An attempt is made to (de-)serialize an object which combines System.Text.Json and Newtonsoft.Json. Attributes from one won't be adhered to in the other.",
+        "An attempt is made to (de-)serialize an object which combines System.Text.Json and Newtonsoft.Json. Attributes from one won't be adhered to in the other and should not be mixed.",
         "Attempting to {0} an object annotated with {1} through {2}",
         Categories.Correctness,
         DiagnosticSeverity.Warning,
@@ -46,7 +46,6 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
                 compilationContext.RegisterOperationAction((context) => Analyze(context, newtonsoftAttribute, systemTextAttribute, newtonsoftSerializers, newtonsoftDeserializers, systemTextSerializers, systemTextDeserializers), OperationKind.Invocation);
             }
         });
-        
     }
 
     private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol newtonsoftAttribute, INamedTypeSymbol systemTextAttribute, IMethodSymbol[] newtonsoftSerializers, IMethodSymbol[] newtonsoftDeserializers, IMethodSymbol[] systemTextSerializers, IMethodSymbol[] systemTextDeserializers)
@@ -57,7 +56,7 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
         if (invokedNewtonsoftSerializer is not null)
         {
             var argument = invocation.Arguments.FirstOrDefault();
-            var passedArgument = argument?.SemanticModel?.GetTypeInfo((( ArgumentSyntax)argument.Syntax).Expression).Type;
+            var passedArgument = argument?.SemanticModel?.GetTypeInfo(( (ArgumentSyntax)argument.Syntax ).Expression).Type;
             Check(invocation, passedArgument, systemTextAttribute, "serialize", "System.Text.Json", "Newtonsoft.Json", context);
             return;
         }

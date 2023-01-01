@@ -176,4 +176,38 @@ class MyData
 
         await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json through Newtonsoft.Json");
     }
+
+    [TestMethod]
+    public async Task NewtonsoftMixedWithSystemTextJson_Serialize_SystemText()
+    {
+        var original = @"
+using System.Text.Json.Serialization;
+
+var data = System.Text.Json.JsonSerializer.Deserialize<MyData>(string.Empty);
+
+class MyData
+{
+    [JsonPropertyName(""prop"")]
+    public int MyProp { get; set; }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task NewtonsoftMixedWithSystemTextJson_Serialize_Newtonsoft()
+    {
+        var original = @"
+using Newtonsoft.Json;
+
+var data = Newtonsoft.Json.JsonConvert.SerializeObject(new MyData());
+
+class MyData
+{
+    [JsonProperty(""prop"")]
+    public int MyProp { get; set; }
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }
