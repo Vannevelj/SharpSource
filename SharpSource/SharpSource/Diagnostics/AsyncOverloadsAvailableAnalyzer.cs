@@ -43,8 +43,9 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        // Problem: If the surrounding method is a global statement is it considered as `IsAsync: false` even though async calls work
-        if (surroundingMethod is { IsAsync: false })
+        // If the surrounding method is a global statement is it considered as `IsAsync: false` even though async calls work
+        // Using CanBeReferencedByName to try and distinguish between the two scenarios since the top-level statements entry point can't be referenced 
+        if (surroundingMethod is { IsAsync: false, CanBeReferencedByName: true })
         {
             return;
         }
