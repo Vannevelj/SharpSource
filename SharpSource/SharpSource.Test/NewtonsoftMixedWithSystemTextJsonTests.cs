@@ -26,7 +26,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json through Newtonsoft.Json");
+        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json");
     }
 
     [TestMethod]
@@ -98,7 +98,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original, "Attempting to deserialize an object annotated with System.Text.Json through Newtonsoft.Json");
+        await VerifyDiagnostic(original, "Attempting to deserialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json");
     }
 
     [TestMethod]
@@ -174,7 +174,7 @@ class MyData
     public int MyProp {{ get; set; }}
 }}";
 
-        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json through Newtonsoft.Json");
+        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json");
     }
 
     [TestMethod]

@@ -57,7 +57,7 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
         {
             var argument = invocation.Arguments.FirstOrDefault();
             var passedArgument = argument?.SemanticModel?.GetTypeInfo(( (ArgumentSyntax)argument.Syntax ).Expression).Type;
-            Check(invocation, passedArgument, systemTextAttribute, "serialize", "System.Text.Json", "Newtonsoft.Json", context);
+            Check(invocation, passedArgument, systemTextAttribute, "serialize", context);
             return;
         }
 
@@ -65,7 +65,7 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
         if (invokedNewtonsoftDeserializer is not null)
         {
             var passedArgument = invocation.TargetMethod.TypeArguments.FirstOrDefault();
-            Check(invocation, passedArgument, systemTextAttribute, "deserialize", "System.Text.Json", "Newtonsoft.Json", context);
+            Check(invocation, passedArgument, systemTextAttribute, "deserialize", context);
             return;
         }
 
@@ -73,7 +73,7 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
         if (invokedSystemTextSerializer is not null)
         {
             var passedArgument = invocation.TargetMethod.TypeArguments.FirstOrDefault();
-            Check(invocation, passedArgument, newtonsoftAttribute, "serialize", "Newtonsoft.Json", "System.Text.Json", context);
+            Check(invocation, passedArgument, newtonsoftAttribute, "serialize", context);
             return;
         }
 
@@ -81,12 +81,12 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
         if (invokedSystemTextDeserializer is not null)
         {
             var passedArgument = invocation.TargetMethod.TypeArguments.FirstOrDefault();
-            Check(invocation, passedArgument, newtonsoftAttribute, "deserialize", "Newtonsoft.Json", "System.Text.Json", context);
+            Check(invocation, passedArgument, newtonsoftAttribute, "deserialize", context);
             return;
         }
     }
 
-    private static void Check(IInvocationOperation invocation, ITypeSymbol? argument, INamedTypeSymbol opposingAttributeType, string operation, string serializer, string attribute, OperationAnalysisContext context)
+    private static void Check(IInvocationOperation invocation, ITypeSymbol? argument, INamedTypeSymbol opposingAttributeType, string operation, OperationAnalysisContext context)
     {
         if (argument is null)
         {
@@ -95,9 +95,10 @@ public class NewtonsoftMixedWithSystemTextJsonAnalyzer : DiagnosticAnalyzer
 
         foreach (var member in argument.GetMembers())
         {
-            if (member.GetAttributes().Any(a => opposingAttributeType.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
+            var incompatibleAttribute = member.GetAttributes().FirstOrDefault(a => opposingAttributeType.Equals(a.AttributeClass, SymbolEqualityComparer.Default));
+            if (incompatibleAttribute is not null)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), operation, serializer, attribute));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), operation, incompatibleAttribute.AttributeClass?.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), invocation.TargetMethod.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
             }
         }
     }
