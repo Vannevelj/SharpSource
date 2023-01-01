@@ -42,6 +42,8 @@ public abstract class DiagnosticVerifier
     private static readonly MetadataReference MsTestReference = MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
     private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
     private static readonly MetadataReference ImmutableReference = MetadataReference.CreateFromFile(typeof(ImmutableHashSet).Assembly.Location);
+    private static readonly MetadataReference SystemTextJsonReference = MetadataReference.CreateFromFile(typeof(System.Text.Json.JsonSerializer).Assembly.Location);
+    private static readonly MetadataReference NewtonsoftJsonReference = MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonSerializer).Assembly.Location);
 
     private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath) ?? "", dllName);
 
@@ -350,7 +352,9 @@ public abstract class DiagnosticVerifier
             XunitReference,
             MsTestReference,
             NunitReference,
-            ImmutableReference
+            ImmutableReference,
+            SystemTextJsonReference,
+            NewtonsoftJsonReference
         };
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.WindowsApplication).WithAllowUnsafe(true);
