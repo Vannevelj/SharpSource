@@ -567,6 +567,11 @@ namespace ConsoleApplication1
     [DataRow("double")]
     [DataRow("Guid")]
     [DataRow("string")]
+    [DataRow("nint")]
+    [DataRow("nuint")]
+    [DataRow("char")]
+    [DataRow("bool")]
+    [DataRow("decimal")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_BasicTypes(string type)
     {
         var original = @$"
@@ -576,6 +581,23 @@ using System.Linq;
 
 var x = new HashSet<{type}>();
 if (x.Contains(default)) {{ }}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/243")]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithExternType()
+    {
+        var original = @"
+using System.Runtime.InteropServices;
+
+static class GlobalAssemblyCacheLocation
+{
+    [DllImport(""clr"", PreserveSig = true)]
+    private static extern unsafe void DoThing(string id, byte* path);
+
+    private static unsafe void Thing() => DoThing(""id"", null);
+}";
 
         await VerifyDiagnostic(original);
     }

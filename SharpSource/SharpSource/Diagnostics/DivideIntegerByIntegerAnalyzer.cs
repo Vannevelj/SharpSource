@@ -1,16 +1,14 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
+public sealed class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
 {
     private static readonly SpecialType[] IntegerTypes =
     {
@@ -33,13 +31,18 @@ public class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.DivideExpression);
+        context.RegisterOperationAction(AnalyzeBinaryOperation, OperationKind.Binary);
     }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeBinaryOperation(OperationAnalysisContext context)
     {
-        var divideExpression = (BinaryExpressionSyntax)context.Node;
-        var leftType = context.SemanticModel.GetTypeInfo(divideExpression.Left).Type;
+        var binaryOperation = (IBinaryOperation)context.Operation;
+        if (binaryOperation.OperatorKind != BinaryOperatorKind.Divide)
+        {
+            return;
+        }
+
+        var leftType = binaryOperation.LeftOperand.Type;
         if (leftType == null)
         {
             return;
@@ -47,7 +50,7 @@ public class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
 
         if (IntegerTypes.Contains(leftType.SpecialType))
         {
-            var rightType = context.SemanticModel.GetTypeInfo(divideExpression.Right).Type;
+            var rightType = binaryOperation.RightOperand.Type;
             if (rightType == null)
             {
                 return;
@@ -55,7 +58,7 @@ public class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
 
             if (IntegerTypes.Contains(rightType.SpecialType))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, divideExpression.GetLocation(), divideExpression.ToString()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, binaryOperation.Syntax.GetLocation(), binaryOperation.Syntax.ToString()));
             }
         }
     }

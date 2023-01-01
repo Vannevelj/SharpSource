@@ -538,4 +538,24 @@ partial struct Test
 
         await VerifyDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/244")]
+    public async Task StaticInitializerAccessedBeforeInitialization_DifferentTypeSameMemberName()
+    {
+        var original = @"
+using System.Collections.Immutable;
+
+class Other
+{
+    public const string Key = ""Other key"";
+}
+
+class Test
+{
+    public static ImmutableHashSet<string> All = ImmutableHashSet.Create(""first"", Other.Key, ""last"");
+    public static string Key = ""key"";
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }

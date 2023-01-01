@@ -1,6 +1,28 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.21] - 2023-01-01
+- `StaticInitializerAccessedBeforeInitialization`: Doesn't trigger an error if a member with the same name but in a different type is referenced
+- `TestMethodWithoutPublicModifier`: Now supports custom attributes that inherit from a test attribute
+
+## [1.16.20] - 2023-01-01
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed a `NullReferenceException` when analysing `extern` declarations
+
+## [1.16.19] - 2023-01-01
+- `AsyncOverloadsAvailableAnalyzer`: Analyzer is rewritten to use `IOperation`
+
+## [1.16.18] - 2022-12-31
+- Unit tests target .NET 7 and test framework dependencies have been updated
+- Vsix build tools dependency is updated
+
+## [1.16.17] - 2022-12-30
+- `DivideIntegerByIntegerAnalyzer`: Analyzer is rewritten to use `IOperation`
+- `EnumWithoutDefaultValueAnalyzer`: Analyzer is rewritten to use `ISymbol`
+- `EqualsAndGetHashcodeNotImplementedTogetherAnalyzer`: Analyzer is rewritten to use `ISymbol`
+- `LockingOnDiscouragedObjectAnalyzer`: Analyzer is rewritten to use `IOperation`
+- `LockingOnMutableReferenceAnalyzer`: Analyzer is rewritten to use `IOperation`
+- `UnnecessaryEnumerableMaterializationAnalyzer`: Use array instead of hash set for searching for small number of elements
+
 ## [1.16.16] - 2022-12-30
 - `TestMethodWithoutPublicModifier`: Analyzer is rewritten to use `IOperation`
 
@@ -12,6 +34,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.16.13] - 2022-12-30
 - `LinqTraversalBeforeFilter`: Analyzer is rewritten to use `IOperation`
+- `LinqTraversalBeforeFilter`: Now supports LINQ query syntax
 
 ## [1.16.12] - 2022-12-30
 - Project is updated to C# 11

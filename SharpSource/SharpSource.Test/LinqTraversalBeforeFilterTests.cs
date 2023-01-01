@@ -79,4 +79,38 @@ class Test
             "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?",
             "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?");
     }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_QuerySyntax()
+    {
+        var original = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new [] {{ 32 }};
+var result = from v in values
+             orderby v descending
+             where v > 5
+             select v;
+";
+
+        await VerifyDiagnostic(original, "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?");
+    }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_QuerySyntax_CorrectOrder()
+    {
+        var original = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new [] {{ 32 }};
+var result = from v in values
+             where v > 5
+             orderby v descending
+             select v;
+";
+
+        await VerifyDiagnostic(original);
+    }
 }

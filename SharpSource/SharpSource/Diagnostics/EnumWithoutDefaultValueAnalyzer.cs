@@ -2,8 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
@@ -11,7 +9,7 @@ using SharpSource.Utilities;
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
+public sealed class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
 {
     private static readonly string[] AcceptedNames = new[] { "Unknown", "None" };
 
@@ -30,27 +28,29 @@ public class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.EnumDeclaration);
+        context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeSymbol(SymbolAnalysisContext context)
     {
-        var enumDeclaration = (EnumDeclarationSyntax)context.Node;
-        var enumMembers = enumDeclaration.DescendantNodes().OfType<EnumMemberDeclarationSyntax>();
-
-        var membersOfInterest = enumMembers.Where(en => AcceptedNames.Contains(en.Identifier.ValueText)).ToArray();
-        if (membersOfInterest.Length == 0)
+        var symbol = (INamedTypeSymbol)context.Symbol;
+        if (symbol.TypeKind != TypeKind.Enum)
         {
-            Report(enumDeclaration.Identifier, context);
             return;
         }
 
-        var membersWithZeroValue = membersOfInterest.Where(m => context.SemanticModel.GetDeclaredSymbol(m)?.ConstantValue?.Equals(0) == true);
-        if (!membersWithZeroValue.Any())
+        var membersOfInterest = symbol.GetMembers().Where(en => AcceptedNames.Contains(en.Name)).ToArray();
+        if (membersOfInterest.Length == 0)
         {
-            Report(enumDeclaration.Identifier, context);
+            Report(symbol, context);
+            return;
+        }
+
+        if (!membersOfInterest.Any(m => m is IFieldSymbol { ConstantValue: 0 }))
+        {
+            Report(symbol, context);
         }
     }
 
-    private static void Report(SyntaxToken identifier, SyntaxNodeAnalysisContext context) => context.ReportDiagnostic(Diagnostic.Create(Rule, identifier.GetLocation(), identifier.ValueText));
+    private static void Report(INamedTypeSymbol symbol, SymbolAnalysisContext context) => context.ReportDiagnostic(Diagnostic.Create(Rule, symbol.Locations[0], symbol.Name));
 }

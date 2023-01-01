@@ -1,15 +1,13 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class LockingOnDiscouragedObjectAnalyzer : DiagnosticAnalyzer
+public sealed class LockingOnDiscouragedObjectAnalyzer : DiagnosticAnalyzer
 {
     private static readonly string Title = "A lock was taken using an instance of a discouraged type. System.String, System.Type and 'this' references can all lead to deadlocks and should be replaced with a System.Object instance instead.";
 
@@ -37,29 +35,32 @@ public class LockingOnDiscouragedObjectAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.LockStatement);
+        context.RegisterCompilationStartAction(context =>
+        {
+            var typeSymbol = context.Compilation.GetTypeByMetadataName("System.Type");
+            context.RegisterOperationAction(context => AnalyzeLockOperation(context, typeSymbol), OperationKind.Lock);
+        });
     }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeLockOperation(OperationAnalysisContext context, INamedTypeSymbol? typeSymbol)
     {
-        var lockStatement = (LockStatementSyntax)context.Node;
-
-        if (lockStatement.Expression is ThisExpressionSyntax)
+        var lockOperation = (ILockOperation)context.Operation;
+        if (lockOperation.LockedValue.Kind == OperationKind.InstanceReference)
         {
-            context.ReportDiagnostic(Diagnostic.Create(RuleThis, lockStatement.Expression.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(RuleThis, lockOperation.LockedValue.Syntax.GetLocation()));
             return;
         }
 
-        var symbol = context.SemanticModel.GetTypeInfo(lockStatement.Expression).Type;
+        var symbol = lockOperation.LockedValue.Type;
         if (symbol?.SpecialType is SpecialType.System_String)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, lockStatement.Expression.GetLocation(), "string"));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, lockOperation.LockedValue.Syntax.GetLocation(), "string"));
             return;
         }
 
-        if (symbol?.IsDefinedInSystemAssembly() == true && symbol.Name == "Type")
+        if (symbol?.Equals(typeSymbol, SymbolEqualityComparer.Default) == true)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, lockStatement.Expression.GetLocation(), "Type"));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, lockOperation.LockedValue.Syntax.GetLocation(), "Type"));
             return;
         }
     }
