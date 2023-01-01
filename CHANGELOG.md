@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.16.20] - 2023-01-01
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed a `NullReferenceException` when analysing `extern` declarations
+
 ## [1.16.19] - 2023-01-01
 - `AsyncOverloadsAvailableAnalyzer`: Analyzer is rewritten to use `IOperation`
 
@@ -27,6 +30,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.16.13] - 2022-12-30
 - `LinqTraversalBeforeFilter`: Analyzer is rewritten to use `IOperation`
+- `LinqTraversalBeforeFilter`: Now supports LINQ query syntax
 
 ## [1.16.12] - 2022-12-30
 - Project is updated to C# 11
