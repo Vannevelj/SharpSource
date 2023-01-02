@@ -32,44 +32,14 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
             context.RegisterSymbolStartAction(symbolContext =>
             {
                 var method = (IMethodSymbol)symbolContext.Symbol;
-                if (( method.IsAsync || method.ReturnType.IsTaskType() ) && method.Name != WellKnownMemberNames.TopLevelStatementsEntryPointMethodName)
+                var isAsync = method.IsAsync || method.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
+                if (isAsync || method.ReturnType.IsTaskType())
                 {
-                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols, method.IsAsync), OperationKind.Invocation);
+                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols, isAsync), OperationKind.Invocation);
                 }
 
-                symbolContext.RegisterOperationAction(context => AnalyzeLambda(context, threadSleepSymbols), OperationKind.AnonymousFunction);
             }, SymbolKind.Method);
-
-            context.RegisterOperationAction(context => AnalyzeLocalFunction(context, threadSleepSymbols), OperationKind.LocalFunction);
         });
-    }
-
-    private static void AnalyzeLocalFunction(OperationAnalysisContext context, IMethodSymbol[]? threadSleepSymbols)
-    {
-        var localFunction = (ILocalFunctionOperation)context.Operation;
-        if (localFunction.Symbol.IsAsync || localFunction.Symbol.ReturnType.IsTaskType())
-        {
-            // An ugly approach to only take the operations that are part of the current block
-            // This way we avoid triggering the diagnostic multiple times when there are nested local functions
-            foreach (var invocation in localFunction.Descendants().Skip(1).TakeWhile(d => d is not IBlockOperation).OfType<IInvocationOperation>())
-            {
-                Analyze(context, invocation, threadSleepSymbols, localFunction.Symbol.IsAsync);
-            }
-        }
-    }
-
-    private static void AnalyzeLambda(OperationAnalysisContext context, IMethodSymbol[]? threadSleepSymbols)
-    {
-        var lambda = (IAnonymousFunctionOperation)context.Operation;
-        if (!lambda.Symbol.IsAsync)
-        {
-            return;
-        }
-
-        foreach (var invocation in lambda.Descendants().OfType<IInvocationOperation>())
-        {
-            Analyze(context, invocation, threadSleepSymbols, lambda.Symbol.IsAsync);
-        }
     }
 
     private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? threadSleepSymbols, bool isAsync)
