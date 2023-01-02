@@ -359,4 +359,104 @@ class Test
         await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
         await VerifyFix(original, result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/258")]
+    public async Task AsyncMethodWithVoidReturnType_WithInterfaceImplementation()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+class MyClass : SomeInterface
+{   
+    public async void MyMethod() => await Task.CompletedTask;
+}
+
+interface SomeInterface
+{
+    void MyMethod();
+}
+";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncMethodWithVoidReturnType_WithExplicitInterfaceImplementation()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+class MyClass : SomeInterface
+{   
+    async void SomeInterface.MyMethod() => await Task.CompletedTask;
+}
+
+interface SomeInterface
+{
+    void MyMethod();
+}
+";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncMethodWithVoidReturnType_WithAbstractImplementation()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+class MyClass : Base
+{   
+    public async override void MyMethod() => await Task.CompletedTask;
+}
+
+abstract class Base
+{
+    public abstract void MyMethod();
+}
+";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncMethodWithVoidReturnType_WithIrrelevantInterfaceImplementation()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+class MyClass : SomeInterface
+{
+    async void RealMethod() => await Task.CompletedTask;
+    public int MyMethod() => 5;
+}
+
+interface SomeInterface
+{
+    int MyMethod();
+}";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+class MyClass : SomeInterface
+{
+    async Task RealMethod() => await Task.CompletedTask;
+    public int MyMethod() => 5;
+}
+
+interface SomeInterface
+{
+    int MyMethod();
+}";
+
+        await VerifyDiagnostic(original, "Method RealMethod is marked as async but has a void return type");
+        await VerifyFix(original, result);
+    }
 }

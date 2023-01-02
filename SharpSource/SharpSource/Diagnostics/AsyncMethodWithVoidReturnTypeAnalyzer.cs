@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -67,6 +68,12 @@ public sealed class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
         }
 
         if (!method.IsAsync)
+        {
+            return false;
+        }
+
+        // We don't trigger for implementations of interface/abstract definitions since they can't be unless the definition changes
+        if (method.IsOverride || method.IsInterfaceImplementation())
         {
             return false;
         }
