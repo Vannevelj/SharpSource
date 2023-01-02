@@ -14,7 +14,7 @@ var data = Newtonsoft.Json.JsonConvert.SerializeObject(new MyData());
 
 class MyData
 {
-    [System.Text.Json.Serialization.JsonPropertyName(""prop"")]
+    [System.Text.Json.Serialization.JsonPropertyName("prop")]
     public int MyProp { get; set; }
 }
 ```
