@@ -72,7 +72,7 @@ public sealed class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // We don't trigger for implementations of interface/abstract definitions since they can't be unless the definition changes
+        // We don't trigger for implementations of interface/abstract definitions since they can't be modified unless the definition changes
         if (method.IsOverride || method.IsInterfaceImplementation())
         {
             return false;
