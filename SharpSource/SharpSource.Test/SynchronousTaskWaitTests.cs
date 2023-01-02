@@ -266,7 +266,7 @@ namespace ConsoleApplication1
         await VerifyFix(original, result);
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/263")]
     public async Task SynchronousTaskWait_PreservesLeadingTrivia()
     {
         var original = @"
@@ -342,6 +342,35 @@ using System;
 using System.Threading.Tasks;
 
 await Task.Delay(1);";
+
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/245")]
+    public async Task SynchronousTaskWait_WhenTimeoutIsPassed()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+await MyMethod();
+
+async Task MyMethod()
+{
+    Task.Delay(1).Wait(10000);
+}";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+await MyMethod();
+
+async Task MyMethod()
+{
+    Task.Delay(1).Wait(10000);
+}";
 
         await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
         await VerifyFix(original, result);

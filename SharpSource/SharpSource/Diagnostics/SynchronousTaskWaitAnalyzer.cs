@@ -50,7 +50,10 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+        var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+        properties.Add("numberOfArguments", invocation.Arguments.Length.ToString());
+
+        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable()));
     }
 
     private static void AnalyzeLambda(OperationAnalysisContext context, IMethodSymbol[]? taskWaitSymbols)

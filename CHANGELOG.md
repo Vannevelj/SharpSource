@@ -5,6 +5,7 @@ https://keepachangelog.com/en/1.0.0/
 - `SynchronousTaskWait`: Now works for top-level statements
 - `SynchronousTaskWait`: Rewritten to use `IOperation`
 - `SynchronousTaskWait`: Preserves leading trivia when applying the code fix
+- `SynchronousTaskWait`: Doesn't offer a code fix when a timeout is passed to `Task.Wait(timeoutMs)`
 
 ## [1.17.1] - 2023-01-02
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed an issue where a `NullReferenceException` would be thrown
