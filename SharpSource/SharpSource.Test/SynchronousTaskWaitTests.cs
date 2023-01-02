@@ -375,4 +375,37 @@ async Task MyMethod()
         await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
         await VerifyFix(original, result);
     }
+
+    [TestMethod]
+    public async Task SynchronousTaskWait_LocalFunction()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+await MyMethod();
+
+async Task MyMethod()
+{
+    async Task InnerMethod() => Task.Delay(1).Wait();
+
+    await InnerMethod();
+}";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+await MyMethod();
+
+async Task MyMethod()
+{
+    async Task InnerMethod() => await Task.Delay(1);
+
+    await InnerMethod();
+}";
+
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
+    }
 }
