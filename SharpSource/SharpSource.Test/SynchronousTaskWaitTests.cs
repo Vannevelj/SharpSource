@@ -306,6 +306,8 @@ class Test
 using System;
 using System.Threading.Tasks;
 
+await MyMethod();
+
 async Task MyMethod()
 {
     Task.Delay(1).Wait();
@@ -314,6 +316,8 @@ async Task MyMethod()
         var result = @"
 using System;
 using System.Threading.Tasks;
+
+await MyMethod();
 
 async Task MyMethod()
 {
