@@ -83,7 +83,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
     {
         var negation = useNegation ? "!" : "";
         var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({firstArgument}, {secondArgument}, StringComparison.{stringComparison})");
-        var newRoot = root.ReplaceNode(expressionToReplace, newNode).AddUsingStatementIfMissing("System");
+        var newRoot = root.ReplaceNode(expressionToReplace, newNode.WithLeadingTrivia(firstArgument.GetLeadingTrivia())).AddUsingStatementIfMissing("System");
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }
