@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.1] - 2023-01-02
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed an issue where a `NullReferenceException` would be thrown
+
 ## [1.17.0] - 2023-01-01
 - `NewtonsoftMixedWithSystemTextJson`: An attempt is made to (de-)serialize an object which combines `System.Text.Json` and `Newtonsoft.Json`. Attributes from one won't be adhered to in the other and should not be mixed.
 
