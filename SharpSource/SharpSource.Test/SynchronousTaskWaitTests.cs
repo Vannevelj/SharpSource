@@ -267,7 +267,7 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task SynchronousTaskWait_PreservesTrivia()
+    public async Task SynchronousTaskWait_PreservesLeadingTrivia()
     {
         var original = @"
 using System;

@@ -48,7 +48,8 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
             return Task.FromResult(document);
         }
 
-        var newExpression = AwaitExpression(memberAccessExpression.Expression);
+        var leadingTrivia = memberAccessExpression.GetLeadingTrivia();
+        var newExpression = AwaitExpression(memberAccessExpression.Expression.WithoutLeadingTrivia()).WithLeadingTrivia(leadingTrivia);
         var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
         if (originalInvocation == default)
         {
