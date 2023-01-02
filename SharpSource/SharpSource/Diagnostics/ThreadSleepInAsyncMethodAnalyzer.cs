@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -27,54 +25,36 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
+        context.RegisterCompilationStartAction(context =>
+        {
+            var threadSleepSymbols = context.Compilation.GetTypeByMetadataName("System.Threading.Thread")?.GetMembers("Sleep").OfType<IMethodSymbol>().ToArray();
+
+            context.RegisterSymbolStartAction(symbolContext =>
+            {
+                var method = (IMethodSymbol)symbolContext.Symbol;
+                var isAsync = method.IsAsync || method.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
+                if (isAsync || method.ReturnType.IsTaskType())
+                {
+                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols, isAsync), OperationKind.Invocation);
+                }
+            }, SymbolKind.Method);
+        });
     }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? threadSleepSymbols, bool isAsync)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-        var isAccessingThreadDotSleep = invocation.Expression switch
-        {
-            MemberAccessExpressionSyntax memberAccess => IsAccessingThreadDotSleep(memberAccess.Name, context),
-            IdentifierNameSyntax identifierName => IsAccessingThreadDotSleep(identifierName, context),
-            _ => false,
-        };
-
-        if (!isAccessingThreadDotSleep)
+        if (!threadSleepSymbols.Any(symbol => invocation.TargetMethod.Equals(symbol, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
-        var (found, returnType, modifiers) = context.Node.FirstAncestorOrSelfOfType(
-            SyntaxKind.MethodDeclaration,
-            SyntaxKind.LocalFunctionStatement,
-            SyntaxKind.ParenthesizedLambdaExpression) switch
-        {
-            MethodDeclarationSyntax method => (true, method.ReturnType, method.Modifiers),
-            LocalFunctionStatementSyntax local => (true, local.ReturnType, local.Modifiers),
-            _ => (false, default, default)
-        };
-
-        if (!found || returnType == default)
+        if (invocation.Ancestors().Any(a => a is IAnonymousFunctionOperation { Symbol.IsAsync: false }))
         {
             return;
         }
 
-        var isAsync = modifiers.Any(SyntaxKind.AsyncKeyword);
-        var returnTypeInfo = context.SemanticModel.GetTypeInfo(returnType);
-        var hasTaskReturnType = returnTypeInfo.Type?.IsTaskType();
-
-        if (isAsync || hasTaskReturnType == true)
-        {
-            var dic = ImmutableDictionary.CreateBuilder<string, string?>();
-            dic.Add("isAsync", isAsync.ToString());
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), dic.ToImmutable(), null));
-        }
-    }
-
-    private static bool IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
-    {
-        var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
-        return invokedSymbol is { ContainingType.Name: "Thread", Name: "Sleep" };
+        var dic = ImmutableDictionary.CreateBuilder<string, string?>();
+        dic.Add("isAsync", isAsync.ToString());
+        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), dic.ToImmutable()));
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SharpSource.Utilities;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -23,39 +24,34 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var synchronousWaitMethod = root?.FindToken(diagnosticSpan.Start)
-            .Parent?
-            .AncestorsAndSelf()
-            .OfType<MemberAccessExpressionSyntax>()
-            .SingleOrDefault(x => x.Name.Identifier.ValueText == "Wait");
 
-        if (root == default || synchronousWaitMethod == default)
+        var synchronousWaitMethod = root?.FindNode(diagnosticSpan, getInnermostNodeForTie: true) as InvocationExpressionSyntax;
+        var memberAccessExpression = synchronousWaitMethod?.DescendantNodesAndSelfOfType(SyntaxKind.SimpleMemberAccessExpression).FirstOrDefault() as MemberAccessExpressionSyntax;
+
+        // If arguments are passed in then we don't want to offer a code fix as there is no straight way to include that functionality.
+        if (diagnostic.Properties.TryGetValue("numberOfArguments", out var numberOfArguments) && numberOfArguments != "0")
+        {
+            return;
+        }
+
+        if (root == default || synchronousWaitMethod == default || memberAccessExpression == default)
         {
             return;
         }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use await",
-                x => UseAwait(context.Document, synchronousWaitMethod, root),
+                x => UseAwait(context.Document, synchronousWaitMethod, memberAccessExpression, root),
                 SynchronousTaskWaitAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private static Task<Document> UseAwait(Document document, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root)
+    private static Task<Document> UseAwait(Document document, InvocationExpressionSyntax invocationExpression, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode root)
     {
-        if (memberAccessExpression == null)
-        {
-            return Task.FromResult(document);
-        }
+        var leadingTrivia = memberAccessExpression.GetLeadingTrivia();
+        var newExpression = AwaitExpression(memberAccessExpression.Expression.WithoutLeadingTrivia()).WithLeadingTrivia(leadingTrivia);
 
-        var newExpression = AwaitExpression(memberAccessExpression.Expression);
-        var originalInvocation = memberAccessExpression.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-        if (originalInvocation == default)
-        {
-            return Task.FromResult(document);
-        }
-
-        var newRoot = root.ReplaceNode(originalInvocation, newExpression);
+        var newRoot = root.ReplaceNode(invocationExpression, newExpression);
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

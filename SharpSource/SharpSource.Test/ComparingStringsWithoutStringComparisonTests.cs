@@ -489,4 +489,29 @@ bool result = string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);";
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/256")]
+    public async Task ComparingStringsWithoutStringComparison_PreservesTrivia()
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = // Compare the two
+    s1.ToLower() == s2.ToLower();";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = // Compare the two
+    string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
 }

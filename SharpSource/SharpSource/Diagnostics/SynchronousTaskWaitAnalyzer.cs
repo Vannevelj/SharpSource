@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -27,44 +25,33 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.SimpleMemberAccessExpression);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var taskWaitSymbols = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")?.GetMembers("Wait").OfType<IMethodSymbol>().ToArray();
+
+            compilationContext.RegisterSymbolStartAction(symbolContext =>
+            {
+                var method = (IMethodSymbol)symbolContext.Symbol;
+                var isAsync = method.IsAsync || method.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
+                if (isAsync || method.ReturnType.IsTaskType())
+                {
+                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, taskWaitSymbols), OperationKind.Invocation);
+                }
+            }, SymbolKind.Method);
+        });
     }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? taskWaitSymbols)
     {
-        var memberAccess = (MemberAccessExpressionSyntax)context.Node;
-
-        var invokedSymbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol;
-        if (invokedSymbol == null)
+        if (taskWaitSymbols is null || !taskWaitSymbols.Any(s => invocation.TargetMethod.Equals(s, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
-        var enclosingLambda = memberAccess.FirstAncestorOrSelf<LambdaExpressionSyntax>();
-        if (enclosingLambda != null)
-        {
-            if (enclosingLambda.AsyncKeyword == default)
-            {
-                return;
-            }
-        }
-        else
-        {
-            var enclosingMethod = memberAccess.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-            if (enclosingMethod == null)
-            {
-                return;
-            }
+        var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+        properties.Add("numberOfArguments", invocation.Arguments.Length.ToString());
 
-            if (!enclosingMethod.Modifiers.Any(SyntaxKind.AsyncKeyword))
-            {
-                return;
-            }
-        }
-
-        if (invokedSymbol.Name == "Wait" && invokedSymbol.ContainingType?.Name == "Task")
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, memberAccess.GetLocation()));
-        }
+        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable()));
     }
 }
