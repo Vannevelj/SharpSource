@@ -100,7 +100,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         if (!isTestClass)
         {
             return;
-        }        
+        }
 
         context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
     }
