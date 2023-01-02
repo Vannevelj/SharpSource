@@ -32,13 +32,12 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
 
             compilationContext.RegisterSymbolStartAction(symbolContext =>
             {
-                var symbol = (IMethodSymbol)symbolContext.Symbol;
-                if (symbol is { IsAsync: true } or { Name: WellKnownMemberNames.TopLevelStatementsEntryPointMethodName })
+                var method = (IMethodSymbol)symbolContext.Symbol;
+                var isAsync = method.IsAsync || method.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
+                if (isAsync || method.ReturnType.IsTaskType())
                 {
                     symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, taskWaitSymbols), OperationKind.Invocation);
                 }
-
-                symbolContext.RegisterOperationAction(context => AnalyzeLambda(context, taskWaitSymbols), OperationKind.AnonymousFunction);
             }, SymbolKind.Method);
         });
     }
@@ -54,19 +53,5 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
         properties.Add("numberOfArguments", invocation.Arguments.Length.ToString());
 
         context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable()));
-    }
-
-    private static void AnalyzeLambda(OperationAnalysisContext context, IMethodSymbol[]? taskWaitSymbols)
-    {
-        var lambda = (IAnonymousFunctionOperation)context.Operation;
-        if (!lambda.Symbol.IsAsync)
-        {
-            return;
-        }
-
-        foreach (var invocation in lambda.Descendants().OfType<IInvocationOperation>())
-        {
-            Analyze(context, invocation, taskWaitSymbols);
-        }
     }
 }

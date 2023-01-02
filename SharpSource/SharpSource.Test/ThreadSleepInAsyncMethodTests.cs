@@ -575,6 +575,75 @@ async Task MyMethod() {
     }
 
     [TestMethod]
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_LambdaAsync_InClass()
+    {
+        var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{
+    async Task MyMethod() {
+	    Action lambda = async () => Thread.Sleep(32);
+	    lambda();
+    }
+}
+";
+
+        var result = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{
+    async Task MyMethod() {
+	    Action lambda = async () => await Task.Delay(32);
+	    lambda();
+    }
+}
+";
+
+        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/268")]
+    public async Task ThreadSleepInAsyncMethod_AsyncLambda_AsAnonymousFunction()
+    {
+        var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+	    Action MyMethod() => new Action(async () => Thread.Sleep(32));
+    }
+}";
+
+        var result = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+	    Action MyMethod() => new Action(async () => await Task.Delay(32));
+    }
+}";
+
+        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
     public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_Timespan()
     {
         var original = @"

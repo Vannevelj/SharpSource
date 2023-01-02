@@ -37,7 +37,6 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
                 {
                     symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols, isAsync), OperationKind.Invocation);
                 }
-
             }, SymbolKind.Method);
         });
     }
