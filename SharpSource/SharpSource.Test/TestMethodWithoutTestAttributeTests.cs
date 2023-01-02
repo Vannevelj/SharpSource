@@ -211,7 +211,7 @@ namespace ConsoleApplication1
     [DataRow("record")]
     [DataRow("record class")]
     [DataRow("record struct")]
-    public async Task TestMethodWithoutTestAttribute_RecordAsync(string record)
+    public async Task TestMethodWithoutTestAttribute_Record(string record)
     {
         var original = $@"
 {record} Test
@@ -233,6 +233,47 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Test : IDisposable
 {
     public void Dispose() { }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/255")]
+    public async Task TestMethodWithoutTestAttribute_LifetimeHooks()
+    {
+        var original = @"
+using Xunit;
+using System.Threading.Tasks;
+
+public class MyClass : IAsyncLifetime
+{
+    public async Task InitializeAsync()
+    {
+    }
+
+    public async Task DisposeAsync() { }
+
+    [Fact]
+    public void MyOtherMethod()
+    {
+    }
+}";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_Struct()
+    {
+        var original = @"
+using Xunit;
+
+struct MyClass
+{
+    [Fact]
+    public void MyMethod()
+    {
+    }
 }";
 
         await VerifyDiagnostic(original);

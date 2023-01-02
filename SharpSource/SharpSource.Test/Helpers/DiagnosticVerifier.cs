@@ -46,6 +46,7 @@ public abstract class DiagnosticVerifier
     private static readonly MetadataReference SystemTextJsonReference = MetadataReference.CreateFromFile(typeof(System.Text.Json.JsonSerializer).Assembly.Location);
     private static readonly MetadataReference NewtonsoftJsonReference = MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonSerializer).Assembly.Location);
     private static readonly MetadataReference HttpClientFactoryReference = MetadataReference.CreateFromFile(typeof(IHttpClientFactory).Assembly.Location);
+    private static readonly MetadataReference SystemThreadingTasksReference = MetadataReference.CreateFromFile(GetDllDirectory("System.Threading.Tasks.dll"));
 
     private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath) ?? "", dllName);
 
@@ -357,7 +358,8 @@ public abstract class DiagnosticVerifier
             ImmutableReference,
             SystemTextJsonReference,
             NewtonsoftJsonReference,
-            HttpClientFactoryReference
+            HttpClientFactoryReference,
+            SystemThreadingTasksReference
         };
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.WindowsApplication).WithAllowUnsafe(true);
