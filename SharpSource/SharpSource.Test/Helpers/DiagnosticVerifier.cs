@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,6 +45,8 @@ public abstract class DiagnosticVerifier
     private static readonly MetadataReference ImmutableReference = MetadataReference.CreateFromFile(typeof(ImmutableHashSet).Assembly.Location);
     private static readonly MetadataReference SystemTextJsonReference = MetadataReference.CreateFromFile(typeof(System.Text.Json.JsonSerializer).Assembly.Location);
     private static readonly MetadataReference NewtonsoftJsonReference = MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonSerializer).Assembly.Location);
+    private static readonly MetadataReference HttpClientFactoryReference = MetadataReference.CreateFromFile(typeof(IHttpClientFactory).Assembly.Location);
+    private static readonly MetadataReference SystemThreadingTasksReference = MetadataReference.CreateFromFile(GetDllDirectory("System.Threading.Tasks.dll"));
 
     private static string GetDllDirectory(string dllName) => Path.Combine(Path.GetDirectoryName(SystemPrivateCoreLibPath) ?? "", dllName);
 
@@ -354,7 +357,9 @@ public abstract class DiagnosticVerifier
             NunitReference,
             ImmutableReference,
             SystemTextJsonReference,
-            NewtonsoftJsonReference
+            NewtonsoftJsonReference,
+            HttpClientFactoryReference,
+            SystemThreadingTasksReference
         };
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.WindowsApplication).WithAllowUnsafe(true);

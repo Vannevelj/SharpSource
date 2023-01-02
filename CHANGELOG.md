@@ -1,6 +1,15 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.1] - 2023-01-02
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed an issue where a `NullReferenceException` would be thrown
+- `HttpClientInstantiatedDirectly`: Only triggers if a reference to `Microsoft.Extensions.Http` exists and `IHttpClientFactory` is within scope
+- `AsyncMethodWithVoidReturnType`: Does not trigger for `interface` and `abstract class` implementations
+- `TestMethodWithoutTestAttribute`: Now excludes lifetime hooks such as `Xunit.IAsyncLifetime`
+- `TestMethodWithoutTestAttribute`: No longer incorrectly triggers for `[Fact]` attributes inside a `struct`
+- `TestMethodWithoutTestAttribute`: Also accepts test methods that return `ValueTask` and `ValueTask<T>`
+- `TestMethodWithoutTestAttribute`: Rewritten to use `ISymbol`
+
 ## [1.17.0] - 2023-01-01
 - `NewtonsoftMixedWithSystemTextJson`: An attempt is made to (de-)serialize an object which combines `System.Text.Json` and `Newtonsoft.Json`. Attributes from one won't be adhered to in the other and should not be mixed.
 

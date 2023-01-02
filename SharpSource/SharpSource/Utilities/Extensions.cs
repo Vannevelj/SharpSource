@@ -214,4 +214,10 @@ public static class Extensions
             yield return operation;
         }
     }
+
+    public static bool IsInterfaceImplementation(this IMethodSymbol method)
+        => method.ContainingType
+                 .AllInterfaces
+                 .SelectMany(@interface => @interface.GetMembers().OfType<IMethodSymbol>())
+                 .Any(interfaceMethod => method.ContainingType.FindImplementationForInterfaceMember(interfaceMethod)?.Equals(method, SymbolEqualityComparer.Default) == true);
 }

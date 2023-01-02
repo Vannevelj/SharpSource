@@ -28,7 +28,8 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var httpClientSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Net.Http.HttpClient");
-            if (httpClientSymbol is not null)
+            var httpClientFactorySymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Net.Http.IHttpClientFactory");
+            if (httpClientSymbol is not null && httpClientFactorySymbol is not null)
             {
                 compilationContext.RegisterOperationAction(context => AnalyzeCreation(context, httpClientSymbol), OperationKind.ObjectCreation);
             }

@@ -1,8 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
@@ -27,80 +25,74 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var testClassAttributeSymbols = ImmutableArray.Create(
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestFixtureAttribute")
+            );
+
+            var testMethodAttributeSymbols = ImmutableArray.Create(
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute")
+            );
+
+            var taskTypes = ImmutableArray.Create(
+                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task"),
+                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1"),
+                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask"),
+                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask`1")
+            );
+
+            compilationContext.RegisterSymbolAction(context => Analyze(context, testClassAttributeSymbols, testMethodAttributeSymbols, taskTypes), SymbolKind.Method);
+        });
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> taskTypes)
     {
-        var method = (MethodDeclarationSyntax)context.Node;
-
-        if (!method.Modifiers.Any(SyntaxKind.PublicKeyword))
+        var method = (IMethodSymbol)context.Symbol;
+        if (method.DeclaredAccessibility != Accessibility.Public)
         {
             return;
         }
 
-        // Don't trigger this for IDisposable implementations
-        if (method is { Identifier.ValueText: "Dispose", ParameterList.Parameters.Count: 0 })
+        // Don't trigger this for IDisposable implementations or lifetime hooks
+        if (method.IsInterfaceImplementation())
         {
             return;
         }
 
         // Check if we're in a unit-test context
-        // For NUnit and MSTest we can see if the enclosing class/struct has a [TestClass] or [TestFixture] attribute
+        // For NUnit and MSTest we can see if the enclosing class has a [TestClass] or [TestFixture] attribute
         // For xUnit.NET we will have to see if there are other methods in the current class that contain a [Fact] attribute
-
-        var enclosingType = method.GetEnclosingTypeNode();
-        if (!enclosingType.IsKind(SyntaxKind.ClassDeclaration) && !enclosingType.IsKind(SyntaxKind.StructDeclaration))
+        if (method.ContainingType.TypeKind is not TypeKind.Class)
         {
             return;
-        }
-
-        if (context.SemanticModel.GetDeclaredSymbol(enclosingType) is not INamedTypeSymbol symbol)
-        {
-            return;
-        }
-
-        var isTestClass = false;
-        foreach (var attribute in symbol.GetAttributes())
-        {
-            if (attribute?.AttributeClass == default)
-            {
-                continue;
-            }
-
-            if (attribute.AttributeClass.Name == "TestClass" ||
-                attribute.AttributeClass.Name == "TestClassAttribute" ||
-                attribute.AttributeClass.Name == "TestFixture" ||
-                attribute.AttributeClass.Name == "TestFixtureAttribute")
-            {
-                isTestClass = true;
-                break;
-            }
         }
 
         // If it has different attributes then we won't bother with it either
-        if (method.AttributeLists.SelectMany(x => x.Attributes).Any())
+        if (method.GetAttributes().Any())
         {
             return;
         }
 
+        if (method.ReturnType is not { SpecialType: SpecialType.System_Void } && !taskTypes.Any(taskType => method.ReturnType.OriginalDefinition.Equals(taskType, SymbolEqualityComparer.Default)))
+        {
+            return;
+        }
+
+        var isTestClass = method.ContainingType.GetAttributes().Any(a => testClassAttributeSymbols.Any(testClassAttribute => a.AttributeClass?.Equals(testClassAttribute, SymbolEqualityComparer.Default) == true));
         if (!isTestClass)
         {
             // Look at other methods in the class to see if they have a test attribute
             // We do this only for xUnit.NET because the others should already have been caught with the previous test
             // If they weren't, it means the entire class wasn't marked as a test which is not in the scope of this analyzer
-
-            foreach (var member in enclosingType.DescendantNodes().OfType<MethodDeclarationSyntax>(SyntaxKind.MethodDeclaration))
+            foreach (var member in method.ContainingType.GetMembers().OfType<IMethodSymbol>())
             {
-                foreach (var attributeList in member.AttributeLists)
+                if (member.GetAttributes().Any(a => testMethodAttributeSymbols.Any(testMethodAttribute => a.AttributeClass?.Equals(testMethodAttribute, SymbolEqualityComparer.Default) == true)))
                 {
-                    foreach (var attribute in attributeList.Attributes)
-                    {
-                        if (attribute.Name.ToString() == "Fact" || attribute.Name.ToString() == "Theory")
-                        {
-                            isTestClass = true;
-                        }
-                    }
+                    isTestClass = true;
+                    break;
                 }
             }
         }
@@ -110,18 +102,6 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var returnType = context.SemanticModel.GetTypeInfo(method.ReturnType).Type;
-        var voidType = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Void);
-        var taskType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
-        var taskTType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
-        if (returnType != default && !(
-            returnType.Equals(voidType, SymbolEqualityComparer.Default) ||
-            returnType.Equals(taskType, SymbolEqualityComparer.Default) ||
-            returnType.OriginalDefinition.Equals(taskTType, SymbolEqualityComparer.Default) ))
-        {
-            return;
-        }
-
-        context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
     }
 }

@@ -52,7 +52,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
             var lookupWithMethodSymbols =
                 from lookup in SupportedLookups
                 let typeSymbol = compilationContext.Compilation.GetTypeByMetadataName(lookup.type.FullName)
-                let methodSymbol = typeSymbol.GetMembers(lookup.method).OfType<IMethodSymbol>().FirstOrDefault()
+                let methodSymbol = typeSymbol?.GetMembers(lookup.method).OfType<IMethodSymbol>().FirstOrDefault()
                 where typeSymbol != null && methodSymbol != null
                 select (typeSymbol, methodSymbol);
 
