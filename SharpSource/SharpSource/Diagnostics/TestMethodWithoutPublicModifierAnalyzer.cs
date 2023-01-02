@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -24,10 +25,20 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var testMethodAttributeSymbols = ImmutableArray.Create(
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute")
+            );
+
+            compilationContext.RegisterSymbolAction(context => Analyze(context, testMethodAttributeSymbols), SymbolKind.Method);
+        });
     }
 
-    private static void AnalyzeMethod(SymbolAnalysisContext context)
+    private static void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols)
     {
         var method = (IMethodSymbol)context.Symbol;
 
@@ -42,7 +53,7 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
             var attributeType = attribute.AttributeClass;
             while (attributeType is not null)
             {
-                if (attributeType.Name is "TestAttribute" or "TestMethodAttribute" or "FactAttribute" or "TheoryAttribute")
+                if (testMethodAttributeSymbols.Any(symbol => attributeType.Equals(symbol, SymbolEqualityComparer.Default)))
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
                     return;
