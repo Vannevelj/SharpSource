@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.2] - 2023-01-02
+- `SynchronousTaskWait`: Now works for top-level statements
+- `SynchronousTaskWait`: Rewritten to use `IOperation`
+
 ## [1.17.1] - 2023-01-02
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed an issue where a `NullReferenceException` would be thrown
 - `HttpClientInstantiatedDirectly`: Only triggers if a reference to `Microsoft.Extensions.Http` exists and `IHttpClientFactory` is within scope
