@@ -265,4 +265,81 @@ namespace ConsoleApplication1
         await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
         await VerifyFix(original, result);
     }
+
+    [TestMethod]
+    public async Task SynchronousTaskWait_PreservesTrivia()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+class Test
+{
+    async Task MyMethod()
+    {
+        // Wait a bit
+        Task.Delay(1).Wait();
+    }
+}";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+class Test
+{
+    async Task MyMethod()
+    {
+        // Wait a bit
+        await Task.Delay(1);
+    }
+}";
+
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task SynchronousTaskWait_TopLevelMethod()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+async Task MyMethod()
+{
+    Task.Delay(1).Wait();
+}";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+async Task MyMethod()
+{
+    await Task.Delay(1);
+}";
+
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task SynchronousTaskWait_TopLevelStatement()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+Task.Delay(1).Wait();";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+await Task.Delay(1);";
+
+        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
+        await VerifyFix(original, result);
+    }
 }
