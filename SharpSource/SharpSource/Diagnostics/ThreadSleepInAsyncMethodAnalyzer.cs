@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -27,54 +25,67 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
+        context.RegisterCompilationStartAction(context =>
+        {
+            var threadSleepSymbols = context.Compilation.GetTypeByMetadataName("System.Threading.Thread")?.GetMembers("Sleep").OfType<IMethodSymbol>().ToArray();
+
+            context.RegisterSymbolStartAction(symbolContext =>
+            {
+                var method = (IMethodSymbol)symbolContext.Symbol;
+                if (( method.IsAsync || method.ReturnType.IsTaskType() ) && method.Name != WellKnownMemberNames.TopLevelStatementsEntryPointMethodName)
+                {
+                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols, method.IsAsync), OperationKind.Invocation);
+                }
+
+                symbolContext.RegisterOperationAction(context => AnalyzeLambda(context, threadSleepSymbols), OperationKind.AnonymousFunction);
+            }, SymbolKind.Method);
+
+            context.RegisterOperationAction(context => AnalyzeLocalFunction(context, threadSleepSymbols), OperationKind.LocalFunction);
+        });
     }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeLocalFunction(OperationAnalysisContext context, IMethodSymbol[]? threadSleepSymbols)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-        var isAccessingThreadDotSleep = invocation.Expression switch
+        var localFunction = (ILocalFunctionOperation)context.Operation;
+        if (localFunction.Symbol.IsAsync || localFunction.Symbol.ReturnType.IsTaskType())
         {
-            MemberAccessExpressionSyntax memberAccess => IsAccessingThreadDotSleep(memberAccess.Name, context),
-            IdentifierNameSyntax identifierName => IsAccessingThreadDotSleep(identifierName, context),
-            _ => false,
-        };
+            // An ugly approach to only take the operations that are part of the current block
+            // This way we avoid triggering the diagnostic multiple times when there are nested local functions
+            foreach (var invocation in localFunction.Descendants().Skip(1).TakeWhile(d => d is not IBlockOperation).OfType<IInvocationOperation>())
+            {
+                Analyze(context, invocation, threadSleepSymbols, localFunction.Symbol.IsAsync);
+            }
+        }
+    }
 
-        if (!isAccessingThreadDotSleep)
+    private static void AnalyzeLambda(OperationAnalysisContext context, IMethodSymbol[]? threadSleepSymbols)
+    {
+        var lambda = (IAnonymousFunctionOperation)context.Operation;
+        if (!lambda.Symbol.IsAsync)
         {
             return;
         }
 
-        var (found, returnType, modifiers) = context.Node.FirstAncestorOrSelfOfType(
-            SyntaxKind.MethodDeclaration,
-            SyntaxKind.LocalFunctionStatement,
-            SyntaxKind.ParenthesizedLambdaExpression) switch
+        foreach (var invocation in lambda.Descendants().OfType<IInvocationOperation>())
         {
-            MethodDeclarationSyntax method => (true, method.ReturnType, method.Modifiers),
-            LocalFunctionStatementSyntax local => (true, local.ReturnType, local.Modifiers),
-            _ => (false, default, default)
-        };
+            Analyze(context, invocation, threadSleepSymbols, lambda.Symbol.IsAsync);
+        }
+    }
 
-        if (!found || returnType == default)
+    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? threadSleepSymbols, bool isAsync)
+    {
+        if (!threadSleepSymbols.Any(symbol => invocation.TargetMethod.Equals(symbol, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
-        var isAsync = modifiers.Any(SyntaxKind.AsyncKeyword);
-        var returnTypeInfo = context.SemanticModel.GetTypeInfo(returnType);
-        var hasTaskReturnType = returnTypeInfo.Type?.IsTaskType();
-
-        if (isAsync || hasTaskReturnType == true)
+        if (invocation.Ancestors().Any(a => a is IAnonymousFunctionOperation { Symbol.IsAsync: false }))
         {
-            var dic = ImmutableDictionary.CreateBuilder<string, string?>();
-            dic.Add("isAsync", isAsync.ToString());
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), dic.ToImmutable(), null));
+            return;
         }
-    }
 
-    private static bool IsAccessingThreadDotSleep(SimpleNameSyntax invokedFunction, SyntaxNodeAnalysisContext context)
-    {
-        var invokedSymbol = context.SemanticModel.GetSymbolInfo(invokedFunction).Symbol;
-        return invokedSymbol is { ContainingType.Name: "Thread", Name: "Sleep" };
+        var dic = ImmutableDictionary.CreateBuilder<string, string?>();
+        dic.Add("isAsync", isAsync.ToString());
+        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), dic.ToImmutable()));
     }
 }

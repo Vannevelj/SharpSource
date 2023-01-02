@@ -7,6 +7,8 @@ https://keepachangelog.com/en/1.0.0/
 - `SynchronousTaskWait`: Preserves leading trivia when applying the code fix
 - `SynchronousTaskWait`: Doesn't offer a code fix when a timeout is passed to `Task.Wait(timeoutMs)`
 - `ComparingStringsWithoutStringComparison`: Preserves leading trivia when applying the code fix
+- `ThreadSleepInAsyncMethod`: Rewritten to use `IOperation`
+- `ThreadSleepInAsyncMethod`: Supports `async` lambdas
 
 ## [1.17.1] - 2023-01-02
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Fixed an issue where a `NullReferenceException` would be thrown

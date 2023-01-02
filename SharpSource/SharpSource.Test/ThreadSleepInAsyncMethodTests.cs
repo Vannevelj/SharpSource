@@ -544,4 +544,74 @@ async Task MyMethod() {
 
         await VerifyDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_LambdaAsync()
+    {
+        var original = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task MyMethod() {
+	Action lambda = async () => Thread.Sleep(32);
+	lambda();
+}
+";
+
+        var result = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task MyMethod() {
+	Action lambda = async () => await Task.Delay(32);
+	lambda();
+}
+";
+
+        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep_Timespan()
+    {
+        var original = @"
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        async Task MyMethod()
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(5));
+        }
+    }
+}";
+
+        var result = @"
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        async Task MyMethod()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+    }
+}";
+
+        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
+        await VerifyFix(original, result);
+    }
 }
