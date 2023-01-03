@@ -459,4 +459,48 @@ enum Foo
         await VerifyDiagnostic(original, "Enum Foo.Bop is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
         await VerifyFix(original, result);
     }
+
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/260")]
+    public async Task FlagsEnumValuesAreNotPowersOfTwo_FormatsCorrectly()
+    {
+        var original = @"
+using System;
+
+[Flags]
+enum Foo
+{
+    Bar = 0,
+
+    // Option 1
+    Biz = 1,
+
+    // Option 2
+    Baz = 2,
+
+    // Option 3
+    Buz = 3
+}";
+
+        var result = @"
+using System;
+
+[Flags]
+enum Foo
+{
+    Bar = 0,
+
+    // Option 1
+    Biz = 1,
+
+    // Option 2
+    Baz = 2,
+
+    // Option 3
+    Buz = Biz | Baz
+}";
+
+        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
+        await VerifyFix(original, result);
+    }
 }
