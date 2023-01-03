@@ -307,7 +307,7 @@ enum Foo
     }
 
     [TestMethod]
-    [Ignore("We need to support binary expressions on top of literals")]
+    [Ignore("We need to support binary expressions on top of literals. See https://github.com/Vannevelj/SharpSource/issues/271")]
     public async Task FlagsEnumValuesAreNotPowersOfTwo_BinaryExpressions()
     {
         var original = @"
