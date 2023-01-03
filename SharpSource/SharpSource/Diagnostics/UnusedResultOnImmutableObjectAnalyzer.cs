@@ -26,7 +26,7 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        
+
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var stringSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_String);
