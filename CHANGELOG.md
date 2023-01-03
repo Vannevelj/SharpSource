@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.17.3] - 2023-01-03
 - `FlagsEnumValuesAreNotPowersOfTwo`: Code fix now formats correctly and doesn't copy comments
+- `HttpContextStoredInField`: Only triggers if a reference to `Microsoft.AspNetCore.Http.IHttpContextAccessor` exists
 
 ## [1.17.2] - 2023-01-02
 - `SynchronousTaskWait`: Now works for top-level statements
