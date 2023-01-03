@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -148,5 +150,16 @@ public static class Extensions
         }
 
         return default;
+    }
+
+    public static async ValueTask<SyntaxNode> GetRequiredSyntaxRootAsync(this Document document, CancellationToken cancellationToken)
+    {
+        if (document.TryGetSyntaxRoot(out var root))
+        {
+            return root;
+        }
+
+        root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+        return root ?? throw new InvalidOperationException($"Unable to find a syntax root for document {document.Name}");
     }
 }

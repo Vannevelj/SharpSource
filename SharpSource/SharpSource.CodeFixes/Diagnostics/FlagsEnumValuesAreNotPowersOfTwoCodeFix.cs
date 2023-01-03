@@ -22,12 +22,12 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var enumMember = root?.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
+        var enumMember = root.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
         var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
-        if (root == default || enumMember == default || semanticModel == default)
+        if (enumMember == default || semanticModel == default)
         {
             return;
         }
