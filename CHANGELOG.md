@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.3] - 2023-01-03
+- 
+
 ## [1.17.2] - 2023-01-02
 - `SynchronousTaskWait`: Now works for top-level statements
 - `SynchronousTaskWait`: Rewritten to use `IOperation`
