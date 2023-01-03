@@ -254,4 +254,14 @@ static class Extensions
 
         await VerifyDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task UnusedResultOnImmutableObjectTests_TopLevelStatement()
+    {
+        var original = $@"
+""test"".Trim();
+";
+
+        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+    }
 }
