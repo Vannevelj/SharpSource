@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -12,8 +11,6 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly HashSet<string> AllowedInvocations = new() { "CopyTo", "TryCopyTo" };
-
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.UnusedResultOnImmutableObject,
         "The result of an operation on an immutable object is unused",
@@ -29,38 +26,37 @@ public class UnusedResultOnImmutableObjectAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var stringSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_String);
+            var allowedInvocations = stringSymbol.GetMembers("CopyTo").Concat(stringSymbol.GetMembers("TryCopyTo")).OfType<IMethodSymbol>().ToArray();
+
+            compilationContext.RegisterOperationAction(context => Analyze(context, allowedInvocations), OperationKind.Invocation);
+        });
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, IMethodSymbol[] allowedInvocations)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
+        var invocation = (IInvocationOperation)context.Operation;
+        if (invocation.Instance?.Type?.SpecialType is not SpecialType.System_String)
         {
             return;
         }
 
-        var typeBeingAccessed = context.SemanticModel.GetTypeInfo(memberAccess.Expression).Type;
-        if (typeBeingAccessed == null || typeBeingAccessed.SpecialType != SpecialType.System_String)
+        if (allowedInvocations.Any(i => i.Equals(invocation.TargetMethod, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
-        if (AllowedInvocations.Contains(memberAccess.Name.Identifier.ValueText))
+        if (invocation.TargetMethod.IsExtensionMethod && !invocation.TargetMethod.IsDefinedInSystemAssembly())
         {
             return;
         }
 
-        if (context.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol is not IMethodSymbol methodBeingInvoked ||
-           ( methodBeingInvoked.IsExtensionMethod && !methodBeingInvoked.IsDefinedInSystemAssembly() ))
+        if (invocation.Parent is IExpressionStatementOperation expressionStatement && expressionStatement.Parent is IBlockOperation)
         {
-            return;
-        }
-
-        if (invocation.Parent is ExpressionStatementSyntax expressionStatement &&
-            expressionStatement.Parent is BlockSyntax or GlobalStatementSyntax)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
         }
     }
 }

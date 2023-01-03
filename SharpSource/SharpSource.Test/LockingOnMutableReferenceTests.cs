@@ -20,26 +20,26 @@ public class LockingOnMutableReferenceTests : DiagnosticVerifier
         var original = @"
 class Test
 {
-    private object _lock = new object();
+    private object _someLock = new object();
 
     void M()
     {
-        lock(_lock) { }
+        lock(_someLock) { }
     }
 }";
 
         var expected = @"
 class Test
 {
-    private readonly object _lock = new object();
+    private readonly object _someLock = new object();
 
     void M()
     {
-        lock(_lock) { }
+        lock(_someLock) { }
     }
 }";
 
-        await VerifyDiagnostic(original, "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
+        await VerifyDiagnostic(original, "A lock was obtained on _someLock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
         await VerifyFix(original, expected);
     }
 

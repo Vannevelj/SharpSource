@@ -30,7 +30,7 @@ class MyController
     }
 
     [TestMethod]
-    [Ignore("Minimal Web API is not supported yet")]
+    [Ignore("Minimal Web API is not supported yet. See https://github.com/Vannevelj/SharpSource/issues/140")]
     [DataRow("[FromBody]")]
     [DataRow("[FromBodyAttribute]")]
     [DataRow("[Microsoft.AspNetCore.Mvc.FromBody]")]

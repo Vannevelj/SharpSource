@@ -22,16 +22,16 @@ public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var taskResultExpression = root?.FindToken(diagnosticSpan.Start)
+        var taskResultExpression = root.FindToken(diagnosticSpan.Start)
             .Parent?
             .AncestorsAndSelf()
             .OfType<MemberAccessExpressionSyntax>()
             .SingleOrDefault(x => x.Name.Identifier.ValueText == "Result");
 
-        if (root == default || taskResultExpression == default)
+        if (taskResultExpression == default)
         {
             return;
         }

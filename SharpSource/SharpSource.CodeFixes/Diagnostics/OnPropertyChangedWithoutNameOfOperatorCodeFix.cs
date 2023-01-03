@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
+using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
 
@@ -18,13 +19,8 @@ public class OnPropertyChangedWithoutNameOfOperatorCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
-
-        if (root == default)
-        {
-            return;
-        }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use nameof()",

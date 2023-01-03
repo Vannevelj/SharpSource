@@ -27,7 +27,8 @@ public class HttpContextStoredInFieldAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var httpContextSymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Http.HttpContext");
-            if (httpContextSymbol is not null)
+            var httpContextAccessorSymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Http.IHttpContextAccessor");
+            if (httpContextSymbol is not null && httpContextAccessorSymbol is not null)
             {
                 compilationContext.RegisterSymbolAction(context => AnalyzeCreation(context, httpContextSymbol), SymbolKind.Field);
             }

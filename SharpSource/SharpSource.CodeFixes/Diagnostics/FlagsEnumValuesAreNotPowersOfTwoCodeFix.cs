@@ -22,12 +22,12 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var enumMember = root?.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
+        var enumMember = root.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
         var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
-        if (root == default || enumMember == default || semanticModel == default)
+        if (enumMember == default || semanticModel == default)
         {
             return;
         }
@@ -85,7 +85,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
 
     private static Task<Document> UseBitwiseExpression(Document document, SyntaxNode root, EnumMemberDeclarationSyntax enumMember, SyntaxToken firstIdentifier, SyntaxToken secondIdentifier)
     {
-        var newValue = SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseOrExpression, SyntaxFactory.IdentifierName(firstIdentifier), SyntaxFactory.IdentifierName(secondIdentifier));
+        var newValue = SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseOrExpression, SyntaxFactory.IdentifierName(firstIdentifier.WithoutTrivia()), SyntaxFactory.IdentifierName(secondIdentifier.WithoutTrivia()));
         var newMember = enumMember.WithEqualsValue(SyntaxFactory.EqualsValueClause(newValue)).WithAdditionalAnnotations(Formatter.Annotation);
         var newRoot = root.ReplaceNode(enumMember, newMember);
         var newDocument = document.WithSyntaxRoot(newRoot);

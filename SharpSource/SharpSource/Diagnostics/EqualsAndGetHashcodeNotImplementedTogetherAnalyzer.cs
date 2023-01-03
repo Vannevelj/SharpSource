@@ -26,47 +26,47 @@ public sealed class EqualsAndGetHashcodeNotImplementedTogetherAnalyzer : Diagnos
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
         context.RegisterCompilationStartAction(context =>
-    {
-        var objectSymbol = context.Compilation.GetSpecialType(SpecialType.System_Object);
-        var objectEquals = objectSymbol.GetMembers(nameof(Equals)).OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.Length == 1);
-        var objectGetHashCode = objectSymbol.GetMembers(nameof(GetHashCode)).OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.IsEmpty);
-
-        context.RegisterSymbolAction(context =>
         {
-            var classSymbol = (INamedTypeSymbol)context.Symbol;
-            if (classSymbol.TypeKind != TypeKind.Class)
-            {
-                return;
-            }
+            var objectSymbol = context.Compilation.GetSpecialType(SpecialType.System_Object);
+            var objectEquals = objectSymbol.GetMembers(nameof(Equals)).OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.Length == 1);
+            var objectGetHashCode = objectSymbol.GetMembers(nameof(GetHashCode)).OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.IsEmpty);
 
-            var equalsImplemented = false;
-            var getHashcodeImplemented = false;
-
-            foreach (var node in classSymbol.GetMembers())
+            context.RegisterSymbolAction(context =>
             {
-                if (node is not IMethodSymbol method)
+                var classSymbol = (INamedTypeSymbol)context.Symbol;
+                if (classSymbol.TypeKind != TypeKind.Class)
                 {
-                    continue;
+                    return;
                 }
 
-                method = method.GetBaseDefinition();
+                var equalsImplemented = false;
+                var getHashcodeImplemented = false;
 
-                if (method.Equals(objectEquals, SymbolEqualityComparer.Default))
+                foreach (var node in classSymbol.GetMembers())
                 {
-                    equalsImplemented = true;
-                }
-                else if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
-                {
-                    getHashcodeImplemented = true;
-                }
-            }
+                    if (node is not IMethodSymbol method)
+                    {
+                        continue;
+                    }
 
-            if (equalsImplemented ^ getHashcodeImplemented)
-            {
-                var properties = ImmutableDictionary<string, string?>.Empty.Add("IsEqualsImplemented", equalsImplemented.ToString());
-                context.ReportDiagnostic(Diagnostic.Create(Rule, classSymbol.Locations[0], properties, classSymbol.Name));
-            }
-        }, SymbolKind.NamedType);
-    });
+                    method = method.GetBaseDefinition();
+
+                    if (method.Equals(objectEquals, SymbolEqualityComparer.Default))
+                    {
+                        equalsImplemented = true;
+                    }
+                    else if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default))
+                    {
+                        getHashcodeImplemented = true;
+                    }
+                }
+
+                if (equalsImplemented ^ getHashcodeImplemented)
+                {
+                    var properties = ImmutableDictionary<string, string?>.Empty.Add("IsEqualsImplemented", equalsImplemented.ToString());
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, classSymbol.Locations[0], properties, classSymbol.Name));
+                }
+            }, SymbolKind.NamedType);
+        });
     }
 }

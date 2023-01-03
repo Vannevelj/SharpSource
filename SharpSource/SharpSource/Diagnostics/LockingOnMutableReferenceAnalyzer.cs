@@ -12,7 +12,7 @@ public sealed class LockingOnMutableReferenceAnalyzer : DiagnosticAnalyzer
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.LockingOnMutableReference,
         "A lock was obtained on a mutable field which can lead to deadlocks when a new value is assigned. Mark the field as readonly to prevent re-assignment after a lock is taken.",
-        "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.",
+        "A lock was obtained on {0} but the field is mutable. This can lead to deadlocks when a new value is assigned.",
         Categories.Correctness,
         DiagnosticSeverity.Warning,
         true,

@@ -21,11 +21,11 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var synchronousWaitMethod = root?.FindNode(diagnosticSpan, getInnermostNodeForTie: true) as InvocationExpressionSyntax;
+        var synchronousWaitMethod = root.FindNode(diagnosticSpan, getInnermostNodeForTie: true) as InvocationExpressionSyntax;
         var memberAccessExpression = synchronousWaitMethod?.DescendantNodesAndSelfOfType(SyntaxKind.SimpleMemberAccessExpression).FirstOrDefault() as MemberAccessExpressionSyntax;
 
         // If arguments are passed in then we don't want to offer a code fix as there is no straight way to include that functionality.
@@ -34,7 +34,7 @@ public class SynchronousTaskWaitCodeFix : CodeFixProvider
             return;
         }
 
-        if (root == default || synchronousWaitMethod == default || memberAccessExpression == default)
+        if (synchronousWaitMethod == default || memberAccessExpression == default)
         {
             return;
         }
