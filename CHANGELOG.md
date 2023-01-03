@@ -6,6 +6,7 @@ https://keepachangelog.com/en/1.0.0/
 - `HttpContextStoredInField`: Only triggers if a reference to `Microsoft.AspNetCore.Http.IHttpContextAccessor` exists
 - `LockingOnMutableReference`: Now includes the name of the field in the error message
 - Simplified `GetSyntaxRootAsync` calls in code fixes
+- `UnusedResultOnImmutableObject`: Now uses `IOperation`
 
 ## [1.17.2] - 2023-01-02
 - `SynchronousTaskWait`: Now works for top-level statements
