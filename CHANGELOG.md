@@ -3,6 +3,9 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.17.4] - 2023-01-04
 - `AsyncOverloadsAvailable`: In a chain of method calls, the code fix no longer replaces the wrong invocation
+- `ComparingStringsWithoutStringComparison`: No longer triggers when a culture is passed to `.ToLower()` or `.ToUpper()`
+- `ComparingStringsWithoutStringComparison`: Chained method invocations are now supported
+- `ComparingStringsWithoutStringComparison`: Rewritten to use `IOperation`
 
 ## [1.17.3] - 2023-01-03
 - `FlagsEnumValuesAreNotPowersOfTwo`: Code fix now formats correctly and doesn't copy comments
