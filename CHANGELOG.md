@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.4] - 2023-01-04
+- `AsyncOverloadsAvailable`: In a chain of method calls, the code fix no longer replaces the wrong invocation
+
 ## [1.17.3] - 2023-01-03
 - `FlagsEnumValuesAreNotPowersOfTwo`: Code fix now formats correctly and doesn't copy comments
 - `HttpContextStoredInField`: Only triggers if a reference to `Microsoft.AspNetCore.Http.IHttpContextAccessor` exists
