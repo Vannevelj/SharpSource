@@ -65,7 +65,7 @@ public static class Extensions
         // s1?.ToLower()
         if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
         {
-            var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+            var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Where(x => x.ArgumentList.Arguments.Count == 0).FirstOrDefault();
             var firstInvocation = fullInvocation?.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
             if (firstInvocation == default || fullInvocation == default)
             {
@@ -77,7 +77,7 @@ public static class Extensions
             return conditionalAccess.WithWhenNotNull(fullInvocation.WithExpression(updateName(subExpression, nextInvocation)));
         }
 
-        foreach (InvocationExpressionSyntax nestedInvocation in invocationOrConditionalAccess.DescendantNodesAndSelfOfType(SyntaxKind.InvocationExpression))
+        foreach (var nestedInvocation in invocationOrConditionalAccess.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Where(x => x.ArgumentList.Arguments.Count == 0))
         {
             if (!nestedInvocation.IsAnInvocationOf(type, method, semanticModel))
             {

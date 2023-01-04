@@ -28,7 +28,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
 
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var diagnosticNode = compilation.FindNode(diagnosticSpan);
+        var diagnosticNode = compilation.FindNode(diagnosticSpan, getInnermostNodeForTie: true);
 
         var expression = diagnosticNode.FirstAncestorOrSelfOfType(SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
         if (expression == default)
