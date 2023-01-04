@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -12,6 +11,15 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyzer
 {
+    internal enum CapitalizationFunction
+    {
+        None = 0,
+        Ordinal = 1,
+        Invariant = 2
+    }
+
+    private record CapitalizationContext(IMethodSymbol[] MethodSymbols, CapitalizationFunction CapitalizationFunction, string Function);
+
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.ComparingStringsWithoutStringComparison,
         "A string is being compared through allocating a new string, e.g. using ToLower() or ToUpperInvariant(). Use a case-insensitive comparison instead which does not allocate.",
@@ -27,68 +35,73 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression, SyntaxKind.IsPatternExpression);
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var stringSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_String);
+            var toLowerSymbols = stringSymbol.GetMembers("ToLower").OfType<IMethodSymbol>().ToArray();
+            var toUpperSymbols = stringSymbol.GetMembers("ToUpper").OfType<IMethodSymbol>().ToArray();
+            var toLowerInvariantSymbols = stringSymbol.GetMembers("ToLowerInvariant").OfType<IMethodSymbol>().ToArray();
+            var toUpperInvariantSymbols = stringSymbol.GetMembers("ToUpperInvariant").OfType<IMethodSymbol>().ToArray();
+
+            var capitalizationContexts = ImmutableArray.Create(
+                new CapitalizationContext(toLowerSymbols, CapitalizationFunction.Ordinal, "ToLower"),
+                new CapitalizationContext(toUpperSymbols, CapitalizationFunction.Ordinal, "ToUpper"),
+                new CapitalizationContext(toLowerInvariantSymbols, CapitalizationFunction.Invariant, "ToLowerInvariant"),
+                new CapitalizationContext(toUpperInvariantSymbols, CapitalizationFunction.Invariant, "ToUpperInvariant")
+            );
+
+            compilationContext.RegisterOperationAction(context => Analyze(context, capitalizationContexts), OperationKind.Binary, OperationKind.IsPattern);
+        });
     }
 
-    private static void Analyze(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, ImmutableArray<CapitalizationContext> capitalizationContexts)
     {
-        var expressionsToCheck = context.Node switch
+        var operands = context.Operation switch
         {
-            BinaryExpressionSyntax binaryExpression => new[] { binaryExpression.Left, binaryExpression.Right },
-            IsPatternExpressionSyntax isPatternExpression
-                when isPatternExpression.Pattern
-                    is ConstantPatternSyntax
-                    or UnaryPatternSyntax { RawKind: (int)SyntaxKind.NotPattern, Pattern: ConstantPatternSyntax }
-                        => new[] { isPatternExpression.Expression },
-            _ => Array.Empty<ExpressionSyntax>()
+            IBinaryOperation binaryOperation when binaryOperation.OperatorKind is BinaryOperatorKind.Equals or BinaryOperatorKind.NotEquals
+                => new[] { binaryOperation.LeftOperand, binaryOperation.RightOperand },
+            IIsPatternOperation isPatternOperation when isPatternOperation.Pattern is IConstantPatternOperation or INegatedPatternOperation { Pattern: IConstantPatternOperation }
+                => new[] { isPatternOperation.Value },
+            _ => Array.Empty<IOperation>()
         };
 
-        foreach (var expression in expressionsToCheck)
+        foreach (var operand in operands)
         {
-            var (capitalizationFunction, invokedFunction) = StringCapitalizationFunction(expression, context.SemanticModel);
-            if (capitalizationFunction != CapitalizationFunction.None)
+            var capitalizationContext = StringCapitalizationFunction(operand, capitalizationContexts);
+            if (capitalizationContext is { CapitalizationFunction: CapitalizationFunction.Ordinal or CapitalizationFunction.Invariant })
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                properties.Add("comparison", capitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
-                properties.Add("function", invokedFunction);
-                context.ReportDiagnostic(Diagnostic.Create(Rule, expression.GetLocation(), properties.ToImmutable()));
-                break;
+                properties.Add("comparison", capitalizationContext.CapitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
+                properties.Add("function", capitalizationContext.Function);
+                context.ReportDiagnostic(Diagnostic.Create(Rule, operand.Syntax.GetLocation(), properties.ToImmutable()));
+                return;
             }
         }
     }
 
-    private static (CapitalizationFunction, string?) StringCapitalizationFunction(ExpressionSyntax node, SemanticModel semanticModel)
+    private static CapitalizationContext? StringCapitalizationFunction(IOperation operand, ImmutableArray<CapitalizationContext> capitalizationContexts)
     {
-        if (node is InvocationExpressionSyntax or ConditionalAccessExpressionSyntax && !node.HasASubsequentInvocation())
+        CapitalizationContext? getContext(IInvocationOperation invocation)
         {
-            if (node.IsAnInvocationOf(typeof(string), "ToLower", semanticModel))
+            if (invocation is { Arguments.Length: 0 })
             {
-                return (CapitalizationFunction.Ordinal, "ToLower");
+                foreach (var capitalizationContext in capitalizationContexts)
+                {
+                    if (capitalizationContext.MethodSymbols.Any(s => s.Equals(invocation.TargetMethod, SymbolEqualityComparer.Default)))
+                    {
+                        return capitalizationContext;
+                    }
+                }
             }
 
-            if (node.IsAnInvocationOf(typeof(string), "ToUpper", semanticModel))
-            {
-                return (CapitalizationFunction.Ordinal, "ToUpper");
-            }
-
-            if (node.IsAnInvocationOf(typeof(string), "ToLowerInvariant", semanticModel))
-            {
-                return (CapitalizationFunction.Invariant, "ToLowerInvariant");
-            }
-
-            if (node.IsAnInvocationOf(typeof(string), "ToUpperInvariant", semanticModel))
-            {
-                return (CapitalizationFunction.Invariant, "ToUpperInvariant");
-            }
+            return default;
         }
 
-        return (CapitalizationFunction.None, default);
+        return operand switch
+        {
+            IInvocationOperation inv => getContext(inv),
+            IConditionalAccessOperation { WhenNotNull: IInvocationOperation { Arguments.Length: 0 } nestedInv } => getContext(nestedInv),
+            _ => default
+        };
     }
-}
-
-internal enum CapitalizationFunction
-{
-    None = 0,
-    Ordinal = 1,
-    Invariant = 2
 }

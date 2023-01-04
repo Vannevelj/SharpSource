@@ -952,4 +952,37 @@ class MyClass
         await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
         await VerifyFix(original, result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/253")]
+    public async Task AsyncOverloadsAvailable_Chained()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+Get().DoThing();
+
+MyClass Get() => new MyClass();
+
+class MyClass
+{
+    public void DoThing() { }
+    public async Task DoThingAsync() { }
+}";
+
+        var result = @"
+using System.Threading.Tasks;
+
+await Get().DoThingAsync();
+
+MyClass Get() => new MyClass();
+
+class MyClass
+{
+    public void DoThing() { }
+    public async Task DoThingAsync() { }
+}";
+
+        await VerifyDiagnostic(original, "Async overload available for MyClass.DoThing");
+        await VerifyFix(original, result);
+    }
 }

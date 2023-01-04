@@ -90,11 +90,12 @@ bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison})
     }
 
     [TestMethod]
-    [DataRow("ToLower")]
-    [DataRow("ToUpper")]
-    [DataRow("ToLowerInvariant")]
-    [DataRow("ToUpperInvariant")]
-    public async Task ComparingStringsWithoutStringComparison_NullableChained(string call)
+    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/190")]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_NullableChained(string call, string expectedStringComparison)
     {
         var original = @$"
 using System;
@@ -103,7 +104,15 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1?.{call}().Trim() == s2?.{call}().Trim();";
 
-        await VerifyDiagnostic(original);
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1?.Trim(), s2?.Trim(), StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
@@ -141,11 +150,12 @@ bool result = s1?.Trim().{call}().ToString() == s2?.Trim().{call}().ToString();"
     }
 
     [TestMethod]
-    [DataRow("ToLower")]
-    [DataRow("ToUpper")]
-    [DataRow("ToLowerInvariant")]
-    [DataRow("ToUpperInvariant")]
-    public async Task ComparingStringsWithoutStringComparison_NullableChainedMultiple_CompareInEndOfChain(string call)
+    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/190")]
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_NullableChainedMultiple_CompareInEndOfChain(string call, string expectedStringComparison)
     {
         var original = @$"
 using System;
@@ -154,7 +164,15 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1?.Trim().ToString().{call}() == s2?.Trim().ToString().{call}();";
 
-        await VerifyDiagnostic(original);
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1?.Trim().ToString(), s2?.Trim().ToString(), StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
@@ -257,11 +275,11 @@ bool result = s1.{call}().Trim() == s2.{call}().Trim();";
     }
 
     [TestMethod]
-    [DataRow("ToLower")]
-    [DataRow("ToUpper")]
-    [DataRow("ToLowerInvariant")]
-    [DataRow("ToUpperInvariant")]
-    public async Task ComparingStringsWithoutStringComparison_WithPrefixedCalls(string call)
+    [DataRow("ToLower", "OrdinalIgnoreCase")]
+    [DataRow("ToUpper", "OrdinalIgnoreCase")]
+    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
+    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
+    public async Task ComparingStringsWithoutStringComparison_Chained(string call, string expectedStringComparison)
     {
         var original = @$"
 using System;
@@ -270,7 +288,15 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1.Trim().{call}() == s2.Trim().{call}();";
 
-        await VerifyDiagnostic(original);
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = string.Equals(s1.Trim(), s2.Trim(), StringComparison.{expectedStringComparison});";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
     }
 
     [TestMethod]
@@ -513,5 +539,83 @@ bool result = // Compare the two
 
         await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
         await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    public async Task ComparingStringsWithoutStringComparison_WithArgument_Left(string call)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = s1.{call}(System.Globalization.CultureInfo.CurrentCulture) == s2.{call}();";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = string.Equals(s1.{call}(System.Globalization.CultureInfo.CurrentCulture), s2, StringComparison.OrdinalIgnoreCase);";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    public async Task ComparingStringsWithoutStringComparison_WithArgument_Right(string call)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = s1.{call}() == s2.{call}(System.Globalization.CultureInfo.CurrentCulture);";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = string.Equals(s1, s2.{call}(System.Globalization.CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);";
+
+        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
+        await VerifyFix(original, result);
+    }
+
+    [TestMethod]
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    public async Task ComparingStringsWithoutStringComparison_WithArgument_Both(string call)
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = s1.{call}(System.Globalization.CultureInfo.CurrentCulture) == s2.{call}(System.Globalization.CultureInfo.CurrentCulture);";
+
+        await VerifyDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ComparingStringsWithoutStringComparison_DifferentMethod()
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+bool result = s1.Trim() == s2;";
+
+        await VerifyDiagnostic(original);
     }
 }
