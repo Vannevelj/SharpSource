@@ -4,12 +4,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 
-using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.MultipleFromBodyParametersAnalyzer>;
-
 namespace SharpSource.Test;
 
 [TestClass]
-public class MultipleFromBodyParametersTests
+public class MultipleFromBodyParametersTests : DiagnosticVerifier
 {
     protected override DiagnosticAnalyzer DiagnosticAnalyzer => new MultipleFromBodyParametersAnalyzer();
 
