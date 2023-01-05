@@ -1,8 +1,11 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.AccessingTaskResultWithoutAwaitAnalyzer, SharpSource.Diagnostics.AccessingTaskResultWithoutAwaitCodeFix>;
 
 namespace SharpSource.Test;
 
@@ -19,7 +22,7 @@ using System.Net.Http;
 
 var g = new HttpClient();
 ";
-
+        VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead");
         await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
     }
 

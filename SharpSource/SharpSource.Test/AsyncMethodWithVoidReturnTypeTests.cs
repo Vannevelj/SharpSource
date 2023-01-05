@@ -4,15 +4,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.AsyncMethodWithVoidReturnTypeAnalyzer, SharpSource.Diagnostics.AsyncMethodWithVoidReturnTypeCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AsyncMethodWithVoidReturnTypeTests : DiagnosticVerifier
+public class AsyncMethodWithVoidReturnTypeTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AsyncMethodWithVoidReturnTypeAnalyzer();
-    protected override CodeFixProvider CodeFixProvider => new AsyncMethodWithVoidReturnTypeCodeFix();
-
     [TestMethod]
     public async Task AsyncMethodWithVoidReturnType_WithAsyncAndTask()
     {
@@ -32,7 +30,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -54,7 +52,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -76,7 +74,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -98,7 +96,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -125,7 +123,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -152,7 +150,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -167,7 +165,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {   
-        async void MyHandler(object o, int e)
+        async void {|#0:MyHandler|}(object o, int e)
         {
             await Task.Run(() => { });
         }
@@ -190,8 +188,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyHandler is marked as async but has a void return type");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Method MyHandler is marked as async but has a void return type"), result);
     }
 
     [TestMethod]
@@ -206,7 +203,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {   
-        async void MyMethod()
+        async void {|#0:MyMethod|}()
         {
             await Task.Run(() => { });
         }
@@ -229,8 +226,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod is marked as async but has a void return type"), result);
     }
 
     [TestMethod]
@@ -257,7 +253,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/19")]
@@ -271,7 +267,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {   
-        async void Method()
+        async void {|#0:Method|}()
         {
                
         }
@@ -294,8 +290,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Method Method is marked as async but has a void return type");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Method Method is marked as async but has a void return type"), result);
     }
 
     [TestMethod]
@@ -305,7 +300,7 @@ namespace ConsoleApplication1
 using System;
 using System.Threading.Tasks;
 
-async void MyMethod()
+async void {|#0:MyMethod|}()
 {
     await Task.CompletedTask;
 }";
@@ -319,8 +314,7 @@ async Task MyMethod()
     await Task.CompletedTask;
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod is marked as async but has a void return type"), result);
     }
 
     [TestMethod]
@@ -334,7 +328,7 @@ class Test
 {
     void Method()
     {
-        async void MyMethod()
+        async void {|#0:MyMethod|}()
         {
             await Task.CompletedTask;
         }
@@ -356,8 +350,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod is marked as async but has a void return type");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod is marked as async but has a void return type"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/258")]
@@ -378,7 +371,7 @@ interface SomeInterface
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -399,7 +392,7 @@ interface SomeInterface
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -420,7 +413,7 @@ abstract class Base
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -432,7 +425,7 @@ using System.Threading.Tasks;
 
 class MyClass : SomeInterface
 {
-    async void RealMethod() => await Task.CompletedTask;
+    async void {|#0:RealMethod|}() => await Task.CompletedTask;
     public int MyMethod() => 5;
 }
 
@@ -456,7 +449,6 @@ interface SomeInterface
     int MyMethod();
 }";
 
-        await VerifyDiagnostic(original, "Method RealMethod is marked as async but has a void return type");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Method RealMethod is marked as async but has a void return type"), result);
     }
 }
