@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -83,7 +84,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
     {
         var negation = useNegation ? "!" : "";
         var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({firstArgument}, {secondArgument}, StringComparison.{stringComparison})");
-        var newRoot = root.ReplaceNode(expressionToReplace, newNode.WithLeadingTrivia(firstArgument.GetLeadingTrivia())).AddUsingStatementIfMissing("System");
+        var newRoot = root.ReplaceNode(expressionToReplace, newNode.WithLeadingTrivia(firstArgument.GetLeadingTrivia())).WithAdditionalAnnotations(Simplifier.AddImportsAnnotation);
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

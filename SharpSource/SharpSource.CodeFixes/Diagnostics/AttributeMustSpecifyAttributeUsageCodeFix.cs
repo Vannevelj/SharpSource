@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -50,8 +51,7 @@ public class AttributeMustSpecifyAttributeUsageCodeFix : CodeFixProvider
                 SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(arguments)));
 
         var newClass = classDeclaration.AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[] { newAttribute })));
-        var newRoot = root.ReplaceNode(classDeclaration, newClass);
-        newRoot = newRoot.AddUsingStatementIfMissing("System");
+        var newRoot = root.ReplaceNode(classDeclaration, newClass.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation));
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

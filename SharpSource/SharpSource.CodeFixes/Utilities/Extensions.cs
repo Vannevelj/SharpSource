@@ -13,30 +13,6 @@ public static class Extensions
 {
     public static T FirstOfKind<T>(this IEnumerable<SyntaxNode> enumerable, SyntaxKind kind) where T : SyntaxNode => enumerable.OfType<T>(kind).FirstOrDefault();
 
-    public static CompilationUnitSyntax AddUsingStatementIfMissing(this CompilationUnitSyntax compilation, string import)
-    {
-        if (!compilation.Usings.Any(x => x.Name.GetText().ToString() == import))
-        {
-            var parts = import.Split('.').Select(x => SyntaxFactory.IdentifierName(x)).ToList();
-            if (parts.Count == 1)
-            {
-                return compilation.AddUsings(SyntaxFactory.UsingDirective(parts[0]));
-            }
-
-            var counter = 0;
-            NameSyntax currentName = parts[0];
-            while (counter < parts.Count - 1)
-            {
-                currentName = SyntaxFactory.QualifiedName(currentName, parts[counter + 1]);
-                counter++;
-            }
-
-            return compilation.AddUsings(SyntaxFactory.UsingDirective(currentName));
-        }
-
-        return compilation;
-    }
-
     /// <summary>
     /// Removes the first instance of a particular method call from a chain of invocations
     /// </summary>
