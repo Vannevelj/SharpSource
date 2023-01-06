@@ -50,8 +50,8 @@ public class AttributeMustSpecifyAttributeUsageCodeFix : CodeFixProvider
                 SyntaxFactory.IdentifierName("AttributeUsage"),
                 SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(arguments)));
 
-        var newClass = classDeclaration.AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[] { newAttribute })));
-        var newRoot = root.ReplaceNode(classDeclaration, newClass.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation));
+        var newClass = classDeclaration.AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[] { newAttribute.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.AttributeUsageAttribute")) })));
+        var newRoot = root.ReplaceNode(classDeclaration, newClass);
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

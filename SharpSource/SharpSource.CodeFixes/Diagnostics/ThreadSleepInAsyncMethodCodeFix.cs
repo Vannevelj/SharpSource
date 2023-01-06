@@ -60,7 +60,7 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
         }
 
         var newInvocation = invocation.WithExpression(newExpression);
-        var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.AddImportsAnnotation);
+        var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.Threading.Tasks.Task"));
 
         var newRoot = root.ReplaceNode(invocation, awaitExpression);
         var newDocument = document.WithSyntaxRoot(newRoot);

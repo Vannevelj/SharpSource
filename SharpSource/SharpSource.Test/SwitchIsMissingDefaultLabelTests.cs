@@ -405,7 +405,8 @@ namespace ConsoleApplication1
     }
 }";
 
-        var result = @"using System;
+        var result = @"
+using System;
 
 namespace ConsoleApplication1
 {

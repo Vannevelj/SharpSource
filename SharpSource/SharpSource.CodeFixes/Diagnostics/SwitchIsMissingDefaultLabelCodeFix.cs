@@ -49,7 +49,7 @@ public class SwitchIsMissingDefaultLabelCodeFix : CodeFixProvider
         var statements = SyntaxFactory.List(new List<StatementSyntax> { argumentException });
         var defaultCase = SyntaxFactory.SwitchSection(SyntaxFactory.List<SwitchLabelSyntax>(new[] { SyntaxFactory.DefaultSwitchLabel() }), statements);
 
-        var newNode = switchBlock.AddSections(defaultCase.WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation, Simplifier.AddImportsAnnotation));
+        var newNode = switchBlock.AddSections(defaultCase.WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation, Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.ArgumentException")));
         var newRoot = root.ReplaceNode(switchBlock, newNode);
 
         return Task.FromResult(document.WithSyntaxRoot(newRoot));

@@ -1,10 +1,8 @@
-using System.Collections.Immutable;
-using System.Linq;
-
 namespace Microsoft.CodeAnalysis.Simplification
 {
     /// <summary>
     /// An annotation that holds onto information about a type or namespace symbol.
+    /// Taken from https://github.com/dotnet/roslyn/blob/main/src/Workspaces/SharedUtilitiesAndExtensions/Compiler/Core/Simplification/SymbolAnnotation.cs
     /// </summary>
     internal static class SymbolAnnotation
     {
@@ -13,7 +11,7 @@ namespace Microsoft.CodeAnalysis.Simplification
         public static SyntaxAnnotation Create(ISymbol symbol)
             => Create(DocumentationCommentId.CreateReferenceId(symbol));
 
-        public static SyntaxAnnotation Create(string referenceId)
-            => new(Kind, referenceId);
+        public static SyntaxAnnotation Create(string fullyQualifiedTypeName)
+            => new(Kind, fullyQualifiedTypeName);
     }
 }

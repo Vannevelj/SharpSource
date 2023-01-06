@@ -40,11 +40,9 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private static async Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
+    private static Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
     {
-        var model = await document.GetSemanticModelAsync();
-        var methodSymbol = model!.GetSymbolInfo((methodDeclaration as MethodDeclarationSyntax)!.ReturnType)!.Symbol!;
-        var annotation = SymbolAnnotation.Create(methodSymbol);
+        var annotation = SymbolAnnotation.Create("System.Threading.Tasks.Task");
         SyntaxNode newMethod = methodDeclaration switch
         {
             MethodDeclarationSyntax method => method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(annotation, Formatter.Annotation, Simplifier.AddImportsAnnotation)),
@@ -54,6 +52,6 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
 
         var newRoot = root.ReplaceNode(methodDeclaration, newMethod);
         var newDocument = document.WithSyntaxRoot(newRoot);
-        return newDocument;
+        return Task.FromResult(newDocument);
     }
 }
