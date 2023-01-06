@@ -459,4 +459,24 @@ interface SomeInterface
         await VerifyDiagnostic(original, "Method RealMethod is marked as async but has a void return type");
         await VerifyFix(original, result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/259")]
+    public async Task AsyncMethodWithVoidReturnType_WithAsyncAndWinUIEventHandlerArguments()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+class ItemClickEventArgs { }
+
+class MyClass
+{   
+    async void MyHandler(object o, ItemClickEventArgs e)
+    {
+        await Task.CompletedTask;
+    }
+}";
+
+        await VerifyDiagnostic(original);
+    }
 }

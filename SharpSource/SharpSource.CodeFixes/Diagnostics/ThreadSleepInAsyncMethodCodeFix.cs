@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-
+using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -60,15 +60,10 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
         }
 
         var newInvocation = invocation.WithExpression(newExpression);
-        var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
+        var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.Threading.Tasks.Task"));
 
         var newRoot = root.ReplaceNode(invocation, awaitExpression);
-
-        var compilationUnit = (CompilationUnitSyntax)newRoot;
-        newRoot = compilationUnit.AddUsingStatementIfMissing("System.Threading.Tasks");
-
         var newDocument = document.WithSyntaxRoot(newRoot);
-
         return Task.FromResult(newDocument);
     }
 }
