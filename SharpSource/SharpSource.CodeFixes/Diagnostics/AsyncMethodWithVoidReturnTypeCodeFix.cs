@@ -43,7 +43,7 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
     private static async Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
     {
         var model = await document.GetSemanticModelAsync();
-        var methodSymbol = model!.GetDeclaredSymbol(methodDeclaration)!;
+        var methodSymbol = model!.GetSymbolInfo((methodDeclaration as MethodDeclarationSyntax)!.ReturnType)!.Symbol!;
         var annotation = SymbolAnnotation.Create(methodSymbol);
         SyntaxNode newMethod = methodDeclaration switch
         {
