@@ -40,17 +40,20 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private static Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
+    private static async Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
     {
+        var model = await document.GetSemanticModelAsync();
+        var methodSymbol = model!.GetDeclaredSymbol(methodDeclaration)!;
+        var annotation = SymbolAnnotation.Create(methodSymbol);
         SyntaxNode newMethod = methodDeclaration switch
         {
-            MethodDeclarationSyntax method => method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation, Simplifier.AddImportsAnnotation)),
-            LocalFunctionStatementSyntax local => local.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation, Simplifier.AddImportsAnnotation)),
+            MethodDeclarationSyntax method => method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(annotation, Formatter.Annotation, Simplifier.AddImportsAnnotation)),
+            LocalFunctionStatementSyntax local => local.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(annotation, Formatter.Annotation, Simplifier.AddImportsAnnotation)),
             _ => throw new NotSupportedException($"Unexpected node: {methodDeclaration.GetType().Name}")
         };
 
         var newRoot = root.ReplaceNode(methodDeclaration, newMethod);
         var newDocument = document.WithSyntaxRoot(newRoot);
-        return Task.FromResult(newDocument);
+        return newDocument;
     }
 }
