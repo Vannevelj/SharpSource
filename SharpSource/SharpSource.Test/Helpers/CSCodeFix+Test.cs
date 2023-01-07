@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -38,6 +39,7 @@ namespace SharpSource.Test
                 TestState.AdditionalReferences.Add(typeof(System.Net.Http.HttpClient).Assembly.Location);
                 TestState.AdditionalReferences.Add(typeof(IHttpClientFactory).Assembly.Location);
                 TestState.AdditionalReferences.Add(typeof(Console).Assembly.Location);
+                TestState.AdditionalReferences.Add(typeof(Enumerable).Assembly.Location);
                 
                 // Initialized with an empty object so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
                 TestState.ReferenceAssemblies = new ReferenceAssemblies("net7.0");
