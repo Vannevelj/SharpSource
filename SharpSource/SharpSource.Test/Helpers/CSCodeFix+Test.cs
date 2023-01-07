@@ -1,6 +1,8 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
 
 namespace SharpSource.Test
@@ -23,11 +25,15 @@ namespace SharpSource.Test
                     return solution;
                 });
 
+                TestState.OutputKind = OutputKind.WindowsApplication;
                 TestState.AnalyzerConfigFiles.Add(("/.globalconfig", @"
 is_global = true
 end_of_line = lf
 "));
             }
+
+            protected override bool IsCompilerDiagnosticIncluded(Diagnostic diagnostic, CompilerDiagnostics compilerDiagnostics)
+                => diagnostic.Id is not "CS5001" && base.IsCompilerDiagnosticIncluded(diagnostic, compilerDiagnostics);
         }
     }
 }
