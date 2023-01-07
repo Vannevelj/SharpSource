@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Test.Helpers;
@@ -431,19 +432,7 @@ async Task DoThing(FileStream file)
 {
     var result = await file.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None);
 }";
-        await new VerifyCS.Test
-        {
-            TestState =
-            {
-                Sources = { original },
-                OutputKind = OutputKind.ConsoleApplication,
-            },
-            FixedCode = result,
-            ExpectedDiagnostics =
-            {
-                VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."),
-            },
-        }.RunAsync();
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/146")]
@@ -464,18 +453,6 @@ async Task DoThing(FileStream? file)
     var result = file?{|#0:.ReadAsync(new byte[] {}, 0, 0, CancellationToken.None).Result|};
 }";
 
-        await new VerifyCS.Test
-        {
-            TestState =
-            {
-                Sources = { original },
-                OutputKind = OutputKind.ConsoleApplication,
-            },
-            FixedCode = original,
-            ExpectedDiagnostics =
-            {
-                VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."),
-            },
-        }.RunAsync();
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."));
     }
 }

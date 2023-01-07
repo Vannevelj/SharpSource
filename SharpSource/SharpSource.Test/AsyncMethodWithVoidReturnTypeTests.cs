@@ -469,6 +469,6 @@ class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

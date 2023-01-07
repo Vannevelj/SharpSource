@@ -40,6 +40,9 @@ namespace SharpSource.Test
         public static async Task VerifyNoDiagnostic(string source)
             => await VerifyCodeFix(source, source);
 
+        public static async Task VerifyDiagnosticWithoutFix(string source, DiagnosticResult expected)
+            => await VerifyCodeFix(source, expected, source);
+
         /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, string)"/>
         public static async Task VerifyCodeFix(string source, string fixedSource)
             => await VerifyCodeFix(source, DiagnosticResult.EmptyDiagnosticResults, fixedSource);

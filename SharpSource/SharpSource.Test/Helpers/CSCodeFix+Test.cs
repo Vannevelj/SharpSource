@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
@@ -25,6 +26,7 @@ namespace SharpSource.Test
                     return solution;
                 });
 
+                TestState.AdditionalReferences.Add(typeof(Microsoft.AspNetCore.Mvc.FromBodyAttribute).Assembly.Location);
                 TestState.OutputKind = OutputKind.WindowsApplication;
                 TestState.AnalyzerConfigFiles.Add(("/.globalconfig", @"
 is_global = true

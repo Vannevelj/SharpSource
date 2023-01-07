@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.MultipleFromBodyParametersAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class MultipleFromBodyParametersTests : DiagnosticVerifier
+public class MultipleFromBodyParametersTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new MultipleFromBodyParametersAnalyzer();
-
     [TestMethod]
     [DataRow("[FromBody]")]
     [DataRow("[FromBodyAttribute]")]
@@ -22,11 +19,9 @@ using Microsoft.AspNetCore.Mvc;
 
 class MyController
 {{
-    void DoThing({attribute} string first, {attribute} string second) {{ }}
-}}
-";
-
-        await VerifyDiagnostic(original, "Method DoThing specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.");
+    void {{|#0:DoThing|}}({attribute} string first, {attribute} string second) {{ }}
+}}";
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method DoThing specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead."));
     }
 
     [TestMethod]
@@ -47,7 +42,7 @@ class WebApplication {{
 }}
 class Service {{ }}";
 
-        await VerifyDiagnostic(original, "Method specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method DoThing specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead."));
     }
 
     [TestMethod]
@@ -62,7 +57,7 @@ class MyController
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -77,7 +72,7 @@ class MyController
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -92,7 +87,7 @@ class MyController
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -107,7 +102,7 @@ class MyController
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -122,6 +117,6 @@ class MyController
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
