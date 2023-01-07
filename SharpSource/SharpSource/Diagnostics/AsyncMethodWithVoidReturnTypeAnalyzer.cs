@@ -82,7 +82,7 @@ public sealed class AsyncMethodWithVoidReturnTypeAnalyzer : DiagnosticAnalyzer
         if (method.Parameters.Length == 2)
         {
             var isFirstParameterObject = method.Parameters[0].Type.SpecialType == SpecialType.System_Object;
-            var isSecondParameterEventArgs = method.Parameters[1].Type.InheritsFrom(eventArgsSymbol);
+            var isSecondParameterEventArgs = method.Parameters[1].Type.InheritsFrom(eventArgsSymbol) || method.Parameters[1].Type.Name.EndsWith("EventArgs");
 
             if (isFirstParameterObject && isSecondParameterEventArgs)
             {

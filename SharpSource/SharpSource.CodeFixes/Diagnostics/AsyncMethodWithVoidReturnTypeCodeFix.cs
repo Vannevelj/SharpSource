@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -41,17 +42,15 @@ public class AsyncMethodWithVoidReturnTypeCodeFix : CodeFixProvider
 
     private static Task<Document> ChangeReturnTypeAsync(Document document, SyntaxNode methodDeclaration, SyntaxNode root)
     {
+        var annotation = SymbolAnnotation.Create("System.Threading.Tasks.Task");
         SyntaxNode newMethod = methodDeclaration switch
         {
-            MethodDeclarationSyntax method => method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation)),
-            LocalFunctionStatementSyntax local => local.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(Formatter.Annotation)),
+            MethodDeclarationSyntax method => method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(annotation, Formatter.Annotation, Simplifier.AddImportsAnnotation)),
+            LocalFunctionStatementSyntax local => local.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithAdditionalAnnotations(annotation, Formatter.Annotation, Simplifier.AddImportsAnnotation)),
             _ => throw new NotSupportedException($"Unexpected node: {methodDeclaration.GetType().Name}")
         };
 
         var newRoot = root.ReplaceNode(methodDeclaration, newMethod);
-        var compilation = (CompilationUnitSyntax)newRoot;
-        newRoot = compilation.AddUsingStatementIfMissing("System.Threading.Tasks");
-
         var newDocument = document.WithSyntaxRoot(newRoot);
         return Task.FromResult(newDocument);
     }
