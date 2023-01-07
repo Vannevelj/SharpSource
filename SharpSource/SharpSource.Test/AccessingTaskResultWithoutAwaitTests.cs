@@ -1,6 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Test.Helpers;
 
