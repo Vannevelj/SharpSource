@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.HttpContextStoredInFieldAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class HttpContextStoredInFieldAnalyzerTests : DiagnosticVerifier
+public class HttpContextStoredInFieldTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpContextStoredInFieldAnalyzer();
-
     [TestMethod]
     public async Task HttpContextStoredInField_InField()
     {
@@ -19,11 +16,10 @@ using Microsoft.AspNetCore.Http;
 
 class Test
 {
-    private HttpContext _context;
-}
-";
+    private HttpContext {|#0:_context|};
+}";
 
-        await VerifyDiagnostic(original, "HttpContext was stored in a field. Use IHttpContextAccessor instead");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpContext was stored in a field. Use IHttpContextAccessor instead"));
     }
 
     [TestMethod]
@@ -35,10 +31,9 @@ class HttpContext { }
 class Test
 {
     private HttpContext _context;
-}
-";
+}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -50,10 +45,9 @@ using Microsoft.AspNetCore.Http;
 class Test
 {
     private HttpContext Context { get; set; }
-}
-";
+}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -68,10 +62,9 @@ class Test
     {
         HttpContext context;
     }
-}
-";
+}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -82,12 +75,10 @@ using Microsoft.AspNetCore.Http;
 
 class Test
 {
-    private HttpContext _context, _context2;
-}
-";
-
-        await VerifyDiagnostic(original,
-            "HttpContext was stored in a field. Use IHttpContextAccessor instead",
-            "HttpContext was stored in a field. Use IHttpContextAccessor instead");
+    private HttpContext {|#0:_context|}, {|#1:_context2|};
+}";
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic(location: 0).WithMessage("HttpContext was stored in a field. Use IHttpContextAccessor instead"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("HttpContext was stored in a field. Use IHttpContextAccessor instead"));
     }
 }

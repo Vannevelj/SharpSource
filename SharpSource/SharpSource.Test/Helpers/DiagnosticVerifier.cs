@@ -383,6 +383,13 @@ public abstract class DiagnosticVerifier
             count++;
         }
 
+        var globalConfigDocumentId = DocumentId.CreateNewId(projectId, "globalconfig");
+        var globalConfigSource = @"
+is_global = true
+end_of_line = lf
+";
+        solution = solution.AddAnalyzerConfigDocument(globalConfigDocumentId, ".globalconfig", SourceText.From(globalConfigSource), null, "/root");
+
         var newProject = solution.GetProject(projectId);
         if (newProject == default)
         {

@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.DivideIntegerByIntegerAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class DivideIntegerByIntegerTests : DiagnosticVerifier
+public class DivideIntegerByIntegerTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DivideIntegerByIntegerAnalyzer();
-
     [TestMethod]
     public async Task DivideIntegerByInteger_TwoIntegers()
     {
@@ -21,12 +18,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         {   
             void Method()
             {
-                int result = 5 / 6;
+                int result = {|#0:5 / 6|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -44,7 +41,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -62,7 +59,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -80,7 +77,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -98,9 +95,9 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original,
-            string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6 / 2"),
-            string.Format(DivideIntegerByIntegerAnalyzer.Rule.MessageFormat.ToString(), "5 / 6"));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.").WithSpan(8, 33, 8, 38),
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("The operands in the divisive expression 5 / 6 / 2 are both integers and result in an implicit rounding.").WithSpan(8, 33, 8, 42));
     }
 
     [TestMethod]
@@ -113,12 +110,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         {   
             void Method()
             {
-                double result = 5 / 6 / 2.0;
+                double result = {|#0:5 / 6|} / 2.0;
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding."));
     }
 
     /// <summary>
@@ -140,7 +137,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -158,7 +155,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -177,7 +174,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -191,12 +188,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             void Method()
             {
                 var x = 5;
-                double result = x / 3;
+                double result = {|#0:x / 3|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / 3 are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / 3 are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -211,12 +208,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 var x = 5;
                 var y = 6;
-                double result = x / y;
+                double result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -230,7 +227,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             void Method()
             {
                 var y = 6;
-                double result = IntMethod() / y;
+                double result = {|#0:IntMethod() / y|};
             }
 
             int IntMethod()
@@ -240,7 +237,7 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression IntMethod() / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression IntMethod() / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -255,12 +252,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
         {   
             void Method()
             {
-                Console.WriteLine(5 / 6);
+                Console.WriteLine({|#0:5 / 6|});
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression 5 / 6 are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -275,12 +272,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 short x = 5;
                 short y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -295,12 +292,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 long x = 5;
                 long y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -315,12 +312,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 long x = 5;
                 int y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -335,12 +332,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 ulong x = 5;
                 ulong y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -355,12 +352,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 uint x = 5;
                 uint y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -375,12 +372,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 ushort x = 5;
                 ushort y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -395,12 +392,12 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 byte x = 5;
                 byte y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 
     [TestMethod]
@@ -415,11 +412,11 @@ public class DivideIntegerByIntegerTests : DiagnosticVerifier
             {
                 sbyte x = 5;
                 sbyte y = 6;
-                var result = x / y;
+                var result = {|#0:x / y|};
             }
         }
     }";
 
-        await VerifyDiagnostic(original, "The operands in the divisive expression x / y are both integers and result in an implicit rounding.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The operands in the divisive expression x / y are both integers and result in an implicit rounding."));
     }
 }

@@ -1,18 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ComparingStringsWithoutStringComparisonAnalyzer, SharpSource.Diagnostics.ComparingStringsWithoutStringComparisonCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ComparingStringsWithoutStringComparisonTests : DiagnosticVerifier
+public class ComparingStringsWithoutStringComparisonTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ComparingStringsWithoutStringComparisonAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new ComparingStringsWithoutStringComparisonCodeFix();
 
     [TestMethod]
     [DataRow("ToLower", "OrdinalIgnoreCase")]
@@ -26,7 +22,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1.{call}() == s2.{call}();";
+bool result = {{|#0:s1.{call}()|}} == s2.{call}();";
 
         var result = @$"
 using System;
@@ -35,8 +31,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -51,7 +46,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1.{call}() != s2.{call}();";
+bool result = {{|#0:s1.{call}()|}} != s2.{call}();";
 
         var result = @$"
 using System;
@@ -60,8 +55,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = !string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -76,7 +70,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1?.{call}() == s2?.{call}();";
+bool result = {{|#0:s1?.{call}()|}} == s2?.{call}();";
 
         var result = @$"
 using System;
@@ -85,8 +79,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -102,7 +95,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1?.{call}().Trim() == s2?.{call}().Trim();";
+bool result = {{|#0:s1?.{call}().Trim()|}} == s2?.{call}().Trim();";
 
         var result = @$"
 using System;
@@ -111,8 +104,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1?.Trim(), s2?.Trim(), StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -129,7 +121,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1?.{call}().Trim().ToString() == s2?.{call}().Trim().ToString();";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -146,7 +138,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1?.Trim().{call}().ToString() == s2?.Trim().{call}().ToString();";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -162,7 +154,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1?.Trim().ToString().{call}() == s2?.Trim().ToString().{call}();";
+bool result = {{|#0:s1?.Trim().ToString().{call}()|}} == s2?.Trim().ToString().{call}();";
 
         var result = @$"
 using System;
@@ -171,8 +163,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1?.Trim().ToString(), s2?.Trim().ToString(), StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -187,7 +178,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1!.{call}() == s2!.{call}();";
+bool result = {{|#0:s1!.{call}()|}} == s2!.{call}();";
 
         var result = @$"
 using System;
@@ -196,8 +187,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -214,7 +204,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1!.{call}().Trim() == s2!.{call}().Trim();";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -231,7 +221,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -245,7 +235,7 @@ bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison})
 using System;
 
 string s1 = string.Empty;
-bool result = s1.{call}() == ""TeSt"";";
+bool result = {{|#0:s1.{call}()|}} == ""TeSt"";";
 
         var result = @$"
 using System;
@@ -253,8 +243,7 @@ using System;
 string s1 = string.Empty;
 bool result = string.Equals(s1, ""TeSt"", StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -271,7 +260,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1.{call}().Trim() == s2.{call}().Trim();";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -286,7 +275,7 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1.Trim().{call}() == s2.Trim().{call}();";
+bool result = {{|#0:s1.Trim().{call}()|}} == s2.Trim().{call}();";
 
         var result = @$"
 using System;
@@ -295,8 +284,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1.Trim(), s2.Trim(), StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -310,7 +298,7 @@ bool result = string.Equals(s1.Trim(), s2.Trim(), StringComparison.{expectedStri
 using System;
 
 string s1 = string.Empty;
-bool result = s1.{call}() is ""test"";";
+bool result = {{|#0:s1.{call}()|}} is ""test"";";
 
         var result = @$"
 using System;
@@ -318,8 +306,7 @@ using System;
 string s1 = string.Empty;
 bool result = string.Equals(s1, ""test"", StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -333,7 +320,7 @@ bool result = string.Equals(s1, ""test"", StringComparison.{expectedStringCompar
 using System;
 
 string s1 = string.Empty;
-bool result = s1.{call}() is not ""test"";";
+bool result = {{|#0:s1.{call}()|}} is not ""test"";";
 
         var result = @$"
 using System;
@@ -341,8 +328,7 @@ using System;
 string s1 = string.Empty;
 bool result = !string.Equals(s1, ""test"", StringComparison.{expectedStringComparison});";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -358,7 +344,7 @@ using System;
 string s1 = string.Empty;
 bool result = s1.{call}() is (""test"" or ""other"");";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -374,7 +360,7 @@ using System;
 string s1 = string.Empty;
 bool result = s1.{call}() is not (""test"" or ""other"");";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -392,7 +378,7 @@ string s2 = string.Empty;
 bool result = GetValue(s1.{call}()) == GetValue(s2.{call}());
 string GetValue(string s) => s;";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -405,7 +391,7 @@ string GetValue(string s) => s;";
         var original = @$"
 using System;
 
-bool result = T.Name.{call}() == T.Name.{call}();
+bool result = {{|#0:T.Name.{call}()|}} == T.Name.{call}();
 
 class T
 {{
@@ -422,8 +408,7 @@ class T
     public static string Name {{ get; set; }}
 }}";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -439,7 +424,7 @@ using System;
 class Test
 {{
     string _name;
-    bool IsValid() => this._name.{call}() == this._name.{call}();
+    bool IsValid() => {{|#0:this._name.{call}()|}} == this._name.{call}();
 }}";
 
         var result = @$"
@@ -451,8 +436,7 @@ class Test
     bool IsValid() => string.Equals(this._name, this._name, StringComparison.{expectedStringComparison});
 }}";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -460,7 +444,7 @@ class Test
     {
         var original = @$"
 string s1 = ""first"";
-bool result = s1.ToLower() is ""test"";";
+bool result = {{|#0:s1.ToLower()|}} is ""test"";";
 
         var result = @$"
 using System;
@@ -468,8 +452,7 @@ using System;
 string s1 = ""first"";
 bool result = string.Equals(s1, ""test"", StringComparison.OrdinalIgnoreCase);";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -479,7 +462,7 @@ bool result = string.Equals(s1, ""test"", StringComparison.OrdinalIgnoreCase);";
 using System;
 
 string s1 = ""first"";
-Method(s1.ToLower() is ""test"");
+Method({{|#0:s1.ToLower()|}} is ""test"");
 
 void Method(bool b) {{ }}";
 
@@ -491,8 +474,7 @@ Method(string.Equals(s1, ""test"", StringComparison.OrdinalIgnoreCase));
 
 void Method(bool b) {{ }}";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/56")]
@@ -504,7 +486,7 @@ using System.Text;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = s1.ToLower() == s2.ToLower();";
+bool result = {|#0:s1.ToLower()|} == s2.ToLower();";
 
         var result = @$"
 using System.Text;
@@ -514,8 +496,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/256")]
@@ -528,7 +509,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 
 bool result = // Compare the two
-    s1.ToLower() == s2.ToLower();";
+    {{|#0:s1.ToLower()|}} == s2.ToLower();";
 
         var result = @$"
 using System;
@@ -539,8 +520,7 @@ string s2 = string.Empty;
 bool result = // Compare the two
     string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -554,7 +534,7 @@ using System;
 string s1 = string.Empty;
 string s2 = string.Empty;
 
-bool result = s1.{call}(System.Globalization.CultureInfo.CurrentCulture) == s2.{call}();";
+bool result = s1.{call}(System.Globalization.CultureInfo.CurrentCulture) == {{|#0:s2.{call}()|}};";
 
         var result = @$"
 using System;
@@ -564,8 +544,7 @@ string s2 = string.Empty;
 
 bool result = string.Equals(s1.{call}(System.Globalization.CultureInfo.CurrentCulture), s2, StringComparison.OrdinalIgnoreCase);";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -579,7 +558,7 @@ using System;
 string s1 = string.Empty;
 string s2 = string.Empty;
 
-bool result = s1.{call}() == s2.{call}(System.Globalization.CultureInfo.CurrentCulture);";
+bool result = {{|#0:s1.{call}()|}} == s2.{call}(System.Globalization.CultureInfo.CurrentCulture);";
 
         var result = @$"
 using System;
@@ -589,8 +568,7 @@ string s2 = string.Empty;
 
 bool result = string.Equals(s1, s2.{call}(System.Globalization.CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);";
 
-        await VerifyDiagnostic(original, "A string is being compared through allocating a new string. Use a case-insensitive comparison instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
     [TestMethod]
@@ -605,7 +583,7 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1.{call}(System.Globalization.CultureInfo.CurrentCulture) == s2.{call}(System.Globalization.CultureInfo.CurrentCulture);";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -618,6 +596,6 @@ string s1 = string.Empty;
 string s2 = string.Empty;
 bool result = s1.Trim() == s2;";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

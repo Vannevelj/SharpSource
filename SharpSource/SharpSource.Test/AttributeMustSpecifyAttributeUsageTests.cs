@@ -1,26 +1,21 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.AttributeMustSpecifyAttributeUsageAnalyzer, SharpSource.Diagnostics.AttributeMustSpecifyAttributeUsageCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AttributeMustSpecifyAttributeUsageTests : DiagnosticVerifier
+public class AttributeMustSpecifyAttributeUsageTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AttributeMustSpecifyAttributeUsageAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new AttributeMustSpecifyAttributeUsageCodeFix();
-
     [TestMethod]
     public async Task AttributeMustSpecifyAttributeUsage_NoAttribute()
     {
         var original = @"
 using System;
 
-class MyAttribute : Attribute
+class {|#0:MyAttribute|} : Attribute
 {
 }";
 
@@ -32,8 +27,7 @@ class MyAttribute : Attribute
 {
 }";
 
-        await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MyAttribute should specify how the attribute can be used"), result);
     }
 
     [TestMethod]
@@ -43,7 +37,7 @@ class MyAttribute : Attribute
 using System;
 
 [Obsolete]
-class MyAttribute : Attribute
+class {|#0:MyAttribute|} : Attribute
 {
 }";
 
@@ -56,8 +50,7 @@ class MyAttribute : Attribute
 {
 }";
 
-        await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MyAttribute should specify how the attribute can be used"), result);
     }
 
     [TestMethod]
@@ -74,7 +67,7 @@ class MyAttribute : Attribute
 {{
 }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -85,14 +78,14 @@ using System;
 
 class SomeAttribute {{ }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
     public async Task AttributeMustSpecifyAttributeUsage_NoUsingStatement()
     {
         var original = @"
-class MyAttribute : System.Attribute
+class {|#0:MyAttribute|} : System.Attribute
 {
 }";
 
@@ -103,8 +96,7 @@ class MyAttribute : System.Attribute
 {
 }";
 
-        await VerifyDiagnostic(original, "MyAttribute should specify how the attribute can be used");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MyAttribute should specify how the attribute can be used"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/169")]
@@ -118,7 +110,7 @@ class MyAttribute : Attribute
 }
 #endif";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/197")]
@@ -132,6 +124,7 @@ class MyAttribute : Attribute { }
 
 class DerivedAttribute : MyAttribute { }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
+
     }
 }

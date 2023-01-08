@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.NewGuidAnalyzer, SharpSource.Diagnostics.NewGuidCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class NewGuidTests : DiagnosticVerifier
+public class NewGuidTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new NewGuidAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new NewGuidCodeFix();
-
     [TestMethod]
     public async Task NewGuid_Constructor_NewGuid()
     {
@@ -25,7 +19,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            var g = new Guid();
+            var g = {|#0:new Guid()|};
         }
     }
 }";
@@ -43,8 +37,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        await VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result);
     }
 
     [TestMethod]
@@ -54,7 +47,7 @@ namespace ConsoleApplication1
 using System;
 void Method()
 {
-    Guid g = new();
+    Guid g = {|#0:new()|};
 }";
 
         var result = @"
@@ -64,8 +57,7 @@ void Method()
     Guid g = Guid.NewGuid();
 }";
 
-        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        await VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result);
     }
 
     [TestMethod]
@@ -78,7 +70,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            var g = new System.Guid();
+            var g = {|#0:new System.Guid()|};
         }
     }
 }";
@@ -95,8 +87,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        await VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result);
     }
 
     [TestMethod]
@@ -110,7 +101,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            var g = new Guid();
+            var g = {|#0:new Guid()|};
         }
     }
 }";
@@ -128,8 +119,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        await VerifyFix(original, result, codeFixIndex: 1);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result, codeActionIndex: 1);
     }
 
     [TestMethod]
@@ -142,7 +132,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            var g = new System.Guid();
+            var g = {|#0:new System.Guid()|};
         }
     }
 }";
@@ -159,8 +149,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        await VerifyFix(original, result, codeFixIndex: 1);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result, codeActionIndex: 1);
     }
 
     [TestMethod]
@@ -174,7 +163,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            Console.WriteLine(new Guid());
+            Console.WriteLine({|#0:new Guid()|});
         }
     }
 }";
@@ -192,8 +181,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An empty guid was created in an ambiguous manner");
-        await VerifyFix(original, result, codeFixIndex: 0);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result);
     }
 
     [TestMethod]
@@ -212,7 +200,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -231,7 +219,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -250,7 +238,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -269,6 +257,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

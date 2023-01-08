@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ThreadStaticWithInitializerAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ThreadStaticWithInitializerTests : DiagnosticVerifier
+public class ThreadStaticWithInitializerTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ThreadStaticWithInitializerAnalyzer();
-
     [TestMethod]
     public async Task ThreadStaticWithInitializer()
     {
@@ -21,11 +18,11 @@ using System.Threading;
 class MyClass
 {
     [ThreadStatic]
-    static Random _random = new Random();
+    static Random _random {|#0:= new Random()|};
 }
 ";
 
-        await VerifyDiagnostic(original, "_random is marked as [ThreadStatic] so it cannot contain an initializer");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("_random is marked as [ThreadStatic] so it cannot contain an initializer"));
     }
 
     [TestMethod]
@@ -42,7 +39,7 @@ class MyClass
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -55,11 +52,11 @@ using System.Threading;
 class MyClass
 {
     [ThreadStatic]
-    static Random _random, _random2 = new Random();
+    static Random _random, _random2 {|#0:= new Random()|};
 }
 ";
 
-        await VerifyDiagnostic(original, "_random2 is marked as [ThreadStatic] so it cannot contain an initializer");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("_random2 is marked as [ThreadStatic] so it cannot contain an initializer"));
     }
 
     [TestMethod]
@@ -72,12 +69,12 @@ using System.Threading;
 class MyClass
 {
     [ThreadStatic]
-    static Random _random = new(), _random2 = new Random();
+    static Random _random {|#0:= new()|}, _random2 {|#1:= new Random()|};
 }
 ";
 
-        await VerifyDiagnostic(original,
-            "_random is marked as [ThreadStatic] so it cannot contain an initializer",
-            "_random2 is marked as [ThreadStatic] so it cannot contain an initializer");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic().WithMessage("_random is marked as [ThreadStatic] so it cannot contain an initializer"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("_random2 is marked as [ThreadStatic] so it cannot contain an initializer"));
     }
 }

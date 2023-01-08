@@ -1,19 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.AsyncOverloadsAvailableAnalyzer, SharpSource.Diagnostics.AsyncOverloadsAvailableCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class AsyncOverloadsAvailableTests : DiagnosticVerifier
+public class AsyncOverloadsAvailableTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new AsyncOverloadsAvailableAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new AsyncOverloadsAvailableCodeFix();
-
     [TestMethod]
     public async Task AsyncOverloadsAvailable_WithOverload_InAsyncContext()
     {
@@ -27,7 +22,7 @@ namespace ConsoleApplication1
     {   
         async void MyMethod()
         {
-            new StringWriter().Write("""");
+            {|#0:new StringWriter().Write("""")|};
         }
     }
 }";
@@ -46,9 +41,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-
-        await VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
     }
 
     [TestMethod]
@@ -69,7 +62,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -90,7 +83,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -111,7 +104,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
@@ -136,7 +129,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
@@ -152,7 +145,7 @@ namespace ConsoleApplication1
     {   
         async Task MyMethod()
         {
-            Get();
+            {|#0:Get()|};
         }
 
         string Get() => null;
@@ -180,8 +173,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/21")]
@@ -197,7 +189,7 @@ namespace ConsoleApplication1
     {   
         async Task MyMethod()
         {
-            Do();
+            {|#0:Do()|};
         }
 
         void Do() { }
@@ -225,8 +217,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Do");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Do"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/25")]
@@ -251,7 +242,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -268,7 +259,7 @@ namespace ConsoleApplication1
     {   
         async Task MyMethod()
         {
-            Get();
+            {|#0:Get()|};
         }
 
         string Get() => null;
@@ -297,8 +288,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -324,7 +314,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/24")]
@@ -347,7 +337,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -363,7 +353,7 @@ namespace ConsoleApplication1
     {   
         async Task MyMethod()
         {
-            Get<string>();
+            {|#0:Get<string>()|};
         }
 
         T Get<T>() => default(T);
@@ -391,8 +381,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/26")]
@@ -416,7 +405,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/88")]
@@ -432,7 +421,7 @@ class Test
 
     async Task Method()
     {
-        var length = DoThing().Length;
+        var length = {|#0:DoThing()|}.Length;
     }
 }";
 
@@ -450,8 +439,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for Test.DoThing");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for Test.DoThing"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/97")]
@@ -473,7 +461,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/103")]
@@ -482,15 +470,14 @@ class Test
         var original = @"
 using System.IO;
 
-new StringWriter().Write(string.Empty);";
+{|#0:new StringWriter().Write(string.Empty)|};";
 
         var result = @"
 using System.IO;
 
 await new StringWriter().WriteAsync(string.Empty);";
 
-        await VerifyDiagnostic(original, "Async overload available for StringWriter.Write");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/104")]
@@ -509,7 +496,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/110")]
@@ -522,7 +509,7 @@ class MyClass
 {   
     async Task MyMethod()
     {
-        Get();
+        {|#0:Get()|};
     }
 
     int Get() => 5;
@@ -545,8 +532,7 @@ class MyClass
     async ValueTask<int> GetAsync() => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
@@ -566,7 +552,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/120")]
@@ -588,7 +574,7 @@ class Test
 	}
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -606,7 +592,7 @@ class Test
 
 	async Task Method()
 	{
-		var obj = new List<Test>().Select(async t => t.DoThing());
+		var obj = new List<Test>().Select(async t => {|#0:t.DoThing()|});
 	}
 }";
 
@@ -626,8 +612,7 @@ class Test
 	}
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for Test.DoThing");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for Test.DoThing"), result);
     }
 
     [TestMethod]
@@ -649,7 +634,7 @@ class Test
 	}
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -663,7 +648,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken token)
     {
-        Get();
+        {|#0:Get()|};
     }
 
     int Get() => 5;
@@ -685,8 +670,7 @@ class MyClass
     async Task<int> GetAsync(CancellationToken token) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -700,7 +684,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken? token = null)
     {
-        Get();
+        {|#0:Get()|};
     }
 
     int Get() => 5;
@@ -722,8 +706,7 @@ class MyClass
     async Task<int> GetAsync(CancellationToken token) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -737,7 +720,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken token)
     {
-        Get(5);
+        {|#0:Get(5)|};
     }
 
     int Get(int i) => 5;
@@ -759,8 +742,7 @@ class MyClass
     async Task<int> GetAsync(int x, CancellationToken token) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -774,7 +756,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken token)
     {
-        Get(32, string.Empty, true);
+        {|#0:Get(32, string.Empty, true)|};
     }
 
     int Get(int i, string y, bool z) => 5;
@@ -796,8 +778,7 @@ class MyClass
     async Task<int> GetAsync(int i, string y, bool z) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -811,7 +792,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken token)
     {
-        Get(5, token);
+        {|#0:Get(5, token)|};
     }
 
     int Get(int i, CancellationToken token) => 5;
@@ -833,8 +814,7 @@ class MyClass
     async Task<int> GetAsync(int x, CancellationToken token) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -855,7 +835,7 @@ class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -869,7 +849,7 @@ class MyClass
 {   
     async Task MyMethod(string i, CancellationToken token, int x)
     {
-        Get(5);
+        {|#0:Get(5)|};
     }
 
     int Get(int i) => 5;
@@ -891,8 +871,7 @@ class MyClass
     async Task<int> GetAsync(int x, CancellationToken token) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [TestMethod]
@@ -913,7 +892,7 @@ class MyClass
     async Task<int> GetAsync(int x, CancellationToken token, int y) => 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -927,7 +906,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken token)
     {
-        Get();
+        {|#0:Get()|};
     }
 
     int Get(CancellationToken? token = null) => 5;
@@ -949,8 +928,7 @@ class MyClass
     async Task<int> GetAsync(CancellationToken? token = null) => 5;
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.Get");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.Get"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/253")]
@@ -959,7 +937,7 @@ class MyClass
         var original = @"
 using System.Threading.Tasks;
 
-Get().DoThing();
+{|#0:Get().DoThing()|};
 
 MyClass Get() => new MyClass();
 
@@ -982,7 +960,6 @@ class MyClass
     public async Task DoThingAsync() { }
 }";
 
-        await VerifyDiagnostic(original, "Async overload available for MyClass.DoThing");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
     }
 }

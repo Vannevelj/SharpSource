@@ -1,26 +1,22 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.HttpClientInstantiatedDirectlyAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class HttpClientInstantiatedDirectlyAnalyzerTests : DiagnosticVerifier
+public class HttpClientInstantiatedDirectlyTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new HttpClientInstantiatedDirectlyAnalyzer();
-
     [TestMethod]
     public async Task HttpClientInstantiatedDirectly_Constructor()
     {
         var original = @"
 using System.Net.Http;
 
-var g = new HttpClient();
-";
+var g = {|#0:new HttpClient()|};";
 
-        await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"));
     }
 
     [TestMethod]
@@ -29,20 +25,18 @@ var g = new HttpClient();
         var original = @"
 using System.Net.Http;
 
-HttpClient g = new();
-";
+HttpClient g = {|#0:new()|};";
 
-        await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"));
     }
 
     [TestMethod]
     public async Task HttpClientInstantiatedDirectly_FullName()
     {
         var original = @"
-var g = new System.Net.Http.HttpClient();
-";
+var g = {|#0:new System.Net.Http.HttpClient()|};";
 
-        await VerifyDiagnostic(original, "HttpClient was instantiated directly. Use IHttpClientFactory instead");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"));
     }
 
     [TestMethod]
@@ -57,10 +51,9 @@ class MyClass
     {
         var g = new HttpClient();
     }
-}
-";
+}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -74,9 +67,8 @@ class MyClass
     void Method(HttpClient client)
     {
     }
-}
-";
+}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

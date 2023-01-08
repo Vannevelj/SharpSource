@@ -1,20 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.DateTimeNowAnalyzer, SharpSource.Diagnostics.DateTimeNowCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class DateTimeNowTests : DiagnosticVerifier
+public class DateTimeNowTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new DateTimeNowAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new DateTimeNowCodeFix();
-
-
     [TestMethod]
     public async Task DateTimeNow_UtcNow()
     {
@@ -31,7 +25,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -45,7 +39,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            Console.WriteLine(DateTime.Now);
+            Console.WriteLine({|#0:DateTime.Now|});
         }
     }
 }";
@@ -63,8 +57,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use DateTime.UtcNow to get a locale-independent value"), result);
     }
 
     [TestMethod]
@@ -78,7 +71,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            System.Console.WriteLine(Now);
+            System.Console.WriteLine({|#0:Now|});
         }
     }
 }";
@@ -96,8 +89,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use DateTime.UtcNow to get a locale-independent value"), result);
     }
 
     [TestMethod]
@@ -110,7 +102,7 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            var date = System.DateTime.Now;
+            var date = {|#0:System.DateTime.Now|};
         }
     }
 }";
@@ -127,8 +119,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use DateTime.UtcNow to get a locale-independent value"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/179")]
@@ -137,14 +128,13 @@ namespace ConsoleApplication1
 
         var original = @"
 using System;
-var date = DateTime.Now;";
+var date = {|#0:DateTime.Now|};";
 
         var result = @"
 using System;
 var date = DateTime.UtcNow;";
 
-        await VerifyDiagnostic(original, "Use DateTime.UtcNow to get a locale-independent value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use DateTime.UtcNow to get a locale-independent value"), result);
     }
 
     [TestMethod]
@@ -155,6 +145,6 @@ var date = DateTime.UtcNow;";
 using System;
 var date = nameof(DateTime.Now);";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
