@@ -6,7 +6,7 @@ using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.
 namespace SharpSource.Test;
 
 [TestClass]
-public class HttpClientInstantiatedDirectlyAnalyzerTests
+public class HttpClientInstantiatedDirectlyTests
 {
     [TestMethod]
     public async Task HttpClientInstantiatedDirectly_Constructor()
