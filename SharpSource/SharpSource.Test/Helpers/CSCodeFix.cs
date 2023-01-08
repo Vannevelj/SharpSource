@@ -14,8 +14,8 @@ namespace SharpSource.Test
         where TCodeFix : CodeFixProvider, new()
     {
         /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic()"/>
-        public static DiagnosticResult Diagnostic()
-            => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic().WithLocation(0);
+        public static DiagnosticResult Diagnostic(int location = 0)
+            => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic().WithLocation(location);
 
         /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(string)"/>
         public static DiagnosticResult Diagnostic(string diagnosticId)
