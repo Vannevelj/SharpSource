@@ -48,16 +48,17 @@ namespace SharpSource.Test
             => await VerifyCodeFix(source, DiagnosticResult.EmptyDiagnosticResults, fixedSource);
 
         /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult, string)"/>
-        public static async Task VerifyCodeFix(string source, DiagnosticResult expected, string fixedSource)
-            => await VerifyCodeFix(source, new[] { expected }, fixedSource);
+        public static async Task VerifyCodeFix(string source, DiagnosticResult expected, string fixedSource, int codeActionIndex = 0)
+            => await VerifyCodeFix(source, new[] { expected }, fixedSource, codeActionIndex);
 
         /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult[], string)"/>
-        public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource)
+        public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0)
         {
             var test = new Test
             {
                 TestCode = source,
                 FixedCode = fixedSource,
+                CodeActionIndex = codeActionIndex
             };
 
             test.ExpectedDiagnostics.AddRange(expected);
