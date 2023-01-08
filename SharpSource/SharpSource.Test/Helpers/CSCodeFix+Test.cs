@@ -36,6 +36,7 @@ namespace SharpSource.Test
 
                 // Initialized with an empty object so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
                 TestState.ReferenceAssemblies = ReferenceAssemblies.Net.Net60;
+            TestState.AdditionalReferences.Add(typeof(Microsoft.AspNetCore.Http.HttpContext).Assembly.Location);
 
 
                 TestState.OutputKind = OutputKind.WindowsApplication;
