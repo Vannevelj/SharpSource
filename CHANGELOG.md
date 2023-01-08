@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.6] - 2023-01-08
+- Switched several test files over to the `VerifyCS` approach
+
 ## [1.17.5] - 2023-01-06
 - `AsyncMethodWithVoidReturnType` will not trigger for `EventArgs` from other frameworks such as WinUI
 - Code fixes that introduce `using` statements will now take "Global Usings" into account and format the `using` statement better
