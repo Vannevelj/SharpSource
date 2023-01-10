@@ -57,7 +57,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         }
 
         // Don't trigger this for IDisposable implementations or lifetime hooks
-        if (method.IsInterfaceImplementation())
+        if (method.IsInterfaceImplementation() || method.IsOverride || method.MethodKind == MethodKind.Constructor)
         {
             return;
         }
