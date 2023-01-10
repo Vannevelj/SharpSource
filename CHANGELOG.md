@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.17.7] - 2023-01-10
+- `TestMethodWithoutTestAttribute`: No longer fires for test constructors
+- `TestMethodWithoutTestAttribute`: No longer fires for overridden methods
+- `TestMethodWithoutTestAttribute` tests use VerifyCS
+
 ## [1.17.6] - 2023-01-08
 - Switched several test files over to the `VerifyCS` approach
 

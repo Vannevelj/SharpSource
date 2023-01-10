@@ -276,4 +276,42 @@ struct MyClass
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_Constructor()
+    {
+        var original = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class MyClass
+{
+    public MyClass()
+    {
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_DisposeVirtual()
+    {
+        var original = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class TestBase : IDisposable
+{
+    public virtual void Dispose() { }
+}
+
+[TestClass]
+public class MyClass : TestBase
+{
+    public override void Dispose() => base.Dispose();
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
