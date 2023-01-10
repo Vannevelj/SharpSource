@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.TestMethodWithoutTestAttributeAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class TestMethodWithoutTestAttributeTests : DiagnosticVerifier
+public class TestMethodWithoutTestAttributeTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new TestMethodWithoutTestAttributeAnalyzer();
-
     [TestMethod]
     public async Task TestMethodWithoutTestAttribute_MSTest()
     {
@@ -22,13 +20,13 @@ namespace ConsoleApplication1
     [TestClass]
     class MyClass
     {
-        public void MyMethod()
+        public void {|#0:MyMethod|}()
         {
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
     }
 
     [TestMethod]
@@ -42,13 +40,13 @@ namespace ConsoleApplication1
     [TestFixture]
     class MyClass
     {
-        public void MyMethod()
+        public void {|#0:MyMethod|}()
         {
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
     }
 
     [TestMethod]
@@ -67,7 +65,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -80,7 +78,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-        public void MyMethod()
+        public void {|#0:MyMethod|}()
         {
         }
 
@@ -91,7 +89,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
     }
 
     [TestMethod]
@@ -106,14 +104,14 @@ namespace ConsoleApplication1
     [TestClass]
     class MyClass
     {
-        public async Task MyMethod()
+        public async Task {|#0:MyMethod|}()
         {
             await Task.Delay(0);
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
     }
 
     [TestMethod]
@@ -128,14 +126,14 @@ namespace ConsoleApplication1
     [TestClass]
     class MyClass
     {
-        public Task<int> MyMethod()
+        public Task<int> {|#0:MyMethod|}()
         {
             return Task.FromResult(5);
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Method MyMethod might be missing a test attribute");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
     }
 
     [TestMethod]
@@ -156,7 +154,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -182,7 +180,7 @@ namespace ConsoleApplication1
 class SomethingElseAttribute : Attribute { }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/22")]
@@ -204,7 +202,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/91")]
@@ -219,7 +217,7 @@ namespace ConsoleApplication1
     public void MyMethod() {{ }}
 }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/98")]
@@ -235,7 +233,7 @@ class Test : IDisposable
     public void Dispose() { }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/255")]
@@ -259,7 +257,7 @@ public class MyClass : IAsyncLifetime
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -276,6 +274,6 @@ struct MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
