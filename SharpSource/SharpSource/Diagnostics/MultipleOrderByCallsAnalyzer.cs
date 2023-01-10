@@ -33,7 +33,7 @@ public sealed class MultipleOrderByCallsAnalyzer : DiagnosticAnalyzer
             if (orderBySymbols is not null)
             {
                 context.RegisterOperationAction(context => Analyze(context, orderBySymbols), OperationKind.Invocation);
-            }            
+            }
         });
     }
 

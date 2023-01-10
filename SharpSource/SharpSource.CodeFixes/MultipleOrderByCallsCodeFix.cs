@@ -31,16 +31,12 @@ public class MultipleOrderByCallsCodeFix : CodeFixProvider
             return;
         }
 
-        ExpressionSyntax? newExpression = invocation.Expression switch
-        {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(SyntaxFactory.IdentifierName(newName)),
-            _ => default
-        };
-
-        if (newExpression == default)
+        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
         {
             return;
         }
+
+        var newExpression = memberAccess.WithName(SyntaxFactory.IdentifierName(newName));
 
         context.RegisterCodeFix(
             CodeAction.Create(
