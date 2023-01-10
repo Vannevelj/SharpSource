@@ -28,7 +28,7 @@ public sealed class MultipleOrderByCallsAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(context =>
         {
             var enumerableSymbol = context.Compilation.GetTypeByMetadataName("System.Linq.Enumerable");
-            var orderBySymbols = enumerableSymbol?.GetMembers("OrderBy").OfType<IMethodSymbol>().ToArray();
+            var orderBySymbols = enumerableSymbol?.GetMembers("OrderBy").Concat(enumerableSymbol?.GetMembers("OrderByDescending")).OfType<IMethodSymbol>().ToArray();
 
             if (orderBySymbols is not null)
             {
@@ -52,7 +52,9 @@ public sealed class MultipleOrderByCallsAnalyzer : DiagnosticAnalyzer
             {
                 if (orderByMethods.Any(symbol => symbol.Equals(previousInvocation.TargetMethod.OriginalDefinition, SymbolEqualityComparer.Default)))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, previousInvocation.Syntax.GetLocation()));
+                    var newName = previousInvocation.TargetMethod.OriginalDefinition.Name == "OrderBy" ? "ThenBy" : "ThenByDescending";
+                    var properties = ImmutableDictionary<string, string?>.Empty.Add("NewName", newName);
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, previousInvocation.Syntax.GetLocation(), properties));
                 }
                 break;
             }
