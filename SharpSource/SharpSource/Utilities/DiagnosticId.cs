@@ -53,4 +53,5 @@ public static class DiagnosticId
     public const string ThreadStaticWithInitializer = "SS052";
     public const string PointlessCollectionToString = "SS053";
     public const string NewtonsoftMixedWithSystemTextJson = "SS054";
+    public const string MultipleOrderByCalls = "SS055";
 }
