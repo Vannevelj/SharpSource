@@ -54,7 +54,7 @@ record Data(int X, int Y);";
     }
 
     [TestMethod]
-    [Ignore("Fix all provider keeps complaining")]
+    [Ignore("Fix all provider keeps complaining, see https://github.com/Vannevelj/SharpSource/issues/282")]
     public async Task MultipleOrderByCalls_MultipleOrderByChained()
     {
         var original = @"
