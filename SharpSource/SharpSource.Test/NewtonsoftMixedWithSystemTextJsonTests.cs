@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.NewtonsoftMixedWithSystemTextJsonAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class NewtonsoftMixedWithSystemTextJsonTests : DiagnosticVerifier
+public class NewtonsoftMixedWithSystemTextJsonTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new NewtonsoftMixedWithSystemTextJsonAnalyzer();
-
     [TestMethod]
     public async Task NewtonsoftMixedWithSystemTextJson_Serialize_SystemText_ThroughNewtonsoft()
     {
@@ -18,7 +15,7 @@ public class NewtonsoftMixedWithSystemTextJsonTests : DiagnosticVerifier
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-var data = Newtonsoft.Json.JsonConvert.SerializeObject(new MyData());
+var data = {|#0:Newtonsoft.Json.JsonConvert.SerializeObject(new MyData())|};
 
 class MyData
 {
@@ -26,7 +23,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempting to serialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json"));
     }
 
     [TestMethod]
@@ -44,7 +41,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -54,7 +51,7 @@ class MyData
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-var data = System.Text.Json.JsonSerializer.Serialize(new MyData());
+var data = {|#0:System.Text.Json.JsonSerializer.Serialize(new MyData())|};
 
 class MyData
 {
@@ -62,7 +59,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with Newtonsoft.Json through System.Text.Json");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempting to serialize an object annotated with Newtonsoft.Json through System.Text.Json"));
     }
 
     [TestMethod]
@@ -80,7 +77,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -90,7 +87,7 @@ class MyData
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-var data = Newtonsoft.Json.JsonConvert.DeserializeObject<MyData>(string.Empty);
+var data = {|#0:Newtonsoft.Json.JsonConvert.DeserializeObject<MyData>(string.Empty)|};
 
 class MyData
 {
@@ -98,7 +95,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original, "Attempting to deserialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempting to deserialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json"));
     }
 
     [TestMethod]
@@ -116,7 +113,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -126,7 +123,7 @@ class MyData
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-var data = System.Text.Json.JsonSerializer.Deserialize<MyData>(string.Empty);
+var data = {|#0:System.Text.Json.JsonSerializer.Deserialize<MyData>(string.Empty)|};
 
 class MyData
 {
@@ -134,7 +131,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original, "Attempting to deserialize an object annotated with Newtonsoft.Json through System.Text.Json");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempting to deserialize an object annotated with Newtonsoft.Json through System.Text.Json"));
     }
 
     [TestMethod]
@@ -152,7 +149,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -166,7 +163,7 @@ class MyData
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-var data = Newtonsoft.Json.JsonConvert.SerializeObject(new MyData());
+var data = {{|#0:Newtonsoft.Json.JsonConvert.SerializeObject(new MyData())|}};
 
 class MyData
 {{
@@ -174,7 +171,7 @@ class MyData
     public int MyProp {{ get; set; }}
 }}";
 
-        await VerifyDiagnostic(original, "Attempting to serialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempting to serialize an object annotated with System.Text.Json.Serialization through Newtonsoft.Json"));
     }
 
     [TestMethod]
@@ -191,7 +188,7 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -208,6 +205,6 @@ class MyData
     public int MyProp { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

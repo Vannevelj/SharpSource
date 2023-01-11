@@ -39,6 +39,7 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             TestState.AdditionalReferences.Add(typeof(Xunit.FactAttribute).Assembly.Location);
             TestState.AdditionalReferences.Add(typeof(NUnit.Framework.TestFixtureAttribute).Assembly.Location);
             TestState.AdditionalReferences.Add(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
+            TestState.AdditionalReferences.Add(typeof(Newtonsoft.Json.JsonSerializer).Assembly.Location);
 
             // Initialized explicitly so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
             TestState.ReferenceAssemblies = ReferenceAssemblies.Net.Net60;
