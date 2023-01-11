@@ -2,7 +2,7 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.19.0] - 2023-01-11
-- `MultipleOrderByCalls`: Successive `OrderBy()` calls will maintain only the last specified sort order. Use `ThenBy()` to combine them
+- `FormReadSynchronously`: Synchronously accessed `HttpRequest.Form` which uses sync-over-async. Use `HttpRequest.ReadFormAsync()` instead
 
 ## [1.18.0] - 2023-01-10
 - `MultipleOrderByCalls`: Successive `OrderBy()` calls will maintain only the last specified sort order. Use `ThenBy()` to combine them
