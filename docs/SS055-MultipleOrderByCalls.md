@@ -4,7 +4,7 @@
 
 ---
 
-Successive OrderBy() calls will maintain only the last specified sort order. Use ThenBy() to combine them
+Successive `OrderBy()` calls will maintain only the last specified sort order. Use `ThenBy()` to combine them.
 
 ---
 
