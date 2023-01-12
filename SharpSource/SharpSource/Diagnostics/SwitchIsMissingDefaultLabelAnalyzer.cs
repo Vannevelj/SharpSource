@@ -27,17 +27,12 @@ public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
         context.RegisterOperationAction(context =>
         {
-            var cs = (ISwitchCaseOperation)context.Operation;
-            var surroundingSwitch = cs.Ancestors().OfType<ISwitchOperation>().FirstOrDefault();
-            if (surroundingSwitch == default)
-            {
-                return;
-            }
+            var surroundingSwitch = (ISwitchOperation)context.Operation;
 
             if (!surroundingSwitch.Cases.SelectMany(c => c.Clauses).OfType<IDefaultCaseClauseOperation>().Any())
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, surroundingSwitch.Syntax.GetLocation()));
             }
-        }, OperationKind.SwitchCase);
+        }, OperationKind.Switch);
     }
 }
