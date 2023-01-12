@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.19.0] - 2023-01-11
 - `FormReadSynchronously`: Synchronously accessed `HttpRequest.Form` which uses sync-over-async. Use `HttpRequest.ReadFormAsync()` instead
+- `SwitchIsMissingDefaultLabel`: Rewritten using `IOperation` and tests use `VerifyCS`
 - `NewtonsoftMixedWithSystemTextJson` tests use `VerifyCS`
 
 ## [1.18.0] - 2023-01-10

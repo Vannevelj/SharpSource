@@ -1,9 +1,8 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -26,28 +25,19 @@ public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SwitchStatement);
-    }
-
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
-    {
-        var switchBlock = (SwitchStatementSyntax)context.Node;
-
-        var hasDefaultLabel = false;
-        foreach (var section in switchBlock.Sections)
+        context.RegisterOperationAction(context =>
         {
-            foreach (var label in section.Labels)
+            var cs = (ISwitchCaseOperation)context.Operation;
+            var surroundingSwitch = cs.Ancestors().OfType<ISwitchOperation>().FirstOrDefault();
+            if (surroundingSwitch == default)
             {
-                if (label.IsKind(SyntaxKind.DefaultSwitchLabel))
-                {
-                    hasDefaultLabel = true;
-                }
+                return;
             }
-        }
 
-        if (!hasDefaultLabel)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, switchBlock.SwitchKeyword.GetLocation()));
-        }
+            if (!surroundingSwitch.Cases.SelectMany(c => c.Clauses).OfType<IDefaultCaseClauseOperation>().Any())
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, surroundingSwitch.Syntax.GetLocation()));
+            }
+        }, OperationKind.SwitchCase);
     }
 }
