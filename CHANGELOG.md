@@ -3,7 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.19.1] - 2023-01-12
 - `PointlessCollectionToString`: Supports immutable collections
-- `ThrowNull` and `UnboundedStackalloc` tests use `VerifyCS`
+- `PointlessCollectionToString`, `ThrowNull` and `UnboundedStackalloc` tests use `VerifyCS`
 
 ## [1.19.0] - 2023-01-12
 - `FormReadSynchronously`: Synchronously accessed `HttpRequest.Form` which uses sync-over-async. Use `HttpRequest.ReadFormAsync()` instead
