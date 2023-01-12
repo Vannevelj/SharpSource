@@ -35,6 +35,40 @@ Console.Write(collection.ToString());
         await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
     }
 
+    [DataRow("ImmutableArray")]
+    [DataRow("ImmutableList")]
+    [DataRow("ImmutableHashSet")]
+    [DataRow("ImmutableQueue")]
+    [DataRow("ImmutableSortedSet")]
+    [DataRow("ImmutableStack")]
+    public async Task PointlessCollectionToString_ImmutableTypes(string collection)
+    {
+        var original = @$"
+using System;
+using System.Collections.Immutable;
+
+var collection = {collection}.Create<string>();
+Console.Write(collection.ToString());
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
+
+    [DataRow("ImmutableSortedDictionary")]
+    [DataRow("ImmutableDictionary")]
+    public async Task PointlessCollectionToString_ImmutableDictionary(string collection)
+    {
+        var original = @$"
+using System;
+using System.Collections.Immutable;
+
+var collection = {collection}.Create<string, string>();
+Console.Write(collection.ToString());
+";
+
+        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+    }
+
     [TestMethod]
     public async Task PointlessCollectionToString_OtherType()
     {
@@ -72,11 +106,17 @@ Console.Write(collection.ToString());
     [DataRow("IReadOnlySet<int>")]
     [DataRow("ISet<int>")]
     [DataRow("IReadOnlyDictionary<int, int>")]
+    [DataRow("IImmutableList<int>")]
+    [DataRow("IImmutableStack<int>")]
+    [DataRow("IImmutableSet<int>")]
+    [DataRow("IImmutableQueue<int>")]
+    [DataRow("IImmutableDictionary<int, int>")]
     public async Task PointlessCollectionToString_InterfaceAsParam(string interfaceParam)
     {
         var original = @$"
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 void DoThing({interfaceParam} collection)
 {{
