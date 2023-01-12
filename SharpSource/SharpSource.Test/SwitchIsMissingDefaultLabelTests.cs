@@ -5,14 +5,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.SwitchIsMissingDefaultLabelAnalyzer, SharpSource.Diagnostics.SwitchIsMissingDefaultLabelCodeFix>;
+
 namespace SharpSource.Test;
 
 [TestClass]
-public class SwitchIsMissingDefaultLabelTests : DiagnosticVerifier
+public class SwitchIsMissingDefaultLabelTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SwitchIsMissingDefaultLabelAnalyzer();
-    protected override CodeFixProvider CodeFixProvider => new SwitchIsMissingDefaultLabelCodeFix();
-
     [TestMethod]
     public async Task SwitchIsMissingDefaultLabel_MissingDefaultStatement_SwitchOnEnum()
     {
@@ -31,12 +30,12 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            {|#0:switch (e)
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -56,20 +55,19 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            {|#0:switch (e)
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
                     break;
                 default:
                     throw new ArgumentException(""Unsupported value"");
-            }
+            }|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -85,12 +83,12 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = ""test"";
-            switch (e)
+            {|#0:switch (e)
             {
                 case ""test"":
                 case ""test1"":
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -117,8 +115,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -133,12 +130,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            switch (""test"")
+            {|#0:switch (""test"")
             {
                 case ""test"":
                 case ""test1"":
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -164,8 +161,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -180,12 +176,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            switch (0)
+            {|#0:switch (0)
             {
                 case 0:
                 case 1:
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -211,8 +207,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -239,7 +234,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -255,12 +250,12 @@ namespace ConsoleApplication1
         void Method()
         {
             var x = 5;
-            switch ((x))
+            {|#0:switch ((x))
             {
                 case 5:
                 case 6:
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -287,8 +282,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -303,12 +297,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            switch ((""test""))
+            {|#0:switch ((""test""))
             {
                 case ""test"":
                 case ""test1"":
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -334,8 +328,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -350,12 +343,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            switch ((0))
+            {|#0:switch ((0))
             {
                 case 0:
                 case 1:
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -381,8 +374,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [TestMethod]
@@ -395,12 +387,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            switch (0)
+            {|#0:switch (0)
             {
                 case 0:
                 case 1:
                     break;
-            }
+            }|}
         }
     }
 }";
@@ -426,8 +418,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/167")]
@@ -436,10 +427,10 @@ namespace ConsoleApplication1
         var original = @"
 using System;
 
-switch (Test.A)
+{|#0:switch (Test.A)
 {
     case Test.A: return;
-}
+}|}
 
 enum Test { A, B }";
 
@@ -455,7 +446,6 @@ switch (Test.A)
 
 enum Test { A, B }";
 
-        await VerifyDiagnostic(original, "Switch should have default label.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
 }

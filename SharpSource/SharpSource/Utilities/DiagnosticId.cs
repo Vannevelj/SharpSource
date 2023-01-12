@@ -54,4 +54,5 @@ public static class DiagnosticId
     public const string PointlessCollectionToString = "SS053";
     public const string NewtonsoftMixedWithSystemTextJson = "SS054";
     public const string MultipleOrderByCalls = "SS055";
+    public const string FormReadSynchronously = "SS056";
 }
