@@ -1,19 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ThreadSleepInAsyncMethodAnalyzer, SharpSource.Diagnostics.ThreadSleepInAsyncMethodCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ThreadSleepInAsyncMethodTests : DiagnosticVerifier
+public class ThreadSleepInAsyncMethodTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ThreadSleepInAsyncMethodAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new ThreadSleepInAsyncMethodCodeFix();
-
     [TestMethod]
     public async Task ThreadSleepInAsyncMethod_AsyncMethod_AndThreadSleep()
     {
@@ -29,7 +24,7 @@ namespace ConsoleApplication1
     {
         async Task MyMethod()
         {
-            Thread.Sleep(5000);
+            {|#0:Thread.Sleep(5000)|};
         }
     }
 }";
@@ -51,8 +46,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -70,7 +64,7 @@ namespace ConsoleApplication1
     {
         async Task MyMethod()
         {
-            Sleep(5000);
+            {|#0:Sleep(5000)|};
         }
     }
 }";
@@ -92,8 +86,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -111,7 +104,7 @@ namespace ConsoleApplication1
     {
         async Task<int> MyMethod()
         {
-            Thread.Sleep(5000);
+            {|#0:Thread.Sleep(5000)|};
             return 5;
         }
     }
@@ -135,8 +128,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -154,7 +146,7 @@ namespace ConsoleApplication1
     {
         async void MyMethod()
         {
-            Thread.Sleep(5000);
+            {|#0:Thread.Sleep(5000)|};
         }
     }
 }";
@@ -176,8 +168,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -200,7 +191,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -218,32 +209,13 @@ namespace ConsoleApplication1
     {
         Task MyMethod()
         {
-            Thread.Sleep(5000);
+            {|#0:Thread.Sleep(5000)|};
             return Task.CompletedTask;
         }
     }
 }";
 
-        var result = @"
-using System;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ConsoleApplication1
-{
-    class MyClass
-    {
-        Task MyMethod()
-        {
-            Thread.Sleep(5000);
-            return Task.CompletedTask;
-        }
-    }
-}";
-
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"));
     }
 
     [TestMethod]
@@ -266,7 +238,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -284,7 +256,7 @@ namespace ConsoleApplication1
     {
         async Task MyMethod()
         {
-            MyThread.Sleep(5000);
+            {|#0:MyThread.Sleep(5000)|};
         }
     }
 }";
@@ -306,8 +278,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -324,7 +295,7 @@ namespace ConsoleApplication1
     {
         async void MyMethod()
         {
-            Thread.Sleep(5000);
+            {|#0:Thread.Sleep(5000)|};
         }
     }
 }";
@@ -346,8 +317,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -363,7 +333,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-        async Task MyMethod() => Thread.Sleep(5000);
+        async Task MyMethod() => {|#0:Thread.Sleep(5000)|};
     }
 }";
 
@@ -381,8 +351,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/23")]
@@ -407,7 +376,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/112")]
@@ -421,7 +390,7 @@ class Test
 {
     async ValueTask MyMethod()
     {
-        Thread.Sleep(5000);
+        {|#0:Thread.Sleep(5000)|};
     }
 }";
 
@@ -437,8 +406,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/112")]
@@ -452,26 +420,11 @@ class Test
 {
     ValueTask MyMethod()
     {
-        Thread.Sleep(5000);
+        {|#0:Thread.Sleep(5000)|};
         return ValueTask.CompletedTask;
     }
 }";
-
-        var result = @"
-using System.Threading;
-using System.Threading.Tasks;
-
-class Test
-{
-    ValueTask MyMethod()
-    {
-        Thread.Sleep(5000);
-        return ValueTask.CompletedTask;
-    }
-}";
-
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"));
     }
 
     [TestMethod]
@@ -482,7 +435,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-async Task MyMethod() => Thread.Sleep(5000);
+async Task MyMethod() => {|#0:Thread.Sleep(5000)|};
 await MyMethod();
 ";
 
@@ -495,8 +448,7 @@ async Task MyMethod() => await Task.Delay(5000);
 await MyMethod();
 ";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -509,7 +461,7 @@ using System.Threading.Tasks;
 
 async Task Method()
 {
-    async Task MyMethod() => Thread.Sleep(5000);
+    async Task MyMethod() => {|#0:Thread.Sleep(5000)|};
     await MyMethod();
 }";
 
@@ -524,8 +476,7 @@ async Task Method()
     await MyMethod();
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -542,7 +493,7 @@ async Task MyMethod() {
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -554,7 +505,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 async Task MyMethod() {
-	Action lambda = async () => Thread.Sleep(32);
+	Action lambda = async () => {|#0:Thread.Sleep(32)|};
 	lambda();
 }
 ";
@@ -570,8 +521,7 @@ async Task MyMethod() {
 }
 ";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -585,7 +535,7 @@ using System.Threading.Tasks;
 class MyClass
 {
     async Task MyMethod() {
-	    Action lambda = async () => Thread.Sleep(32);
+	    Action lambda = async () => {|#0:Thread.Sleep(32)|};
 	    lambda();
     }
 }
@@ -605,8 +555,7 @@ class MyClass
 }
 ";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -622,7 +571,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-	    Action MyMethod() => new Action(async () => Thread.Sleep(32));
+	    Action MyMethod() => new Action(async () => {|#0:Thread.Sleep(32)|});
     }
 }";
 
@@ -639,8 +588,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 
     [TestMethod]
@@ -658,7 +606,7 @@ namespace ConsoleApplication1
     {
         async Task MyMethod()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(5));
+            {|#0:Thread.Sleep(TimeSpan.FromSeconds(5))|};
         }
     }
 }";
@@ -680,7 +628,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Synchronously sleeping thread in an async method");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Synchronously sleeping thread in an async method"), result);
     }
 }
