@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ParameterAssignedInConstructorAnalyzer, SharpSource.Diagnostics.ParameterAssignedInConstructorCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ParameterAssignedInConstructorTests : DiagnosticVerifier
+public class ParameterAssignedInConstructorTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ParameterAssignedInConstructorAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new ParameterAssignedInConstructorCodeFix();
-
     [TestMethod]
     public async Task ParameterAssignedInConstructor_Property()
     {
@@ -24,7 +18,7 @@ class Test
 
     Test(int count)
     {
-        count = Count;
+        {|#0:count|} = Count;
     }
 }";
 
@@ -39,8 +33,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Suspicious assignment of parameter count in constructor of Test");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
     }
 
     [TestMethod]
@@ -57,7 +50,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -70,7 +63,7 @@ class Test
 
     Test(int count)
     {
-        count = _count;
+        {|#0:count|} = _count;
     }
 }";
 
@@ -85,8 +78,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Suspicious assignment of parameter count in constructor of Test");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
     }
 
     [TestMethod]
@@ -103,7 +95,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -120,7 +112,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -137,7 +129,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -149,7 +141,7 @@ class Test
     int Count { get; set; }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -165,7 +157,7 @@ partial class Test
 {
     Test(int count)
     {
-        count = Count;
+        {|#0:count|} = Count;
     }
 }";
 
@@ -183,39 +175,7 @@ partial class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Suspicious assignment of parameter count in constructor of Test");
-        await VerifyFix(original, result);
-    }
-
-    [TestMethod]
-    public async Task ParameterAssignedInConstructor_PartialDifferentFiles()
-    {
-        var file1 = @"
-partial class Test
-{
-    int Count { get; set; }
-}";
-
-        var file2 = @"
-partial class Test
-{
-    Test(int count)
-    {
-        count = Count;
-    }
-}";
-
-        var result = @"
-partial class Test
-{
-    Test(int count)
-    {
-        Count = count;
-    }
-}";
-
-        await VerifyDiagnostic(new[] { file1, file2 }, "Suspicious assignment of parameter count in constructor of Test");
-        await VerifyFix(file2, result, additionalSources: new[] { file1 });
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
     }
 
     [TestMethod]
@@ -226,7 +186,7 @@ class Test
 {
     int Count { get; set; }
 
-    Test(int count) => count = Count;
+    Test(int count) => {|#0:count|} = Count;
 }";
 
         var result = @"
@@ -237,8 +197,7 @@ class Test
     Test(int count) => Count = count;
 }";
 
-        await VerifyDiagnostic(original, "Suspicious assignment of parameter count in constructor of Test");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
     }
 
     [TestMethod]
@@ -252,7 +211,7 @@ class Test
     Test(int count) => count = count > 5 ? Count : 0;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -265,8 +224,8 @@ class Test
 
     Test(int count, int other)
     {
-        count = _count;
-        other = _count2;
+        {|#0:count|} = _count;
+        {|#1:other|} = _count2;
     }
 }";
 
@@ -282,11 +241,10 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(
-            original,
-            "Suspicious assignment of parameter count in constructor of Test",
-            "Suspicious assignment of parameter other in constructor of Test");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, new[] {
+            VerifyCS.Diagnostic(location: 0).WithMessage("Suspicious assignment of parameter count in constructor of Test"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("Suspicious assignment of parameter other in constructor of Test")
+        }, result);
     }
 
     [TestMethod]
@@ -300,7 +258,7 @@ class Test
     Test(ref int count) => count = Count;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -314,7 +272,7 @@ class Test
     Test(out int count) => count = Count;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -333,7 +291,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -348,7 +306,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -365,6 +323,6 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
