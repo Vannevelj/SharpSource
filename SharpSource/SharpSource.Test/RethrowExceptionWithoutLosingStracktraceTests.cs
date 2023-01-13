@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktraceAnalyzer, SharpSource.Diagnostics.RethrowExceptionWithoutLosingStacktraceCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class RethrowExceptionWithoutLosingStracktraceTests : DiagnosticVerifier
+public class RethrowExceptionWithoutLosingStracktraceTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RethrowExceptionWithoutLosingStacktraceAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new RethrowExceptionWithoutLosingStacktraceCodeFix();
-
     [TestMethod]
     public async Task RethrowExceptionWithoutLosingStracktrace_WithRethrowArgument()
     {
@@ -33,7 +27,7 @@ namespace ConsoleApplication1
             }
             catch(Exception e)
             {
-                throw e;
+                {|#0:throw e;|}
             }
         }
     }
@@ -61,8 +55,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Rethrown exception loses the stacktrace.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Rethrown exception loses the stacktrace."), result);
     }
 
     [TestMethod]
@@ -90,7 +83,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -118,7 +111,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -147,7 +140,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -168,7 +161,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -196,7 +189,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -223,6 +216,6 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
