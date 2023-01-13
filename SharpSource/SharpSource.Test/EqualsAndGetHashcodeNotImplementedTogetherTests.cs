@@ -1,18 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogetherAnalyzer, SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogetherCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class EqualsAndGetHashcodeNotImplementedTogetherTests : DiagnosticVerifier
+public class EqualsAndGetHashcodeNotImplementedTogetherTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new EqualsAndGetHashcodeNotImplementedTogetherAnalyzer();
-    protected override CodeFixProvider CodeFixProvider => new EqualsAndGetHashcodeNotImplementedTogetherCodeFix();
-
     [TestMethod]
     public async Task EqualsAndGetHashcodeNotImplemented_BothImplemented_NoWarning()
     {
@@ -33,7 +28,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -42,7 +37,7 @@ namespace ConsoleApplication1
         var original = @"
 namespace ConsoleApplication1
 {
-    class MyClass
+    class {|#0:MyClass|}
     {
         public override bool Equals(object obj)
         {
@@ -68,8 +63,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Equals() and GetHashcode() must be implemented together on MyClass"), result);
     }
 
     [TestMethod]
@@ -78,7 +72,7 @@ namespace ConsoleApplication1
         var original = @"
 namespace ConsoleApplication1
 {
-    class MyClass
+    class {|#0:MyClass|}
     {
         public override int GetHashCode()
         {
@@ -104,8 +98,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Equals() and GetHashcode() must be implemented together on MyClass"), result);
     }
 
     [TestMethod]
@@ -119,7 +112,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -137,7 +130,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -155,7 +148,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -165,7 +158,7 @@ namespace ConsoleApplication1
 using System;
 namespace ConsoleApplication1
 {
-    class MyClass
+    class {|#0:MyClass|}
     {
         public override bool Equals(object obj)
         {
@@ -192,8 +185,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Equals() and GetHashcode() must be implemented together on MyClass"), result);
     }
 
     [TestMethod]
@@ -203,7 +195,7 @@ namespace ConsoleApplication1
 using System;
 namespace ConsoleApplication1
 {
-    class MyClass
+    class {|#0:MyClass|}
     {
         public override int GetHashCode()
         {
@@ -230,8 +222,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Equals() and GetHashcode() must be implemented together on MyClass"), result);
     }
 
     [TestMethod]
@@ -254,7 +245,7 @@ namespace ConsoleApplication1
         }
     }
 
-    class MyClass : MyBaseClass
+    class {|#0:MyClass|} : MyBaseClass
     {
         public override int GetHashCode()
         {
@@ -294,23 +285,21 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Equals() and GetHashcode() must be implemented together on MyClass");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Equals() and GetHashcode() must be implemented together on MyClass"), result);
     }
 
     [TestMethod]
     public async Task EqualsAndGetHashcodeNotImplemented_Partial()
     {
-        var file1 = @"
+        var original = @"
 partial class MyClass
 {
     public override bool Equals(object obj)
     {
         throw new System.NotImplementedException();
     }
-}";
+}
 
-        var file2 = @"
 partial class MyClass
 {
     public override int GetHashCode()
@@ -319,6 +308,6 @@ partial class MyClass
     }
 }";
 
-        await VerifyDiagnostic(new string[] { file1, file2 });
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

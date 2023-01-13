@@ -12,7 +12,7 @@ public class TestMethodWithoutPublicModifierTests
     [TestMethod]
     public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndTestAttribute()
     {
-        var test = @"
+        var original = @"
     using System;
     using NUnit.Framework;
 
@@ -29,7 +29,7 @@ public class TestMethodWithoutPublicModifierTests
         }
     }";
 
-        await VerifyCS.VerifyNoDiagnostic(test);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
