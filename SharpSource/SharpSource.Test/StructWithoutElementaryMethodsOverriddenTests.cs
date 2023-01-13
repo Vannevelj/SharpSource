@@ -1,23 +1,18 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.StructWithoutElementaryMethodsOverriddenAnalyzer, SharpSource.Diagnostics.StructWithoutElementaryMethodsOverriddenCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class StructWithoutElementaryMethodsOverriddenTests : DiagnosticVerifier
+public class StructWithoutElementaryMethodsOverriddenTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StructWithoutElementaryMethodsOverriddenAnalyzer();
-    protected override CodeFixProvider CodeFixProvider => new StructWithoutElementaryMethodsOverriddenCodeFix();
-
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_NoMethodsImplemented()
     {
         var original = @"
-struct X
+struct {|#0:X|}
 {
 }";
 
@@ -40,15 +35,14 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_EqualsImplemented()
     {
         var original = @"
-struct X
+struct {|#0:X|}
 {
     public override bool Equals(object obj)
     {
@@ -75,15 +69,14 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_GetHashCodeImplemented()
     {
         var original = @"
-struct X
+struct {|#0:X|}
 {
     public override int GetHashCode()
     {
@@ -110,15 +103,14 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_ToStringImplemented()
     {
         var original = @"
-struct X
+struct {|#0:X|}
 {
     public override string ToString()
     {
@@ -145,15 +137,14 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_EqualsAndGetHashCodeImplemented()
     {
         var original = @"
-struct X
+struct {|#0:X|}
 {
     public override bool Equals(object obj)
     {
@@ -185,8 +176,7 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original, "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 
     [TestMethod]
@@ -211,25 +201,24 @@ struct X
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_Partial_PartiallyImplemented()
     {
-        var file1 = @"
-partial struct X
+        var original = @"
+partial struct {|#0:X|}
 {
     public override bool Equals(object obj) => false;
-}";
+}
 
-        var file2 = @"
 partial struct X
 {
 
 }";
 
-        var file1Result = @"
+        var result = @"
 partial struct X
 {
     public override bool Equals(object obj) => false;
@@ -243,30 +232,62 @@ partial struct X
     {
         throw new System.NotImplementedException();
     }
+}
+
+partial struct X
+{
+
 }";
 
-        await VerifyDiagnostic(new[] { file1, file2 },
-            "Implement Equals(), GetHashCode() and ToString() methods on struct X.",
-            "Implement Equals(), GetHashCode() and ToString() methods on struct X.");
-        await VerifyFix(file1, file1Result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 
     [TestMethod]
     public async Task StructWithoutElementaryMethodsOverridden_Partial_FullyImplemented()
     {
-        var file1 = @"
-partial struct X
+        var original = @"
+partial struct {|#0:X|}
 {
     public override bool Equals(object obj) => false;
-}";
+}
 
-        var file2 = @"
 partial struct X
 {
     public override int GetHashCode() => 5;
     public override string ToString() => string.Empty;
 }";
 
-        await VerifyDiagnostic(new[] { file1, file2 });
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StructWithoutElementaryMethodsOverridden_IEquatableWithoutEquals()
+    {
+        var original = @"
+using System;
+
+struct {|#0:X|} : IEquatable<X>
+{
+    public bool Equals(X obj) => false;
+    public override int GetHashCode() => 5;
+    public override string ToString() => string.Empty;
+}";
+
+        var result = @"
+using System;
+
+struct {|#0:X|} : IEquatable<X>
+{
+    public bool Equals(X obj) => false;
+    public override int GetHashCode() => 5;
+    public override string ToString() => string.Empty;
+
+    public override bool Equals(object obj)
+    {
+        throw new NotImplementedException();
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
     }
 }
