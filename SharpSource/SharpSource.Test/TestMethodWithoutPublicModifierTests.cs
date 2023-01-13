@@ -1,19 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.TestMethodWithoutPublicModifierAnalyzer, SharpSource.Diagnostics.TestMethodWithoutPublicModifierCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
+public class TestMethodWithoutPublicModifierTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new TestMethodWithoutPublicModifierAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new TestMethodWithoutPublicModifierCodeFix();
-
     [TestMethod]
     public async Task TestMethodWithoutPublicModifier_WithPublicModifierAndTestAttribute()
     {
@@ -34,7 +29,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(test);
+        await VerifyCS.VerifyNoDiagnostic(test);
     }
 
     [TestMethod]
@@ -57,7 +52,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -79,7 +74,7 @@ public class TestMethodWithoutPublicModifierTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -95,7 +90,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [Test]
-        internal void Method()
+        internal void {|#0:Method|}()
         {
 
         }
@@ -119,8 +114,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [TestMethod]
@@ -136,7 +130,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [TestMethod]
-        internal void Method()
+        internal void {|#0:Method|}()
         {
 
         }
@@ -160,8 +154,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [TestMethod]
@@ -176,7 +169,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [Fact]
-        internal void Method()
+        internal void {|#0:Method|}()
         {
 
         }
@@ -199,8 +192,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [TestMethod]
@@ -220,7 +212,7 @@ public class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -236,7 +228,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [TestMethod]
-        protected internal virtual void Method()
+        protected internal virtual void {|#0:Method|}()
         {
 
         }
@@ -260,8 +252,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [TestMethod]
@@ -277,7 +268,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [TestMethod]
-        internal virtual void Method()
+        internal virtual void {|#0:Method|}()
         {
 
         }
@@ -301,8 +292,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [TestMethod]
@@ -318,7 +308,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [Test]
-        void Method()
+        void {|#0:Method|}()
         {
 
         }
@@ -342,8 +332,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [TestMethod]
@@ -363,7 +352,7 @@ namespace ConsoleApplication1
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/236")]
@@ -379,7 +368,7 @@ class MyOwnAttribute : TestAttribute {}
 public class MyClass
 {
     [MyOwnAttribute]
-    void Method()
+    void {|#0:Method|}()
     {
 
     }
@@ -401,8 +390,7 @@ public class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/236")]
@@ -420,7 +408,7 @@ class MyThirdAttribute : MySecondAttribute {}
 public class MyClass
 {
     [MyThird]
-    void Method()
+    void {|#0:Method|}()
     {
 
     }
@@ -444,7 +432,6 @@ public class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original, "Test method \"Method\" is not public.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
     }
 }

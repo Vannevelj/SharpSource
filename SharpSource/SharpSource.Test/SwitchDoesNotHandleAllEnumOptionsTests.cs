@@ -1,18 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptionsAnalyzer, SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptionsCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class SwitchDoesNotHandleAllEnumOptionsTests : DiagnosticVerifier
+public class SwitchDoesNotHandleAllEnumOptionsTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SwitchDoesNotHandleAllEnumOptionsAnalyzer();
-    protected override CodeFixProvider CodeFixProvider => new SwitchDoesNotHandleAllEnumOptionsCodeFix();
-
     [TestMethod]
     public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement()
     {
@@ -29,7 +24,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
@@ -64,8 +59,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -95,7 +89,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -119,7 +113,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -138,7 +132,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 default:
                     break;
@@ -175,8 +169,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -195,7 +188,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                     break;
@@ -232,8 +225,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -250,7 +242,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case Asynchronous:
                 case DeleteOnClose:
@@ -273,15 +265,15 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case Encrypted:
+                case FileOptions.RandomAccess:
                     throw new System.NotImplementedException();
                 case SequentialScan:
                     throw new System.NotImplementedException();
-                case FileOptions.RandomAccess:
-                    throw new System.NotImplementedException();
-                case WriteThrough:
+                case Encrypted:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
                 case Asynchronous:
                 case DeleteOnClose:
@@ -291,8 +283,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -311,7 +302,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Buzz:
                     break;
@@ -350,8 +341,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -368,7 +358,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
             }
         }
@@ -388,27 +378,26 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case Encrypted:
+                case Asynchronous:
+                    throw new System.NotImplementedException();
+                case FileOptions.RandomAccess:
                     throw new System.NotImplementedException();
                 case SequentialScan:
                     throw new System.NotImplementedException();
                 case DeleteOnClose:
                     throw new System.NotImplementedException();
-                case FileOptions.RandomAccess:
-                    throw new System.NotImplementedException();
-                case Asynchronous:
-                    throw new System.NotImplementedException();
-                case WriteThrough:
+                case Encrypted:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -425,7 +414,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case FileOptions.Encrypted:
                     break;
@@ -451,13 +440,13 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case DeleteOnClose:
-                    throw new System.NotImplementedException();
                 case Asynchronous:
                     throw new System.NotImplementedException();
-                case WriteThrough:
+                case DeleteOnClose:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
                 case Encrypted:
                     break;
@@ -470,8 +459,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -488,7 +476,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case FileOptions.Encrypted:
                     break;
@@ -514,13 +502,13 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case DeleteOnClose:
-                    throw new System.NotImplementedException();
                 case Asynchronous:
                     throw new System.NotImplementedException();
-                case WriteThrough:
+                case DeleteOnClose:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
                 case FileOptions.Encrypted:
                     break;
@@ -533,8 +521,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -554,7 +541,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
@@ -590,8 +577,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -611,7 +597,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
@@ -647,8 +633,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -664,7 +649,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case Encrypted:
                     break;
@@ -689,13 +674,13 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case DeleteOnClose:
-                    throw new System.NotImplementedException();
                 case Asynchronous:
                     throw new System.NotImplementedException();
-                case WriteThrough:
+                case DeleteOnClose:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
                 case Encrypted:
                     break;
@@ -708,8 +693,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -725,7 +709,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case Encrypted:
                     break;
@@ -750,13 +734,13 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case DeleteOnClose:
-                    throw new System.NotImplementedException();
                 case Asynchronous:
                     throw new System.NotImplementedException();
-                case WriteThrough:
+                case DeleteOnClose:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
                 case Encrypted:
                     break;
@@ -769,8 +753,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -789,7 +772,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
@@ -824,8 +807,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -844,7 +826,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            switch (e)
+            switch ({|#0:e|})
             {
                 case (MyEnum) 0:
                     break;
@@ -853,7 +835,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -867,7 +849,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = System.IO.FileOptions.DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
             }
         }
@@ -884,27 +866,26 @@ namespace ConsoleApplication1
             var e = System.IO.FileOptions.DeleteOnClose;
             switch (e)
             {
-                case System.IO.FileOptions.Encrypted:
+                case System.IO.FileOptions.Asynchronous:
+                    throw new System.NotImplementedException();
+                case System.IO.FileOptions.RandomAccess:
                     throw new System.NotImplementedException();
                 case System.IO.FileOptions.SequentialScan:
                     throw new System.NotImplementedException();
                 case System.IO.FileOptions.DeleteOnClose:
                     throw new System.NotImplementedException();
-                case System.IO.FileOptions.RandomAccess:
-                    throw new System.NotImplementedException();
-                case System.IO.FileOptions.Asynchronous:
-                    throw new System.NotImplementedException();
-                case System.IO.FileOptions.WriteThrough:
+                case System.IO.FileOptions.Encrypted:
                     throw new System.NotImplementedException();
                 case System.IO.FileOptions.None:
+                    throw new System.NotImplementedException();
+                case System.IO.FileOptions.WriteThrough:
                     throw new System.NotImplementedException();
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -920,7 +901,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = FileOptions.DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
             }
         }
@@ -939,27 +920,26 @@ namespace ConsoleApplication1
             var e = FileOptions.DeleteOnClose;
             switch (e)
             {
-                case FileOptions.Encrypted:
+                case FileOptions.Asynchronous:
+                    throw new System.NotImplementedException();
+                case FileOptions.RandomAccess:
                     throw new System.NotImplementedException();
                 case FileOptions.SequentialScan:
                     throw new System.NotImplementedException();
                 case FileOptions.DeleteOnClose:
                     throw new System.NotImplementedException();
-                case FileOptions.RandomAccess:
-                    throw new System.NotImplementedException();
-                case FileOptions.Asynchronous:
-                    throw new System.NotImplementedException();
-                case FileOptions.WriteThrough:
+                case FileOptions.Encrypted:
                     throw new System.NotImplementedException();
                 case FileOptions.None:
+                    throw new System.NotImplementedException();
+                case FileOptions.WriteThrough:
                     throw new System.NotImplementedException();
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -975,7 +955,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = DeleteOnClose;
-            switch (e)
+            switch ({|#0:e|})
             {
             }
         }
@@ -994,26 +974,25 @@ namespace ConsoleApplication1
             var e = DeleteOnClose;
             switch (e)
             {
-                case Encrypted:
+                case Asynchronous:
+                    throw new System.NotImplementedException();
+                case RandomAccess:
                     throw new System.NotImplementedException();
                 case SequentialScan:
                     throw new System.NotImplementedException();
                 case DeleteOnClose:
                     throw new System.NotImplementedException();
-                case RandomAccess:
-                    throw new System.NotImplementedException();
-                case Asynchronous:
-                    throw new System.NotImplementedException();
-                case WriteThrough:
+                case Encrypted:
                     throw new System.NotImplementedException();
                 case None:
+                    throw new System.NotImplementedException();
+                case WriteThrough:
                     throw new System.NotImplementedException();
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Missing enum member in switched cases.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
     }
 }
