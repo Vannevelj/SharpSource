@@ -325,4 +325,34 @@ class Test
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task ParameterAssignedInConstructor_PartialDifferentFiles()
+    {
+        var file1 = @"
+partial class Test
+{
+    int Count { get; set; }
+}";
+
+        var file2 = @"
+partial class Test
+{
+    Test(int count)
+    {
+        {|#0:count|} = Count;
+    }
+}";
+
+        var result = @"
+partial class Test
+{
+    Test(int count)
+    {
+        Count = count;
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(file2, new[] { VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test") }, result, additionalFiles: new[] { file1 });
+    }
 }
