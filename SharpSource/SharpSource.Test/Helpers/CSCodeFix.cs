@@ -69,7 +69,7 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
                 var filename = Guid.NewGuid().ToString();
                 test.TestState.Sources.Add(($"{filename}.cs", file));
                 test.FixedState.Sources.Add(($"{filename}.cs", file));
-            }            
+            }
         }
 
         test.ExpectedDiagnostics.AddRange(expected);
