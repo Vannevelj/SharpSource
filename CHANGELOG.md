@@ -1,6 +1,12 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.19.1] - 2023-01-14
+- `PointlessCollectionToString`: Supports immutable collections
+- `StructWithoutElementaryMethodsOverridden`: No longer generates the elementary methods in both declarations if it is a `partial struct`
+- `StructWithoutElementaryMethodsOverridden`: Rewritten to use `ISymbol`
+- `PointlessCollectionToString`, `ThrowNull`, `ExplicitEnumValues`, `RethrowExceptionWithoutLosingStracktrace`, `SwitchDoesNotHandleAllEnumOptions`, `ThreadSleepInAsyncMethodTests`, `ParameterAssignedInConstructorTests`, `EqualsAndGetHashcodeNotImplemented`, `TestMethodWithoutPublicModifier`, `FlagsEnumValuesAreNotPowersOfTwoTests`, `StructWithoutElementaryMethodsOverridden` and `UnboundedStackalloc` tests use `VerifyCS`
+
 ## [1.19.0] - 2023-01-12
 - `FormReadSynchronously`: Synchronously accessed `HttpRequest.Form` which uses sync-over-async. Use `HttpRequest.ReadFormAsync()` instead
 - `SwitchIsMissingDefaultLabel`: Rewritten using `IOperation` and tests use `VerifyCS`

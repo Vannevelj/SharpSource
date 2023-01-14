@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using SharpSource.Utilities;
@@ -27,43 +26,26 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.StructDeclaration);
+
+        context.RegisterCompilationStartAction(compilationContext =>
+        {
+            var objectSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_Object);
+            var equalsSymbol = objectSymbol?.GetMembers("Equals").OfType<IMethodSymbol>().FirstOrDefault();
+            var getHashCodeSymbol = objectSymbol?.GetMembers("GetHashCode").OfType<IMethodSymbol>().FirstOrDefault();
+            var toStringSymbol = objectSymbol?.GetMembers("ToString").OfType<IMethodSymbol>().FirstOrDefault();
+
+            if (equalsSymbol is null || getHashCodeSymbol is null || toStringSymbol is null)
+            {
+                return;
+            }
+            compilationContext.RegisterSymbolAction(context => Analyze(context, equalsSymbol, getHashCodeSymbol, toStringSymbol), SymbolKind.NamedType);
+        });
     }
 
-    private void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
+    private static void Analyze(SymbolAnalysisContext context, IMethodSymbol equalsSymbol, IMethodSymbol getHashCodeSymbol, IMethodSymbol toStringSymbol)
     {
-        var objectSymbol = context.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
-        IMethodSymbol? objectEquals = null;
-        IMethodSymbol? objectGetHashCode = null;
-        IMethodSymbol? objectToString = null;
-
-        foreach (var symbol in objectSymbol.GetMembers())
-        {
-            if (symbol is not IMethodSymbol)
-            {
-                continue;
-            }
-
-            var method = (IMethodSymbol)symbol;
-            if (method is { MetadataName: WellKnownMemberNames.ObjectEquals, Parameters.Length: 1 })
-            {
-                objectEquals = method;
-            }
-
-            if (method is { MetadataName: WellKnownMemberNames.ObjectGetHashCode, Parameters.Length: 0 })
-            {
-                objectGetHashCode = method;
-            }
-
-            if (method is { MetadataName: WellKnownMemberNames.ObjectToString, Parameters.Length: 0 })
-            {
-                objectToString = method;
-            }
-        }
-
-        var structDeclaration = (StructDeclarationSyntax)context.Node;
-        var structSymbol = context.SemanticModel.GetDeclaredSymbol(structDeclaration);
-        if (structSymbol == default)
+        var structSymbol = (INamedTypeSymbol)context.Symbol;
+        if (structSymbol.TypeKind is not TypeKind.Struct)
         {
             return;
         }
@@ -72,13 +54,12 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
         var getHashCodeImplemented = false;
         var toStringImplemented = false;
 
-        foreach (var node in structSymbol.GetMembers())
+        foreach (var member in structSymbol.GetMembers())
         {
-            if (node is not IMethodSymbol method)
+            if (member is not IMethodSymbol method)
             {
                 continue;
             }
-
 
             if (!method.IsOverride)
             {
@@ -93,17 +74,17 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
                 return;
             }
 
-            if (method.Equals(objectEquals, SymbolEqualityComparer.Default) == true)
+            if (method.Equals(equalsSymbol, SymbolEqualityComparer.Default) == true)
             {
                 equalsImplemented = true;
             }
 
-            if (method.Equals(objectGetHashCode, SymbolEqualityComparer.Default) == true)
+            if (method.Equals(getHashCodeSymbol, SymbolEqualityComparer.Default) == true)
             {
                 getHashCodeImplemented = true;
             }
 
-            if (method.Equals(objectToString, SymbolEqualityComparer.Default) == true)
+            if (method.Equals(toStringSymbol, SymbolEqualityComparer.Default) == true)
             {
                 toStringImplemented = true;
             }
@@ -118,7 +99,7 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
                     new ("IsToStringImplemented", toStringImplemented.ToString())
                 });
 
-            context.ReportDiagnostic(Diagnostic.Create(Rule, structDeclaration.Identifier.GetLocation(), properties, structDeclaration.Identifier));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, structSymbol.Locations[0], properties, structSymbol.Name));
         }
     }
 }

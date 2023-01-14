@@ -4,13 +4,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.PointlessCollectionToStringAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
+
 namespace SharpSource.Test;
 
 [TestClass]
-public class PointlessCollectionToStringTests : DiagnosticVerifier
+public class PointlessCollectionToStringTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new PointlessCollectionToStringAnalyzer();
-
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("LinkedList<int>")]
@@ -29,10 +29,44 @@ using System;
 using System.Collections.Generic;
 
 var collection = new {collection}();
-Console.Write(collection.ToString());
+Console.Write({{|#0:collection.ToString()|}});
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
+    }
+
+    [DataRow("ImmutableArray")]
+    [DataRow("ImmutableList")]
+    [DataRow("ImmutableHashSet")]
+    [DataRow("ImmutableQueue")]
+    [DataRow("ImmutableSortedSet")]
+    [DataRow("ImmutableStack")]
+    public async Task PointlessCollectionToString_ImmutableTypes(string collection)
+    {
+        var original = @$"
+using System;
+using System.Collections.Immutable;
+
+var collection = {collection}.Create<string>();
+Console.Write({{|#0:collection.ToString()|}});
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
+    }
+
+    [DataRow("ImmutableSortedDictionary")]
+    [DataRow("ImmutableDictionary")]
+    public async Task PointlessCollectionToString_ImmutableDictionary(string collection)
+    {
+        var original = @$"
+using System;
+using System.Collections.Immutable;
+
+var collection = {collection}.Create<string, string>();
+Console.Write({{|#0:collection.ToString()|}});
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
@@ -45,21 +79,21 @@ var collection = 5;
 Console.Write(collection.ToString());
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_IEnumerable()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
 IEnumerable<int> collection = new List<int>();
-Console.Write(collection.ToString());
+Console.Write({|#0:collection.ToString()|});
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
@@ -72,47 +106,53 @@ Console.Write(collection.ToString());
     [DataRow("IReadOnlySet<int>")]
     [DataRow("ISet<int>")]
     [DataRow("IReadOnlyDictionary<int, int>")]
+    [DataRow("IImmutableList<int>")]
+    [DataRow("IImmutableStack<int>")]
+    [DataRow("IImmutableSet<int>")]
+    [DataRow("IImmutableQueue<int>")]
+    [DataRow("IImmutableDictionary<int, int>")]
     public async Task PointlessCollectionToString_InterfaceAsParam(string interfaceParam)
     {
         var original = @$"
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 void DoThing({interfaceParam} collection)
 {{
-    Console.Write(collection.ToString());
+    Console.Write({{|#0:collection.ToString()|}});
 }}
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_NullConditional()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
 var collection = new List<int>();
-Console.Write(collection?.ToString());
+Console.Write(collection?{|#0:.ToString()|});
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_NullSuppress()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
 var collection = new List<int>();
-Console.Write(collection!.ToString());
+Console.Write({|#0:collection!.ToString()|});
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
@@ -126,108 +166,108 @@ var collection = new List<int>();
 Console.Write(collection.GetHashCode());
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_Chained()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
-Console.Write(Get().ToString());
+Console.Write({|#0:Get().ToString()|});
 
 List<int> Get() => new();
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_Chained_NullConditional()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
-Console.Write(Get()?.ToString());
+Console.Write(Get()?{|#0:.ToString()|});
 
 List<int> Get() => new();
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_Chained_NullSuppress()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
-Console.Write(Get()!.ToString());
+Console.Write({|#0:Get()!.ToString()|});
 
 List<int> Get() => new();
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_Chained_Property()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
-Console.Write(Test.Get.ToString());
+Console.Write({|#0:Test.Get.ToString()|});
 
 class Test
-{{
+{
     public static List<int> Get => new();
-}}
+}
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_Long_Chained_Null()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
-Console.Write(Test.Get?.ToString());
+Console.Write(Test.Get?{|#0:.ToString()|});
 
 class Test
-{{
+{
     public static List<int> Get => new();
-}}
+}
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
     [TestMethod]
     public async Task PointlessCollectionToString_Chained_Property_Null()
     {
-        var original = @$"
+        var original = @"
 using System;
 using System.Collections.Generic;
 
 class Test
-{{
+{
     Test()
-    {{
-        Console.Write(Get?.ToString());
-    }}
+    {
+        Console.Write(Get?{|#0:.ToString()|});
+    }
     
     List<int> Get => new();
-}}
+}
 ";
 
-        await VerifyDiagnostic(original, ".ToString() was called on a collection which results in impractical output");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 }

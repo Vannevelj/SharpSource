@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -52,7 +53,7 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         => await VerifyCodeFix(source, new[] { expected }, fixedSource, codeActionIndex);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult[], string)"/>
-    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0)
+    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0, string[]? additionalFiles = null)
     {
         var test = new Test
         {
@@ -60,6 +61,16 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             FixedCode = fixedSource,
             CodeActionIndex = codeActionIndex
         };
+
+        if (additionalFiles != null)
+        {
+            foreach (var file in additionalFiles)
+            {
+                var filename = Guid.NewGuid().ToString();
+                test.TestState.Sources.Add(($"{filename}.cs", file));
+                test.FixedState.Sources.Add(($"{filename}.cs", file));
+            }
+        }
 
         test.ExpectedDiagnostics.AddRange(expected);
         await test.RunAsync(CancellationToken.None);

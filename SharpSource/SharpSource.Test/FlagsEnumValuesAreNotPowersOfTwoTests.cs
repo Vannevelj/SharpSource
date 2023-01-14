@@ -1,19 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwoAnalyzer, SharpSource.Diagnostics.FlagsEnumValuesAreNotPowersOfTwoCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class FlagsEnumValuesAreNotPowersOfTwoTests : DiagnosticVerifier
+public class FlagsEnumValuesAreNotPowersOfTwoTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new FlagsEnumValuesAreNotPowersOfTwoAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new FlagsEnumValuesAreNotPowersOfTwoCodeFix();
-
     [TestMethod]
     public async Task FlagsEnumValuesAreNotPowersOfTwo_ValuesAreNotPowersOfTwo()
     {
@@ -26,7 +21,7 @@ enum Foo
     Bar = 0,
     Biz = 1,
     Baz = 2,
-    Buz = 3,
+    Buz = {|#0:3|},
     Boz = 4
 }";
 
@@ -43,8 +38,7 @@ enum Foo
     Boz = 4
 }";
 
-        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."), result);
     }
 
     [TestMethod]
@@ -70,7 +64,7 @@ enum Foo : {type}
     Bar = 0,
     Biz = 1,
     Baz = 2,
-    Buz = 3,
+    Buz = {{|#0:3|}},
     Boz = 4
 }}";
 
@@ -87,8 +81,7 @@ enum Foo : {type}
     Boz = 4
 }}";
 
-        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."), result);
     }
 
     [TestMethod]
@@ -107,7 +100,7 @@ enum Foo
     Boz = 8
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -122,7 +115,7 @@ enum Foo
     Bar = 0x0,
     Biz = 0x1,
     Baz = 0x2,
-    Buz = 0x3,
+    Buz = {|#0:0x3|},
     Boz = 0x4
 }";
 
@@ -139,8 +132,7 @@ enum Foo
     Boz = 0x4
 }";
 
-        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."), result);
     }
 
     [TestMethod]
@@ -159,7 +151,7 @@ enum Foo
     Boz = 0x8
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -176,7 +168,7 @@ enum Foo
     Buz = -3
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -195,7 +187,7 @@ enum Foo
     Boz
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -211,7 +203,7 @@ enum Foo
     Boz = 4
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -224,7 +216,7 @@ enum Foo
     Bar = 0,
     Biz = 1,
     Baz = 2,
-    Buz = 3,
+    Buz = {|#0:3|},
     Boz = 4
 }";
 
@@ -239,8 +231,7 @@ enum Foo
     Boz = 4
 }";
 
-        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."), result);
     }
 
     [TestMethod]
@@ -259,7 +250,7 @@ enum Foo
     Boz = 1 << 3
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -284,7 +275,7 @@ enum Days
     Weekend = Saturday | Sunday,
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -303,7 +294,7 @@ enum Foo
     Boz = 'e'
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -350,12 +341,12 @@ enum Days
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
 
-        await VerifyDiagnostic(original,
-            "Enum Days.Tuesday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
-            "Enum Days.Thursday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
-            "Enum Days.Friday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.",
-            "Enum Days.Saturday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, new[] {
+            VerifyCS.Diagnostic().WithMessage("Enum Days.Tuesday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
+            VerifyCS.Diagnostic().WithMessage("Enum Days.Thursday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
+            VerifyCS.Diagnostic().WithMessage("Enum Days.Friday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
+            VerifyCS.Diagnostic().WithMessage("Enum Days.Saturday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.")
+        }, result);
     }
 
     [TestMethod]
@@ -381,7 +372,7 @@ enum Days
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -407,7 +398,7 @@ enum Days
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -424,7 +415,7 @@ enum Foo
     C
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -440,7 +431,7 @@ enum Foo
     Baz = 2,
     Buz = 4,
     Boz = 8,
-    Bop = 10,
+    Bop = {|#0:10|},
 }";
 
         var result = @"
@@ -456,8 +447,7 @@ enum Foo
     Bop = Bip | Boz,
 }";
 
-        await VerifyDiagnostic(original, "Enum Foo.Bop is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Enum Foo.Bop is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."), result);
     }
 
 
@@ -479,7 +469,7 @@ enum Foo
     Baz = 2,
 
     // Option 3
-    Buz = 3
+    Buz = {|#0:3|}
 }";
 
         var result = @"
@@ -500,7 +490,6 @@ enum Foo
     Buz = Biz | Baz
 }";
 
-        await VerifyDiagnostic(original, "Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Enum Foo.Buz is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."), result);
     }
 }

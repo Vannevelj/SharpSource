@@ -1,22 +1,19 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ThrowNullAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ThrowNullTests : DiagnosticVerifier
+public class ThrowNullTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ThrowNullAnalyzer();
-
     [TestMethod]
     public async Task ThrowNull_ThrowsNullLiteral()
     {
-        var original = @"throw null;";
+        var original = @"{|#0:throw null;|}";
 
-        await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Throwing null will always result in a runtime exception"));
     }
 
     [TestMethod]
@@ -24,17 +21,17 @@ public class ThrowNullTests : DiagnosticVerifier
     {
         var original = @"
 const System.Exception NullConst = null;
-throw NullConst;";
+{|#0:throw NullConst;|}";
 
-        await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Throwing null will always result in a runtime exception"));
     }
 
     [TestMethod]
     public async Task ThrowNull_ThrowsNullCast()
     {
-        var original = @"throw (System.Exception)null;";
+        var original = @"{|#0:throw (System.Exception)null;|}";
 
-        await VerifyDiagnostic(original, "Throwing null will always result in a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Throwing null will always result in a runtime exception"));
     }
 
     [TestMethod]
@@ -42,7 +39,7 @@ throw NullConst;";
     {
         var original = @"throw new System.Exception();";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -55,6 +52,6 @@ try {
     throw;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

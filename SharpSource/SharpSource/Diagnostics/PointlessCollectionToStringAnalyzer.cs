@@ -54,7 +54,19 @@ public class PointlessCollectionToStringAnalyzer : DiagnosticAnalyzer
                 "IReadOnlyCollection" or
                 "IReadOnlyList" or
                 "IReadOnlySet" or
-                "IReadOnlyDictionary")
+                "IReadOnlyDictionary" or
+                "IImmutableList" or
+                "ImmutableArray" or
+                "IImmutableStack" or
+                "IImmutableSet" or
+                "IImmutableQueue" or
+                "IImmutableDictionary" or
+                "ImmutableHashSet" or
+                "ImmutableList" or
+                "ImmutableQueue" or
+                "ImmutableSortedDictionary" or
+                "ImmutableSortedSet" or
+                "ImmutableStack")
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
         }

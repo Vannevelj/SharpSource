@@ -1,25 +1,19 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ExplicitEnumValuesAnalyzer, SharpSource.Diagnostics.ExplicitEnumValuesCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ExplicitEnumValuesTests : DiagnosticVerifier
+public class ExplicitEnumValuesTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ExplicitEnumValuesAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new ExplicitEnumValuesCodeFix();
-
     [TestMethod]
     public async Task ExplicitEnumValues_NotSpecified()
     {
         var original = @"
 enum Test {
-    A
+    {|#0:A|}
 }";
 
         var result = @"
@@ -27,8 +21,7 @@ enum Test {
     A = 0
 }";
 
-        await VerifyDiagnostic(original, "Option A on enum Test should explicitly specify its value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Option A on enum Test should explicitly specify its value"), result);
     }
 
     [TestMethod]
@@ -39,7 +32,7 @@ enum Test {
     A = 0
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -48,7 +41,7 @@ enum Test {
         var original = @"
 enum Test {
     A = 0,
-    B
+    {|#0:B|}
 }";
 
         var result = @"
@@ -57,8 +50,7 @@ enum Test {
     B = 1
 }";
 
-        await VerifyDiagnostic(original, "Option B on enum Test should explicitly specify its value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Option B on enum Test should explicitly specify its value"), result);
     }
 
     [TestMethod]
@@ -70,7 +62,7 @@ enum Test {
     B = A
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -81,7 +73,7 @@ enum Test {
     A = 1 << 1
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -89,9 +81,9 @@ enum Test {
     {
         var original = @"
 enum Test {
-    A,
+    {|#0:A|},
     B = 1,
-    C
+    {|#1:C|}
 }";
 
         var result = @"
@@ -101,7 +93,9 @@ enum Test {
     C = 2
 }";
 
-        await VerifyDiagnostic(original, "Option A on enum Test should explicitly specify its value", "Option C on enum Test should explicitly specify its value");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, new[] {
+            VerifyCS.Diagnostic(location: 0).WithMessage("Option A on enum Test should explicitly specify its value"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("Option C on enum Test should explicitly specify its value")
+        }, result);
     }
 }
