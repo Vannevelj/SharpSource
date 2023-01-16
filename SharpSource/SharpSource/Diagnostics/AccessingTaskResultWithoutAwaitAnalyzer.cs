@@ -67,9 +67,7 @@ public sealed class AccessingTaskResultWithoutAwaitAnalyzer : DiagnosticAnalyzer
             operation = operation.Parent;
         }
 
-        if (isAsyncContext)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation()));
-        }
+        var properties = ImmutableDictionary<string, string?>.Empty.Add("isAsync", isAsyncContext ? "true" : "false");
+        context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), properties));
     }
 }
