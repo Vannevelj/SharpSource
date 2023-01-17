@@ -38,20 +38,20 @@ public class CollectionManipulatedDuringTraversal : DiagnosticAnalyzer
             }
 
             var allProhibitedMethods = Enumerable.Empty<ISymbol>()
-                                            .Concat(getSymbols("System.Collections.Generic.List`1", "Add", "Remove", "Insert", "AddRange", "Clear", "InsertRange", "RemoveAll", "RemoveAt", "RemoveRange", "Reverse", "Sort"))
-                                            .Concat(getSymbols("System.Collections.Generic.Dictionary`2", "Add", "Clear", "Remove", "TryAdd"))
-                                            .Concat(getSymbols("System.Collections.Generic.HashSet`1", "Add", "Clear", "ExceptWith", "IntersectWith", "Remove", "RemoveWhere", "SymmetricExceptWith", "UnionWith"))
-                                            .Concat(getSymbols("System.Collections.Generic.Stack`1", "Clear", "Pop", "Push", "TryPop"))
-                                            .Concat(getSymbols("System.Collections.Generic.Queue`1", "Clear", "Dequeue", "Enqueue", "TryDequeue"))
-                                            .Concat(getSymbols("System.Collections.Generic.SortedDictionary`2", "Add", "Clear", "Remove"))
-                                            .Concat(getSymbols("System.Collections.Generic.SortedList`2", "Add", "Remove", "RemoveAt", "SetValueAtIndex"))
-                                            .Concat(getSymbols("System.Collections.Generic.SortedSet`1", "Add", "Clear", "ExceptWith", "IntersectWith", "Remove", "RemoveWhere", "Reverse", "SymmetricExceptWith", "UnionWith"))
-                                            .Concat(getSymbols("System.Collections.Generic.ICollection`1", "Add", "Clear", "Remove"))
-                                            .Concat(getSymbols("System.Collections.Generic.IList`1", "Insert", "RemoveAt"))
-                                            .Concat(getSymbols("System.Collections.Generic.ISet`1", "Add", "ExceptWith", "IntersectWith", "SymmetricExceptWith", "UnionWith"))
-                                            .Concat(getSymbols("System.Collections.Generic.IDictionary`2", "Add", "Remove"))
-                                            .OfType<IMethodSymbol>()
-                                            .ToArray();
+                .Concat(getSymbols("System.Collections.Generic.List`1", "Add", "Remove", "Insert", "AddRange", "Clear", "InsertRange", "RemoveAll", "RemoveAt", "RemoveRange", "Reverse", "Sort"))
+                .Concat(getSymbols("System.Collections.Generic.Dictionary`2", "Add", "Clear", "Remove", "TryAdd"))
+                .Concat(getSymbols("System.Collections.Generic.HashSet`1", "Add", "Clear", "ExceptWith", "IntersectWith", "Remove", "RemoveWhere", "SymmetricExceptWith", "UnionWith"))
+                .Concat(getSymbols("System.Collections.Generic.Stack`1", "Clear", "Pop", "Push", "TryPop"))
+                .Concat(getSymbols("System.Collections.Generic.Queue`1", "Clear", "Dequeue", "Enqueue", "TryDequeue"))
+                .Concat(getSymbols("System.Collections.Generic.SortedDictionary`2", "Add", "Clear", "Remove"))
+                .Concat(getSymbols("System.Collections.Generic.SortedList`2", "Add", "Remove", "RemoveAt", "SetValueAtIndex"))
+                .Concat(getSymbols("System.Collections.Generic.SortedSet`1", "Add", "Clear", "ExceptWith", "IntersectWith", "Remove", "RemoveWhere", "Reverse", "SymmetricExceptWith", "UnionWith"))
+                .Concat(getSymbols("System.Collections.Generic.ICollection`1", "Add", "Clear", "Remove"))
+                .Concat(getSymbols("System.Collections.Generic.IList`1", "Insert", "RemoveAt"))
+                .Concat(getSymbols("System.Collections.Generic.ISet`1", "Add", "ExceptWith", "IntersectWith", "SymmetricExceptWith", "UnionWith"))
+                .Concat(getSymbols("System.Collections.Generic.IDictionary`2", "Add", "Remove"))
+                .OfType<IMethodSymbol>()
+                .ToArray();
 
             if (allProhibitedMethods is { Length: > 0 })
             {
