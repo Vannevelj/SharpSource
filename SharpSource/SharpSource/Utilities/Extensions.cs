@@ -220,4 +220,16 @@ public static class Extensions
                  .AllInterfaces
                  .SelectMany(@interface => @interface.GetMembers().OfType<IMethodSymbol>())
                  .Any(interfaceMethod => method.ContainingType.FindImplementationForInterfaceMember(interfaceMethod)?.Equals(method, SymbolEqualityComparer.Default) == true);
+
+    public static IEnumerable<ISymbol> GetAllMembers(this INamespaceOrTypeSymbol symbol, params string[] members)
+    {
+        foreach (var member in members)
+        {
+            var symbolMembers = symbol.GetMembers(member);
+            foreach (var symbolMember in symbolMembers)
+            {
+                yield return symbolMember;
+            }
+        }
+    }
 }
