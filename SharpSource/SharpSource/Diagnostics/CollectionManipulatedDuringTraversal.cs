@@ -68,24 +68,24 @@ public class CollectionManipulatedDuringTraversal : DiagnosticAnalyzer
             return;
         }
 
+        var (collectionBeingIteratedOn, instanceOfIteration) = loopOperation switch
+        {
+            IForEachLoopOperation { Collection: IConversionOperation conv } => (GetReferencedSymbol(conv.Operand), GetReferencedInstance(conv.Operand)),
+            IForLoopOperation { Condition: IBinaryOperation { RightOperand: IMemberReferenceOperation memberRef } } => (GetReferencedSymbol(memberRef.Instance), GetReferencedInstance(memberRef.Instance)),
+            _ => default
+        };
+
+        if (collectionBeingIteratedOn == default || instanceOfIteration == default)
+        {
+            return;
+        }
+
         foreach (var invocation in loopOperation.Body.Descendants().TakeWhile(d => d.Kind is not OperationKind.AnonymousFunction).OfType<IInvocationOperation>())
         {
             if (prohibitedInvocations.Any(i => invocation.TargetMethod.OriginalDefinition.Equals(i, SymbolEqualityComparer.Default)))
             {
                 var invokedSymbol = GetReferencedSymbol(invocation.Instance);
-                if (invokedSymbol == default)
-                {
-                    continue;
-                }
-
-                var isTargettingLoopedCollection = loopOperation switch
-                {
-                    IForEachLoopOperation foreachLoop => foreachLoop.Collection.DescendantsAndSelf().Any(d => invokedSymbol.Equals(GetReferencedSymbol(d), SymbolEqualityComparer.Default)),
-                    IForLoopOperation forLoop => forLoop.Condition.DescendantsAndSelf().Any(d => invokedSymbol.Equals(GetReferencedSymbol(d), SymbolEqualityComparer.Default)),
-                    _ => false
-                };
-
-                if (isTargettingLoopedCollection)
+                if (collectionBeingIteratedOn.Equals(invokedSymbol, SymbolEqualityComparer.Default) && instanceOfIteration.Equals(GetReferencedInstance(invocation.Instance), SymbolEqualityComparer.Default))
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
                 }
@@ -99,6 +99,16 @@ public class CollectionManipulatedDuringTraversal : DiagnosticAnalyzer
         IParameterReferenceOperation paramRef => paramRef.Parameter,
         IFieldReferenceOperation fieldRef => fieldRef.Field,
         IMemberReferenceOperation memberRef => memberRef.Member,
+        IInstanceReferenceOperation instanceRef => instanceRef.Type,
+        _ => default
+    };
+    private static ISymbol? GetReferencedInstance(IOperation? operation) => operation switch
+    {
+        ILocalReferenceOperation localRef => localRef.Local,
+        IParameterReferenceOperation paramRef => paramRef.Parameter,
+        IFieldReferenceOperation fieldRef => GetReferencedSymbol(fieldRef.Instance),
+        IMemberReferenceOperation memberRef => GetReferencedSymbol(memberRef.Instance),
+        IInstanceReferenceOperation instanceRef => instanceRef.Type,
         _ => default
     };
 }

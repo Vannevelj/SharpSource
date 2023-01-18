@@ -158,11 +158,52 @@ void Method(List<int> items)
     var copy = items.ToArray();
     foreach (var item in copy.Concat(items))
     {
-        {|#0:items.Add(item)|};
+        items.Add(item);
     }
 }";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempted to manipulate a collection while traversing. Ensure modifications don't affect the original collection."));
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task CollectionManipulatedDuringTraversal_ReferencesComplex_ToNewCollection()
+    {
+        var original = @"
+using System.Collections.Generic;
+using System.Linq;
+
+void Method(List<int> items)
+{
+    foreach (var item in items.ToArray())
+    {
+        items.Add(item);
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task CollectionManipulatedDuringTraversal_ReferencesComplex_SamePropertyOnDifferentType()
+    {
+        var original = @"
+using System.Collections.Generic;
+using System.Linq;
+
+void Method(Test a, Test b)
+{
+    foreach (var item in a.Items)
+    {
+        b.Items.Add(item);
+    }
+}
+
+class Test
+{
+    public List<int> Items { get; set; }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -481,6 +522,42 @@ void Method(List<int> items)
     foreach (var item in items)
     {
         thing = () => items.Add(item);
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task CollectionManipulatedDuringTraversal_WithSubsequentReturn()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+void Method(List<int> items)
+{
+    foreach (var item in items)
+    {
+        items.Add(1);
+        return;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task CollectionManipulatedDuringTraversal_WithSubsequentBreak()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+void Method(List<int> items)
+{
+    foreach (var item in items)
+    {
+        items.Add(1);
+        break;
     }
 }";
 
