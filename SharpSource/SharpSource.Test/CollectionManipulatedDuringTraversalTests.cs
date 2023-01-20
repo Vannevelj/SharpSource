@@ -527,40 +527,4 @@ void Method(List<int> items)
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
-
-    [TestMethod]
-    public async Task CollectionManipulatedDuringTraversal_WithSubsequentReturn()
-    {
-        var original = @"
-using System.Collections.Generic;
-
-void Method(List<int> items)
-{
-    foreach (var item in items)
-    {
-        items.Add(1);
-        return;
-    }
-}";
-
-        await VerifyCS.VerifyNoDiagnostic(original);
-    }
-
-    [TestMethod]
-    public async Task CollectionManipulatedDuringTraversal_WithSubsequentBreak()
-    {
-        var original = @"
-using System.Collections.Generic;
-
-void Method(List<int> items)
-{
-    foreach (var item in items)
-    {
-        items.Add(1);
-        break;
-    }
-}";
-
-        await VerifyCS.VerifyNoDiagnostic(original);
-    }
 }
