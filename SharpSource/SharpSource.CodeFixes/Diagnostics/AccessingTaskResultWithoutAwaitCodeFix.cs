@@ -41,6 +41,11 @@ public class AccessingTaskResultWithoutAwaitCodeFix : CodeFixProvider
             return;
         }
 
+        if (diagnostic.Properties.TryGetValue("isAsync", out var value) && value == "false")
+        {
+            return;
+        }
+
         context.RegisterCodeFix(
             CodeAction.Create("Use await",
                 _ => UseAwait(context.Document, taskResultExpression, root),

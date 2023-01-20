@@ -55,7 +55,6 @@ namespace ConsoleApplication1
     {
         var original = @"
 using System;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApplication1
@@ -64,7 +63,7 @@ namespace ConsoleApplication1
     {   
         Task MyMethod()
         {
-            var number = Other().Result;
+            var number = {|#0:Other().Result|};
             return Task.CompletedTask;
         }
 
@@ -72,7 +71,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyNoDiagnostic(original);
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."));
     }
 
     [TestMethod]
@@ -237,13 +236,13 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-	    Action MyMethod() => new Action(() => Console.Write(Other().Result));
+	    Action MyMethod() => new Action(() => Console.Write({|#0:Other().Result|}));
 
 	    async Task<int> Other() => 5;
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, original);
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."));
     }
 
     [TestMethod]
@@ -260,14 +259,14 @@ namespace ConsoleApplication1
     {   
         MyClass()
         {
-            var number = Other().Result;
+            var number = {|#0:Other().Result|};
         }
 
         async Task<int> Other() => 5;
     }
 }";
 
-        await VerifyCS.VerifyNoDiagnostic(original);
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."));
     }
 
     [TestMethod]

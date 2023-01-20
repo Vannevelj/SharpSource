@@ -1,6 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.20.0] - 2023-01-21
+- `CollectionManipulatedDuringTraversal`: A collection was modified while it was being iterated over. Make a copy first or avoid iterations while the loop is in progress to avoid an `InvalidOperationException` exception at runtime
+- `AccessingTaskResultWithoutAwait`: Now also shows a warning when the method is not `async` but returns a `Task`
+
 ## [1.19.1] - 2023-01-14
 - `PointlessCollectionToString`: Supports immutable collections
 - `StructWithoutElementaryMethodsOverridden`: No longer generates the elementary methods in both declarations if it is a `partial struct`
