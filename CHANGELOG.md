@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.1] - 2023-01-21
+- `StringPlaceholdersInWrongOrder`: Rewritten to use `IOperation`
+
 ## [1.21.0] - 2023-01-21
 - `StringConcatenatedInLoop`: A `string` was concatenated in a loop which introduces intermediate allocations. Consider using a `StringBuilder` or pre-allocated `string` instead.
 - `LinqTraversalBeforeFilter`, `LockingOnDiscouragedObject` and `LockingOnMutableReference` use `VerifyCS`

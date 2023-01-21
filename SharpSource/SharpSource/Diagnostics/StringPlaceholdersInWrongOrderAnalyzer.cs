@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
-using System.Globalization;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -27,48 +25,50 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+        context.RegisterCompilationStartAction(context =>
+        {
+            var stringFormatSymbols = context.Compilation.GetSpecialType(SpecialType.System_String).GetMembers("Format").OfType<IMethodSymbol>().ToImmutableArray();
+            context.RegisterOperationAction(context => Analyze(context, stringFormatSymbols), OperationKind.Invocation);
+        });
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private static void Analyze(OperationAnalysisContext context, ImmutableArray<IMethodSymbol> stringFormatSymbols)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
+        var invocation = (IInvocationOperation)context.Operation;
 
         // Verify we're dealing with a string.Format() call
-        if (!invocation.IsAnInvocationOf(typeof(string), nameof(string.Format), context.SemanticModel))
+        if (!stringFormatSymbols.Any(s => invocation.TargetMethod.Equals(s, SymbolEqualityComparer.Default)))
         {
             return;
         }
 
         // Verify the format is a literal expression and not a method invocation or an identifier
         // The overloads are in the form string.Format(string, object[]) or string.Format(CultureInfo, string, object[])
-        if (invocation.ArgumentList == null || invocation.ArgumentList.Arguments.Count < 2)
+        if (invocation.Arguments is not { Length: >= 2 })
         {
             return;
         }
 
-        var firstArgument = invocation.ArgumentList.Arguments[0];
-        var secondArgument = invocation.ArgumentList.Arguments[1];
-
-        var firstArgumentSymbol = context.SemanticModel.GetSymbolInfo(firstArgument.Expression);
-        if (firstArgument.Expression is not LiteralExpressionSyntax &&
-             firstArgumentSymbol.Symbol?.MetadataName == typeof(CultureInfo).Name &&
-             secondArgument?.Expression is not LiteralExpressionSyntax)
-        {
-            return;
-        }
-
-        if (firstArgument.Expression is not LiteralExpressionSyntax &&
-            secondArgument.Expression is not LiteralExpressionSyntax)
-        {
-            return;
-        }
+        var firstArgument = invocation.Arguments[0];
+        var secondArgument = invocation.Arguments[1];
 
         // Get the formatted string from the correct position
-        var firstArgumentIsLiteral = firstArgument.Expression is LiteralExpressionSyntax;
-        var formatString = firstArgumentIsLiteral
-            ? ( (LiteralExpressionSyntax)firstArgument.Expression ).GetText().ToString()
-            : ( (LiteralExpressionSyntax)secondArgument.Expression ).GetText().ToString();
+        var (formatArgument, firstArgumentIsLiteral) = (firstArgument.Value, secondArgument.Value) switch
+        {
+            (ILiteralOperation literal, _) => (literal.ConstantValue, true),
+            (_, ILiteralOperation literal) => (literal.ConstantValue, false),
+            _ => default
+        };
+
+        if (!formatArgument.HasValue)
+        {
+            return;
+        }
+
+        if (formatArgument.Value is not string formatString)
+        {
+            return;
+        }
 
         // Verify that all placeholders are counting from low to high.
         // Not all placeholders have to be used necessarily, we only re-order the ones that are actually used in the format string.
@@ -95,8 +95,8 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
             //     string.Format("{0} {1} {4} {3}", a, b, c, d)
             // it would otherwise crash because it's trying to access index 4, which we obviously don't have.
             var argumentsToSkip = firstArgumentIsLiteral ? 1 : 2;
-            if (firstValue >= invocation.ArgumentList.Arguments.Count - argumentsToSkip ||
-                secondValue >= invocation.ArgumentList.Arguments.Count - argumentsToSkip)
+            if (firstValue >= invocation.Arguments.Length - argumentsToSkip ||
+                secondValue >= invocation.Arguments.Length - argumentsToSkip)
             {
                 return;
             }
@@ -119,7 +119,7 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
             // They should be in ascending or equal order
             if (firstValue > secondValue && !hasBeenUsedBefore(secondValue, index))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
                 return;
             }
         }
