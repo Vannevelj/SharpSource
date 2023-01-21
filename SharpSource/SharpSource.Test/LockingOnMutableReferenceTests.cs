@@ -1,18 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.LockingOnMutableReferenceAnalyzer, SharpSource.Diagnostics.LockingOnMutableReferenceCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class LockingOnMutableReferenceTests : DiagnosticVerifier
+public class LockingOnMutableReferenceTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LockingOnMutableReferenceAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new LockingOnMutableReferenceCodeFix();
 
     [TestMethod]
     public async Task LockingOnMutableReference_MissingReadonly()
@@ -24,7 +19,7 @@ class Test
 
     void M()
     {
-        lock(_someLock) { }
+        lock({|#0:_someLock|}) { }
     }
 }";
 
@@ -39,8 +34,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "A lock was obtained on _someLock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A lock was obtained on _someLock but the field is mutable. This can lead to deadlocks when a new value is assigned."), expected);
     }
 
     [TestMethod]
@@ -57,7 +51,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -74,7 +68,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -86,7 +80,7 @@ class Test
     private object _lock = new object();
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -103,7 +97,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -119,7 +113,7 @@ partial class Test
 {
     void M()
     {
-        lock(_lock) { }
+        lock({|#0:_lock|}) { }
     }
 }";
 
@@ -137,8 +131,7 @@ partial class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned."), expected);
     }
 
     [TestMethod]
@@ -155,7 +148,7 @@ partial class Test
 {
     void M()
     {
-        lock(_lock) { }
+        lock({|#0:_lock|}) { }
     }
 }";
 
@@ -165,7 +158,6 @@ partial class Test
     private object _lock = new object();
 }";
 
-        await VerifyDiagnostic(new[] { file1, file2 }, "A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.");
-        await VerifyFix(file1, result, additionalSources: new[] { file2 });
+        await VerifyCS.VerifyCodeFix(file1, new[] { VerifyCS.Diagnostic().WithMessage("A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.") }, result, additionalFiles: new[] { file2 });
     }
 }

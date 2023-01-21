@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.LinqTraversalBeforeFilterAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class LinqTraversalBeforeFilterTests : DiagnosticVerifier
+public class LinqTraversalBeforeFilterTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LinqTraversalBeforeFilterAnalyzer();
-
     [TestMethod]
     [DataRow("OrderBy(x => x)")]
     [DataRow("OrderByDescending(x => x)")]
@@ -26,9 +23,9 @@ using System.Linq;
 using System.Collections.Generic;
 
 var values = new [] {{ 32 }};
-values.{traversal}.Where(x => true);";
+{{|#0:values.{traversal}|}}.Where(x => true);";
 
-        await VerifyDiagnostic(original, "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?"));
     }
 
     [TestMethod]
@@ -43,7 +40,7 @@ using System.Collections.Generic;
 var values = new [] {{ 32 }};
 values.{traversal}.Where(x => true);";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -55,7 +52,7 @@ using System.Collections.Generic;
 
 var values = Enumerable.Empty<int>();";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -75,9 +72,10 @@ class Test
 }}
 ";
 
-        await VerifyDiagnostic(original,
-            "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?",
-            "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, new[] {
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?").WithSpan(7, 1, 7, 57),
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?").WithSpan(7, 21, 7, 39)
+        });
     }
 
     [TestMethod]
@@ -89,12 +87,12 @@ using System.Collections.Generic;
 
 var values = new [] {{ 32 }};
 var result = from v in values
-             orderby v descending
+             orderby {{|#0:v descending|}}
              where v > 5
              select v;
 ";
 
-        await VerifyDiagnostic(original, "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?"));
     }
 
     [TestMethod]
@@ -111,6 +109,6 @@ var result = from v in values
              select v;
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

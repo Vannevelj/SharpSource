@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.21.0] - 2023-01-21
 - `StringConcatenatedInLoop`: A `string` was concatenated in a loop which introduces intermediate allocations. Consider using a `StringBuilder` or pre-allocated `string` instead.
+- `LinqTraversalBeforeFilter`, `LockingOnDiscouragedObject` and `LockingOnMutableReference` use `VerifyCS`
 
 ## [1.20.0] - 2023-01-20
 - `CollectionManipulatedDuringTraversal`: A collection was modified while it was being iterated over. Make a copy first or avoid iterations while the loop is in progress to avoid an `InvalidOperationException` exception at runtime
