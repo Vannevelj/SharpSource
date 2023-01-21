@@ -79,9 +79,9 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
             if (int.TryParse(PlaceholderHelpers.GetPlaceholderIndex(elements[index]), out var placeholderValue))
             {
                 // If we already have a new value associated with this placeholder, retrieve it and add it to our result
-                if (placeholderMapping.ContainsKey(placeholderValue))
+                if (placeholderMapping.TryGetValue(placeholderValue, out var value))
                 {
-                    sb.Append(GetNewElement(matches, amountOfPlaceholders, placeholderMapping[placeholderValue]));
+                    sb.Append(GetNewElement(matches, amountOfPlaceholders, value));
                 }
                 else // Otherwise use the new placeholder value and store the mapping
                 {

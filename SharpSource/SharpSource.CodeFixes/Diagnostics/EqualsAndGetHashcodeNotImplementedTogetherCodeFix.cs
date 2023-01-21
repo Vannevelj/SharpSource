@@ -44,7 +44,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         }
     }
 
-    private async Task<Solution> ImplementEqualsAsync(Document document, SyntaxNode root, SyntaxNode statement)
+    private static async Task<Solution> ImplementEqualsAsync(Document document, SyntaxNode root, SyntaxNode statement)
     {
         var classDeclaration = (ClassDeclarationSyntax)statement;
 
@@ -53,7 +53,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         return newDocument.Project.Solution;
     }
 
-    private async Task<Solution> ImplementGetHashCodeAsync(Document document, SyntaxNode root, SyntaxNode statement)
+    private static async Task<Solution> ImplementGetHashCodeAsync(Document document, SyntaxNode root, SyntaxNode statement)
     {
         var classDeclaration = (ClassDeclarationSyntax)statement;
 

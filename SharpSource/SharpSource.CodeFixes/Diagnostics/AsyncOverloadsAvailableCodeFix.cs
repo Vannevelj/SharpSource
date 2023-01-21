@@ -36,7 +36,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
+    private static Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
     {
         ExpressionSyntax? newExpression = invocation.Expression switch
         {
