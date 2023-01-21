@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.LockingOnDiscouragedObjectAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class LockingOnDiscouragedObjectTests : DiagnosticVerifier
+public class LockingOnDiscouragedObjectTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LockingOnDiscouragedObjectAnalyzer();
-
     [TestMethod]
     [DataRow("Type", "Type")]
     [DataRow("System.Type", "Type")]
@@ -27,12 +25,12 @@ class Test
 
     void Method()
     {{
-        lock (_lock) {{ }}
+        lock ({{|#0:_lock|}}) {{ }}
     }}
 }}
 ";
 
-        await VerifyDiagnostic(original, $"A lock was used on an object of type {lockMessage} which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(LockingOnDiscouragedObjectAnalyzer.Rule).WithLocation(0).WithMessage($"A lock was used on an object of type {lockMessage} which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead."));
     }
 
     [TestMethod]
@@ -43,12 +41,12 @@ class Test
 {
     void Method()
     {
-        lock (this) {}
+        lock ({|#0:this|}) {}
     }
 }
 ";
 
-        await VerifyDiagnostic(original, $"A lock was used referencing 'this' which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(LockingOnDiscouragedObjectAnalyzer.RuleThis).WithLocation(0).WithMessage($"A lock was used referencing 'this' which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead."));
     }
 
     [TestMethod]
@@ -66,6 +64,6 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

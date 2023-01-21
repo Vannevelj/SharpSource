@@ -56,4 +56,5 @@ public static class DiagnosticId
     public const string MultipleOrderByCalls = "SS055";
     public const string FormReadSynchronously = "SS056";
     public const string CollectionManipulatedDuringTraversal = "SS057";
+    public const string StringConcatenatedInLoop = "SS058";
 }
