@@ -193,7 +193,6 @@ values.Skip(1).Reverse().Take(1);
     }
 
     [TestMethod]
-    [Ignore("Not the intended behaviour, see https://github.com/Vannevelj/SharpSource/issues/191")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess()
     {
         var original = @"
@@ -201,7 +200,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-{|#0:values?.ToArray().ToList()|};";
+values?{|#0:.ToArray().ToList()|};";
 
         var expected = $@"
 using System.Linq;
@@ -214,7 +213,7 @@ values?.ToList();";
     }
 
     [TestMethod]
-    [Ignore("Not the intended behaviour, see https://github.com/Vannevelj/SharpSource/issues/191")]
+    [Ignore("Need to find a way to handle the testing of a code fix when there are multiple issues")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
     {
         var original = @"
@@ -222,7 +221,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-{|#0:values?.ToArray().ToList().AsEnumerable()|};";
+values?.ToArray().ToList().AsEnumerable();";
 
         var expected = $@"
 using System.Linq;
@@ -231,7 +230,10 @@ using System.Collections.Generic;
 IEnumerable<string> values = new [] {{ ""test"" }};
 values?.ToList().AsEnumerable();";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted"), expected);
+        await VerifyCS.VerifyCodeFix(original, new[] {
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted").WithSpan(6, 8, 6, 27),
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("ToList is unnecessarily materializing the IEnumerable and can be omitted").WithSpan(6, 8, 6, 42)
+        }, expected);
     }
 
     [TestMethod]

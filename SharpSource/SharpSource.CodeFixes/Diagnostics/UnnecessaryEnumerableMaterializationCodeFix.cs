@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 
 using SharpSource.Utilities;
 
@@ -22,20 +22,12 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
     {
         var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
-        var operation = diagnostic.Properties["operation"];
+        var diagnosticSpan = diagnostic.Location.SourceSpan;
+        var invocation = root.FindNode(diagnosticSpan).GetOuterParentOfType(SyntaxKind.ConditionalAccessExpression, SyntaxKind.InvocationExpression);
         var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
 
-        if (operation == default || semanticModel == default)
-        {
-            return;
-        }
-
-        var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var invocations = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>();
-        var invocation = invocations.First(x => x.IsAnInvocationOf(typeof(Enumerable), operation, semanticModel));
-        var surroundingMemberAccess = invocation.FirstAncestorOrSelf<MemberAccessExpressionSyntax>();
-        var nestedMemberAccess = invocation.DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
-        if (nestedMemberAccess == default || surroundingMemberAccess == default)
+        var operation = diagnostic.Properties["operation"];
+        if (operation == default || invocation == default || semanticModel == default)
         {
             return;
         }
@@ -43,14 +35,15 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
         context.RegisterCodeFix(
             CodeAction.Create(
                 $"Remove unnecessary {operation} call",
-                x => RemoveMaterialization(context.Document, surroundingMemberAccess, nestedMemberAccess, root),
+                x => RemoveMaterialization(context.Document, invocation, root, semanticModel, operation),
                 UnnecessaryEnumerableMaterializationAnalyzer.Rule.Id),
             diagnostic);
     }
 
-    private static Task<Document> RemoveMaterialization(Document document, MemberAccessExpressionSyntax surroundingMemberAccess, MemberAccessExpressionSyntax nestedMemberAccess, SyntaxNode root)
+    private static Task<Document> RemoveMaterialization(Document document, SyntaxNode invocation, SyntaxNode root, SemanticModel semanticModel, string invokedFunction)
     {
-        var newRoot = root.ReplaceNode(surroundingMemberAccess.Expression, nestedMemberAccess.Expression);
+        var newInvocation = invocation.RemoveInvocation(typeof(Enumerable), invokedFunction, semanticModel);
+        var newRoot = root.ReplaceNode(invocation, newInvocation);
         var newDocument = document.WithSyntaxRoot(newRoot);
         return Task.FromResult(newDocument);
     }

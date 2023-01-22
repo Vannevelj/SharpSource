@@ -138,4 +138,14 @@ public static class Extensions
         root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         return root ?? throw new InvalidOperationException($"Unable to find a syntax root for document {document.Name}");
     }
+
+    public static SyntaxNode? GetOuterParentOfType(this SyntaxNode node, params SyntaxKind[] types)
+    {
+        var currentNode = node.Parent;
+        while (currentNode?.Parent?.IsAnyKind(types) == true)
+        {
+            currentNode = currentNode.Parent;
+        }
+        return currentNode;
+    }
 }
