@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class ElementaryMethodsOfTypeInCollectionNotOverriddenTests : DiagnosticVerifier
+public class ElementaryMethodsOfTypeInCollectionNotOverriddenTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer();
-
     [TestMethod]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithReferenceType()
     {
@@ -23,14 +21,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -52,7 +50,7 @@ namespace ConsoleApplication1
     interface MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -67,14 +65,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
     struct MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -89,7 +87,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
@@ -102,7 +100,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -117,7 +115,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
@@ -130,7 +128,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -145,7 +143,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
@@ -158,7 +156,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -173,7 +171,7 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
@@ -186,7 +184,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -219,7 +217,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -252,7 +250,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -269,15 +267,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new Dictionary<MyCollectionItem, MyCollectionItem>();
-            var s = list.ContainsKey(new MyCollectionItem());
+            var s = list.ContainsKey({|#0:new MyCollectionItem()|});
         }
     }
 
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original,
-            "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -294,14 +291,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new Dictionary<MyCollectionItem, int>();
-            var s = list.ContainsKey(new MyCollectionItem());
+            var s = list.ContainsKey({|#0:new MyCollectionItem()|});
         }
     }
 
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -325,7 +322,7 @@ namespace ConsoleApplication1
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -340,14 +337,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = Enumerable.Empty<MyCollectionItem>();
-            var s = list.Contains(default);
+            var s = list.Contains({|#0:default|});
         }
     }
 
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -368,7 +365,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -389,7 +386,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -411,7 +408,7 @@ namespace ConsoleApplication1
     enum SomeEnum {}
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -431,7 +428,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -453,7 +450,7 @@ namespace ConsoleApplication1
     class SomeClass {}
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/99")]
@@ -467,17 +464,17 @@ using System.Collections.Generic;
 var list = new List<{type}>();
 var s = list.Contains(default);";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
-    [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
-    [DataRow("new Dictionary<int, MyCollectionItem>().ContainsValue(new MyCollectionItem())")]
-    [DataRow("new Dictionary<MyCollectionItem, int>()[new MyCollectionItem()]")]
-    [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue(new MyCollectionItem(), out _)")]
-    [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
-    [DataRow("new HashSet<MyCollectionItem>().Add(new MyCollectionItem())")]
-    [DataRow("new Dictionary<MyCollectionItem, int>(); x.Add(new MyCollectionItem(), 5)")]
+    [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey({|#0:new MyCollectionItem()|})")]
+    [DataRow("new Dictionary<int, MyCollectionItem>().ContainsValue({|#0:new MyCollectionItem()|})")]
+    [DataRow("new Dictionary<MyCollectionItem, int>()[{|#0:new MyCollectionItem()|}]")]
+    [DataRow("new Dictionary<MyCollectionItem, int>().TryGetValue({|#0:new MyCollectionItem()|}, out _)")]
+    [DataRow("new List<MyCollectionItem>().Contains({|#0:new MyCollectionItem()|})")]
+    [DataRow("new HashSet<MyCollectionItem>().Add({|#0:new MyCollectionItem()|})")]
+    [DataRow("new Dictionary<MyCollectionItem, int>(); x.Add({|#0:new MyCollectionItem()|}, 5)")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
     {
         var original = @$"
@@ -488,16 +485,16 @@ var x = {invocation};
 
 class MyCollectionItem {{}}";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
-    [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey(new MyCollectionItem())")]
-    [DataRow("new List<MyCollectionItem>().Contains(new MyCollectionItem())")]
-    [DataRow("new HashSet<MyCollectionItem>().Contains(new MyCollectionItem())")]
-    [DataRow("new ReadOnlyCollection<MyCollectionItem>(new[] { new MyCollectionItem() }).Contains(new MyCollectionItem())")]
-    [DataRow("new Queue<MyCollectionItem>().Contains(new MyCollectionItem())")]
-    [DataRow("new Stack<MyCollectionItem>().Contains(new MyCollectionItem())")]
+    [DataRow("new Dictionary<MyCollectionItem, int>().ContainsKey({|#0:new MyCollectionItem()|})")]
+    [DataRow("new List<MyCollectionItem>().Contains({|#0:new MyCollectionItem()|})")]
+    [DataRow("new HashSet<MyCollectionItem>().Contains({|#0:new MyCollectionItem()|})")]
+    [DataRow("new ReadOnlyCollection<MyCollectionItem>(new[] { new MyCollectionItem() }).Contains({|#0:new MyCollectionItem()|})")]
+    [DataRow("new Queue<MyCollectionItem>().Contains({|#0:new MyCollectionItem()|})")]
+    [DataRow("new Stack<MyCollectionItem>().Contains({|#0:new MyCollectionItem()|})")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedTypes(string invocation)
     {
         var original = @$"
@@ -509,7 +506,7 @@ var x = {invocation};
 
 class MyCollectionItem {{}}";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -524,14 +521,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list?.Contains(default);
+            var s = list?.Contains({|#0:default|});
         }
     }
 
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [TestMethod]
@@ -546,14 +543,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var list = new List<MyCollectionItem>();
-            var s = list!.Contains(default);
+            var s = list!.Contains({|#0:default|});
         }
     }
 
     class MyCollectionItem {}
 }";
 
-        await VerifyDiagnostic(original, "Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/198")]
@@ -582,7 +579,7 @@ using System.Linq;
 var x = new HashSet<{type}>();
 if (x.Contains(default)) {{ }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/243")]
@@ -599,6 +596,6 @@ static class GlobalAssemblyCacheLocation
     private static unsafe void Thing() => DoThing(""id"", null);
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
