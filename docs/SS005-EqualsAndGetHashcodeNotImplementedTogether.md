@@ -4,7 +4,7 @@
 
 ---
 
-EqualsAndGetHashcodeNotImplementedTogether  | Implement `Equals()` and `GetHashcode()` together. Implement both to ensure consistent behaviour around lookups.
+Implement `Equals()` and `GetHashcode()` together. Implement both to ensure consistent behaviour around lookups.
 
 ---
 
