@@ -64,7 +64,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.{materialization}().{deferred};
+{{|#0:values.{materialization}().{deferred}|}};
 ";
 
         var expected = $@"
@@ -89,7 +89,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.{materialization}().ToList();
+{{|#0:values.{materialization}().ToList()|}};
 ";
 
         var expected = $@"
@@ -178,7 +178,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.Skip(1).Reverse().{materialization}().Take(1);
+{{|#0:values.Skip(1).Reverse().{materialization}().Take(1)|}};
 ";
 
         var expected = $@"
@@ -201,7 +201,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values?.ToArray().ToList();";
+{|#0:values?.ToArray().ToList()|};";
 
         var expected = $@"
 using System.Linq;
@@ -222,7 +222,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values?.ToArray().ToList().AsEnumerable();";
+{|#0:values?.ToArray().ToList().AsEnumerable()|};";
 
         var expected = $@"
 using System.Linq;
@@ -242,7 +242,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values!.ToArray().ToList();";
+{|#0:values!.ToArray().ToList()|};";
 
         var expected = @"
 using System.Linq;
