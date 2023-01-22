@@ -15,3 +15,11 @@ var data = new Data[] { new(1, 3), new(1, 4), new Data(2, 3), new(2, 1), new(1, 
 
 var ordered = data.OrderBy(obj => obj.X).OrderBy(obj => obj.Y);
 ```
+
+## Fix
+```cs
+record Data(int X, int Y);
+var data = new Data[] { new(1, 3), new(1, 4), new Data(2, 3), new(2, 1), new(1, 1)  };
+
+var ordered = data.OrderBy(obj => obj.X).ThenBy(obj => obj.Y);
+```
