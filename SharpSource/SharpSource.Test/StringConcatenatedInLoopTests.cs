@@ -202,4 +202,23 @@ while (true)
 
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string was concatenated in a loop which introduces intermediate allocations. Consider using a StringBuilder or pre-allocated string instead."));
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/292")]
+    public async Task StringConcatenatedInLoopTests_AssignmentInWhileCondition()
+    {
+        var original = @"
+using System;
+using System.IO;
+
+using (StreamReader reader = File.OpenText(""file.txt""))
+{
+    string line;
+    while ((line = await reader.ReadLineAsync()) != null)
+    {
+        Console.Write(line);
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
