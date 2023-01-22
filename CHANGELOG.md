@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.21.2] - 2023-01-23
 - `AsyncOverloadsAvailable`: Correctly generate the fixed code when conditional access is used, i.e. `writer?.Write()`
 - `ParameterAssignedInConstructor`: Don't trigger when the referenced member is a constant
+- `ThreadSleepInAsyncMethod`: Fixed a rare scenario in which an empty code fix would be offered
 
 ## [1.21.1] - 2023-01-22
 - `StringConcatenatedInLoop`: No longer triggers for regular assignments
