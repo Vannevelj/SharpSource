@@ -71,7 +71,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             awaitExpression = SyntaxFactory.ParenthesizedExpression(awaitExpression);
         }
 
-        var newRoot = root.ReplaceNode(invocation, awaitExpression.WithLeadingTrivia(invocation.GetLeadingTrivia()));
+        var newRoot = root.ReplaceNode(invocation, awaitExpression.WithTriviaFrom(invocation));
         var newDocument = document.WithSyntaxRoot(newRoot);
 
         return Task.FromResult(newDocument);

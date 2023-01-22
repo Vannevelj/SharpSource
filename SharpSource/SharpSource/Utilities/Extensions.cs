@@ -162,7 +162,12 @@ public static class Extensions
                 return (parameter.Name, true);
             }
 
-            if (parameter.Type is INamedTypeSymbol { Name: "CancellationToken" })
+            if (parameter is { Type: INamedTypeSymbol { Name: "CancellationToken" }, IsOptional: true })
+            {
+                return (parameter.Name, true);
+            }
+
+            if (parameter is { Type: INamedTypeSymbol { Name: "CancellationToken" } })
             {
                 return (parameter.Name, false);
             }

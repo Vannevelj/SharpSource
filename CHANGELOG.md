@@ -5,7 +5,8 @@ https://keepachangelog.com/en/1.0.0/
 - `StringConcatenatedInLoop`: No longer triggers for regular assignments
 - `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
 - `AsyncOverloadsAvailable`: No longer triggers when contained within a `lock` body
-- `AsyncOverloadsAvailable`: Better maintains whitespace and comments when the code fix is applied
+- `AsyncOverloadsAvailable`: Better maintains whitespace, indentation and comments when the code fix is applied
+- `AsyncOverloadsAvailable`: Improved the detection of overloads when an optional `CancellationToken` is accepted
 - `ExplicitEnumValues` and `EnumWithoutDefaultValue`: Downgraded from warning to info to reduce their prevalence
 - `ExceptionThrownFromProhibitedContext`: No longer triggers for `PlatformNotSupportedException`
 - `StringPlaceholdersInWrongOrder` and `UnnecessaryEnumerableMaterialization`: Rewritten to use `IOperation`
