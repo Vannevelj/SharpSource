@@ -25,7 +25,7 @@ using System.Collections.Generic;
 var values = new [] {{ 32 }};
 {{|#0:values.{traversal}|}}.Where(x => true);";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?"));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"));
     }
 
     [TestMethod]
@@ -73,8 +73,8 @@ class Test
 ";
 
         await VerifyCS.VerifyDiagnosticWithoutFix(original, new[] {
-            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?").WithSpan(7, 1, 7, 57),
-            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?").WithSpan(7, 21, 7, 39)
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?").WithSpan(7, 1, 7, 57),
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?").WithSpan(7, 21, 7, 39)
         });
     }
 
@@ -92,7 +92,7 @@ var result = from v in values
              select v;
 ";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?"));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"));
     }
 
     [TestMethod]

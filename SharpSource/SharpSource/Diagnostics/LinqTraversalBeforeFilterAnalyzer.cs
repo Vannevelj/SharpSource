@@ -19,7 +19,7 @@ public class LinqTraversalBeforeFilterAnalyzer : DiagnosticAnalyzer
         DiagnosticId.LinqTraversalBeforeFilter,
         "An IEnumerable extension method was used to traverse the collection and is subsequently filtered using Where()." +
         "If the Where() filter is executed first, the traversal will have to iterate over fewer items which will result in better performance.",
-        "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering if performed first?",
+        "Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?",
         Categories.Performance,
         DiagnosticSeverity.Warning,
         true,
