@@ -42,7 +42,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 
             compilationContext.RegisterOperationAction(context =>
             {
-                var invocation = (IInvocationOperation) context.Operation;
+                var invocation = (IInvocationOperation)context.Operation;
                 var precedingInvocation = invocation.GetPrecedingInvocation()?.TargetMethod.OriginalDefinition;
                 if (precedingInvocation is null)
                 {
