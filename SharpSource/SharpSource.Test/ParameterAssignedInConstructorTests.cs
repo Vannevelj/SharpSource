@@ -366,7 +366,7 @@ class Test
 
     Test(int count)
     {
-        {|#0:count|} = Count;
+        count = Count;
     }
 }";
 
