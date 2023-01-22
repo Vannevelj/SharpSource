@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.StringPlaceholdersInWrongOrderAnalyzer, SharpSource.Diagnostics.StringPlaceHoldersInWrongOrderCodeFix>;
 
 namespace SharpSource.Test;
@@ -556,5 +556,15 @@ class MyClass
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/297")]
+    public async Task StringPlaceholdersInWrongOrder_WithManyPlaceholders()
+    {
+        var original = @"string s = {|#0:string.Format(""{15}{14}{13}{12}{11}{10}{9}{8}{7}{6}{5}{4}{3}{2}{1}{0}"", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)|};";
+
+        var expected = @"string s = string.Format(""{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}"", 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 }

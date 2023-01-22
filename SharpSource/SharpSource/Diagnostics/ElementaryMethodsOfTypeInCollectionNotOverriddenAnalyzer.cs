@@ -114,7 +114,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
                 }
             }
             currentTypeInHierarchy = currentTypeInHierarchy.BaseType;
-        } while (currentTypeInHierarchy is not (null or { SpecialType: SpecialType.System_Object or SpecialType.System_ValueType }));        
+        } while (currentTypeInHierarchy is not ( null or { SpecialType: SpecialType.System_Object or SpecialType.System_ValueType } ));
 
         if (!implementsEquals || !implementsGetHashCode)
         {
