@@ -213,7 +213,7 @@ values?.ToList();";
     }
 
     [TestMethod]
-    [Ignore("Need to find a way to handle the testing of a code fix when there are multiple issues")]
+    [Ignore("Need to find a way to handle the testing of a code fix when there are multiple issues, see https://github.com/Vannevelj/SharpSource/issues/288")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
     {
         var original = @"
