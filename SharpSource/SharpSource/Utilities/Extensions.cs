@@ -148,38 +148,6 @@ public static class Extensions
         return method;
     }
 
-    public static bool HasASubsequentInvocation(this ExpressionSyntax node)
-    {
-        // If the invocation is wrapped in a nullable access, i.e. s1?.ToLower(), then the first visit will be the ConditionalAccessExpressionSyntax
-        // If we would return on the first invocation then we would exit as soon as we reach ToLower()
-        // For that reason we explicitly track the number of actual invocations we traverse
-        var visitedInvocations = 0;
-
-        var current = node;
-        while (current != default)
-        {
-            if (current is InvocationExpressionSyntax)
-            {
-                visitedInvocations++;
-            }
-
-            if (visitedInvocations > 1)
-            {
-                return true;
-            }
-
-            current = current switch
-            {
-                InvocationExpressionSyntax invocation => invocation.Expression,
-                ConditionalAccessExpressionSyntax conditional => conditional.WhenNotNull,
-                MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
-                _ => default
-            };
-        }
-
-        return false;
-    }
-
     public static (string? Name, bool? IsNullable) GetCancellationTokenFromParameters(this IMethodSymbol? method)
     {
         if (method == default)
