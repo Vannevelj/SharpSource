@@ -1,11 +1,12 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.21.1] - 2023-01-21
-- `StringPlaceholdersInWrongOrder` and `UnnecessaryEnumerableMaterialization`: Rewritten to use `IOperation`
+## [1.21.1] - 2023-01-22
+- `StringConcatenatedInLoop`: No longer triggers for regular assignments
 - `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
 - `ExplicitEnumValues` and `EnumWithoutDefaultValue`: Downgraded from warning to info to reduce their prevalence
 - `ExceptionThrownFromProhibitedContext`: No longer triggers for `PlatformNotSupportedException`
+- `StringPlaceholdersInWrongOrder` and `UnnecessaryEnumerableMaterialization`: Rewritten to use `IOperation`
 - `UnnecessaryEnumerableMaterialization` tests use `VerifyCS`
 - `LinqTraversalBeforeFilter`: Fixed typo in diagnostic message
 
