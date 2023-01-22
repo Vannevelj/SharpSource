@@ -203,6 +203,20 @@ while (true)
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string was concatenated in a loop which introduces intermediate allocations. Consider using a StringBuilder or pre-allocated string instead."));
     }
 
+    [TestMethod]
+    public async Task StringConcatenatedInLoopTests_AssignmentAndConcatenationSeparated_Multiple()
+    {
+        var original = @"
+var res = string.Empty;
+while (true)
+{
+    {|#0:res = res + ""test"" + ""other"" + res + ""another""|};
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string was concatenated in a loop which introduces intermediate allocations. Consider using a StringBuilder or pre-allocated string instead."));
+    }
+
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/292")]
     public async Task StringConcatenatedInLoopTests_AssignmentInWhileCondition()
     {
