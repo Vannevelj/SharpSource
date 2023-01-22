@@ -982,4 +982,29 @@ class Test
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/294")]
+    public async Task AsyncOverloadsAvailable_MaintainsWhitespace()
+    {
+        var original = @"
+using System.IO;
+
+async void MyMethod()
+{
+    // A comment
+
+    {|#0:new StringWriter().Write("""")|};
+}";
+
+        var result = @"
+using System.IO;
+
+async void MyMethod()
+{
+    // A comment
+
+    await new StringWriter().WriteAsync("""");
+}";
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
+    }
 }
