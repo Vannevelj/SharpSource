@@ -962,4 +962,24 @@ class MyClass
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/293")]
+    public async Task AsyncOverloadsAvailable_Lock()
+    {
+        var original = @"
+using System.IO;
+
+class Test
+{
+    async void MyMethod()
+    {
+        lock(this)
+        {
+            {|#0:new StringWriter().Write("""")|};
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
