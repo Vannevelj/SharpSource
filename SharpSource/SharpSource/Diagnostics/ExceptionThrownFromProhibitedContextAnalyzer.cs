@@ -13,7 +13,8 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly HashSet<string> AllowedExceptions = new(new string[] { "NotImplementedException", "NotSupportedException" });
+    private static readonly HashSet<string> AllowedExceptions = new(new string[] { "NotImplementedException", "NotSupportedException", "PlatformNotSupportedException" });
+
     private static DiagnosticDescriptor ImplicitOperatorRule
         => new(DiagnosticId.ExceptionThrownFromImplicitOperator,
             "An exception is thrown from an implicit operator.",

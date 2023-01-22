@@ -5,6 +5,7 @@ https://keepachangelog.com/en/1.0.0/
 - `StringPlaceholdersInWrongOrder` and `UnnecessaryEnumerableMaterialization`: Rewritten to use `IOperation`
 - `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
 - `ExplicitEnumValues` and `EnumWithoutDefaultValue`: Downgraded from warning to info to reduce their prevalence
+- `ExceptionThrownFromProhibitedContext`: No longer triggers for `PlatformNotSupportedException`
 - `UnnecessaryEnumerableMaterialization` tests use `VerifyCS`
 - `LinqTraversalBeforeFilter`: Fixed typo in diagnostic message
 
