@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.2] - 2023-01-23
+- `ParameterAssignedInConstructor`: Don't trigger when the referenced member is a constant
+
 ## [1.21.1] - 2023-01-22
 - `StringConcatenatedInLoop`: No longer triggers for regular assignments
 - `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`

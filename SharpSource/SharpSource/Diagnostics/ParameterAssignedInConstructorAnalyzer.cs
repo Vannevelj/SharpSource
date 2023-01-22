@@ -47,6 +47,11 @@ public sealed class ParameterAssignedInConstructorAnalyzer : DiagnosticAnalyzer
                         return;
                     }
 
+                    if (assignment.Value is { ConstantValue.HasValue: true })
+                    {
+                        return;
+                    }
+
                     context.ReportDiagnostic(Diagnostic.Create(Rule, parameterReference.Syntax.GetLocation(), parameterReference.Parameter.Name, parameterReference.Parameter.ContainingType.Name));
                 }, OperationKind.SimpleAssignment);
             }

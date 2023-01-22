@@ -355,4 +355,21 @@ partial class Test
 
         await VerifyCS.VerifyCodeFix(file2, new[] { VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test") }, result, additionalFiles: new[] { file1 });
     }
+
+    [TestMethod]
+    public async Task ParameterAssignedInConstructor_ConstField()
+    {
+        var original = @"
+class Test
+{
+    private const int Count = 32;
+
+    Test(int count)
+    {
+        {|#0:count|} = Count;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
