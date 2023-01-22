@@ -21,7 +21,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
+        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is not CompilationUnitSyntax compilation || semanticModel == default)
         {
             return;

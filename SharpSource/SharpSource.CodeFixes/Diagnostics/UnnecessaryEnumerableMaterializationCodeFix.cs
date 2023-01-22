@@ -24,7 +24,7 @@ public class UnnecessaryEnumerableMaterializationCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var invocation = root.FindNode(diagnosticSpan).GetOuterParentOfType(SyntaxKind.ConditionalAccessExpression, SyntaxKind.InvocationExpression);
-        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
+        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 
         var operation = diagnostic.Properties["operation"];
         if (operation == default || invocation == default || semanticModel == default)
