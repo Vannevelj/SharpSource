@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.21.1] - 2023-01-21
 - `StringPlaceholdersInWrongOrder` and `UnnecessaryEnumerableMaterialization`: Rewritten to use `IOperation`
 - `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
+- `ExplicitEnumValues` and `EnumWithoutDefaultValue`: Downgraded from warning to info to reduce their prevalence
 - `UnnecessaryEnumerableMaterialization` tests use `VerifyCS`
 
 ## [1.21.0] - 2023-01-21

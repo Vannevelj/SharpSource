@@ -16,7 +16,7 @@ public class ExplicitEnumValuesAnalyzer : DiagnosticAnalyzer
         "An enum should explicitly specify its values",
         "Option {0} on enum {1} should explicitly specify its value",
         Categories.ApiDesign,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS036-ExplicitEnumValues.md");
 
