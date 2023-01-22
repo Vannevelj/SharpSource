@@ -232,4 +232,19 @@ public static class Extensions
             }
         }
     }
+
+    public static IInvocationOperation? GetPrecedingInvocation(this IInvocationOperation invocation)
+    {
+        if (invocation.Instance is IInvocationOperation previousInvocation)
+        {
+            return previousInvocation;
+        }
+
+        if (invocation.Arguments is { Length: > 0 } && invocation.Arguments[0].Value is IConversionOperation { Operand: IInvocationOperation precedingInvocation })
+        {
+            return precedingInvocation;
+        }
+
+        return default;
+    }
 }
