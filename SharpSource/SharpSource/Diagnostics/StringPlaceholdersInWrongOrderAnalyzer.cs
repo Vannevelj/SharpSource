@@ -90,7 +90,7 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
         }
         else
         {
-            var passedThroughParamsArray = invocation.Arguments.Last().Value as IArrayCreationOperation;
+            var passedThroughParamsArray = invocation.Arguments.LastOrDefault()?.Value as IArrayCreationOperation;
             var dimension = passedThroughParamsArray?.DimensionSizes.FirstOrDefault() as ILiteralOperation;
             if (dimension is { ConstantValue: { HasValue: true, Value: int size } })
             {

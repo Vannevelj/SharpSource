@@ -567,4 +567,15 @@ class MyClass
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/306")]
+    public async Task StringPlaceholdersInWrongOrder_WithReferenceToArguments()
+    {
+        var original = @"
+object[] arguments = new object[] { 1, 2, 3 };
+{|#0:string.Format(""{1}{2}{0}"", arguments)|};
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
