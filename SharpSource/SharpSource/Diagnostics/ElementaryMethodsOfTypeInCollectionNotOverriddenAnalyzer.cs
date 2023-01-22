@@ -98,18 +98,23 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         var implementsEquals = false;
         var implementsGetHashCode = false;
-        foreach (var member in argumentType.GetMembers())
+        var currentTypeInHierarchy = argumentType;
+        do
         {
-            if (member.Name == WellKnownMemberNames.ObjectEquals)
+            foreach (var member in currentTypeInHierarchy.GetMembers())
             {
-                implementsEquals = true;
-            }
+                if (member.Name == WellKnownMemberNames.ObjectEquals)
+                {
+                    implementsEquals = true;
+                }
 
-            if (member.Name == WellKnownMemberNames.ObjectGetHashCode)
-            {
-                implementsGetHashCode = true;
+                if (member.Name == WellKnownMemberNames.ObjectGetHashCode)
+                {
+                    implementsGetHashCode = true;
+                }
             }
-        }
+            currentTypeInHierarchy = currentTypeInHierarchy.BaseType;
+        } while (currentTypeInHierarchy is not (null or { SpecialType: SpecialType.System_Object or SpecialType.System_ValueType }));        
 
         if (!implementsEquals || !implementsGetHashCode)
         {

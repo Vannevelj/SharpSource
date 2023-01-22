@@ -598,4 +598,22 @@ static class GlobalAssemblyCacheLocation
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/299")]
+    public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithInheritance()
+    {
+        var original = @"
+using System.Collections.Generic;
+var list = new List<MyCollectionItem>();
+var s = list.Contains(default);
+
+class MyCollectionItem : BaseClass { }
+class BaseClass
+{
+    public override bool Equals(object obj) => true;
+    public override int GetHashCode() => 5;
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
