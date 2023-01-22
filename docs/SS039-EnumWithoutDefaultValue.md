@@ -1,6 +1,6 @@
 # SS039 - EnumWithoutDefaultValue
 
-[![Generic badge](https://img.shields.io/badge/Severity-Warning-yellow.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/CodeFix-No-lightgrey.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Severity-Info-blue.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/CodeFix-No-lightgrey.svg)](https://shields.io/)
 
 ---
 

@@ -36,7 +36,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
+    private static Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
     {
         ExpressionSyntax? newExpression = invocation.Expression switch
         {
@@ -63,7 +63,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             newInvocation = newInvocation.WithArgumentList(newArguments);
         }
 
-        ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation);
+        ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation.WithoutTrivia()).WithAdditionalAnnotations(Formatter.Annotation);
 
         // If we're accessing the result of the method call, i.e. `DoThing().Property` then we need to wrap the `await` expression with parentheses
         if (invocation.Parent is MemberAccessExpressionSyntax)
@@ -71,7 +71,7 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             awaitExpression = SyntaxFactory.ParenthesizedExpression(awaitExpression);
         }
 
-        var newRoot = root.ReplaceNode(invocation, awaitExpression);
+        var newRoot = root.ReplaceNode(invocation, awaitExpression.WithTriviaFrom(invocation));
         var newDocument = document.WithSyntaxRoot(newRoot);
 
         return Task.FromResult(newDocument);

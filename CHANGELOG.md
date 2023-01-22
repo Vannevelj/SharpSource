@@ -1,6 +1,19 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.1] - 2023-01-22
+- `StringConcatenatedInLoop`: No longer triggers for regular assignments
+- `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
+- `AsyncOverloadsAvailable`: No longer triggers when contained within a `lock` body
+- `AsyncOverloadsAvailable`: Better maintains whitespace, indentation and comments when the code fix is applied
+- `AsyncOverloadsAvailable`: Improved the detection of overloads when an optional `CancellationToken` is accepted
+- `ExplicitEnumValues` and `EnumWithoutDefaultValue`: Downgraded from warning to info to reduce their prevalence
+- `ExceptionThrownFromProhibitedContext`: No longer triggers for `PlatformNotSupportedException`
+- `ComparingStringsWithoutStringComparison`: Correctly maintains trailing whitespace when the code fix is applied
+- `StringPlaceholdersInWrongOrder` and `UnnecessaryEnumerableMaterialization`: Rewritten to use `IOperation`
+- `UnnecessaryEnumerableMaterialization` tests use `VerifyCS`
+- `LinqTraversalBeforeFilter`: Fixed typo in diagnostic message
+
 ## [1.21.0] - 2023-01-21
 - `StringConcatenatedInLoop`: A `string` was concatenated in a loop which introduces intermediate allocations. Consider using a `StringBuilder` or pre-allocated `string` instead.
 - `LinqTraversalBeforeFilter`, `LockingOnDiscouragedObject` and `LockingOnMutableReference` use `VerifyCS`

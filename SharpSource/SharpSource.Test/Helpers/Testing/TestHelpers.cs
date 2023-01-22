@@ -55,23 +55,16 @@ public static class TestHelpers
     {
         if (char.IsControl(c) || char.IsWhiteSpace(c))
         {
-            switch (c)
+            return c switch
             {
-                case '\r':
-                    return @"\r";
-                case '\n':
-                    return @"\n";
-                case '\t':
-                    return @"\t";
-                case '\a':
-                    return @"\a";
-                case '\v':
-                    return @"\v";
-                case '\f':
-                    return @"\f";
-                default:
-                    return string.Format("\\u{0:X};", (int)c);
-            }
+                '\r' => @"\r",
+                '\n' => @"\n",
+                '\t' => @"\t",
+                '\a' => @"\a",
+                '\v' => @"\v",
+                '\f' => @"\f",
+                _ => string.Format("\\u{0:X};", (int)c),
+            };
         }
         return c.ToString(CultureInfo.InvariantCulture);
     }

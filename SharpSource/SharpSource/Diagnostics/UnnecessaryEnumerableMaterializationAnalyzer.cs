@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -13,15 +10,6 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
 {
-    // An array is used instead of a hash set since the number of elements is small. HashSet is likely to be slower for searching in this case.
-    private static readonly ImmutableArray<string> MaterializingOperations = ImmutableArray.Create("ToList", "ToArray", "ToHashSet");
-
-    private static readonly HashSet<string> DeferredExecutionOperations = new() {
-        "Select", "SelectMany", "Take", "Skip", "TakeWhile", "SkipWhile", "SkipLast", "Where", "GroupBy", "GroupJoin", "OrderBy", "OrderByDescending",
-        "Union", "UnionBy", "Zip", "Reverse", "Join", "OfType", "Intersect", "IntersectBy", "Except", "ExceptBy", "Distinct",
-        "DistinctBy", "DefaultIfEmpty", "Concat", "Cast"
-    };
-
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.UnnecessaryEnumerableMaterialization,
         "An IEnumerable was materialized before a deferred execution call",
@@ -37,39 +25,46 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-        context.RegisterSyntaxNodeAction(AnalyzeSymbol, SyntaxKind.SimpleMemberAccessExpression);
-    }
 
-    private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
-    {
-        var expression = (MemberAccessExpressionSyntax)context.Node;
-        if (expression.Expression is not InvocationExpressionSyntax invocation)
+        context.RegisterCompilationStartAction(compilationContext =>
         {
-            return;
-        }
-
-        var hasConditionalAccess = expression.FirstAncestorOrSelfOfType(SyntaxKind.ConditionalAccessExpression);
-        if (hasConditionalAccess != default)
-        {
-            return;
-        }
-
-        var invokedFunction = expression.Name.Identifier.ValueText;
-        var isSuspiciousInvocation = DeferredExecutionOperations.Contains(invokedFunction) || MaterializingOperations.Contains(invokedFunction);
-        if (!isSuspiciousInvocation)
-        {
-            return;
-        }
-
-        foreach (var materializingOperation in MaterializingOperations)
-        {
-            if (invocation.IsAnInvocationOf(typeof(Enumerable), materializingOperation, context.SemanticModel))
+            var enumerableSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Linq.Enumerable");
+            if (enumerableSymbol is null)
             {
-                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                properties.Add("operation", materializingOperation);
-                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), properties.ToImmutable(), $"{materializingOperation}"));
                 return;
             }
-        }
+
+            // An array is used instead of a hash set since the number of elements is small. HashSet is likely to be slower for searching in this case.
+            var materializingSymbols = enumerableSymbol.GetAllMembers("ToList", "ToArray", "ToHashSet").ToArray();
+            var deferredExecutionSymbols = enumerableSymbol.GetAllMembers(
+                "Select", "SelectMany", "Take", "Skip", "TakeWhile", "SkipWhile", "SkipLast", "Where", "GroupBy", "GroupJoin", "OrderBy", "OrderByDescending", "Union",
+                       "UnionBy", "Zip", "Reverse", "Join", "OfType", "Intersect", "IntersectBy", "Except", "ExceptBy", "Distinct", "DistinctBy", "DefaultIfEmpty", "Concat", "Cast").ToImmutableHashSet(SymbolEqualityComparer.Default);
+
+            compilationContext.RegisterOperationAction(context =>
+            {
+                var invocation = (IInvocationOperation)context.Operation;
+                var precedingInvocation = invocation.GetPrecedingInvocation()?.TargetMethod.OriginalDefinition;
+                if (precedingInvocation is null)
+                {
+                    return;
+                }
+
+                var precedingSymbol = materializingSymbols.FirstOrDefault(s => s.Equals(precedingInvocation, SymbolEqualityComparer.Default));
+                if (precedingSymbol is null)
+                {
+                    return;
+                }
+
+                var subsequentSymbol = deferredExecutionSymbols.FirstOrDefault(s => s.Equals(precedingInvocation, SymbolEqualityComparer.Default)) ?? materializingSymbols.FirstOrDefault(s => s.Equals(precedingInvocation, SymbolEqualityComparer.Default));
+                if (subsequentSymbol is null)
+                {
+                    return;
+                }
+
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                properties.Add("operation", precedingSymbol.Name);
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{precedingSymbol.Name}"));
+            }, OperationKind.Invocation);
+        });
     }
 }

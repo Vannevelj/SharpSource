@@ -523,6 +523,28 @@ bool result = // Compare the two
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
     }
 
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/301")]
+    public async Task ComparingStringsWithoutStringComparison_PreservesTrailingTrivia()
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = {{|#0:s1.ToLower()|}} == s2.ToLower() && true == true;";
+
+        var result = @$"
+using System;
+
+string s1 = string.Empty;
+string s2 = string.Empty;
+
+bool result = string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase) && true == true;";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
+    }
+
     [TestMethod]
     [DataRow("ToLower")]
     [DataRow("ToUpper")]

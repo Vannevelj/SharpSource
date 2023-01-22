@@ -19,13 +19,13 @@ public static class Extensions
     /// <param name="unwrapSuppress">Turns <c>value!.ToString()</c> into <c>value</c> if set to <c>true</c>. Otherwise <c>value!</c></param>
     public static SyntaxNode RemoveInvocation(this SyntaxNode invocationOrConditionalAccess, Type type, string method, SemanticModel semanticModel, bool unwrapSuppress = false)
     {
-        ExpressionSyntax updateName(ExpressionSyntax subExpression, ExpressionSyntax nextInvocation)
+        static ExpressionSyntax updateName(ExpressionSyntax subExpression, ExpressionSyntax nextInvocation)
         {
             var nextInvocationName = nextInvocation switch
             {
                 MemberAccessExpressionSyntax memberAccess => memberAccess.Name,
                 MemberBindingExpressionSyntax memberBinding => memberBinding.Name,
-                _ => throw new ArgumentException()
+                _ => throw new ArgumentException("Invalid invocation expression")
             };
 
 
@@ -33,7 +33,7 @@ public static class Extensions
             {
                 MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(nextInvocationName),
                 MemberBindingExpressionSyntax memberBinding => memberBinding.WithName(nextInvocationName),
-                _ => throw new ArgumentException()
+                _ => throw new ArgumentException("Invalid invocation expression")
             };
             return newExpression;
         }
@@ -137,5 +137,15 @@ public static class Extensions
 
         root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         return root ?? throw new InvalidOperationException($"Unable to find a syntax root for document {document.Name}");
+    }
+
+    public static SyntaxNode? GetOuterParentOfType(this SyntaxNode node, params SyntaxKind[] types)
+    {
+        var currentNode = node.Parent;
+        while (currentNode?.Parent?.IsAnyKind(types) == true)
+        {
+            currentNode = currentNode.Parent;
+        }
+        return currentNode;
     }
 }

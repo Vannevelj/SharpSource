@@ -54,6 +54,12 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var isInsideLockStatement = invocation.Ancestors().Any(a => a is ILockOperation);
+        if (isInsideLockStatement)
+        {
+            return;
+        }
+
         var invokedMethodName = invocation.TargetMethod.Name;
         var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
 
@@ -87,10 +93,10 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
          *  - The currently invoked function, i.e. Get()
          *  - The potential overload, i.e. GetAsync()
          * 
-         * If the current context doesn't provide a cancellationtoken, the overload must not require it either (no parameter or optional ctoken)
-         * If the current context does provide a cancellationtoken and the overload accepts one (optional or required), we pass it through
-         * If the current context does provide a cancellationtoken but the overload doesn't accept one, we don't pass it through
-         * If the current context does provide a cancellationtoken and the current invocation uses it but the overload doesn't accept it, we need to remove it
+         * If the current context doesn't provide a cancellationToken, the overload must not require it either (no parameter or optional ctoken)
+         * If the current context does provide a cancellationToken and the overload accepts one (optional or required), we pass it through
+         * If the current context does provide a cancellationToken but the overload doesn't accept one, we don't pass it through
+         * If the current context does provide a cancellationToken and the current invocation uses it but the overload doesn't accept it, we need to remove it
          **/
 
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
@@ -98,7 +104,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         var hasOneAdditionalOptionalCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == true;
         var hasOneAdditionalRequiredCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == false && surroundingMethodDeclaration.GetCancellationTokenFromParameters() != default;
 
-        // We allow overloads to differ by providing a cancellationtoken
+        // We allow overloads to differ by providing a cancellationToken
         var isParameterCountOkay = hasExactSameNumberOfParameters || hasOneAdditionalOptionalCancellationTokenParameter || hasOneAdditionalRequiredCancellationTokenParameter;
         if (!isParameterCountOkay)
         {

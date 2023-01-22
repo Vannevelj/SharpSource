@@ -29,13 +29,26 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
         context.RegisterOperationAction(context =>
         {
             var assignment = (IAssignmentOperation)context.Operation;
-            var surroundingLoop = assignment.Ancestors().OfType<ILoopOperation>().FirstOrDefault();
-            if (surroundingLoop is null)
+
+            var isEligible = assignment switch
+            {
+                ICompoundAssignmentOperation { OperatorKind: BinaryOperatorKind.Add } => true,
+                ISimpleAssignmentOperation { Value: IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } } => true,
+                _ => false
+            };
+
+            if (!isEligible)
             {
                 return;
             }
 
             if (assignment.Type is not { SpecialType: SpecialType.System_String })
+            {
+                return;
+            }
+
+            var surroundingLoop = assignment.Ancestors().OfType<ILoopOperation>().FirstOrDefault();
+            if (surroundingLoop is null)
             {
                 return;
             }

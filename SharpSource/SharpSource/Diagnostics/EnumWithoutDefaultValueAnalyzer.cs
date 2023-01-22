@@ -18,7 +18,7 @@ public sealed class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
         "An enum should specify a default value",
         "Enum {0} should specify a default value of 0 as \"Unknown\" or \"None\"",
         Categories.ApiDesign,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS039-EnumWithoutDefaultValue.md");
 

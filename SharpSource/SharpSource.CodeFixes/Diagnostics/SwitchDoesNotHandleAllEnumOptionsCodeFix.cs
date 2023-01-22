@@ -28,7 +28,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
-        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
+        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 
         if (semanticModel == default)
         {

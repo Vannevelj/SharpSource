@@ -21,7 +21,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetRequiredSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
+        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is not CompilationUnitSyntax compilation || semanticModel == default)
         {
             return;
@@ -84,7 +84,7 @@ public class ComparingStringsWithoutStringComparisonCodeFix : CodeFixProvider
     {
         var negation = useNegation ? "!" : "";
         var newNode = SyntaxFactory.ParseExpression($"{negation}string.Equals({firstArgument}, {secondArgument}, StringComparison.{stringComparison})");
-        var newRoot = root.ReplaceNode(expressionToReplace, newNode.WithLeadingTrivia(firstArgument.GetLeadingTrivia())).WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.StringComparison"));
+        var newRoot = root.ReplaceNode(expressionToReplace, newNode.WithLeadingTrivia(firstArgument.GetLeadingTrivia()).WithTrailingTrivia(expressionToReplace.GetTrailingTrivia())).WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.StringComparison"));
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

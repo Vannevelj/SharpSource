@@ -26,7 +26,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var enumMember = root.FindNode(diagnosticSpan)?.FirstAncestorOrSelfOfType(SyntaxKind.EnumMemberDeclaration) as EnumMemberDeclarationSyntax;
-        var semanticModel = await context.Document.GetSemanticModelAsync().ConfigureAwait(false);
+        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
         if (enumMember == default || semanticModel == default)
         {
             return;

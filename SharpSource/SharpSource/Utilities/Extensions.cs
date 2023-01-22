@@ -148,38 +148,6 @@ public static class Extensions
         return method;
     }
 
-    public static bool HasASubsequentInvocation(this ExpressionSyntax node)
-    {
-        // If the invocation is wrapped in a nullable access, i.e. s1?.ToLower(), then the first visit will be the ConditionalAccessExpressionSyntax
-        // If we would return on the first invocation then we would exit as soon as we reach ToLower()
-        // For that reason we explicitly track the number of actual invocations we traverse
-        var visitedInvocations = 0;
-
-        var current = node;
-        while (current != default)
-        {
-            if (current is InvocationExpressionSyntax)
-            {
-                visitedInvocations++;
-            }
-
-            if (visitedInvocations > 1)
-            {
-                return true;
-            }
-
-            current = current switch
-            {
-                InvocationExpressionSyntax invocation => invocation.Expression,
-                ConditionalAccessExpressionSyntax conditional => conditional.WhenNotNull,
-                MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
-                _ => default
-            };
-        }
-
-        return false;
-    }
-
     public static (string? Name, bool? IsNullable) GetCancellationTokenFromParameters(this IMethodSymbol? method)
     {
         if (method == default)
@@ -194,7 +162,12 @@ public static class Extensions
                 return (parameter.Name, true);
             }
 
-            if (parameter.Type is INamedTypeSymbol { Name: "CancellationToken" })
+            if (parameter is { Type: INamedTypeSymbol { Name: "CancellationToken" }, IsOptional: true })
+            {
+                return (parameter.Name, true);
+            }
+
+            if (parameter is { Type: INamedTypeSymbol { Name: "CancellationToken" } })
             {
                 return (parameter.Name, false);
             }
@@ -231,5 +204,20 @@ public static class Extensions
                 yield return symbolMember;
             }
         }
+    }
+
+    public static IInvocationOperation? GetPrecedingInvocation(this IInvocationOperation invocation)
+    {
+        if (invocation.Instance is IInvocationOperation previousInvocation)
+        {
+            return previousInvocation;
+        }
+
+        if (invocation.Arguments is { Length: > 0 } && invocation.Arguments[0].Value is IConversionOperation { Operand: IInvocationOperation precedingInvocation })
+        {
+            return precedingInvocation;
+        }
+
+        return default;
     }
 }

@@ -308,9 +308,11 @@ try { } catch { }
     [TestMethod]
     [DataRow("NotImplementedException")]
     [DataRow("NotSupportedException")]
+    [DataRow("PlatformNotSupportedException")]
     [DataRow("System.NotImplementedException")]
     [DataRow("System.NotSupportedException")]
-    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_AllowedExceptionsAsync(string exception)
+    [DataRow("System.PlatformNotSupportedException")]
+    public async Task ExceptionThrownFromProhibitedContext_FinallyBlock_AllowedExceptions(string exception)
     {
         var original = $@"
 using System;
@@ -616,9 +618,11 @@ class MyClass
     [TestMethod]
     [DataRow("NotImplementedException")]
     [DataRow("NotSupportedException")]
+    [DataRow("PlatformNotSupportedException")]
     [DataRow("System.NotImplementedException")]
     [DataRow("System.NotSupportedException")]
-    public async Task ExceptionThrownFromProhibitedContext_Equals_AllowedExceptionsAsync(string exception)
+    [DataRow("System.PlatformNotSupportedException")]
+    public async Task ExceptionThrownFromProhibitedContext_Equals_AllowedExceptions(string exception)
     {
         var original = $@"
 using System;

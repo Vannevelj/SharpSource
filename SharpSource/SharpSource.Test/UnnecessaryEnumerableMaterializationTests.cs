@@ -1,21 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.UnnecessaryEnumerableMaterializationAnalyzer, SharpSource.Diagnostics.UnnecessaryEnumerableMaterializationCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class UnnecessaryEnumerableMaterializationTests : DiagnosticVerifier
+public class UnnecessaryEnumerableMaterializationTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new UnnecessaryEnumerableMaterializationAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new UnnecessaryEnumerableMaterializationCodeFix();
-
     private static IEnumerable<object[]> GetSingleValueData()
     {
         var materializingOperations = new string[]
@@ -70,7 +64,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.{materialization}().{deferred};
+{{|#0:values.{materialization}().{deferred}|}};
 ";
 
         var expected = $@"
@@ -81,8 +75,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{deferred};
 ";
 
-        await VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage($"{materialization} is unnecessarily materializing the IEnumerable and can be omitted"), expected);
     }
 
     [TestMethod]
@@ -96,7 +89,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.{materialization}().ToList();
+{{|#0:values.{materialization}().ToList()|}};
 ";
 
         var expected = $@"
@@ -107,8 +100,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.ToList();
 ";
 
-        await VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage($"{materialization} is unnecessarily materializing the IEnumerable and can be omitted"), expected);
     }
 
     [TestMethod]
@@ -125,7 +117,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Where(x => true).{materialization}();
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -142,7 +134,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.{materialization}();
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -158,7 +150,7 @@ using System.Collections.Generic;
 var test = Enumerable.Range(0, 100).{materialization}();
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -172,7 +164,7 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Where(x => true).Skip(1).Reverse();
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -186,7 +178,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] {{ ""test"" }};
-values.Skip(1).Reverse().{materialization}().Take(1);
+{{|#0:values.Skip(1).Reverse().{materialization}().Take(1)|}};
 ";
 
         var expected = $@"
@@ -197,12 +189,10 @@ IEnumerable<string> values = new [] {{ ""test"" }};
 values.Skip(1).Reverse().Take(1);
 ";
 
-        await VerifyDiagnostic(original, $"{materialization} is unnecessarily materializing the IEnumerable and can be omitted");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage($"{materialization} is unnecessarily materializing the IEnumerable and can be omitted"), expected);
     }
 
     [TestMethod]
-    [Ignore("Not the intended behaviour, see https://github.com/Vannevelj/SharpSource/issues/191")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess()
     {
         var original = @"
@@ -210,13 +200,20 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values?.ToArray().ToList();";
+values?{|#0:.ToArray().ToList()|};";
 
-        await VerifyDiagnostic(original);
+        var expected = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] {{ ""test"" }};
+values?.ToList();";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted"), expected);
     }
 
     [TestMethod]
-    [Ignore("Not the intended behaviour, see https://github.com/Vannevelj/SharpSource/issues/191")]
+    [Ignore("Need to find a way to handle the testing of a code fix when there are multiple issues, see https://github.com/Vannevelj/SharpSource/issues/288")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
     {
         var original = @"
@@ -226,7 +223,17 @@ using System.Collections.Generic;
 IEnumerable<string> values = new [] { ""test"" };
 values?.ToArray().ToList().AsEnumerable();";
 
-        await VerifyDiagnostic(original);
+        var expected = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] {{ ""test"" }};
+values?.ToList().AsEnumerable();";
+
+        await VerifyCS.VerifyCodeFix(original, new[] {
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted").WithSpan(6, 8, 6, 27),
+            VerifyCS.Diagnostic().WithNoLocation().WithMessage("ToList is unnecessarily materializing the IEnumerable and can be omitted").WithSpan(6, 8, 6, 42)
+        }, expected);
     }
 
     [TestMethod]
@@ -237,7 +244,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values!.ToArray().ToList();";
+{|#0:values!.ToArray().ToList()|};";
 
         var expected = @"
 using System.Linq;
@@ -246,7 +253,6 @@ using System.Collections.Generic;
 IEnumerable<string> values = new [] { ""test"" };
 values!.ToList();";
 
-        await VerifyDiagnostic(original, $"ToArray is unnecessarily materializing the IEnumerable and can be omitted");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted"), expected);
     }
 }

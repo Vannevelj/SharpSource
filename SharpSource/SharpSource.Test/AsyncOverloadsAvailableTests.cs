@@ -962,4 +962,82 @@ class MyClass
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/293")]
+    public async Task AsyncOverloadsAvailable_Lock()
+    {
+        var original = @"
+using System.IO;
+
+class Test
+{
+    async void MyMethod()
+    {
+        lock(this)
+        {
+            {|#0:new StringWriter().Write("""")|};
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/294")]
+    public async Task AsyncOverloadsAvailable_MaintainsWhitespace()
+    {
+        var original = @"
+using System.IO;
+
+async void MyMethod()
+{
+    // A comment
+
+    {|#0:new StringWriter().Write("""")|};
+}";
+
+        var result = @"
+using System.IO;
+
+async void MyMethod()
+{
+    // A comment
+
+    await new StringWriter().WriteAsync("""");
+}";
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/295")]
+    public async Task AsyncOverloadsAvailable_MaintainsIndentation()
+    {
+        var original = @"
+using System.Linq;
+using System.IO;
+
+async void MyMethod()
+{
+    // A comment
+
+    var text = {|#0:File.ReadAllText(""file.txt"")|}
+    .Trim()
+    .Split('|')
+    .ToList();
+}";
+
+        var result = @"
+using System.Linq;
+using System.IO;
+
+async void MyMethod()
+{
+    // A comment
+
+    var text = {|#0:(await File.ReadAllTextAsync(""file.txt""))|}
+    .Trim()
+    .Split('|')
+    .ToList();
+}";
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for File.ReadAllText"), result);
+    }
 }
