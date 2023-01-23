@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.LoopedRandomInstantiationAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class LoopedRandomInstantiationTests : DiagnosticVerifier
+public class LoopedRandomInstantiationTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new LoopedRandomInstantiationAnalyzer();
-
     [TestMethod]
     public async Task LoopedRandomInstantiation_WhileLoop()
     {
@@ -25,13 +22,13 @@ namespace ConsoleApplication1
         {
             while (true)
             {
-                var rand = new Random();
+                var {|#0:rand = new Random()|};
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Variable rand of type System.Random is instantiated in a loop."));
     }
 
     [TestMethod]
@@ -48,13 +45,13 @@ namespace ConsoleApplication1
         {
             do
             {
-                var rand = new Random();
+                var {|#0:rand = new Random()|};
             } while (true);
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Variable rand of type System.Random is instantiated in a loop."));
     }
 
     [TestMethod]
@@ -71,13 +68,13 @@ namespace ConsoleApplication1
         {
             for (var i = 0; i > 5; i++)
             {
-                var rand = new Random(4);
+                var {|#0:rand = new Random(4)|};
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Variable rand of type System.Random is instantiated in a loop."));
     }
 
     [TestMethod]
@@ -96,13 +93,13 @@ namespace ConsoleApplication1
             var list = new List<string>();
             foreach (var item in list)
             {
-                var rand = new Random();
+                var {|#0:rand = new Random()|};
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Variable rand of type System.Random is instantiated in a loop."));
     }
 
     [TestMethod]
@@ -119,13 +116,16 @@ namespace ConsoleApplication1
         {
             while (true)
             {
-                Random rand = new Random(), rind = new Random(2);
+                Random {|#0:rand = new Random()|}, {|#1:rind = new Random(2)|};
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.", "Variable rind of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, new[] {
+            VerifyCS.Diagnostic(location: 0).WithMessage("Variable rand of type System.Random is instantiated in a loop."),
+            VerifyCS.Diagnostic(location: 1).WithMessage("Variable rind of type System.Random is instantiated in a loop.")
+        });
     }
 
     [TestMethod]
@@ -144,14 +144,14 @@ namespace ConsoleApplication1
             {
                 if (true)
                 {
-                    Random rand = new Random();
+                    Random {|#0:rand = new Random()|};
                 }
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Variable rand of type System.Random is instantiated in a loop."));
     }
 
     [TestMethod]
@@ -172,7 +172,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -192,7 +192,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -210,7 +210,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -227,13 +227,13 @@ namespace ConsoleApplication1
         {
             while (true)
             {
-                var rand = new Random();
+                var {|#0:rand = new Random()|};
             }
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "Variable rand of type System.Random is instantiated in a loop.");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Variable rand of type System.Random is instantiated in a loop."));
     }
 
     [TestMethod]
@@ -253,6 +253,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
