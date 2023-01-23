@@ -15,55 +15,55 @@ public sealed class ExceptionThrownFromProhibitedContextAnalyzer : DiagnosticAna
 {
     private static readonly HashSet<string> AllowedExceptions = new(new string[] { "NotImplementedException", "NotSupportedException", "PlatformNotSupportedException" });
 
-    private static DiagnosticDescriptor ImplicitOperatorRule
+    public static DiagnosticDescriptor ImplicitOperatorRule
         => new(DiagnosticId.ExceptionThrownFromImplicitOperator,
             "An exception is thrown from an implicit operator.",
             "An exception is thrown from implicit operator {0} in type {1}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS022-ExceptionThrownFromImplicitOperator.md");
 
-    private static DiagnosticDescriptor PropertyGetterRule
+    public static DiagnosticDescriptor PropertyGetterRule
         => new(DiagnosticId.ExceptionThrownFromPropertyGetter,
             "An exception is thrown from a property getter.",
             "An exception is thrown from the getter of property {0}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS023-ExceptionThrownFromPropertyGetter.md");
 
-    private static DiagnosticDescriptor StaticConstructorRule
+    public static DiagnosticDescriptor StaticConstructorRule
         => new(DiagnosticId.ExceptionThrownFromStaticConstructor,
             "An exception is thrown from a static constructor.",
             "An exception is thrown from {0} its static constructor", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS024-ExceptionThrownFromStaticConstructor.md");
 
-    private static DiagnosticDescriptor FinallyBlockRule
+    public static DiagnosticDescriptor FinallyBlockRule
         => new(DiagnosticId.ExceptionThrownFromFinallyBlock,
             "An exception is thrown from a finally block.",
             "An exception is thrown from a finally block", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS025-ExceptionThrownFromFinallyBlock.md");
 
-    private static DiagnosticDescriptor EqualityOperatorRule
+    public static DiagnosticDescriptor EqualityOperatorRule
         => new(DiagnosticId.ExceptionThrownFromEqualityOperator,
             "An exception is thrown from an equality operator.",
             "An exception is thrown from the {0} operator between {1} and {2} in type {3}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS026-ExceptionThrownFromEqualityOperator.md");
 
-    private static DiagnosticDescriptor DisposeRule
+    public static DiagnosticDescriptor DisposeRule
         => new(DiagnosticId.ExceptionThrownFromDispose,
             "An exception is thrown from a Dispose method.",
             "An exception is thrown from the {0} method in type {1}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS027-ExceptionThrownFromDispose.md");
 
-    private static DiagnosticDescriptor FinalizerRule
+    public static DiagnosticDescriptor FinalizerRule
         => new(DiagnosticId.ExceptionThrownFromFinalizer,
             "An exception is thrown from a finalizer method.",
             "An exception is thrown from the finalizer method in type {0}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS028-ExceptionThrownFromFinalizer.md");
 
-    private static DiagnosticDescriptor GetHashCodeRule
+    public static DiagnosticDescriptor GetHashCodeRule
         => new(DiagnosticId.ExceptionThrownFromGetHashCode,
             "An exception is thrown from a GetHashCode() method.",
             "An exception is thrown from the GetHashCode() method in type {0}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,
             helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS029-ExceptionThrownFromGetHashCode.md");
 
-    private static DiagnosticDescriptor EqualsRule
+    public static DiagnosticDescriptor EqualsRule
         => new(DiagnosticId.ExceptionThrownFromEquals,
             "An exception is thrown from an Equals() method.",
             "An exception is thrown from the Equals({0}) method in type {1}", Categories.ApiDesign, DiagnosticSeverity.Warning, true,

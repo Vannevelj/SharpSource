@@ -23,8 +23,8 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(diagnosticId);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(DiagnosticDescriptor)"/>
-    public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor)
-        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(descriptor);
+    public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor, int location = 0)
+        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(descriptor).WithLocation(location);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyAnalyzerAsync(string, DiagnosticResult[])"/>
     public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
