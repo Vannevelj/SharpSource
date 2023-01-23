@@ -26,40 +26,24 @@ public class ThreadSleepInAsyncMethodCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-        var memberAccess = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+        var invocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
         var isAsync = bool.Parse(diagnostic.Properties["isAsync"]);
-        if (!isAsync || memberAccess == default)
+        if (!isAsync || invocation == default)
         {
             return;
         }
 
         context.RegisterCodeFix(
             CodeAction.Create("Use Task.Delay",
-                x => UseTaskDelay(context.Document, memberAccess, root),
+                x => UseTaskDelay(context.Document, invocation, root),
                 ThreadSleepInAsyncMethodAnalyzer.Rule.Id),
             diagnostic);
     }
 
     private static Task<Document> UseTaskDelay(Document document, InvocationExpressionSyntax invocation, SyntaxNode root)
     {
-        ExpressionSyntax newExpression;
-        if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
-        {
-            newExpression = memberAccess
-                .WithExpression(SyntaxFactory.IdentifierName("Task"))
-                .WithName(SyntaxFactory.IdentifierName("Delay"));
-        }
-        else if (invocation.Expression is IdentifierNameSyntax)
-        {
-            newExpression = SyntaxFactory.ParseExpression("Task.Delay");
-        }
-        else
-        {
-            return Task.FromResult(document);
-        }
-
-        var newInvocation = invocation.WithExpression(newExpression);
+        var newInvocation = invocation.WithExpression(SyntaxFactory.ParseExpression("Task.Delay"));
         var awaitExpression = SyntaxFactory.AwaitExpression(newInvocation).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.AddImportsAnnotation, SymbolAnnotation.Create("System.Threading.Tasks.Task"));
 
         var newRoot = root.ReplaceNode(invocation, awaitExpression);

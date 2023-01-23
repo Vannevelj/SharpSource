@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.StringPlaceholdersInWrongOrderAnalyzer, SharpSource.Diagnostics.StringPlaceHoldersInWrongOrderCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
+public class StringPlaceholdersInWrongOrderTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StringPlaceholdersInWrongOrderAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new StringPlaceHoldersInWrongOrderCodeFix();
-
     [TestMethod]
     public async Task StringPlaceholdersInWrongOrder_InCorrectOrder_WithSingleOccurrence()
     {
@@ -31,7 +25,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -51,7 +46,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -67,7 +63,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(""Hello {1}, my name is {0}. Yes you heard that right, {0}."", ""Mr. Test"", ""Mr. Tester"");
+                string s = {|#0:string.Format(""Hello {1}, my name is {0}. Yes you heard that right, {0}."", ""Mr. Test"", ""Mr. Tester"")|};
             }
         }
     }";
@@ -85,10 +81,10 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
                 string s = string.Format(""Hello {0}, my name is {1}. Yes you heard that right, {1}."", ""Mr. Tester"", ""Mr. Test"");
             }
         }
-    }";
+    }"
+        ;
 
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -104,7 +100,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"");
+                string s = {|#0:string.Format(""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"")|};
             }
         }
     }";
@@ -124,8 +120,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -141,7 +136,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(""Hello {2}, my name is {1}. Yes you heard that right, {1}."", ""Mr. Test"", ""Mr. Tester"", ""Mrs. Testing"");
+                string s = {|#0:string.Format(""Hello {2}, my name is {1}. Yes you heard that right, {1}."", ""Mr. Test"", ""Mr. Tester"", ""Mrs. Testing"")|};
             }
         }
     }";
@@ -161,8 +156,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -178,7 +172,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(""abc {2} def {0} ghi {1}"", ""x"", ""y"", ""z"");
+                string s = {|#0:string.Format(""abc {2} def {0} ghi {1}"", ""x"", ""y"", ""z"")|};
             }
         }
     }";
@@ -198,8 +192,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -220,7 +213,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -241,7 +234,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -262,7 +255,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -279,7 +272,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             void Method()
             {
                 DateTime date = DateTime.Now;
-                string formattedDate = string.Format(""Hello {1}, it's {0:hh:mm:ss t z}"", date, ""Jeroen"");
+                string formattedDate = {|#0:string.Format(""Hello {1}, it's {0:hh:mm:ss t z}"", date, ""Jeroen"")|};
             }
         }
     }";
@@ -300,8 +293,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -318,7 +310,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(CultureInfo.InvariantCulture, ""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"");
+                string s = {|#0:string.Format(CultureInfo.InvariantCulture, ""Hello {1}, my name is {0}."", ""Mr. Test"", ""Mr. Tester"")|};
             }
         }
     }";
@@ -339,8 +331,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -360,7 +351,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -376,7 +367,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(""Hello {{{1}}}, my name is {0}"", ""Mr. Test"", ""Mr. Tester"");
+                string s = {|#0:string.Format(""Hello {{{1}}}, my name is {0}"", ""Mr. Test"", ""Mr. Tester"")|};
             }
         }
     }";
@@ -395,8 +386,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -412,7 +403,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         {
             void Method()
             {
-                string s = string.Format(""{{Hello {1}, my name is {0}}}"", ""Mr. Test"", ""Mr. Tester"");
+                string s = {|#0:string.Format(""{{Hello {1}, my name is {0}}}"", ""Mr. Test"", ""Mr. Tester"")|};
             }
         }
     }";
@@ -431,8 +422,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original, "string.Format() Placeholders are not in ascending order.");
-        await VerifyFix(original, expected);
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
     }
 
     [TestMethod]
@@ -452,7 +443,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -472,7 +464,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -496,7 +489,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -516,7 +510,8 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
             }
         }
     }";
-        await VerifyDiagnostic(original);
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -540,7 +535,7 @@ public class StringPlaceholdersInWrongOrderTests : DiagnosticVerifier
         }
     }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -560,6 +555,27 @@ class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/297")]
+    public async Task StringPlaceholdersInWrongOrder_WithManyPlaceholders()
+    {
+        var original = @"string s = {|#0:string.Format(""{15}{14}{13}{12}{11}{10}{9}{8}{7}{6}{5}{4}{3}{2}{1}{0}"", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)|};";
+
+        var expected = @"string s = string.Format(""{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}"", 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/306")]
+    public async Task StringPlaceholdersInWrongOrder_WithReferenceToArguments()
+    {
+        var original = @"
+object[] arguments = new object[] { 1, 2, 3 };
+{|#0:string.Format(""{1}{2}{0}"", arguments)|};
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

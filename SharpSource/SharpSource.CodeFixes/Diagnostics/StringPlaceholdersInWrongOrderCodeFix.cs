@@ -48,12 +48,8 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
     private static Task<Solution> ReOrderPlaceholdersAsync(Document document, SyntaxNode root,
                                                            InvocationExpressionSyntax stringFormatInvocation)
     {
-        var firstArgumentIsLiteral =
-            stringFormatInvocation.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax;
-        var formatString =
-            ( (LiteralExpressionSyntax)
-                stringFormatInvocation.ArgumentList.Arguments[firstArgumentIsLiteral ? 0 : 1].Expression ).GetText()
-                                                                                                         .ToString();
+        var firstArgumentIsLiteral = stringFormatInvocation.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax;
+        var formatString = ( (LiteralExpressionSyntax)stringFormatInvocation.ArgumentList.Arguments[firstArgumentIsLiteral ? 0 : 1].Expression ).GetText().ToString();
         var elements = PlaceholderHelpers.GetPlaceholdersSplit(formatString);
         var matches = PlaceholderHelpers.GetPlaceholders(formatString);
 
@@ -155,6 +151,9 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
         var originalValue = matches[oldPlaceholderIndex].Value;
         var newValue = new StringBuilder();
 
+        // We need to make sure a placeholder with value "15" does not replace the new value twice, i.e. "00"
+        var hasReplacedValue = false;
+
         for (var index = 0; index < originalValue.Length; index++)
         {
             // Formatting detected: append everything remaining
@@ -163,24 +162,23 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
                 newValue.Append(originalValue.Substring(index));
                 return newValue.ToString();
             }
-
             // Closing brace detected: append the remaining closing brace(s)
-            if (originalValue[index] == '}')
+            else if (originalValue[index] == '}')
             {
                 newValue.Append(originalValue.Substring(index));
                 return newValue.ToString();
             }
-
             // Opening brace detected: just add it
-            if (originalValue[index] == '{')
+            else if (originalValue[index] == '{')
             {
                 newValue.Append(originalValue[index]);
             }
-            else
+            else if (!hasReplacedValue)
             // If it's not a formatting delimiter or open- or closing braces, it must be the actual placeholder value.
             // Replace it by appending the new value.
             {
                 newValue.Append(newPlaceholderValue);
+                hasReplacedValue = true;
             }
         }
         return newValue.ToString();

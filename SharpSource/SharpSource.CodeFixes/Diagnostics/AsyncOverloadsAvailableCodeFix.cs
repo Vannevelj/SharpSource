@@ -29,28 +29,29 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             return;
         }
 
-        context.RegisterCodeFix(
-            CodeAction.Create("Use Async overload",
-                x => UseAsyncOverload(context.Document, invocation, root, diagnostic),
-                AsyncOverloadsAvailableAnalyzer.Rule.Id),
-            diagnostic);
-    }
-
-    private static Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, SyntaxNode root, Diagnostic diagnostic)
-    {
         ExpressionSyntax? newExpression = invocation.Expression switch
         {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(GetIdentifier(memberAccess.Name)),
-            IdentifierNameSyntax identifierName => GetIdentifier(identifierName),
-            GenericNameSyntax genericName => genericName.WithIdentifier(GetIdentifier(genericName).Identifier),
+            MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(GetAsyncIdentifier(memberAccess.Name)),
+            IdentifierNameSyntax identifierName => GetAsyncIdentifier(identifierName),
+            GenericNameSyntax genericName => genericName.WithIdentifier(GetAsyncIdentifier(genericName).Identifier),
+            MemberBindingExpressionSyntax memberBinding => memberBinding.WithName(GetAsyncIdentifier(memberBinding.Name)),
             _ => default
         };
 
         if (newExpression == default)
         {
-            return Task.FromResult(document);
+            return;
         }
 
+        context.RegisterCodeFix(
+            CodeAction.Create("Use Async overload",
+                x => UseAsyncOverload(context.Document, invocation, newExpression, root, diagnostic),
+                AsyncOverloadsAvailableAnalyzer.Rule.Id),
+            diagnostic);
+    }
+
+    private static Task<Document> UseAsyncOverload(Document document, InvocationExpressionSyntax invocation, ExpressionSyntax newExpression, SyntaxNode root, Diagnostic diagnostic)
+    {
         var newInvocation = invocation.WithExpression(newExpression);
 
         var shouldAddCancellationToken = diagnostic.Properties["shouldAddCancellationToken"] == "true";
@@ -63,7 +64,13 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             newInvocation = newInvocation.WithArgumentList(newArguments);
         }
 
-        ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newInvocation.WithoutTrivia()).WithAdditionalAnnotations(Formatter.Annotation);
+        ExpressionSyntax newExpressionToAwait = newInvocation;
+        if (invocation.Parent is ConditionalAccessExpressionSyntax conditionalAccess)
+        {
+            newExpressionToAwait = conditionalAccess.WithWhenNotNull(newInvocation);
+        }
+
+        ExpressionSyntax awaitExpression = SyntaxFactory.AwaitExpression(newExpressionToAwait.WithoutTrivia()).WithAdditionalAnnotations(Formatter.Annotation);
 
         // If we're accessing the result of the method call, i.e. `DoThing().Property` then we need to wrap the `await` expression with parentheses
         if (invocation.Parent is MemberAccessExpressionSyntax)
@@ -71,11 +78,11 @@ public class AsyncOverloadsAvailableCodeFix : CodeFixProvider
             awaitExpression = SyntaxFactory.ParenthesizedExpression(awaitExpression);
         }
 
-        var newRoot = root.ReplaceNode(invocation, awaitExpression.WithTriviaFrom(invocation));
+        var newRoot = root.ReplaceNode(invocation.Parent is ConditionalAccessExpressionSyntax ? invocation.Parent : invocation, awaitExpression.WithTriviaFrom(invocation));
         var newDocument = document.WithSyntaxRoot(newRoot);
 
         return Task.FromResult(newDocument);
     }
 
-    private static IdentifierNameSyntax GetIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
+    private static IdentifierNameSyntax GetAsyncIdentifier(SimpleNameSyntax nameSyntax) => SyntaxFactory.IdentifierName($"{nameSyntax.Identifier.ValueText}Async");
 }

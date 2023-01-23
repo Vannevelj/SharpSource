@@ -1033,11 +1033,32 @@ async void MyMethod()
 {
     // A comment
 
-    var text = {|#0:(await File.ReadAllTextAsync(""file.txt""))|}
+    var text = (await File.ReadAllTextAsync(""file.txt""))
     .Trim()
     .Split('|')
     .ToList();
 }";
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for File.ReadAllText"), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/289")]
+    public async Task AsyncOverloadsAvailable_Nullable()
+    {
+        var original = @"
+using System.IO;
+
+async void MyMethod(StringWriter writer)
+{
+    writer?{|#0:.Write("""")|};
+}";
+
+        var result = @"
+using System.IO;
+
+async void MyMethod(StringWriter writer)
+{
+    await writer?.WriteAsync("""");
+}";
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
     }
 }

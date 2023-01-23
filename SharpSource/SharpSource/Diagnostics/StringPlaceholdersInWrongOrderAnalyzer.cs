@@ -60,12 +60,7 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
             _ => default
         };
 
-        if (!formatArgument.HasValue)
-        {
-            return;
-        }
-
-        if (formatArgument.Value is not string formatString)
+        if (!formatArgument.HasValue || formatArgument.Value is not string formatString)
         {
             return;
         }
@@ -82,6 +77,27 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        // Given a scenario like this:
+        //     string.Format("{0} {1} {4} {3}", a, b, c, d)
+        // it would otherwise crash because it's trying to access index 4, which we obviously don't have.
+        // We also need to skip the optional IFormatProvider which may be the first argument
+        var argumentsToSkip = firstArgumentIsLiteral ? 1 : 2;
+        var formattingArguments = invocation.TargetMethod.Parameters.Where(p => p.Type.SpecialType is SpecialType.System_Object).Count();
+        var numberOfArguments = 0;
+        if (formattingArguments > 0)
+        {
+            numberOfArguments = formattingArguments;
+        }
+        else
+        {
+            var passedThroughParamsArray = invocation.Arguments.LastOrDefault()?.Value as IArrayCreationOperation;
+            var dimension = passedThroughParamsArray?.DimensionSizes.FirstOrDefault() as ILiteralOperation;
+            if (dimension is { ConstantValue: { HasValue: true, Value: int size } })
+            {
+                numberOfArguments = size;
+            }
+        }
+
         for (var index = 1; index < placeholders.Count; index++)
         {
             if (!int.TryParse(placeholders[index - 1].Groups["index"].Value, out var firstValue) ||
@@ -91,12 +107,7 @@ public class StringPlaceholdersInWrongOrderAnalyzer : DiagnosticAnalyzer
                 return;
             }
 
-            // Given a scenario like this:
-            //     string.Format("{0} {1} {4} {3}", a, b, c, d)
-            // it would otherwise crash because it's trying to access index 4, which we obviously don't have.
-            var argumentsToSkip = firstArgumentIsLiteral ? 1 : 2;
-            if (firstValue >= invocation.Arguments.Length - argumentsToSkip ||
-                secondValue >= invocation.Arguments.Length - argumentsToSkip)
+            if (firstValue >= numberOfArguments || secondValue >= numberOfArguments)
             {
                 return;
             }

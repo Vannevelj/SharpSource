@@ -1,6 +1,15 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.2] - 2023-01-23
+- `AsyncOverloadsAvailable`: Correctly generate the fixed code when conditional access is used, i.e. `writer?.Write()`
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Now takes overrides in base types into consideration
+- `ParameterAssignedInConstructor`: Don't trigger when the referenced member is a constant
+- `StringPlaceholdersInWrongOrder`: Code fix generates correct code when there are more than 10 placeholders in the format string
+- `UnboundedStackalloc`: Does not trigger when using pointers, e.g. `int*`
+- `ThreadSleepInAsyncMethod`: Fixed a rare scenario in which an empty code fix would be offered
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`, `LoopedRandomInstantiation` and `StringPlaceholdersInWrongOrder` tests use `VerifyCS`
+
 ## [1.21.1] - 2023-01-22
 - `StringConcatenatedInLoop`: No longer triggers for regular assignments
 - `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
