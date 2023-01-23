@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
+using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
 
 namespace SharpSource.Diagnostics;
@@ -80,6 +80,12 @@ public class UnboundedStackallocAnalyzer : DiagnosticAnalyzer
             {
                 return;
             }
+        }
+
+        var surroundingDeclaration = stackallocExpression.Ancestors().OfType<VariableDeclarationSyntax>().FirstOrDefault();
+        if (surroundingDeclaration is { Type: PointerTypeSyntax })
+        {
+            return;
         }
 
         context.ReportDiagnostic(Diagnostic.Create(Rule, arrayRank.GetLocation()));

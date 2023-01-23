@@ -6,6 +6,7 @@ https://keepachangelog.com/en/1.0.0/
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Now takes overrides in base types into consideration
 - `ParameterAssignedInConstructor`: Don't trigger when the referenced member is a constant
 - `StringPlaceholdersInWrongOrder`: Code fix generates correct code when there are more than 10 placeholders in the format string
+- `UnboundedStackalloc`: Does not trigger when using pointers, e.g. `int*`
 - `ThreadSleepInAsyncMethod`: Fixed a rare scenario in which an empty code fix would be offered
 - `ElementaryMethodsOfTypeInCollectionNotOverridden` and `StringPlaceholdersInWrongOrder` tests use `VerifyCS`
 

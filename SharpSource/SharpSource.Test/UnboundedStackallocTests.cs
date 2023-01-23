@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.UnboundedStackallocAnalyzer, SharpSource.Diagnostics.UnboundedStackallocCodeFix>;
 
 namespace SharpSource.Test;
@@ -45,7 +45,8 @@ Span<int> values = len < 1024 ? stackalloc int[len] : new int[len];";
 using System;
 
 var len = new Random().Next();
-if (len < 1024) {
+if (len < 1024)
+{
     Span<int> values = len < 1024 ? stackalloc int[len] : new int[len];
 }";
 
@@ -59,7 +60,8 @@ if (len < 1024) {
 using System;
 
 var len = new Random().Next();
-if (len < 1024) {
+if (len < 1024)
+{
     return;
 }
 Span<int> values = len < 1024 ? stackalloc int[len] : new int[len];
@@ -75,7 +77,8 @@ Span<int> values = len < 1024 ? stackalloc int[len] : new int[len];
 using System;
 
 var len = new Random().Next();
-if (1024 > len) {
+if (1024 > len)
+{
     Span<int> values = len < 1024 ? stackalloc int[len] : new int[len];
 }";
 
@@ -236,5 +239,20 @@ class Test
 }";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An array is stack allocated without checking the length. Explicitly check the length against a constant value"), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/300")]
+    public async Task UnboundedStackalloc_Unsafe_Pointer()
+    {
+        var original = @"
+using System;
+
+var len = new Random().Next();
+unsafe
+{
+    int* v2 = stackalloc int{|#0:[len]|};
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
