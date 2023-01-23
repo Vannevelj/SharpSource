@@ -1,36 +1,33 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.EnumWithoutDefaultValueAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class EnumWithoutDefaultValueTests : DiagnosticVerifier
+public class EnumWithoutDefaultValueTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new EnumWithoutDefaultValueAnalyzer();
-
     [TestMethod]
     public async Task EnumWithoutDefaultValue_WrongName()
     {
         var original = @"
-enum Test {
+enum {|#0:Test|} {
     A
 }";
 
-        await VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Enum Test should specify a default value of 0 as \"Unknown\" or \"None\""));
     }
 
     [TestMethod]
     public async Task EnumWithoutDefaultValue_NoMembers()
     {
         var original = @"
-enum Test {
+enum {|#0:Test|} {
     
 }";
 
-        await VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Enum Test should specify a default value of 0 as \"Unknown\" or \"None\""));
     }
 
     [TestMethod]
@@ -39,12 +36,12 @@ enum Test {
     public async Task EnumWithoutDefaultValue_RightName_WrongValue(string memberName)
     {
         var original = $@"
-enum Test {{
+enum {{|#0:Test|}} {{
     A,
     {memberName} = 1
 }}";
 
-        await VerifyDiagnostic(original, "Enum Test should specify a default value of 0 as \"Unknown\" or \"None\"");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Enum Test should specify a default value of 0 as \"Unknown\" or \"None\""));
     }
 
     [TestMethod]
@@ -58,7 +55,7 @@ enum Test {{
     A = 1
 }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -72,7 +69,7 @@ enum Test {{
     A = 1
 }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -86,6 +83,6 @@ enum Test {{
     {memberName} = 0,
 }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
