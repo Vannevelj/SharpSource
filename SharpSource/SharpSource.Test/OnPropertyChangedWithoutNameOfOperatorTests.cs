@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperatorAnalyzer, SharpSource.Diagnostics.OnPropertyChangedWithoutNameOfOperatorCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class OnPropertyChangedWithoutNameOfOperatorTests : DiagnosticVerifier
+public class OnPropertyChangedWithoutNameOfOperatorTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new OnPropertyChangedWithoutNameOfOperatorAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new OnPropertyChangedWithoutNameOfOperatorCodeFix();
-
     [TestMethod]
     public async Task OnPropertyChangedWithoutNameOfOperator_WithIdenticalString()
     {
@@ -32,7 +26,7 @@ namespace ConsoleApplication1
             set
             {
                 _isEnabled = value;
-                OnPropertyChanged(""IsEnabled"");
+                OnPropertyChanged({|#0:""IsEnabled""|});
             }
         }
 
@@ -83,8 +77,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(IsEnabled) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(IsEnabled) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -105,7 +98,7 @@ namespace ConsoleApplication1
             set
             {
                 _isEnabled = value;
-                OnPropertyChanged(""iSeNabled"");
+                OnPropertyChanged({|#0:""iSeNabled""|});
             }
         }
 
@@ -156,8 +149,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(IsEnabled) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(IsEnabled) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -196,7 +188,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -217,7 +209,7 @@ namespace ConsoleApplication1
             set
             {
                 _isEnabled = value;
-                OnPropertyChanged(""IsAnotherBoolean"");
+                OnPropertyChanged({|#0:""IsAnotherBoolean""|});
             }
         }
 
@@ -290,8 +282,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(IsAnotherBoolean) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(IsAnotherBoolean) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -330,7 +321,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -351,7 +342,7 @@ namespace ConsoleApplication1
             set
             {
                 _isEnabled = value;
-                OnPropertyChanged(""IsEnabled"", true);
+                OnPropertyChanged({|#0:""IsEnabled""|}, true);
             }
         }
 
@@ -402,8 +393,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(IsEnabled) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(IsEnabled) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -424,7 +414,7 @@ namespace ConsoleApplication1
 		    set
 		    {
 			    _isEnabled = value;
-			    OnPropertyChanged(""IsEnabled"");
+			    OnPropertyChanged({|#0:""IsEnabled""|});
             }
         }
     }
@@ -481,8 +471,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(IsEnabled) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(IsEnabled) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -503,7 +492,7 @@ namespace ConsoleApplication1
             set
             {
                 _isEnabled = value;
-                OnPropertyChanged((""IsEnabled""));
+                OnPropertyChanged(({|#0:""IsEnabled""|}));
             }
         }
 
@@ -554,8 +543,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(IsEnabled) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(IsEnabled) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -576,7 +564,7 @@ namespace ConsoleApplication1
 		    set
 		    {
 			    _isEnabled = value;
-			    OnPropertyChanged(""OtherBoolean"");
+			    OnPropertyChanged({|#0:""OtherBoolean""|});
             }
         }
     }
@@ -637,8 +625,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "OnPropertyChanged(OtherBoolean) can use the nameof() operator.");
-        await VerifyFix(original, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("OnPropertyChanged(OtherBoolean) can use the nameof() operator."), expected);
     }
 
     [TestMethod]
@@ -676,6 +663,6 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }
