@@ -2,7 +2,7 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.21.3] - 2023-01-24
-- `ExceptionThrownFromProhibitedContext` and `EnumWithoutDefaultValue` tests use `VerifyCS`
+- `ExceptionThrownFromProhibitedContext`, `GetHashCodeRefersToMutableMember` and `EnumWithoutDefaultValue` tests use `VerifyCS`
 
 ## [1.21.2] - 2023-01-23
 - `AsyncOverloadsAvailable`: Correctly generate the fixed code when conditional access is used, i.e. `writer?.Write()`

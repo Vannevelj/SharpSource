@@ -1,16 +1,15 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.GetHashCodeRefersToMutableMemberAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
+
 namespace SharpSource.Test;
 
 [TestClass]
-public class GetHashCodeRefersToMutableMemberTests : DiagnosticVerifier
+public class GetHashCodeRefersToMutableMemberTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new GetHashCodeRefersToMutableMemberAnalyzer();
-
     [TestMethod]
     public async Task GetHashCodeRefersToMutableMember_ConstantField()
     {
@@ -28,7 +27,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -43,12 +42,12 @@ namespace ConsoleApplication1
 
         public override int GetHashCode()
         {
-            return _boo.GetHashCode();
+            return {|#0:_boo|}.GetHashCode();
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.FieldRule).WithMessage("GetHashCode() refers to mutable field _boo"));
     }
 
     [TestMethod]
@@ -63,12 +62,12 @@ namespace ConsoleApplication1
 
         public override int GetHashCode()
         {
-            return _boo.GetHashCode();
+            return {|#0:_boo|}.GetHashCode();
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.FieldRule).WithMessage("GetHashCode() refers to mutable field _boo"));
     }
 
     [TestMethod]
@@ -84,12 +83,12 @@ namespace ConsoleApplication1
 
         public override int GetHashCode()
         {
-            return _boo.GetHashCode();
+            return {|#0:_boo|}.GetHashCode();
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.FieldRule).WithMessage("GetHashCode() refers to mutable field _boo"));
     }
 
     [TestMethod]
@@ -105,12 +104,12 @@ namespace ConsoleApplication1
 
         public override int GetHashCode()
         {
-            return _boo.GetHashCode();
+            return {|#0:_boo|}.GetHashCode();
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable field _boo");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.FieldRule).WithMessage("GetHashCode() refers to mutable field _boo"));
     }
 
     [TestMethod]
@@ -131,7 +130,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -152,7 +151,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -172,7 +171,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -193,7 +192,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -208,12 +207,12 @@ namespace ConsoleApplication1
 
         public override int GetHashCode()
         {
-            return Boo.GetHashCode();
+            return {|#0:Boo|}.GetHashCode();
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.PropertyRule).WithMessage("GetHashCode() refers to mutable property Boo"));
     }
 
     [TestMethod]
@@ -233,7 +232,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -249,12 +248,12 @@ namespace ConsoleApplication1
 
         public override int GetHashCode()
         {
-            return Boo.GetHashCode();
+            return {|#0:Boo|}.GetHashCode();
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable property Boo");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.PropertyRule).WithMessage("GetHashCode() refers to mutable property Boo"));
     }
 
     [TestMethod]
@@ -274,7 +273,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -294,7 +293,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -314,7 +313,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -335,7 +334,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -356,7 +355,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/3")]
@@ -379,7 +378,7 @@ namespace ConsoleApplication1
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -395,10 +394,10 @@ partial class ClassX
 {
     public bool Equals(ClassX other) => Code == other.Code;
 
-    public override int GetHashCode() => Code.GetHashCode();
+    public override int GetHashCode() => {|#0:Code|}.GetHashCode();
 }";
 
-        await VerifyDiagnostic(original, "GetHashCode() refers to mutable property Code");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.PropertyRule).WithMessage("GetHashCode() refers to mutable property Code"));
     }
 
     [TestMethod]
@@ -409,7 +408,7 @@ partial class ClassX
 {
     public bool Equals(ClassX other) => Code == other.Code;
 
-    public override int GetHashCode() => Code.GetHashCode();
+    public override int GetHashCode() => {|#0:Code|}.GetHashCode();
 }";
 
         var file2 = @"
@@ -418,6 +417,6 @@ partial class ClassX
     public string Code { get; set; }
 }";
 
-        await VerifyDiagnostic(new string[] { file1, file2 }, "GetHashCode() refers to mutable property Code");
+        await VerifyCS.VerifyAnalyzerAsync(file1, additionalFiles: new[] { file2 }, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.PropertyRule).WithMessage("GetHashCode() refers to mutable property Code"));
     }
 }
