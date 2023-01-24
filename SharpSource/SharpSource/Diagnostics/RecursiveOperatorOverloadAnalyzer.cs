@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -60,11 +61,13 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var tokensFlagged = new List<SyntaxToken>();
+
         if (definedToken.IsKind(SyntaxKind.TrueKeyword) || definedToken.IsKind(SyntaxKind.FalseKeyword))
         {
             checkForTrueOrFalseKeyword();
             return;
-        }
+        }        
 
         foreach (var usage in operatorUsages)
         {
@@ -121,7 +124,12 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
                 return false;
             }
 
-            context.ReportDiagnostic(Diagnostic.Create(Rule, token.GetLocation()));
+            if (!tokensFlagged.Contains(token))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, token.GetLocation()));
+                tokensFlagged.Add(token);
+            }
+            
             return true;
         }
 

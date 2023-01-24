@@ -2,7 +2,8 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.21.3] - 2023-01-24
-- `ExceptionThrownFromProhibitedContext`, `GetHashCodeRefersToMutableMember` and `EnumWithoutDefaultValue` tests use `VerifyCS`
+- `RecursiveOperatorOverload`: No longer triggers multiple identical warnings if the operator is invoked multiple times in the body
+- `ExceptionThrownFromProhibitedContext`, `GetHashCodeRefersToMutableMember`, `RecursiveOperatorOverload` and `EnumWithoutDefaultValue` tests use `VerifyCS`
 
 ## [1.21.2] - 2023-01-23
 - `AsyncOverloadsAvailable`: Correctly generate the fixed code when conditional access is used, i.e. `writer?.Write()`

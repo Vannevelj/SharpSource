@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.RecursiveOperatorOverloadAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class RecursiveEqualityOperatorOverloadTests : DiagnosticVerifier
+public class RecursiveEqualityOperatorOverloadTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new RecursiveOperatorOverloadAnalyzer();
-
     [TestMethod]
     public async Task RecursiveEqualityOperatorOverload_WithEqualityOperators()
     {
@@ -21,17 +18,17 @@ namespace ConsoleApplication1
     {
 	    public static A operator ==(A a1, A a2)
 	    {
-		    return a1 == a2;
+		    return a1 {|#0:==|} a2;
 	    }
 
 	    public static A operator !=(A a1, A a2)
 	    {
-		    return a1 != a2;
+		    return a1 {|#1:!=|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -56,7 +53,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -81,7 +78,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -109,7 +106,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -122,17 +119,17 @@ namespace ConsoleApplication1
     {
 	    public static A operator ==(A a1, A a2)
 	    {
-		    return a1 == null;
+		    return a1 {|#0:==|} null;
 	    }
 
 	    public static A operator !=(A a1, A a2)
 	    {
-		    return a1 != null;
+		    return a1 {|#1:!=|} null;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -145,17 +142,17 @@ namespace ConsoleApplication1
     {
 	    public static A operator ==(A a1, A a2)
 	    {
-		    return null == a2;
+		    return null {|#0:==|} a2;
 	    }
 
 	    public static A operator !=(A a1, A a2)
 	    {
-		    return null != a1;
+		    return null {|#1:!=|} a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -178,7 +175,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -201,7 +198,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -212,11 +209,11 @@ namespace ConsoleApplication1
 {
     public class A
     {
-	    public static A operator +(A a1, A a2) => a1 + a2;
+	    public static A operator +(A a1, A a2) => a1 {|#0:+|} a2;
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -229,12 +226,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator +(A a1, A a2)
 	    {
-		    return a1 + a2;
+		    return a1 {|#0:+|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -247,12 +244,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator +(A a1)
 	    {
-		    return +a1;
+		    return {|#0:+|}a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -265,12 +262,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator -(A a1, A a2)
 	    {
-		    return a1 - a2;
+		    return a1 {|#0:-|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -283,12 +280,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator -(A a1)
 	    {
-		    return -a1;
+		    return {|#0:-|}a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -301,12 +298,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator *(A a1, A a2)
 	    {
-		    return a1 * a2;
+		    return a1 {|#0:*|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -319,12 +316,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator /(A a1, A a2)
 	    {
-		    return a1 / a2;
+		    return a1 {|#0:/|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -337,12 +334,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator !(A a1)
 	    {
-		    return !a1;
+		    return {|#0:!|}a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -355,12 +352,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator ~(A a1)
 	    {
-		    return ~a1;
+		    return {|#0:~|}a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -373,12 +370,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator ++(A a1)
 	    {
-		    return a1++;
+		    return a1{|#0:++|};
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -391,12 +388,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator ++(A a1)
 	    {
-		    return ++a1;
+		    return {|#0:++|}a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -409,12 +406,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator --(A a1)
 	    {
-		    return --a1;
+		    return {|#0:--|}a1;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -425,7 +422,7 @@ namespace ConsoleApplication1
 {
     public class A
     {
-	    public static bool operator true(A a1)
+	    public static bool operator {|#0:true|}(A a1)
 	    {
 		    if (a1)
 			    return true;
@@ -433,7 +430,7 @@ namespace ConsoleApplication1
 			    return false;
 	    }
 
-	    public static bool operator false(A a1)
+	    public static bool operator {|#1:false|}(A a1)
 	    {
 		    if (a1)
 			    return false;
@@ -443,7 +440,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -454,13 +451,13 @@ namespace ConsoleApplication1
 {
     public class A
     {
-	    public static bool operator true(A a1) => a1 ? true : false;
+	    public static bool operator {|#0:true|}(A a1) => a1 ? true : false;
 
-	    public static bool operator false(A a1) => a1 ? false : true;
+	    public static bool operator {|#1:false|}(A a1) => a1 ? false : true;
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -471,13 +468,15 @@ namespace ConsoleApplication1
 {
     public class A
     {
-	    public static bool operator true(A a1) => a1 ? true : a1 ? false : true;
+	    public static bool operator {|#0:true|}(A a1) => a1 ? true : a1 ? false : true;
 
-	    public static bool operator false(A a1) => a1 ? false : a1 ? true : false;
+	    public static bool operator {|#1:false|}(A a1) => a1 ? false : a1 ? true : false;
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -490,12 +489,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator <<(A a1, int a2)
 	    {
-		    return a1 << 5;
+		    return a1 {|#0:<<|} 5;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -508,12 +507,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator >>(A a1, int a2)
 	    {
-		    return a1 >> 5;
+		    return a1 {|#0:>>|} 5;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -526,12 +525,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator ^(A a1, A a2)
 	    {
-		    return a1 ^ a2;
+		    return a1 {|#0:^|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -544,12 +543,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator |(A a1, A a2)
 	    {
-		    return a1 | a2;
+		    return a1 {|#0:||} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -562,12 +561,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator &(A a1, A a2)
 	    {
-		    return a1 & a2;
+		    return a1 {|#0:&|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -580,12 +579,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator %(A a1, A a2)
 	    {
-		    return a1 % a2;
+		    return a1 {|#0:%|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -598,17 +597,17 @@ namespace ConsoleApplication1
     {
 	    public static A operator >=(A a1, A a2)
 	    {
-		    return a1 >= a2;
+		    return a1 {|#0:>=|} a2;
 	    }
 
 	    public static A operator <=(A a1, A a2)
 	    {
-		    return a1 <= a2;
+		    return a1 {|#1:<=|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 
     [TestMethod]
@@ -626,7 +625,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -639,12 +638,12 @@ namespace ConsoleApplication1
     {
 	    public static A operator +(A a1, A a2)
 	    {
-            var a = a1 + a2;
-		    return a + a2;
+            var a = a1 {|#0:+|} a2;
+		    return a {|#1:+|} a2;
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "Recursively using overloaded operator", "Recursively using overloaded operator");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(location: 0).WithMessage("Recursively using overloaded operator"), VerifyCS.Diagnostic(location: 1).WithMessage("Recursively using overloaded operator"));
     }
 }

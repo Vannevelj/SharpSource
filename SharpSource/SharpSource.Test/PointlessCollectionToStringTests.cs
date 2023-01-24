@@ -1,8 +1,5 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
 
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.PointlessCollectionToStringAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
