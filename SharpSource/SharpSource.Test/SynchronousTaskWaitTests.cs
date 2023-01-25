@@ -1,19 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.SynchronousTaskWaitAnalyzer, SharpSource.Diagnostics.SynchronousTaskWaitCodeFix>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class SynchronousTaskWaitTests : DiagnosticVerifier
+public class SynchronousTaskWaitTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new SynchronousTaskWaitAnalyzer();
-
-    protected override CodeFixProvider CodeFixProvider => new SynchronousTaskWaitCodeFix();
-
     [TestMethod]
     public async Task SynchronousTaskWait_AsyncContext()
     {
@@ -28,7 +23,7 @@ namespace ConsoleApplication1
     {
         async Task MyMethod()
         {
-            Task.Delay(1).Wait();
+            {|#0:Task.Delay(1).Wait()|};
         }
     }
 }";
@@ -49,8 +44,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -72,7 +66,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -89,7 +83,7 @@ namespace ConsoleApplication1
     {
         async void MyMethod()
         {
-            Task.Delay(1).Wait();
+            {|#0:Task.Delay(1).Wait()|};
         }
     }
 }";
@@ -110,8 +104,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -126,7 +119,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-        async Task MyMethod() => Task.Delay(1).Wait();
+        async Task MyMethod() => {|#0:Task.Delay(1).Wait()|};
     }
 }";
 
@@ -143,8 +136,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -156,7 +148,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 async Task MyMethod() {
-	Action lambda = async () => Task.Delay(1).Wait();
+	Action lambda = async () => {|#0:Task.Delay(1).Wait()|};
 	lambda();
 }
 ";
@@ -172,8 +164,7 @@ async Task MyMethod() {
 }
 ";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -189,7 +180,7 @@ namespace ConsoleApplication1
 {
     class MyClass
     {
-	    Action MyMethod() => new Action(async () => Task.Delay(1).Wait());
+	    Action MyMethod() => new Action(async () => {|#0:Task.Delay(1).Wait()|});
     }
 }";
 
@@ -206,8 +197,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -226,7 +216,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -250,7 +240,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -267,7 +257,7 @@ namespace ConsoleApplication1
     {
         async Task MyMethod()
         {
-            Get.Wait();
+            {|#0:Get.Wait()|};
         }
 
         Task Get => Task.CompletedTask;
@@ -292,8 +282,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/263")]
@@ -308,7 +297,7 @@ class Test
     async Task MyMethod()
     {
         // Wait a bit
-        Task.Delay(1).Wait();
+        {|#0:Task.Delay(1).Wait()|};
     }
 }";
 
@@ -325,8 +314,7 @@ class Test
     }
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -340,7 +328,7 @@ await MyMethod();
 
 async Task MyMethod()
 {
-    Task.Delay(1).Wait();
+    {|#0:Task.Delay(1).Wait()|};
 }";
 
         var result = @"
@@ -354,8 +342,7 @@ async Task MyMethod()
     await Task.Delay(1);
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [TestMethod]
@@ -365,7 +352,7 @@ async Task MyMethod()
 using System;
 using System.Threading.Tasks;
 
-Task.Delay(1).Wait();";
+{|#0:Task.Delay(1).Wait()|};";
 
         var result = @"
 using System;
@@ -373,8 +360,7 @@ using System.Threading.Tasks;
 
 await Task.Delay(1);";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/245")]
@@ -388,22 +374,10 @@ await MyMethod();
 
 async Task MyMethod()
 {
-    Task.Delay(1).Wait(10000);
+    {|#0:Task.Delay(1).Wait(10000)|};
 }";
 
-        var result = @"
-using System;
-using System.Threading.Tasks;
-
-await MyMethod();
-
-async Task MyMethod()
-{
-    Task.Delay(1).Wait(10000);
-}";
-
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"));
     }
 
     [TestMethod]
@@ -417,7 +391,7 @@ await MyMethod();
 
 async Task MyMethod()
 {
-    async Task InnerMethod() => Task.Delay(1).Wait();
+    async Task InnerMethod() => {|#0:Task.Delay(1).Wait()|};
 
     await InnerMethod();
 }";
@@ -435,7 +409,6 @@ async Task MyMethod()
     await InnerMethod();
 }";
 
-        await VerifyDiagnostic(original, "Asynchronously wait for task completion using await instead");
-        await VerifyFix(original, result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Asynchronously wait for task completion using await instead"), result);
     }
 }

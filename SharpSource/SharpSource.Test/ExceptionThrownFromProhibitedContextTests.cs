@@ -1,16 +1,15 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
 
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ExceptionThrownFromProhibitedContextAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
+
 namespace SharpSource.Test;
 
 [TestClass]
-public class ExceptionThrownFromProhibitedContextTests : DiagnosticVerifier
+public class ExceptionThrownFromProhibitedContextTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new ExceptionThrownFromProhibitedContextAnalyzer();
-
     [TestMethod]
     public async Task ExceptionThrownFromProhibitedContext_ImplicitOperator_ToType()
     {
@@ -24,12 +23,12 @@ namespace ConsoleApplication1
     {
         public static implicit operator MyClass(double d)
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from implicit operator MyClass in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.ImplicitOperatorRule).WithMessage("An exception is thrown from implicit operator MyClass in type MyClass"));
     }
 
     [TestMethod]
@@ -45,12 +44,12 @@ namespace ConsoleApplication1
     {
         public static implicit operator double(MyClass d)
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from implicit operator double in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.ImplicitOperatorRule).WithMessage("An exception is thrown from implicit operator double in type MyClass"));
     }
 
     [TestMethod]
@@ -71,7 +70,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -89,7 +88,7 @@ namespace ConsoleApplication1
 	    {
 		    get
 		    {
-			    throw new ArgumentException();
+			    {|#0:throw new ArgumentException();|}
 		    }
 		    set
 		    {
@@ -99,7 +98,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.PropertyGetterRule).WithMessage("An exception is thrown from the getter of property MyProp"));
     }
 
     [TestMethod]
@@ -127,7 +126,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -145,7 +144,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -163,7 +162,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -181,13 +180,13 @@ namespace ConsoleApplication1
 	    {
 		    get
 		    {
-			    throw new ArgumentException();
+			    {|#0:throw new ArgumentException();|}
 		    }
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.PropertyGetterRule).WithMessage("An exception is thrown from the getter of property MyProp"));
     }
 
     [TestMethod]
@@ -203,12 +202,12 @@ namespace ConsoleApplication1
     {
 	    static MyClass()
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from MyClass its static constructor");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.StaticConstructorRule).WithMessage("An exception is thrown from MyClass its static constructor"));
     }
 
     [TestMethod]
@@ -224,12 +223,12 @@ namespace ConsoleApplication1
     {
 	    static MyStruct()
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from MyStruct its static constructor");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.StaticConstructorRule).WithMessage("An exception is thrown from MyStruct its static constructor"));
     }
 
     [TestMethod]
@@ -250,7 +249,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -260,10 +259,10 @@ namespace ConsoleApplication1
 using System;
 using System.Text;
 
-try { } finally { throw new ArgumentException(); }
+try { } finally { {|#0:throw new ArgumentException();|} }
 ";
 
-        await VerifyDiagnostic(original, "An exception is thrown from a finally block");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.FinallyBlockRule).WithMessage("An exception is thrown from a finally block"));
     }
 
     [TestMethod]
@@ -273,10 +272,10 @@ try { } finally { throw new ArgumentException(); }
 using System;
 using System.Text;
 
-try { } finally { try { } catch { throw new ArgumentException(); } }
+try { } finally { try { } catch { {|#0:throw new ArgumentException();|} } }
 ";
 
-        await VerifyDiagnostic(original, "An exception is thrown from a finally block");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.FinallyBlockRule).WithMessage("An exception is thrown from a finally block"));
     }
 
     [TestMethod]
@@ -289,7 +288,7 @@ using System.Text;
 try { } finally { }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -302,7 +301,7 @@ using System.Text;
 try { } catch { }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -321,7 +320,7 @@ using System.Text;
 try {{ }} finally {{ throw new {exception}(); }}
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -337,7 +336,7 @@ namespace ConsoleApplication1
     {
 	    public static bool operator ==(double d, MyClass mc)
 	    {
-		    throw new ArgumentException();
+		    {|#0:throw new ArgumentException();|}
 	    }
 
 	    public static bool operator !=(double d, MyClass mc)
@@ -347,7 +346,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the == operator between double and MyClass in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.EqualityOperatorRule).WithMessage("An exception is thrown from the == operator between double and MyClass in type MyClass"));
     }
 
     [TestMethod]
@@ -368,12 +367,12 @@ namespace ConsoleApplication1
 
 	    public static bool operator !=(double d, MyClass mc)
 	    {
-		    throw new ArgumentException();
+		    {|#0:throw new ArgumentException();|}
 	    }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the != operator between double and MyClass in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.EqualityOperatorRule).WithMessage("An exception is thrown from the != operator between double and MyClass in type MyClass"));
     }
 
     [TestMethod]
@@ -399,7 +398,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -415,12 +414,12 @@ namespace ConsoleApplication1
     {
 	    public void Dispose()
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the Dispose() method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.DisposeRule).WithMessage("An exception is thrown from the Dispose() method in type MyClass"));
     }
 
     [TestMethod]
@@ -441,12 +440,12 @@ namespace ConsoleApplication1
 
 	    public void Dispose(bool dispose)
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the Dispose(bool) method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.DisposeRule).WithMessage("An exception is thrown from the Dispose(bool) method in type MyClass"));
     }
 
     [TestMethod]
@@ -462,12 +461,12 @@ namespace ConsoleApplication1
     {
 	    public void Dispose()
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the Dispose() method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.DisposeRule).WithMessage("An exception is thrown from the Dispose() method in type MyClass"));
     }
 
     [TestMethod]
@@ -492,7 +491,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -508,12 +507,12 @@ namespace ConsoleApplication1
     {
 	    ~MyClass()
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the finalizer method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.FinalizerRule).WithMessage("An exception is thrown from the finalizer method in type MyClass"));
     }
 
     [TestMethod]
@@ -534,7 +533,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -550,12 +549,12 @@ namespace ConsoleApplication1
     {
 	    public override int GetHashCode()
         {
-            throw new ArgumentException();
+            {|#0:throw new ArgumentException();|}
         }
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the GetHashCode() method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.GetHashCodeRule).WithMessage("An exception is thrown from the GetHashCode() method in type MyClass"));
     }
 
     [TestMethod]
@@ -576,7 +575,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -594,7 +593,7 @@ class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -608,11 +607,11 @@ class MyClass
 {
 	public override bool Equals(object o)
     {
-        throw new ArgumentException();
+        {|#0:throw new ArgumentException();|}
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.EqualsRule).WithMessage("An exception is thrown from the Equals(object) method in type MyClass"));
     }
 
     [TestMethod]
@@ -636,7 +635,7 @@ class MyClass
     }}
 }}";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -650,11 +649,11 @@ public class MyClass : IEquatable<MyClass>
 {
 	public bool Equals(MyClass o)
     {
-        throw new ArgumentException();
+        {|#0:throw new ArgumentException();|}
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the Equals(MyClass) method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.EqualsRule).WithMessage("An exception is thrown from the Equals(MyClass) method in type MyClass"));
     }
 
     [TestMethod]
@@ -673,7 +672,7 @@ public class MyClass
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -687,11 +686,11 @@ public class MyClass
 {
 	public bool Equals(object o)
     {
-        throw new ArgumentException();
+        {|#0:throw new ArgumentException();|}
     }
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the Equals(object) method in type MyClass");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.EqualsRule).WithMessage("An exception is thrown from the Equals(object) method in type MyClass"));
     }
 
     [TestMethod]
@@ -713,7 +712,7 @@ class MyClass
     }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/118")]
@@ -730,14 +729,14 @@ class MyClass
 		{
             try { }
             catch {
-			    throw;
+			    {|#0:throw;|}
             }
             return 5;
 		}
 	}
 }";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.PropertyGetterRule).WithMessage("An exception is thrown from the getter of property MyProp"));
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/117")]
@@ -752,7 +751,7 @@ class MyClass
 	{
 		get
 		{
-			throw Exceptions.Unreachable;
+			{|#0:throw Exceptions.Unreachable;|}
 		}
 	}
 }
@@ -763,6 +762,6 @@ static class Exceptions
 }
 ";
 
-        await VerifyDiagnostic(original, "An exception is thrown from the getter of property MyProp");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.PropertyGetterRule).WithMessage("An exception is thrown from the getter of property MyProp"));
     }
 }

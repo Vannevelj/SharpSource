@@ -68,7 +68,7 @@ namespace ConsoleApplication1
         {
             for (var i = 0; i > 5; i++)
             {
-                var {|#0:rand = new Random(4)|};
+                var {|#0:rand = new Random()|};
             }
         }
     }
@@ -116,7 +116,7 @@ namespace ConsoleApplication1
         {
             while (true)
             {
-                Random {|#0:rand = new Random()|}, {|#1:rind = new Random(2)|};
+                Random {|#0:rand = new Random()|}, {|#1:rind = new Random()|};
             }
         }
     }
@@ -249,6 +249,52 @@ namespace ConsoleApplication1
         void Method()
         {
             var rand = new Random();
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task LoopedRandomInstantiation_Seed()
+    {
+        var original = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            while (true)
+            {
+                var rand = new Random(32);
+            }
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task LoopedRandomInstantiation_Seed_ImplicitObject()
+    {
+        var original = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            while (true)
+            {
+                Random rand = new(32);
+            }
         }
     }
 }";

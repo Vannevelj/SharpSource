@@ -30,7 +30,7 @@ class Test
 }}
 ";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(LockingOnDiscouragedObjectAnalyzer.Rule).WithLocation(0).WithMessage($"A lock was used on an object of type {lockMessage} which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead."));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(LockingOnDiscouragedObjectAnalyzer.Rule).WithMessage($"A lock was used on an object of type {lockMessage} which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead."));
     }
 
     [TestMethod]
@@ -46,7 +46,7 @@ class Test
 }
 ";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(LockingOnDiscouragedObjectAnalyzer.RuleThis).WithLocation(0).WithMessage($"A lock was used referencing 'this' which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead."));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(LockingOnDiscouragedObjectAnalyzer.RuleThis).WithMessage($"A lock was used referencing 'this' which can lead to deadlocks. It is recommended to create a dedicated lock instance of type System.Object instead."));
     }
 
     [TestMethod]

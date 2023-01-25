@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.3] - 2023-01-25
+- `LoopedRandomInstantiation`: No longer triggers when a seed is passed to the constructor
+- `RecursiveOperatorOverload`: No longer triggers multiple identical warnings if the operator is invoked multiple times in the body
+- `ExceptionThrownFromProhibitedContext`, `StaticInitializerAccessedBeforeInitialization`, `SynchronousTaskWait`, `UnusedResultOnImmutableObject`, `GetHashCodeRefersToMutableMember`, `RecursiveOperatorOverload`, `StringDotFormatWithDifferentAmountOfArguments` and `EnumWithoutDefaultValue` tests use `VerifyCS`
+
 ## [1.21.2] - 2023-01-23
 - `AsyncOverloadsAvailable`: Correctly generate the fixed code when conditional access is used, i.e. `writer?.Write()`
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Now takes overrides in base types into consideration
@@ -8,7 +13,7 @@ https://keepachangelog.com/en/1.0.0/
 - `StringPlaceholdersInWrongOrder`: Code fix generates correct code when there are more than 10 placeholders in the format string
 - `UnboundedStackalloc`: Does not trigger when using pointers, e.g. `int*`
 - `ThreadSleepInAsyncMethod`: Fixed a rare scenario in which an empty code fix would be offered
-- `ElementaryMethodsOfTypeInCollectionNotOverridden`, `LoopedRandomInstantiation` and `StringPlaceholdersInWrongOrder` tests use `VerifyCS`
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`, `LoopedRandomInstantiation`, `OnPropertyChangedWithoutNameOfOperator` and `StringPlaceholdersInWrongOrder` tests use `VerifyCS`
 
 ## [1.21.1] - 2023-01-22
 - `StringConcatenatedInLoop`: No longer triggers for regular assignments

@@ -1,16 +1,13 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
-using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.StringDotFormatWithDifferentAmountOfArgumentsAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class StringDotFormatWithDifferentAmountOfArgumentsTests : DiagnosticVerifier
+public class StringDotFormatWithDifferentAmountOfArgumentsTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StringDotFormatWithDifferentAmountOfArgumentsAnalyzer();
-
     [TestMethod]
     public async Task StringDotFormatWithDifferentAmountOfArguments_WithValidScenario()
     {
@@ -28,7 +25,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -48,7 +45,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -68,7 +65,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -84,11 +81,12 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0}, def {1}"", 1);
+            string s = string.Format({|#0:""abc {0}, def {1}""|}, 1);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -104,11 +102,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {1}, def {2}"", 123, 456);
+            string s = string.Format({|#0:""abc {1}, def {2}""|}, 123, 456);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -128,7 +126,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -148,7 +146,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -164,11 +162,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {1:00}, def {1}"", 1);
+            string s = string.Format({|#0:""abc {1:00}, def {1}""|}, 1);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -184,11 +182,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {1}, def {0}"", 1);
+            string s = string.Format({|#0:""abc {1}, def {0}""|}, 1);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -209,7 +207,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -230,7 +228,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -252,7 +250,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -269,11 +267,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(CultureInfo.InvariantCulture, ""def {0} ghi {1}"", 1);
+            string s = string.Format(CultureInfo.InvariantCulture, {|#0:""def {0} ghi {1}""|}, 1);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -290,11 +288,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(CultureInfo.InvariantCulture, ""abc {0}"");
+            string s = string.Format(CultureInfo.InvariantCulture, {|#0:""abc {0}""|});
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -314,7 +312,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -330,11 +328,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""{{def {0} ghi {1}}}"", 1);
+            string s = string.Format({|#0:""{{def {0} ghi {1}}}""|}, 1);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
 
@@ -359,7 +357,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -375,7 +373,7 @@ namespace ConsoleApplication1
     {
         MyClass()
         {
-            Method(""{{def {0} ghi {1}}}"", 1);
+            Method({|#0:""{{def {0} ghi {1}}}""|}, 1);
         }
 
         void Method(string format, object x)
@@ -383,7 +381,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -407,7 +405,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -423,11 +421,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0}, def {1}"");
+            string s = string.Format({|#0:""abc {0}, def {1}""|});
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -447,7 +445,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -467,7 +465,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -483,11 +481,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0} {1}"", new object[] {""hello""});
+            string s = string.Format({|#0:""abc {0} {1}""|}, new object[] {""hello""});
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
 
@@ -508,7 +506,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -534,7 +532,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -560,7 +558,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -581,7 +579,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -606,7 +604,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -622,11 +620,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0} {1} {2}"", new object[] {""hello"", ""bye"", ""uhoh""}, ""test"");
+            string s = string.Format({|#0:""abc {0} {1} {2}""|}, new object[] {""hello"", ""bye"", ""uhoh""}, ""test"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -647,7 +645,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -664,11 +662,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(CultureInfo.InvariantCulture, ""abc {0}{1}"", new object[] {""hello""});
+            string s = string.Format(CultureInfo.InvariantCulture, {|#0:""abc {0}{1}""|}, new object[] {""hello""});
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -690,7 +688,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -716,7 +714,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -734,11 +732,11 @@ namespace ConsoleApplication1
         void Method(string input)
         {
             const string format = ""{0}{1}"";
-            string s = string.Format(format, ""arg"");
+            string s = string.Format({|#0:format|}, ""arg"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -758,11 +756,11 @@ namespace ConsoleApplication1
             const string a = ""{0}"";
             const string b = ""{1}"";
             const string format = a + b;
-            string s = string.Format(format, ""arg"");
+            string s = string.Format({|#0:format|}, ""arg"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -780,11 +778,11 @@ namespace ConsoleApplication1
             const string a = ""{0}"";
             const string b = ""{1}"";
             const string format = a + b;
-            string s = Format(format, ""arg"");
+            string s = Format({|#0:format|}, ""arg"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -801,11 +799,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format((""{0}{1}""), ""arg"");
+            string s = string.Format({|#0:(""{0}{1}"")|}, ""arg"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -820,11 +818,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            Console.WriteLine(""{0}{1}"", ""arg"");
+            Console.WriteLine({|#0:""{0}{1}""|}, ""arg"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -839,11 +837,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            Console.WriteLine(""{0}{1}{2}"", ""arg"", ""arg2"");
+            Console.WriteLine({|#0:""{0}{1}{2}""|}, ""arg"", ""arg2"");
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -858,11 +856,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            Console.WriteLine(""{0}{1}{2}"", new object[] { ""arg"", ""arg2"" });
+            Console.WriteLine({|#0:""{0}{1}{2}""|}, new object[] { ""arg"", ""arg2"" });
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -882,7 +880,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -905,7 +903,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -928,7 +926,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -944,11 +942,11 @@ namespace ConsoleApplication1
         void Method(string input)
         {
             var args = new object[] { ""a"", ""b""};
-            string s = string.Format(""{0}{1}"", (object) args);
+            string s = string.Format({|#0:""{0}{1}""|}, (object) args);
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -964,11 +962,11 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0}{1}"", (new[] { 5 }));
+            string s = string.Format({|#0:""abc {0}{1}""|}, (new[] { 5 }));
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -988,7 +986,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1004,7 +1002,7 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0}{1}"", Other());
+            string s = string.Format({|#0:""abc {0}{1}""|}, Other());
         }
 
         int Other()
@@ -1013,7 +1011,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -1029,7 +1027,7 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0}{1}"", (Other()));
+            string s = string.Format({|#0:""abc {0}{1}""|}, (Other()));
         }
 
         int Other()
@@ -1038,7 +1036,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -1054,7 +1052,7 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string s = string.Format(""abc {0}{1}{2}"", Other(), Other());
+            string s = string.Format({|#0:""abc {0}{1}{2}""|}, Other(), Other());
         }
 
         int Other()
@@ -1063,7 +1061,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -1093,7 +1091,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1113,7 +1111,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1133,7 +1131,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1149,14 +1147,14 @@ namespace ConsoleApplication1
     {
         void Method(string input)
         {
-            string.Format(""{0}{1}"", new MyClass { Prop1 = 5, Prop2 = 6});
+            string.Format({|#0:""{0}{1}""|}, new MyClass { Prop1 = 5, Prop2 = 6});
         }
 
 	    public int Prop1 { get; set; }
 	    public int Prop2 { get; set; }
     }
 }";
-        await VerifyDiagnostic(original, "A string.Format() call lacks arguments and will cause a runtime exception");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string.Format() call lacks arguments and will cause a runtime exception"));
     }
 
     [TestMethod]
@@ -1182,7 +1180,7 @@ namespace ConsoleApplication1
 
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1203,7 +1201,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1224,7 +1222,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -1245,6 +1243,6 @@ namespace ConsoleApplication1
         }
     }
 }";
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

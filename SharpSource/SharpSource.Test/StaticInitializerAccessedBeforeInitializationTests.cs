@@ -1,28 +1,25 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.StaticInitializerAccessedBeforeInitializationAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class StaticInitializerAccessedBeforeInitializationTests : DiagnosticVerifier
+public class StaticInitializerAccessedBeforeInitializationTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new StaticInitializerAccessedBeforeInitializationAnalyzer();
-
-
     [TestMethod]
     public async Task StaticInitializerAccessedBeforeInitialization_StaticFields()
     {
         var original = @"
 class Test
 {
-	public static int FirstField = SecondField;
+	public static int FirstField = {|#0:SecondField|};
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -31,11 +28,11 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = Test.SecondField;
+	public static int FirstField = {|#0:Test.SecondField|};
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -48,7 +45,7 @@ class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -61,7 +58,7 @@ class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -70,7 +67,7 @@ class Test
         var original = @"
 partial struct Test
 {
-	public static int FirstField = SecondField;
+	public static int FirstField = {|#0:SecondField|};
 }
 
 partial struct Test
@@ -78,7 +75,7 @@ partial struct Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -87,7 +84,7 @@ partial struct Test
         var original = @"
 partial class Test
 {
-	public static int FirstField = SecondField;
+	public static int FirstField = {|#0:SecondField|};
 }
 
 partial class Test
@@ -95,7 +92,7 @@ partial class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -104,7 +101,7 @@ partial class Test
         var file1 = @"
 partial class Test
 {
-	public static int FirstField = SecondField;
+	public static int FirstField = {|#0:SecondField|};
 }";
 
         var file2 = @"
@@ -113,7 +110,7 @@ partial class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(new[] { file1, file2 }, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyCodeFix(file1, new[] { VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used") }, file1, additionalFiles: new[] { file2 });
     }
 
     [TestMethod]
@@ -126,7 +123,7 @@ class Test
 	private static readonly int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -135,11 +132,11 @@ class Test
         var original = @"
 class Test
 {
-	public static readonly int FirstField = SecondField;
+	public static readonly int FirstField = {|#0:SecondField|};
 	private static readonly int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -152,7 +149,7 @@ class Test
 	public static readonly int FirstField = SecondField;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -161,14 +158,14 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = SecondField + ThirdField;
+	public static int FirstField = {|#0:SecondField|} + {|#1:ThirdField|};
 	private static int SecondField = 5;
     private static int ThirdField = 5;
 }";
 
-        await VerifyDiagnostic(original,
-            "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used",
-            "FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic(location: 0).WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -177,12 +174,12 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = ThirdField;
+	public static int FirstField = {|#0:ThirdField|};
 	private int SecondField = 5;
     private static int ThirdField = 5;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -200,7 +197,7 @@ class Other
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -213,7 +210,7 @@ class Test
     private static int ThirdField = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -222,11 +219,11 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField, SecondField = ThirdField;
+	public static int FirstField, SecondField = {|#0:ThirdField|};
     private static int ThirdField = 5;
 }";
 
-        await VerifyDiagnostic(original, "SecondField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("SecondField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -235,13 +232,13 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = ThirdField, SecondField = ThirdField;
+	public static int FirstField = {|#0:ThirdField|}, SecondField = {|#1:ThirdField|};
     private static int ThirdField = 5;
 }";
 
-        await VerifyDiagnostic(original,
-            "FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used",
-            "SecondField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic(location: 0).WithMessage("FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("SecondField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -250,11 +247,11 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = 32, SecondField = ThirdField;
+	public static int FirstField = 32, SecondField = {|#0:ThirdField|};
     private static int ThirdField = 5;
 }";
 
-        await VerifyDiagnostic(original, "SecondField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("SecondField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -267,7 +264,7 @@ class Test
 	private static int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -276,14 +273,14 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = SecondField = ThirdField;
+	public static int FirstField = {|#0:SecondField|} = {|#1:ThirdField|};
 	private static int SecondField = 5;
 	private static int ThirdField = 32;
 }";
 
-        await VerifyDiagnostic(original,
-            "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used",
-            "FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic(location: 0).WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -292,14 +289,14 @@ class Test
         var original = @"
 class Test
 {
-	public static int FirstField = SecondField + ThirdField;
+	public static int FirstField = {|#0:SecondField|} + {|#1:ThirdField|};
 	private static int SecondField = 5;
     private static int ThirdField = 32;
 }";
 
-        await VerifyDiagnostic(original,
-            "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used",
-            "FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original,
+            VerifyCS.Diagnostic(location: 0).WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"),
+            VerifyCS.Diagnostic(location: 1).WithMessage("FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 
     [TestMethod]
@@ -308,11 +305,11 @@ class Test
         var original = @"
 struct Test
 {
-	public static int FirstField = SecondField;
+	public static int FirstField = {|#0:SecondField|};
 	public static int SecondField = 32;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/172")]
@@ -325,7 +322,7 @@ struct Test
     static int SecondField = 32;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -334,11 +331,11 @@ struct Test
         var original = @"
 struct Test
 {
-    static string FirstField = nameof(Test) + SecondField;
+    static string FirstField = nameof(Test) + {|#0:SecondField|};
     static string SecondField = ""CF"";
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SecondField but both are marked as static and SecondField will not be initialized when it is used"));
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/171")]
@@ -351,7 +348,7 @@ class Test
     static string SomeFunction() => string.Empty;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -360,12 +357,12 @@ class Test
         var original = @"
 class Test
 {
-	static string FirstField = SomeFunction(SomeArg);
+	static string FirstField = SomeFunction({|#0:SomeArg|});
 	static string SomeFunction(string arg) => arg;
 	static string SomeArg = ""test"";
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses SomeArg but both are marked as static and SomeArg will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SomeArg but both are marked as static and SomeArg will not be initialized when it is used"));
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/173")]
@@ -380,7 +377,7 @@ class Test
 	static void DoThing(int i) { }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/173")]
@@ -395,7 +392,7 @@ class Test
 	static int DoThing() => 32;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
@@ -406,11 +403,11 @@ using System;
 
 class Test
 {
-    public static Lazy<int> FirstField = new(DoThing);
+    public static Lazy<int> FirstField = new({|#0:DoThing|});
     public static int DoThing = 32;
 }";
 
-        await VerifyDiagnostic(original, "FirstField accesses DoThing but both are marked as static and DoThing will not be initialized when it is used");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses DoThing but both are marked as static and DoThing will not be initialized when it is used"));
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
@@ -425,7 +422,7 @@ class Test
     public static int DoThing() => 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/181")]
@@ -440,7 +437,7 @@ class Test
     public static int DoThing() => 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/183")]
@@ -455,7 +452,7 @@ class Test
 	public const int SecondField = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/187")]
@@ -469,7 +466,7 @@ class Test
 	public static int FirstField = Enumerable.Repeat(0, FirstField).First();
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/189")]
@@ -489,7 +486,7 @@ class Other
 	public Other(Action callback) { }
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/188")]
@@ -504,7 +501,7 @@ class Test
     public static int SomeValue = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -519,7 +516,7 @@ class Test
     public static int SomeValue = 5;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -536,7 +533,7 @@ partial struct Test
 	private static int SecondField = FirstField;
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/244")]
@@ -556,6 +553,6 @@ class Test
     public static string Key = ""key"";
 }";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

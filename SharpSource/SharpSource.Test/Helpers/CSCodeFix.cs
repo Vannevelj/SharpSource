@@ -23,16 +23,25 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(diagnosticId);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(DiagnosticDescriptor)"/>
-    public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor)
-        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(descriptor);
+    public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor, int location = 0)
+        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(descriptor).WithLocation(location);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyAnalyzerAsync(string, DiagnosticResult[])"/>
-    public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
+    public static async Task VerifyAnalyzerAsync(string source, string[]? additionalFiles = null, params DiagnosticResult[] expected)
     {
         var test = new Test
         {
             TestCode = source,
         };
+
+        if (additionalFiles != null)
+        {
+            foreach (var file in additionalFiles)
+            {
+                var filename = Guid.NewGuid().ToString();
+                test.TestState.Sources.Add(($"{filename}.cs", file));
+            }
+        }
 
         test.ExpectedDiagnostics.AddRange(expected);
         await test.RunAsync(CancellationToken.None);
