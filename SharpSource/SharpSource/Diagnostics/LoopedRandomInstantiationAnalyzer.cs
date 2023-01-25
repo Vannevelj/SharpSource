@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -39,6 +40,12 @@ public class LoopedRandomInstantiationAnalyzer : DiagnosticAnalyzer
     {
         var declarator = (IVariableDeclaratorOperation)context.Operation;
         if (!randomSymbol.Equals(declarator.Symbol.Type, SymbolEqualityComparer.Default))
+        {
+            return;
+        }
+
+        var constructorCall = declarator.Initializer.Descendants().OfType<IObjectCreationOperation>().FirstOrDefault(oco => randomSymbol.Equals(oco.Constructor?.ContainingSymbol, SymbolEqualityComparer.Default));
+        if (constructorCall is { Arguments.IsEmpty: false })
         {
             return;
         }

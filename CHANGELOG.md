@@ -2,6 +2,7 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.21.3] - 2023-01-24
+- `LoopedRandomInstantiation`: No longer triggers when a seed is passed to the constructor
 - `RecursiveOperatorOverload`: No longer triggers multiple identical warnings if the operator is invoked multiple times in the body
 - `ExceptionThrownFromProhibitedContext`, `StaticInitializerAccessedBeforeInitialization`, `SynchronousTaskWait`, `UnusedResultOnImmutableObject`, `GetHashCodeRefersToMutableMember`, `RecursiveOperatorOverload`, `StringDotFormatWithDifferentAmountOfArguments` and `EnumWithoutDefaultValue` tests use `VerifyCS`
 
