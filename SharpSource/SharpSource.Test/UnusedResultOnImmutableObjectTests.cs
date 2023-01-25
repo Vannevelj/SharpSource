@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SharpSource.Diagnostics;
 using SharpSource.Test.Helpers;
+
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.UnusedResultOnImmutableObjectAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
 
 [TestClass]
-public class UnusedResultOnImmutableObjectTests : DiagnosticVerifier
+public class UnusedResultOnImmutableObjectTests
 {
-    protected override DiagnosticAnalyzer DiagnosticAnalyzer => new UnusedResultOnImmutableObjectAnalyzer();
-
     [TestMethod]
     [DataRow("Trim()")]
     [DataRow("Replace(\"e\", \"oa\")")]
@@ -27,12 +25,12 @@ class Test
 {{
     void Method()
     {{
-        ""test"".{invocation};
+        {{|#0:""test"".{invocation}|}};
     }}
 }}
 ";
 
-        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The result of an operation on an immutable object is unused"));
     }
 
     [TestMethod]
@@ -47,10 +45,10 @@ class Test
     public async Task UnusedResultOnImmutableObjectTests_UnusedResult_GlobalAsync(string invocation)
     {
         var original = $@"
-""test"".{invocation};
+{{|#0:""test"".{invocation}|}};
 ";
 
-        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The result of an operation on an immutable object is unused"));
     }
 
     [TestMethod]
@@ -66,10 +64,10 @@ class Test
     {
         var original = $@"
 var str = ""test"";
-str.{invocation};
+{{|#0:str.{invocation}|}};
 ";
 
-        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The result of an operation on an immutable object is unused"));
     }
 
     [TestMethod]
@@ -87,7 +85,7 @@ str.{invocation};
 var temp = ""test"".{invocation};
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -105,7 +103,7 @@ class Test
 }}
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -123,7 +121,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -139,7 +137,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/82")]
@@ -156,7 +154,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/83")]
@@ -174,7 +172,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/85")]
@@ -190,7 +188,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/81")]
@@ -211,7 +209,7 @@ class Test
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -221,7 +219,7 @@ class Test
 string Method() => string.Empty ?? """".Trim();
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/119")]
@@ -235,7 +233,7 @@ using System;
 """".{invocation};
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/86")]
@@ -252,16 +250,16 @@ static class Extensions
 }
 ";
 
-        await VerifyDiagnostic(original);
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
     public async Task UnusedResultOnImmutableObjectTests_TopLevelStatement()
     {
         var original = $@"
-""test"".Trim();
+{{|#0:""test"".Trim()|}};
 ";
 
-        await VerifyDiagnostic(original, "The result of an operation on an immutable object is unused");
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("The result of an operation on an immutable object is unused"));
     }
 }
