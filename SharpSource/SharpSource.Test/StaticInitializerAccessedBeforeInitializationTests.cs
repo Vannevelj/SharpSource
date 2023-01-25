@@ -178,7 +178,7 @@ class Test
 	private int SecondField = 5;
     private static int ThirdField = 5;
 }";
-                
+
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses ThirdField but both are marked as static and ThirdField will not be initialized when it is used"));
     }
 

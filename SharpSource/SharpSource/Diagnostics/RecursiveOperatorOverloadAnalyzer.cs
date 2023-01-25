@@ -67,7 +67,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
         {
             checkForTrueOrFalseKeyword();
             return;
-        }        
+        }
 
         foreach (var usage in operatorUsages)
         {
@@ -129,7 +129,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
                 context.ReportDiagnostic(Diagnostic.Create(Rule, token.GetLocation()));
                 tokensFlagged.Add(token);
             }
-            
+
             return true;
         }
 
