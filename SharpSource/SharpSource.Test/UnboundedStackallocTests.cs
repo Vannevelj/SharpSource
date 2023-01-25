@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Test.Helpers;
-
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.UnboundedStackallocAnalyzer, SharpSource.Diagnostics.UnboundedStackallocCodeFix>;
 
 namespace SharpSource.Test;
