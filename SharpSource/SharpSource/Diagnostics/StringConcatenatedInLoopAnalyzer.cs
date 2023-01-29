@@ -53,6 +53,12 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
                 return;
             }
 
+            var nestedInsideObjectCreation = assignment.Ancestors().OfType<IObjectCreationOperation>().FirstOrDefault() is not null;
+            if (nestedInsideObjectCreation)
+            {
+                return;
+            }
+
             if (assignment.Target is ILocalReferenceOperation localRef &&
                 surroundingLoop.Body is IBlockOperation body &&
                 body.Locals.Any(s => s.Equals(localRef.Local, SymbolEqualityComparer.Default)))

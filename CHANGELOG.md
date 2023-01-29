@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.4] - 2023-01-29
+- `StringConcatenatedInLoop`: Concatenations inside object creation expressions no longer trigger a warning
+
 ## [1.21.3] - 2023-01-25
 - `LoopedRandomInstantiation`: No longer triggers when a seed is passed to the constructor
 - `RecursiveOperatorOverload`: No longer triggers multiple identical warnings if the operator is invoked multiple times in the body
@@ -17,7 +20,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.21.1] - 2023-01-22
 - `StringConcatenatedInLoop`: No longer triggers for regular assignments
-- `UnnecessaryEnumerableMaterialization`: now supports conditional access, i.e. `values?.ToArray().ToList()`
+- `UnnecessaryEnumerableMaterialization`: Now supports conditional access, i.e. `values?.ToArray().ToList()`
 - `AsyncOverloadsAvailable`: No longer triggers when contained within a `lock` body
 - `AsyncOverloadsAvailable`: Better maintains whitespace, indentation and comments when the code fix is applied
 - `AsyncOverloadsAvailable`: Improved the detection of overloads when an optional `CancellationToken` is accepted

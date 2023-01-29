@@ -9,7 +9,7 @@ namespace SharpSource.Test;
 public class StringConcatenatedInLoopTests
 {
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_ForEach()
+    public async Task StringConcatenatedInLoop_ForEach()
     {
         var original = @"
 using System.Linq;
@@ -25,7 +25,7 @@ foreach (var item in Enumerable.Empty<int>())
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_For()
+    public async Task StringConcatenatedInLoop_For()
     {
         var original = @"
 var res = string.Empty;
@@ -39,7 +39,7 @@ for (var i = 0; i < 10; i++)
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_While()
+    public async Task StringConcatenatedInLoop_While()
     {
         var original = @"
 var res = string.Empty;
@@ -53,7 +53,7 @@ while (true)
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_DoWhile()
+    public async Task StringConcatenatedInLoop_DoWhile()
     {
         var original = @"
 var res = string.Empty;
@@ -67,7 +67,7 @@ do
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_ScopedInsideLoop()
+    public async Task StringConcatenatedInLoop_ScopedInsideLoop()
     {
         var original = @"
 while (true)
@@ -81,7 +81,7 @@ while (true)
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_OutsideLoop()
+    public async Task StringConcatenatedInLoop_OutsideLoop()
     {
         var original = @"
 while (true)
@@ -96,7 +96,7 @@ res += ""test"";
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_ReferencesProperty()
+    public async Task StringConcatenatedInLoop_ReferencesProperty()
     {
         var original = @"
 class Test
@@ -117,7 +117,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_NonCompoundOperator()
+    public async Task StringConcatenatedInLoop_NonCompoundOperator()
     {
         var original = @"
 var res = string.Empty;
@@ -131,7 +131,7 @@ while (true)
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_NonStringType()
+    public async Task StringConcatenatedInLoop_NonStringType()
     {
         var original = @"
 var res = 0;
@@ -145,7 +145,7 @@ while (true)
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_NoBodyBraces()
+    public async Task StringConcatenatedInLoop_NoBodyBraces()
     {
         var original = @"
 var res = string.Empty;
@@ -157,7 +157,7 @@ while (true)
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/290")]
-    public async Task StringConcatenatedInLoopTests_NoConcatenation()
+    public async Task StringConcatenatedInLoop_NoConcatenation()
     {
         var original = @"
 var res = string.Empty;
@@ -171,7 +171,7 @@ while (true)
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/290")]
-    public async Task StringConcatenatedInLoopTests_PropertyAssignment()
+    public async Task StringConcatenatedInLoop_PropertyAssignment()
     {
         var original = @"
 Test res = null;
@@ -190,7 +190,7 @@ class Test
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_AssignmentAndConcatenationSeparated()
+    public async Task StringConcatenatedInLoop_AssignmentAndConcatenationSeparated()
     {
         var original = @"
 var res = string.Empty;
@@ -204,7 +204,7 @@ while (true)
     }
 
     [TestMethod]
-    public async Task StringConcatenatedInLoopTests_AssignmentAndConcatenationSeparated_Multiple()
+    public async Task StringConcatenatedInLoop_AssignmentAndConcatenationSeparated_Multiple()
     {
         var original = @"
 var res = string.Empty;
@@ -218,7 +218,7 @@ while (true)
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/292")]
-    public async Task StringConcatenatedInLoopTests_AssignmentInWhileCondition()
+    public async Task StringConcatenatedInLoop_AssignmentInWhileCondition()
     {
         var original = @"
 using System;
@@ -231,6 +231,26 @@ using (StreamReader reader = File.OpenText(""file.txt""))
     {
         Console.Write(line);
     }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/308")]
+    public async Task StringConcatenatedInLoop_ConcatenationInsideObjectCreation()
+    {
+        var original = @"
+for(var i = 0; i < 10; i++)
+{
+    System.Console.WriteLine(new Test
+    {
+        SomeProp = ""file_"" + i
+    });
+}
+
+class Test
+{
+    public string SomeProp { get; set; }
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
