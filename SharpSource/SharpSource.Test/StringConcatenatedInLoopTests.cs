@@ -255,4 +255,69 @@ class Test
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/309")]
+    public async Task StringConcatenatedInLoop_AssignmentToLoopVariable()
+    {
+        var original = @"
+void Method(Test[] tests)
+{
+    foreach (var test in tests)
+    {
+        test.Id += ""_"" + ""hello"";
+    }
+}
+
+class Test
+{
+    public string Id { get; set; }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_AssignmentToLoopVariable_Field()
+    {
+        var original = @"
+void Method(Test[] tests)
+{
+    foreach (var test in tests)
+    {
+        test._id += ""_"" + ""hello"";
+    }
+}
+
+class Test
+{
+    public string _id;
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_AssignmentToLoopVariable_Nested()
+    {
+        var original = @"
+void Method(Test[] tests)
+{
+    foreach (var test in tests)
+    {
+        test.Id.Id += ""_"" + ""hello"";
+    }
+}
+
+class Test
+{
+    public TestTwo Id { get; set; } = new();
+}
+
+class TestTwo
+{
+    public string Id { get; set; }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }

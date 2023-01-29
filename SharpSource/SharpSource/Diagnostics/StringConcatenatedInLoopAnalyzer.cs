@@ -59,14 +59,25 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
                 return;
             }
 
-            if (assignment.Target is ILocalReferenceOperation localRef &&
-                surroundingLoop.Body is IBlockOperation body &&
-                body.Locals.Any(s => s.Equals(localRef.Local, SymbolEqualityComparer.Default)))
+            if (surroundingLoop.Body is IBlockOperation body)
             {
-                return;
+                var instanceToFind = GetLocal(assignment.Target);
+                var isReferencingLocal = surroundingLoop.Locals.Concat(body.Locals).Any(s => s.Equals(instanceToFind, SymbolEqualityComparer.Default));
+                if (isReferencingLocal)
+                {
+                    return;
+                }
             }
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, assignment.Syntax.GetLocation()));
         }, OperationKind.CompoundAssignment, OperationKind.SimpleAssignment);
     }
+
+    private static ISymbol? GetLocal(IOperation? operation) => operation switch
+    {
+        ILocalReferenceOperation localRef => localRef.Local,
+        IPropertyReferenceOperation propRef => GetLocal(propRef.Instance),
+        IFieldReferenceOperation fieldRef => GetLocal(fieldRef.Instance),
+        _ => default
+    };
 }
