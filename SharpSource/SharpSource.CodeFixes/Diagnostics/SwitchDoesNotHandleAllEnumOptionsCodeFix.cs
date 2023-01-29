@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 using SharpSource.Utilities;
 
@@ -42,16 +43,8 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
             return;
         }
 
-        context.RegisterCodeFix(
-            CodeAction.Create("Add cases",
-                x => AddMissingCaseAsync(context.Document, semanticModel, (CompilationUnitSyntax)root, switchStatement),
-                SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
-    }
-
-    private async Task<Solution> AddMissingCaseAsync(Document document, SemanticModel semanticModel, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
-    {
-        var enumType = semanticModel.GetTypeInfo(switchBlock.Expression).Type as INamedTypeSymbol;
-        var caseLabels = switchBlock.Sections.SelectMany(l => l.Labels)
+        var enumType = semanticModel.GetTypeInfo(switchStatement.Expression).Type as INamedTypeSymbol;
+        var caseLabels = switchStatement.Sections.SelectMany(l => l.Labels)
                                     .OfType<CaseSwitchLabelSyntax>()
                                     .Select(l => l.Value)
                                     .ToList();
@@ -62,35 +55,44 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         var hasSimplifiedLabel = caseLabels.OfType<IdentifierNameSyntax>().Any();
         var useSimplifiedForm = ( hasSimplifiedLabel || !caseLabels.OfType<MemberAccessExpressionSyntax>().Any() ) && caseLabels.Any();
 
-        var qualifier = GetQualifierForException(root);
+        if (enumType is null || missingLabels is null || switchStatement is null)
+        {
+            return;
+        }
 
-        var notImplementedException =
-            SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($" new {qualifier}NotImplementedException()"))
-                         .WithAdditionalAnnotations(Simplifier.Annotation);
-        var statements = SyntaxFactory.List(new List<StatementSyntax> { notImplementedException });
+        var qualifier = GetQualifierForException((CompilationUnitSyntax)root);
 
-        var newSections = SyntaxFactory.List(switchBlock.Sections);
+        var notImplementedException = ThrowStatement(ParseExpression($" new {qualifier}NotImplementedException()")).WithAdditionalAnnotations(Simplifier.Annotation);
+        var statements = List(new List<StatementSyntax> { notImplementedException });
+
+        context.RegisterCodeFix(
+            CodeAction.Create("Add cases",
+                x => AddMissingCaseAsync(context.Document, enumType, missingLabels, useSimplifiedForm, (CompilationUnitSyntax)root, switchStatement, statements),
+                SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
+    }
+
+    private static async Task<Document> AddMissingCaseAsync(Document document, INamedTypeSymbol enumType, IEnumerable<string> missingLabels, bool useSimplifiedForm, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock, SyntaxList<StatementSyntax> sectionBody)
+    {
+        var allSections = new List<SwitchSectionSyntax>(switchBlock.Sections);
 
         foreach (var label in missingLabels)
         {
-            var expression = SyntaxFactory.ParseExpression($"{enumType?.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
-            var caseLabel = SyntaxFactory.CaseSwitchLabel(expression);
-
-            var section =
-                SyntaxFactory.SwitchSection(SyntaxFactory.List(new List<SwitchLabelSyntax> { caseLabel }), statements)
-                             .WithAdditionalAnnotations(Formatter.Annotation);
+            var expression = ParseExpression($"{enumType?.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
+            var caseLabel = CaseSwitchLabel(expression);
+            var section = SwitchSection(List(new SwitchLabelSyntax[] { caseLabel }), sectionBody).WithAdditionalAnnotations(Formatter.Annotation);
 
             // ensure that the new cases are above the default case
-            newSections = newSections.Insert(0, section);
+            allSections.Insert(0, section);
         }
 
+        var newSections = List(allSections);
         var newNode = useSimplifiedForm
             ? switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation)
             : switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation);
 
         var newRoot = root.ReplaceNode(switchBlock, newNode);
         var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
-        return newDocument.Project.Solution;
+        return newDocument;
     }
 
     private static IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
