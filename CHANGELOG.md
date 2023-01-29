@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.5] - 2023-01-29
+- `StringConcatenatedInLoop`: Assignments without a concatenation referencing the assigned field won't trigger a warning
+
 ## [1.21.4] - 2023-01-29
 - `StringConcatenatedInLoop`: Concatenations inside object creation expressions no longer trigger a warning
 - `StringConcatenatedInLoop`: Does not trigger when assigning to the loop variable
