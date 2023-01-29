@@ -510,9 +510,9 @@ namespace ConsoleApplication1
                     throw new System.NotImplementedException();
                 case WriteThrough:
                     throw new System.NotImplementedException();
-                case FileOptions.Encrypted:
+                case Encrypted:
                     break;
-                case FileOptions.SequentialScan:
+                case SequentialScan:
                     break;
                 case FileOptions.RandomAccess:
                     break;

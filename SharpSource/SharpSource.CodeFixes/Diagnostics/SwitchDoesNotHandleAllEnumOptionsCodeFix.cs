@@ -50,28 +50,21 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
                                     .ToList();
 
         var missingLabels = GetMissingLabels(caseLabels, enumType);
-
-        // use simplified form if there are any in simplified form or if there are not any labels at all
-        var hasSimplifiedLabel = caseLabels.OfType<IdentifierNameSyntax>().Any();
-        var useSimplifiedForm = ( hasSimplifiedLabel || !caseLabels.OfType<MemberAccessExpressionSyntax>().Any() ) && caseLabels.Any();
-
         if (enumType is null || missingLabels is null || switchStatement is null)
         {
             return;
         }
 
-        var qualifier = GetQualifierForException((CompilationUnitSyntax)root);
-
-        var notImplementedException = ThrowStatement(ParseExpression($" new {qualifier}NotImplementedException()")).WithAdditionalAnnotations(Simplifier.Annotation);
+        var notImplementedException = ThrowStatement(ParseExpression($" new System.NotImplementedException()")).WithAdditionalAnnotations(Simplifier.Annotation);
         var statements = List(new List<StatementSyntax> { notImplementedException });
 
         context.RegisterCodeFix(
             CodeAction.Create("Add cases",
-                x => AddMissingCaseAsync(context.Document, enumType, missingLabels, useSimplifiedForm, (CompilationUnitSyntax)root, switchStatement, statements),
+                x => AddMissingCaseAsync(context.Document, enumType, missingLabels, (CompilationUnitSyntax)root, switchStatement, statements),
                 SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
     }
 
-    private static async Task<Document> AddMissingCaseAsync(Document document, INamedTypeSymbol enumType, IEnumerable<string> missingLabels, bool useSimplifiedForm, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock, SyntaxList<StatementSyntax> sectionBody)
+    private static async Task<Document> AddMissingCaseAsync(Document document, INamedTypeSymbol enumType, IEnumerable<string> missingLabels, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock, SyntaxList<StatementSyntax> sectionBody)
     {
         var allSections = new List<SwitchSectionSyntax>(switchBlock.Sections);
 
@@ -86,9 +79,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         }
 
         var newSections = List(allSections);
-        var newNode = useSimplifiedForm
-            ? switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation)
-            : switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation);
+        var newNode = switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation);
 
         var newRoot = root.ReplaceNode(switchBlock, newNode);
         var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
@@ -121,21 +112,5 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
 
         // don't create members like ".ctor"
         return enumType.GetMembers().Where(member => !membersToIgnore.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName).Select(member => member.Name);
-    }
-
-    private string GetQualifierForException(CompilationUnitSyntax root)
-    {
-        var qualifier = "System.";
-        var usingSystemDirective =
-            root.Usings.Where(u => u.Name is IdentifierNameSyntax)
-                .FirstOrDefault(u => ( (IdentifierNameSyntax)u.Name ).Identifier.ValueText == nameof(System));
-
-        if (usingSystemDirective != null)
-        {
-            qualifier = usingSystemDirective.Alias == null
-                ? string.Empty
-                : usingSystemDirective.Alias.Name.Identifier.ValueText + ".";
-        }
-        return qualifier;
     }
 }
