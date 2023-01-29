@@ -46,8 +46,7 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         var enumType = semanticModel.GetTypeInfo(switchStatement.Expression).Type as INamedTypeSymbol;
         var caseLabels = switchStatement.Sections.SelectMany(l => l.Labels)
                                     .OfType<CaseSwitchLabelSyntax>()
-                                    .Select(l => l.Value)
-                                    .ToList();
+                                    .Select(l => l.Value);
 
         var missingLabels = GetMissingLabels(caseLabels, enumType);
         if (enumType is null || missingLabels is null || switchStatement is null)
@@ -64,13 +63,13 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
                 SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
     }
 
-    private static async Task<Document> AddMissingCaseAsync(Document document, INamedTypeSymbol enumType, IEnumerable<string> missingLabels, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock, SyntaxList<StatementSyntax> sectionBody)
+    private static async Task<Document> AddMissingCaseAsync(Document document, INamedTypeSymbol enumType, IEnumerable<ISymbol> missingLabels, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock, SyntaxList<StatementSyntax> sectionBody)
     {
         var allSections = new List<SwitchSectionSyntax>(switchBlock.Sections);
 
         foreach (var label in missingLabels)
         {
-            var expression = ParseExpression($"{enumType?.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
+            var expression = ParseExpression($"{enumType?.ToDisplayString()}.{label.Name}").WithAdditionalAnnotations(Simplifier.Annotation);
             var caseLabel = CaseSwitchLabel(expression);
             var section = SwitchSection(List(new SwitchLabelSyntax[] { caseLabel }), sectionBody).WithAdditionalAnnotations(Formatter.Annotation);
 
@@ -86,11 +85,11 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         return newDocument;
     }
 
-    private static IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
+    private static IEnumerable<ISymbol> GetMissingLabels(IEnumerable<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
     {
         if (enumType == default)
         {
-            return Enumerable.Empty<string>();
+            return Enumerable.Empty<ISymbol>();
         }
 
         var membersToIgnore = new HashSet<string>();
@@ -111,6 +110,6 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
         }
 
         // don't create members like ".ctor"
-        return enumType.GetMembers().Where(member => !membersToIgnore.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName).Select(member => member.Name);
+        return enumType.GetMembers().Where(member => !membersToIgnore.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName);
     }
 }
