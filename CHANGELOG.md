@@ -5,6 +5,8 @@ https://keepachangelog.com/en/1.0.0/
 - `StringConcatenatedInLoop`: Concatenations inside object creation expressions no longer trigger a warning
 - `StringConcatenatedInLoop`: Does not trigger when assigning to the loop variable
 - `UnnecessaryEnumerableMaterialization`: Now correctly parses the two subsequent invocations, avoiding issues when they are nested within a method call themselves
+- `SwitchDoesNotHandleAllEnumOptions`: Code Fix generates more predictable code when simplification is possible
+- `SwitchDoesNotHandleAllEnumOptions`: Performance of Code Fix has been improved
 
 ## [1.21.3] - 2023-01-25
 - `LoopedRandomInstantiation`: No longer triggers when a seed is passed to the constructor
