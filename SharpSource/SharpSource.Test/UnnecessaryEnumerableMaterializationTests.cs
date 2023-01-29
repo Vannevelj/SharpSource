@@ -273,4 +273,17 @@ void Method(IList<string> list)
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/310")]
+    public async Task UnnecessaryEnumerableMaterialization_ToListForEach()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var files = new[] { """" };
+files.OfType<string>().ToList().ForEach(x => System.Console.Write(x));";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
