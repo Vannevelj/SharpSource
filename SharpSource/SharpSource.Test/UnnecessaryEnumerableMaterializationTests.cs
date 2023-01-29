@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.UnnecessaryEnumerableMaterializationAnalyzer, SharpSource.Diagnostics.UnnecessaryEnumerableMaterializationCodeFix>;
 
 namespace SharpSource.Test;
@@ -254,5 +254,36 @@ IEnumerable<string> values = new [] { ""test"" };
 values!.ToList();";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted"), expected);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/310")]
+    public async Task UnnecessaryEnumerableMaterialization_ExpressionAcceptsBaseType()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var files = new[] { """" };
+Method(files.OfType<string>().ToList());
+
+void Method(IList<string> list)
+{
+
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/310")]
+    public async Task UnnecessaryEnumerableMaterialization_ToListForEach()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var files = new[] { """" };
+files.OfType<string>().ToList().ForEach(x => System.Console.Write(x));";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 }

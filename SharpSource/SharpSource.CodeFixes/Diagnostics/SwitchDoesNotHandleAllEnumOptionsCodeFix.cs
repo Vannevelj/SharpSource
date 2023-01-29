@@ -10,8 +10,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-
 using SharpSource.Utilities;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SharpSource.Diagnostics;
 
@@ -42,90 +42,73 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
             return;
         }
 
+        var enumType = semanticModel.GetTypeInfo(switchStatement.Expression).Type as INamedTypeSymbol;
+        var caseLabels = switchStatement.Sections.SelectMany(l => l.Labels)
+                                    .OfType<CaseSwitchLabelSyntax>()
+                                    .Select(l => l.Value);
+
+        var missingLabels = GetMissingLabels(caseLabels, enumType);
+        if (enumType is null || missingLabels is null || switchStatement is null)
+        {
+            return;
+        }
+
+        var notImplementedException = ThrowStatement(ParseExpression($" new System.NotImplementedException()")).WithAdditionalAnnotations(Simplifier.Annotation);
+        var statements = List(new List<StatementSyntax> { notImplementedException });
+
         context.RegisterCodeFix(
             CodeAction.Create("Add cases",
-                x => AddMissingCaseAsync(context.Document, semanticModel, (CompilationUnitSyntax)root, switchStatement),
+                x => AddMissingCaseAsync(context.Document, enumType, missingLabels, (CompilationUnitSyntax)root, switchStatement, statements),
                 SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule.Id), diagnostic);
     }
 
-    private async Task<Solution> AddMissingCaseAsync(Document document, SemanticModel semanticModel, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock)
+    private static async Task<Document> AddMissingCaseAsync(Document document, INamedTypeSymbol enumType, IEnumerable<ISymbol> missingLabels, CompilationUnitSyntax root, SwitchStatementSyntax switchBlock, SyntaxList<StatementSyntax> sectionBody)
     {
-        var enumType = semanticModel.GetTypeInfo(switchBlock.Expression).Type as INamedTypeSymbol;
-        var caseLabels = switchBlock.Sections.SelectMany(l => l.Labels)
-                                    .OfType<CaseSwitchLabelSyntax>()
-                                    .Select(l => l.Value)
-                                    .ToList();
-
-        var missingLabels = GetMissingLabels(caseLabels, enumType);
-
-        // use simplified form if there are any in simplified form or if there are not any labels at all
-        var hasSimplifiedLabel = caseLabels.OfType<IdentifierNameSyntax>().Any();
-        var useSimplifiedForm = ( hasSimplifiedLabel || !caseLabels.OfType<MemberAccessExpressionSyntax>().Any() ) && caseLabels.Any();
-
-        var qualifier = GetQualifierForException(root);
-
-        var notImplementedException =
-            SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression($" new {qualifier}NotImplementedException()"))
-                         .WithAdditionalAnnotations(Simplifier.Annotation);
-        var statements = SyntaxFactory.List(new List<StatementSyntax> { notImplementedException });
-
-        var newSections = SyntaxFactory.List(switchBlock.Sections);
+        var allSections = new List<SwitchSectionSyntax>(switchBlock.Sections);
 
         foreach (var label in missingLabels)
         {
-            var expression = SyntaxFactory.ParseExpression($"{enumType?.ToDisplayString()}.{label}").WithAdditionalAnnotations(Simplifier.Annotation);
-            var caseLabel = SyntaxFactory.CaseSwitchLabel(expression);
-
-            var section =
-                SyntaxFactory.SwitchSection(SyntaxFactory.List(new List<SwitchLabelSyntax> { caseLabel }), statements)
-                             .WithAdditionalAnnotations(Formatter.Annotation);
+            var expression = ParseExpression($"{enumType?.ToDisplayString()}.{label.Name}").WithAdditionalAnnotations(Simplifier.Annotation);
+            var caseLabel = CaseSwitchLabel(expression);
+            var section = SwitchSection(List(new SwitchLabelSyntax[] { caseLabel }), sectionBody).WithAdditionalAnnotations(Formatter.Annotation);
 
             // ensure that the new cases are above the default case
-            newSections = newSections.Insert(0, section);
+            allSections.Insert(0, section);
         }
 
-        var newNode = useSimplifiedForm
-            ? switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation)
-            : switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation);
+        var newSections = List(allSections);
+        var newNode = switchBlock.WithSections(newSections).WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation);
 
         var newRoot = root.ReplaceNode(switchBlock, newNode);
         var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
-        return newDocument.Project.Solution;
+        return newDocument;
     }
 
-    private static IEnumerable<string> GetMissingLabels(List<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
+    private static IEnumerable<ISymbol> GetMissingLabels(IEnumerable<ExpressionSyntax> caseLabels, INamedTypeSymbol? enumType)
     {
         if (enumType == default)
         {
-            return Enumerable.Empty<string>();
+            return Enumerable.Empty<ISymbol>();
         }
 
-        // these are the labels like `MyEnum.EnumMember`
-        var labels = caseLabels
-            .OfType<MemberAccessExpressionSyntax>()
-            .Select(l => l.Name.Identifier.ValueText)
-            .ToList();
+        var membersToIgnore = new HashSet<string>();
 
-        // these are the labels like `EnumMember` (such as when using `using static Namespace.MyEnum;`)
-        labels.AddRange(caseLabels.OfType<IdentifierNameSyntax>().Select(l => l.Identifier.ValueText));
+        foreach (var label in caseLabels)
+        {
+            // these are the labels like `MyEnum.EnumMember`
+            if (label is MemberAccessExpressionSyntax memberAccess)
+            {
+                membersToIgnore.Add(memberAccess.Name.Identifier.ValueText);
+            }
+
+            // these are the labels like `EnumMember` (such as when using `using static Namespace.MyEnum;`)
+            else if (label is IdentifierNameSyntax identifier)
+            {
+                membersToIgnore.Add(identifier.Identifier.ValueText);
+            }
+        }
 
         // don't create members like ".ctor"
-        return enumType.GetMembers().Where(member => !labels.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName).Select(member => member.Name);
-    }
-
-    private string GetQualifierForException(CompilationUnitSyntax root)
-    {
-        var qualifier = "System.";
-        var usingSystemDirective =
-            root.Usings.Where(u => u.Name is IdentifierNameSyntax)
-                .FirstOrDefault(u => ( (IdentifierNameSyntax)u.Name ).Identifier.ValueText == nameof(System));
-
-        if (usingSystemDirective != null)
-        {
-            qualifier = usingSystemDirective.Alias == null
-                ? string.Empty
-                : usingSystemDirective.Alias.Name.Identifier.ValueText + ".";
-        }
-        return qualifier;
+        return enumType.GetMembers().Where(member => !membersToIgnore.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName);
     }
 }
