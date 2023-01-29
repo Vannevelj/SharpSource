@@ -102,17 +102,25 @@ public class SwitchDoesNotHandleAllEnumOptionsCodeFix : CodeFixProvider
             return Enumerable.Empty<string>();
         }
 
-        // these are the labels like `MyEnum.EnumMember`
-        var labels = caseLabels
-            .OfType<MemberAccessExpressionSyntax>()
-            .Select(l => l.Name.Identifier.ValueText)
-            .ToList();
+        var membersToIgnore = new HashSet<string>();
 
-        // these are the labels like `EnumMember` (such as when using `using static Namespace.MyEnum;`)
-        labels.AddRange(caseLabels.OfType<IdentifierNameSyntax>().Select(l => l.Identifier.ValueText));
+        foreach (var label in caseLabels)
+        {
+            // these are the labels like `MyEnum.EnumMember`
+            if (label is MemberAccessExpressionSyntax memberAccess)
+            {
+                membersToIgnore.Add(memberAccess.Name.Identifier.ValueText);
+            }
+
+            // these are the labels like `EnumMember` (such as when using `using static Namespace.MyEnum;`)
+            else if (label is IdentifierNameSyntax identifier)
+            {
+                membersToIgnore.Add(identifier.Identifier.ValueText);
+            }
+        }
 
         // don't create members like ".ctor"
-        return enumType.GetMembers().Where(member => !labels.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName).Select(member => member.Name);
+        return enumType.GetMembers().Where(member => !membersToIgnore.Contains(member.Name) && member.Name != WellKnownMemberNames.InstanceConstructorName).Select(member => member.Name);
     }
 
     private string GetQualifierForException(CompilationUnitSyntax root)
