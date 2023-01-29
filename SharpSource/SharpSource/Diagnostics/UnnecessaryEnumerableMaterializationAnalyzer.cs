@@ -29,21 +29,22 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var enumerableSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Linq.Enumerable");
-            if (enumerableSymbol is null)
-            {
-                return;
-            }
+            var listSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Collections.Generic.List`1");
 
             // An array is used instead of a hash set since the number of elements is small. HashSet is likely to be slower for searching in this case.
-            var materializingSymbols = enumerableSymbol.GetAllMembers("ToList", "ToArray", "ToHashSet").ToArray();
-            var deferredExecutionSymbols = enumerableSymbol.GetAllMembers(
+            var materializingSymbols = enumerableSymbol?.GetAllMembers("ToList", "ToArray", "ToHashSet").ToArray();
+            var deferredExecutionSymbols =
+                enumerableSymbol?.GetAllMembers(
                 "Select", "SelectMany", "Take", "Skip", "TakeWhile", "SkipWhile", "SkipLast", "Where", "GroupBy", "GroupJoin", "OrderBy", "OrderByDescending", "Union",
-                       "UnionBy", "Zip", "Reverse", "Join", "OfType", "Intersect", "IntersectBy", "Except", "ExceptBy", "Distinct", "DistinctBy", "DefaultIfEmpty", "Concat", "Cast").ToImmutableHashSet(SymbolEqualityComparer.Default);
+                       "UnionBy", "Zip", "Reverse", "Join", "OfType", "Intersect", "IntersectBy", "Except", "ExceptBy", "Distinct", "DistinctBy", "DefaultIfEmpty", "Concat", "Cast")
+                .Concat(listSymbol?.GetAllMembers("Reverse"))
+                .ToImmutableHashSet(SymbolEqualityComparer.Default);
 
             compilationContext.RegisterOperationAction(context =>
             {
                 var invocation = (IInvocationOperation)context.Operation;
                 var precedingInvocation = invocation.GetPrecedingInvocation()?.TargetMethod.OriginalDefinition;
+                var subsequentInvocation = invocation.TargetMethod.OriginalDefinition;
                 if (precedingInvocation is null)
                 {
                     return;
@@ -55,7 +56,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
                     return;
                 }
 
-                var subsequentSymbol = deferredExecutionSymbols.FirstOrDefault(s => s.Equals(precedingInvocation, SymbolEqualityComparer.Default)) ?? materializingSymbols.FirstOrDefault(s => s.Equals(precedingInvocation, SymbolEqualityComparer.Default));
+                var subsequentSymbol = deferredExecutionSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default)) ?? materializingSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default));
                 if (subsequentSymbol is null)
                 {
                     return;
