@@ -95,13 +95,15 @@ using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
-bool result = {{|#0:s1?.{call}().Trim()|}} == s2?.{call}().Trim();";
+
+bool result = {{|#0:s1?.Trim()?.{call}()|}} == s2?.Trim()?.{call}();";
 
         var result = @$"
 using System;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
+
 bool result = string.Equals(s1?.Trim(), s2?.Trim(), StringComparison.{expectedStringComparison});";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);

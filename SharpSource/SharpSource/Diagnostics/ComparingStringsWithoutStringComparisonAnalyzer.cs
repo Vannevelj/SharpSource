@@ -81,27 +81,29 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
 
     private static CapitalizationContext? StringCapitalizationFunction(IOperation operand, ImmutableArray<CapitalizationContext> capitalizationContexts)
     {
-        CapitalizationContext? getContext(IInvocationOperation invocation)
+        static IInvocationOperation? getInvocation(IOperation op)
         {
-            if (invocation is { Arguments.Length: 0 })
+            return op switch
             {
-                foreach (var capitalizationContext in capitalizationContexts)
-                {
-                    if (capitalizationContext.MethodSymbols.Any(s => s.Equals(invocation.TargetMethod, SymbolEqualityComparer.Default)))
-                    {
-                        return capitalizationContext;
-                    }
-                }
-            }
-
-            return default;
+                IInvocationOperation inv => inv,
+                IConditionalAccessOperation { WhenNotNull: IConditionalAccessOperation or IInvocationOperation } cond => getInvocation(cond.WhenNotNull),
+                _ => default
+            };
         }
 
-        return operand switch
+        var invocation = getInvocation(operand);
+
+        if (invocation is { Arguments.Length: 0 })
         {
-            IInvocationOperation inv => getContext(inv),
-            IConditionalAccessOperation { WhenNotNull: IInvocationOperation { Arguments.Length: 0 } nestedInv } => getContext(nestedInv),
-            _ => default
-        };
+            foreach (var capitalizationContext in capitalizationContexts)
+            {
+                if (capitalizationContext.MethodSymbols.Any(s => s.Equals(invocation.TargetMethod, SymbolEqualityComparer.Default)))
+                {
+                    return capitalizationContext;
+                }
+            }
+        }
+
+        return default;
     }
 }
