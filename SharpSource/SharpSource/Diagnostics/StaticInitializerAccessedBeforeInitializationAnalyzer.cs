@@ -62,7 +62,7 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
                     var operation = context.Operation.Parent;
                     while (operation is not null)
                     {
-                        if (operation.Kind is OperationKind.AnonymousFunction or OperationKind.NameOf)
+                        if (operation.Kind is OperationKind.AnonymousFunction or OperationKind.NameOf or OperationKind.Invocation)
                         {
                             return;
                         }

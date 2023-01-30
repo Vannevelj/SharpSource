@@ -1,8 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.21.5] - 2023-01-29
+## [1.21.5] - 2023-01-30
 - `StringConcatenatedInLoop`: Assignments without a concatenation referencing the assigned field won't trigger a warning
+- `StaticInitializerAccessedBeforeInitialization`: No longer triggers if the referenced symbol is used an argument to a method call
 
 ## [1.21.4] - 2023-01-29
 - `StringConcatenatedInLoop`: Concatenations inside object creation expressions no longer trigger a warning

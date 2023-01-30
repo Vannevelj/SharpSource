@@ -61,7 +61,7 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
             }
 
             if (surroundingLoop.Body is IBlockOperation body)
-            {                
+            {
                 var isReferencingLocal = surroundingLoop.Locals.Concat(body.Locals).Any(s => s.Equals(assignedSymbol, SymbolEqualityComparer.Default));
                 if (isReferencingLocal)
                 {
