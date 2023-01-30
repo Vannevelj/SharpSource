@@ -5,6 +5,7 @@ https://keepachangelog.com/en/1.0.0/
 - `StringConcatenatedInLoop`: Assignments without a concatenation referencing the assigned field won't trigger a warning
 - `StaticInitializerAccessedBeforeInitialization`: No longer triggers if the referenced symbol is used an argument to a method call
 - `SwitchIsMissingDefaultLabel`: Restricted the IDE warning to the `switch` value instead of the entire statement
+- `EqualsAndGetHashcodeNotImplementedTogether`, `RethrowExceptionWithoutLosingStacktrace` and `StringPlaceHoldersInWrongOrder`: Minor improvements to code fixes to return individual documents instead of a solution
 
 ## [1.21.4] - 2023-01-29
 - `StringConcatenatedInLoop`: Concatenations inside object creation expressions no longer trigger a warning
