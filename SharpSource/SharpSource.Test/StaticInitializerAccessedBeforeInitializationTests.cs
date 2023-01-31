@@ -351,18 +351,18 @@ class Test
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/314")]
     public async Task StaticInitializerAccessedBeforeInitialization_AsArgumentToMethodInvocation()
     {
         var original = @"
 class Test
 {
-	static string FirstField = SomeFunction({|#0:SomeArg|});
+	static string FirstField = SomeFunction(SomeArg);
 	static string SomeFunction(string arg) => arg;
 	static string SomeArg = ""test"";
 }";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("FirstField accesses SomeArg but both are marked as static and SomeArg will not be initialized when it is used"));
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/173")]

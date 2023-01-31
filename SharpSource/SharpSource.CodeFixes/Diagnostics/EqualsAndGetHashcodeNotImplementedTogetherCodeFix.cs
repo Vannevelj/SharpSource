@@ -44,32 +44,30 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         }
     }
 
-    private static async Task<Solution> ImplementEqualsAsync(Document document, SyntaxNode root, SyntaxNode statement)
+    private static async Task<Document> ImplementEqualsAsync(Document document, SyntaxNode root, SyntaxNode statement)
     {
         var classDeclaration = (ClassDeclarationSyntax)statement;
 
         var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetEqualsMethod()));
         var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
-        return newDocument.Project.Solution;
+        return newDocument;
     }
 
-    private static async Task<Solution> ImplementGetHashCodeAsync(Document document, SyntaxNode root, SyntaxNode statement)
+    private static async Task<Document> ImplementGetHashCodeAsync(Document document, SyntaxNode root, SyntaxNode statement)
     {
         var classDeclaration = (ClassDeclarationSyntax)statement;
 
         var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetGetHashCodeMethod()));
         var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
-        return newDocument.Project.Solution;
+        return newDocument;
     }
 
     private static MethodDeclarationSyntax GetEqualsMethod()
     {
         var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();")
-            .WithAdditionalAnnotations(Simplifier.Annotation);
-        var parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("obj"))
-            .WithType(SyntaxFactory.ParseTypeName("object"));
+        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
+        var parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("obj")).WithType(SyntaxFactory.ParseTypeName("object"));
 
         return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("bool"), "Equals")
                 .AddModifiers(publicModifier, overrideModifier)
@@ -82,8 +80,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
     {
         var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();")
-            .WithAdditionalAnnotations(Simplifier.Annotation);
+        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
 
         return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("int"), "GetHashCode")
                 .AddModifiers(publicModifier, overrideModifier)

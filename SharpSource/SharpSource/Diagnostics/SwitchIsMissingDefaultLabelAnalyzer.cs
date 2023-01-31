@@ -31,7 +31,7 @@ public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
 
             if (!surroundingSwitch.Cases.SelectMany(c => c.Clauses).OfType<IDefaultCaseClauseOperation>().Any())
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, surroundingSwitch.Syntax.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, surroundingSwitch.Value.Syntax.GetLocation()));
             }
         }, OperationKind.Switch);
     }

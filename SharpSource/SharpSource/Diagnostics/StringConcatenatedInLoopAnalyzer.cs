@@ -29,11 +29,12 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
         context.RegisterOperationAction(context =>
         {
             var assignment = (IAssignmentOperation)context.Operation;
+            var assignedSymbol = GetSymbol(assignment.Target);
 
             var isEligible = assignment switch
             {
                 ICompoundAssignmentOperation { OperatorKind: BinaryOperatorKind.Add } => true,
-                ISimpleAssignmentOperation { Value: IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } } => true,
+                ISimpleAssignmentOperation { Value: IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } binary } => BinaryOperationConcatenatesSymbol(binary, assignedSymbol),
                 _ => false
             };
 
@@ -61,8 +62,7 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
 
             if (surroundingLoop.Body is IBlockOperation body)
             {
-                var instanceToFind = GetLocal(assignment.Target);
-                var isReferencingLocal = surroundingLoop.Locals.Concat(body.Locals).Any(s => s.Equals(instanceToFind, SymbolEqualityComparer.Default));
+                var isReferencingLocal = surroundingLoop.Locals.Concat(body.Locals).Any(s => s.Equals(assignedSymbol, SymbolEqualityComparer.Default));
                 if (isReferencingLocal)
                 {
                     return;
@@ -73,11 +73,32 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
         }, OperationKind.CompoundAssignment, OperationKind.SimpleAssignment);
     }
 
-    private static ISymbol? GetLocal(IOperation? operation) => operation switch
+    private static ISymbol? GetSymbol(IOperation? operation) => operation switch
     {
         ILocalReferenceOperation localRef => localRef.Local,
-        IPropertyReferenceOperation propRef => GetLocal(propRef.Instance),
-        IFieldReferenceOperation fieldRef => GetLocal(fieldRef.Instance),
+        IPropertyReferenceOperation propRef => GetSymbol(propRef.Instance),
+        IFieldReferenceOperation fieldRef => GetSymbol(fieldRef.Instance),
         _ => default
     };
+
+    private static bool BinaryOperationConcatenatesSymbol(IBinaryOperation binary, ISymbol? targetSymbol)
+    {
+        if (targetSymbol is null)
+        {
+            return false;
+        }
+
+        static bool traverse(IOperation op, ISymbol targetSymbol)
+        {
+            if (op is IBinaryOperation nestedBinaryOp)
+            {
+                return traverse(nestedBinaryOp.LeftOperand, targetSymbol) || traverse(nestedBinaryOp.RightOperand, targetSymbol);
+            }
+
+            var symbol = GetSymbol(op);
+            return SymbolEqualityComparer.Default.Equals(symbol, targetSymbol);
+        }
+
+        return traverse(binary, targetSymbol);
+    }
 }

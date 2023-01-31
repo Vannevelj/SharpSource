@@ -33,12 +33,11 @@ public class RethrowExceptionWithoutLosingStacktraceCodeFix : CodeFixProvider
                 RethrowExceptionWithoutLosingStacktraceAnalyzer.Rule.Id), diagnostic);
     }
 
-    private static Task<Solution> RemoveRethrowAsync(Document document, SyntaxNode root,
-                                              ThrowStatementSyntax throwStatement)
+    private static Task<Document> RemoveRethrowAsync(Document document, SyntaxNode root, ThrowStatementSyntax throwStatement)
     {
         var newStatement = SyntaxFactory.ThrowStatement();
         var newRoot = root.ReplaceNode(throwStatement, newStatement);
         var newDocument = document.WithSyntaxRoot(newRoot);
-        return Task.FromResult(newDocument.Project.Solution);
+        return Task.FromResult(newDocument);
     }
 }

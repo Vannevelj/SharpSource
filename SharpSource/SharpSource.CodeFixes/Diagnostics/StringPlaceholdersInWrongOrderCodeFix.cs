@@ -17,8 +17,7 @@ namespace SharpSource.Diagnostics;
 [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds
-        => ImmutableArray.Create(StringPlaceholdersInWrongOrderAnalyzer.Rule.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(StringPlaceholdersInWrongOrderAnalyzer.Rule.Id);
 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -45,7 +44,7 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
             diagnostic);
     }
 
-    private static Task<Solution> ReOrderPlaceholdersAsync(Document document, SyntaxNode root,
+    private static Task<Document> ReOrderPlaceholdersAsync(Document document, SyntaxNode root,
                                                            InvocationExpressionSyntax stringFormatInvocation)
     {
         var firstArgumentIsLiteral = stringFormatInvocation.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax;
@@ -139,7 +138,7 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
         var newInvocation = stringFormatInvocation.WithArgumentList(newArguments);
         var newRoot = root.ReplaceNode(stringFormatInvocation, newInvocation);
         var newDocument = document.WithSyntaxRoot(newRoot);
-        return Task.FromResult(newDocument.Project.Solution);
+        return Task.FromResult(newDocument);
     }
 
     /// <summary>

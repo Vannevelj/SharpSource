@@ -30,12 +30,12 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            {|#0:switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -55,14 +55,14 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = MyEnum.Fizz;
-            {|#0:switch (e)
+            switch ({|#0:e|})
             {
                 case MyEnum.Fizz:
                 case MyEnum.Buzz:
                     break;
                 default:
                     throw new ArgumentException(""Unsupported value"");
-            }|}
+            }
         }
     }
 }";
@@ -83,12 +83,12 @@ namespace ConsoleApplication1
         void Method()
         {
             var e = ""test"";
-            {|#0:switch (e)
+            switch ({|#0:e|})
             {
                 case ""test"":
                 case ""test1"":
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -130,12 +130,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            {|#0:switch (""test"")
+            switch ({|#0:""test""|})
             {
                 case ""test"":
                 case ""test1"":
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -176,12 +176,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            {|#0:switch (0)
+            switch ({|#0:0|})
             {
                 case 0:
                 case 1:
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -250,12 +250,12 @@ namespace ConsoleApplication1
         void Method()
         {
             var x = 5;
-            {|#0:switch ((x))
+            switch (({|#0:x|}))
             {
                 case 5:
                 case 6:
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -297,12 +297,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            {|#0:switch ((""test""))
+            switch (({|#0:""test""|}))
             {
                 case ""test"":
                 case ""test1"":
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -343,12 +343,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            {|#0:switch ((0))
+            switch (({|#0:0|}))
             {
                 case 0:
                 case 1:
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -387,12 +387,12 @@ namespace ConsoleApplication1
     {
         void Method()
         {
-            {|#0:switch (0)
+            switch ({|#0:0|})
             {
                 case 0:
                 case 1:
                     break;
-            }|}
+            }
         }
     }
 }";
@@ -427,10 +427,10 @@ namespace ConsoleApplication1
         var original = @"
 using System;
 
-{|#0:switch (Test.A)
+switch ({|#0:Test.A|})
 {
     case Test.A: return;
-}|}
+}
 
 enum Test { A, B }";
 

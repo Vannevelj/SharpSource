@@ -320,4 +320,18 @@ class TestTwo
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/312")]
+    public async Task StringConcatenatedInLoop_ConcatenationWithoutReferencingTarget()
+    {
+        var original = @"
+string s = string.Empty;
+
+while (true)
+{
+    s = ""test"" + "".txt"";
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
