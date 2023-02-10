@@ -193,11 +193,11 @@ bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison})
     }
 
     [TestMethod]
-    [DataRow("ToLower", "OrdinalIgnoreCase")]
-    [DataRow("ToUpper", "OrdinalIgnoreCase")]
-    [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
-    [DataRow("ToUpperInvariant", "InvariantCultureIgnoreCase")]
-    public async Task ComparingStringsWithoutStringComparison_ForceNotNullableChained(string call, string expectedStringComparison)
+    [DataRow("ToLower")]
+    [DataRow("ToUpper")]
+    [DataRow("ToLowerInvariant")]
+    [DataRow("ToUpperInvariant")]
+    public async Task ComparingStringsWithoutStringComparison_ForceNotNullableChained(string call)
     {
         var original = @$"
 using System;

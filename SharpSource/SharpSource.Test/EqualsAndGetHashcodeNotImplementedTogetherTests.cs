@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogetherAnalyzer, SharpSource.Diagnostics.EqualsAndGetHashcodeNotImplementedTogetherCodeFix>;
 
 namespace SharpSource.Test;
@@ -309,5 +310,43 @@ partial class MyClass
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/296")]
+    public async Task EqualsAndGetHashcodeNotImplemented_NullableContext()
+    {
+        var original = @"
+class {|#0:MyClass|}
+{
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+
+        var result = @"
+class MyClass
+{
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+
+        var test = new VerifyCS.Test
+        {
+            TestCode = original,
+            FixedCode = result,
+            NullableContextOptions = NullableContextOptions.Enable
+        };
+
+        test.ExpectedDiagnostics.Add(VerifyCS.Diagnostic().WithMessage("Equals() and GetHashcode() must be implemented together on MyClass"));
+
+        await test.RunAsync();
     }
 }

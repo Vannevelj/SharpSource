@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.StructWithoutElementaryMethodsOverriddenAnalyzer, SharpSource.Diagnostics.StructWithoutElementaryMethodsOverriddenCodeFix>;
 
 namespace SharpSource.Test;
@@ -289,5 +290,44 @@ struct {|#0:X|} : IEquatable<X>
 }";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/296")]
+    public async Task StructWithoutElementaryMethodsOverridden_NullableEnabled()
+    {
+        var original = @"
+struct {|#0:X|}
+{
+}";
+
+        var result = @"
+struct X
+{
+    public override bool Equals(object? obj)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override int GetHashCode()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override string ToString()
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+
+        var test = new VerifyCS.Test
+        {
+            TestCode = original,
+            FixedCode = result,
+            NullableContextOptions = NullableContextOptions.Enable
+        };
+
+        test.ExpectedDiagnostics.Add(VerifyCS.Diagnostic().WithMessage("Implement Equals(), GetHashCode() and ToString() methods on struct X."));
+
+        await test.RunAsync();
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -11,6 +12,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SharpSource.Diagnostics;
 
@@ -57,45 +60,38 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
                 StructWithoutElementaryMethodsOverriddenAnalyzer.Rule.Id), diagnostic);
     }
 
-    private static readonly MethodDeclarationSyntax EqualsMethod = GetEqualsMethod();
-    private static readonly MethodDeclarationSyntax GetHashCodeMethod = GetGetHashCodeMethod();
-    private static readonly MethodDeclarationSyntax ToStringMethod = GetToStringMethod();
-
-    private static Task<Document> AddMissingMethodsAsync(Document document, SyntaxNode root,
-        StructDeclarationSyntax statement, bool implementEquals, bool implementGetHashCode,
-        bool implementToString)
+    private static Task<Document> AddMissingMethodsAsync(Document document, SyntaxNode root, StructDeclarationSyntax statement, bool implementEquals, bool implementGetHashCode, bool implementToString)
     {
         var newStatement = statement;
 
         if (!implementEquals)
         {
-            newStatement = newStatement.AddMembers(EqualsMethod);
+            var isNullable = document.Project.CompilationOptions?.NullableContextOptions is not NullableContextOptions.Disable;
+            newStatement = newStatement.AddMembers(GetEqualsMethod(isNullable));
         }
 
         if (!implementGetHashCode)
         {
-            newStatement = newStatement.AddMembers(GetHashCodeMethod);
+            newStatement = newStatement.AddMembers(GetGetHashCodeMethod());
         }
 
         if (!implementToString)
         {
-            newStatement = newStatement.AddMembers(ToStringMethod);
+            newStatement = newStatement.AddMembers(GetToStringMethod());
         }
 
         var newRoot = root.ReplaceNode(statement, newStatement);
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 
-    private static MethodDeclarationSyntax GetEqualsMethod()
+    private static MethodDeclarationSyntax GetEqualsMethod(bool isNullable)
     {
-        var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-        var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();")
-            .WithAdditionalAnnotations(Simplifier.Annotation);
-        var parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("obj"))
-            .WithType(SyntaxFactory.ParseTypeName("object"));
+        var publicModifier = Token(SyntaxKind.PublicKeyword);
+        var overrideModifier = Token(SyntaxKind.OverrideKeyword);
+        var bodyStatement = ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
+        var parameter = Parameter(Identifier("obj")).WithType(ParseTypeName(isNullable ? "object?" : "object"));
 
-        return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("bool"), "Equals")
+        return MethodDeclaration(ParseTypeName("bool"), "Equals")
                 .AddModifiers(publicModifier, overrideModifier)
                 .AddBodyStatements(bodyStatement)
                 .AddParameterListParameters(parameter)
@@ -104,12 +100,11 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
 
     private static MethodDeclarationSyntax GetGetHashCodeMethod()
     {
-        var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-        var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();")
-            .WithAdditionalAnnotations(Simplifier.Annotation);
+        var publicModifier = Token(SyntaxKind.PublicKeyword);
+        var overrideModifier = Token(SyntaxKind.OverrideKeyword);
+        var bodyStatement = ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
 
-        return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("int"), "GetHashCode")
+        return MethodDeclaration(ParseTypeName("int"), "GetHashCode")
                 .AddModifiers(publicModifier, overrideModifier)
                 .AddBodyStatements(bodyStatement)
                 .WithAdditionalAnnotations(Formatter.Annotation);
@@ -117,12 +112,11 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
 
     private static MethodDeclarationSyntax GetToStringMethod()
     {
-        var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-        var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();")
-            .WithAdditionalAnnotations(Simplifier.Annotation);
+        var publicModifier = Token(SyntaxKind.PublicKeyword);
+        var overrideModifier = Token(SyntaxKind.OverrideKeyword);
+        var bodyStatement = ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
 
-        return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("string"), "ToString")
+        return MethodDeclaration(ParseTypeName("string"), "ToString")
                 .AddModifiers(publicModifier, overrideModifier)
                 .AddBodyStatements(bodyStatement)
                 .WithAdditionalAnnotations(Formatter.Annotation);
@@ -140,7 +134,7 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
             }
         }
 
-        var value = string.Empty;
+        var value = new StringBuilder();
         for (var i = 0; i < members.Count; i++)
         {
             if (members.ElementAt(i).Value)
@@ -148,23 +142,23 @@ public class StructWithoutElementaryMethodsOverriddenCodeFix : CodeFixProvider
                 continue;
             }
 
-            if (missingMemberCount == 2 && !string.IsNullOrEmpty(value))
+            if (missingMemberCount == 2 && value.Length > 0)
             {
-                value += " and ";
+                value.Append(" and ");
             }
 
-            value += members.ElementAt(i).Key;
+            value.Append(members.ElementAt(i).Key);
 
             if (missingMemberCount == 3 && i == 0)
             {
-                value += ", ";
+                value.Append(", ");
             }
             else if (missingMemberCount == 3 && i == 1)
             {
-                value += ", and ";
+                value.Append(", and ");
             }
         }
 
-        return value;
+        return value.ToString();
     }
 }
