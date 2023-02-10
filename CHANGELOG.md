@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.21.6] - 2023-02-10
+- `StructWithoutElementaryMethodsOverridden`: Generates an `Equals(object? o)` method when nullable reference types are enabled
+
 ## [1.21.5] - 2023-01-31
 - `StringConcatenatedInLoop`: Assignments without a concatenation referencing the assigned field won't trigger a warning
 - `StaticInitializerAccessedBeforeInitialization`: No longer triggers if the referenced symbol is used an argument to a method call

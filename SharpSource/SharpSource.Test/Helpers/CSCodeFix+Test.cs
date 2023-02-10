@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
@@ -18,13 +15,14 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
 {
     public class Test : CSharpCodeFixTest<TAnalyzer, TCodeFix, MSTestVerifier>
     {
+        public NullableContextOptions NullableContextOptions { get; set; } = NullableContextOptions.Disable;
+
         public Test()
         {
             SolutionTransforms.Add((solution, projectId) =>
             {
                 var compilationOptions = solution.GetProject(projectId)!.CompilationOptions!;
-                compilationOptions = compilationOptions.WithSpecificDiagnosticOptions(
-                    compilationOptions.SpecificDiagnosticOptions.SetItems(CSharpVerifierHelper.NullableWarnings));
+                compilationOptions = compilationOptions.WithSpecificDiagnosticOptions(compilationOptions.SpecificDiagnosticOptions.SetItems(CSharpVerifierHelper.NullableWarnings));
                 solution = solution.WithProjectCompilationOptions(projectId, compilationOptions);
 
                 return solution;
@@ -44,12 +42,15 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             // Initialized explicitly so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
             TestState.ReferenceAssemblies = ReferenceAssemblies.Net.Net60;
 
-            TestState.OutputKind = OutputKind.WindowsApplication;
+            TestState.OutputKind = OutputKind.WindowsApplication; // todo remove?
             TestState.AnalyzerConfigFiles.Add(("/.globalconfig", @"
 is_global = true
 end_of_line = lf
 "));
         }
+
+        protected override CompilationOptions CreateCompilationOptions()
+            => new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true).WithNullableContextOptions(NullableContextOptions);
 
         protected override bool IsCompilerDiagnosticIncluded(Diagnostic diagnostic, CompilerDiagnostics compilerDiagnostics)
             => diagnostic.Id is not "CS5001" && base.IsCompilerDiagnosticIncluded(diagnostic, compilerDiagnostics);
