@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using SharpSource.Utilities;
 
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 namespace SharpSource.Diagnostics;
 
 [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
@@ -29,7 +31,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         if (bool.Parse(diagnostic.Properties["IsEqualsImplemented"]))
         {
             context.RegisterCodeFix(
-                CodeAction.Create("Implement GetHashCode().",
+                CodeAction.Create("Implement GetHashCode()",
                     x => ImplementGetHashCodeAsync(context.Document, root, statement),
                     EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id),
                 diagnostic);
@@ -37,7 +39,7 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         else
         {
             context.RegisterCodeFix(
-                CodeAction.Create("Implement Equals(object obj).",
+                CodeAction.Create("Implement Equals()",
                     x => ImplementEqualsAsync(context.Document, root, statement),
                     EqualsAndGetHashcodeNotImplementedTogetherAnalyzer.Rule.Id),
                 diagnostic);
@@ -48,7 +50,8 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
     {
         var classDeclaration = (ClassDeclarationSyntax)statement;
 
-        var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetEqualsMethod()));
+        var isNullable = document.Project.CompilationOptions?.NullableContextOptions is not NullableContextOptions.Disable;
+        var newRoot = root.ReplaceNode(classDeclaration, classDeclaration.AddMembers(GetEqualsMethod(isNullable)));
         var newDocument = await Simplifier.ReduceAsync(document.WithSyntaxRoot(newRoot)).ConfigureAwait(false);
         return newDocument;
     }
@@ -62,14 +65,14 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
         return newDocument;
     }
 
-    private static MethodDeclarationSyntax GetEqualsMethod()
+    private static MethodDeclarationSyntax GetEqualsMethod(bool isNullable)
     {
-        var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-        var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
-        var parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("obj")).WithType(SyntaxFactory.ParseTypeName("object"));
+        var publicModifier = Token(SyntaxKind.PublicKeyword);
+        var overrideModifier = Token(SyntaxKind.OverrideKeyword);
+        var bodyStatement = ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
+        var parameter = Parameter(Identifier("obj")).WithType(ParseTypeName(isNullable ? "object?" : "object"));
 
-        return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("bool"), "Equals")
+        return MethodDeclaration(ParseTypeName("bool"), "Equals")
                 .AddModifiers(publicModifier, overrideModifier)
                 .AddBodyStatements(bodyStatement)
                 .AddParameterListParameters(parameter)
@@ -78,11 +81,11 @@ public class EqualsAndGetHashcodeNotImplementedTogetherCodeFix : CodeFixProvider
 
     private static MethodDeclarationSyntax GetGetHashCodeMethod()
     {
-        var publicModifier = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
-        var overrideModifier = SyntaxFactory.Token(SyntaxKind.OverrideKeyword);
-        var bodyStatement = SyntaxFactory.ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
+        var publicModifier = Token(SyntaxKind.PublicKeyword);
+        var overrideModifier = Token(SyntaxKind.OverrideKeyword);
+        var bodyStatement = ParseStatement("throw new System.NotImplementedException();").WithAdditionalAnnotations(Simplifier.Annotation);
 
-        return SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("int"), "GetHashCode")
+        return MethodDeclaration(ParseTypeName("int"), "GetHashCode")
                 .AddModifiers(publicModifier, overrideModifier)
                 .AddBodyStatements(bodyStatement)
                 .WithAdditionalAnnotations(Formatter.Annotation);
