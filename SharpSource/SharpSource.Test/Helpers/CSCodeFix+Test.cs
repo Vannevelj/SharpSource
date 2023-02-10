@@ -42,7 +42,7 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             // Initialized explicitly so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
             TestState.ReferenceAssemblies = ReferenceAssemblies.Net.Net60;
 
-            TestState.OutputKind = OutputKind.WindowsApplication; // todo remove?
+            TestState.OutputKind = OutputKind.WindowsApplication;
             TestState.AnalyzerConfigFiles.Add(("/.globalconfig", @"
 is_global = true
 end_of_line = lf
