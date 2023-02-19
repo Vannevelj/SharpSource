@@ -334,4 +334,34 @@ while (true)
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_Return()
+    {
+        var original = @"
+var res = string.Empty;
+while (true)
+{
+    {|#0:res += ""test""|};
+    return;
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_Break()
+    {
+        var original = @"
+var res = string.Empty;
+while (true)
+{
+    {|#0:res += ""test""|};
+    break;
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
