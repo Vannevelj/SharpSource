@@ -5,6 +5,7 @@ https://keepachangelog.com/en/1.0.0/
 - `StringConcatenatedInLoop`: No longer triggers if concatenation is immediately followed by a `return` or `break` clause
 - `AsyncOverloadsAvailable`: Doesn't trigger inside a synchronous local function
 - `SynchronousTaskWait`: Now also supports anonymous functions
+- `ThreadSleepInAsyncMethod`: Now also supports anonymous functions
 
 ## [1.21.6] - 2023-02-10
 - `StructWithoutElementaryMethodsOverridden`: Generates an `Equals(object? o)` method when nullable reference types are enabled

@@ -29,20 +29,32 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
         {
             var threadSleepSymbols = context.Compilation.GetTypeByMetadataName("System.Threading.Thread")?.GetMembers("Sleep").OfType<IMethodSymbol>().ToArray();
 
-            context.RegisterSymbolStartAction(symbolContext =>
-            {
-                var method = (IMethodSymbol)symbolContext.Symbol;
-                var isAsync = method.IsAsync || method.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
-                if (isAsync || method.ReturnType.IsTaskType())
-                {
-                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols, isAsync), OperationKind.Invocation);
-                }
-            }, SymbolKind.Method);
+            context.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols), OperationKind.Invocation);
         });
     }
 
-    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? threadSleepSymbols, bool isAsync)
+    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? threadSleepSymbols)
     {
+        var surroundingMethodOperation = context.Operation.Ancestors().FirstOrDefault(a => a is ILocalFunctionOperation or IMethodBodyBaseOperation or IAnonymousFunctionOperation);
+        var surroundingMethod = surroundingMethodOperation switch
+        {
+            ILocalFunctionOperation localFunction => localFunction.Symbol,
+            IMethodBodyBaseOperation methodBody => methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol,
+            IAnonymousFunctionOperation anonFunction => anonFunction.Symbol,
+            _ => default,
+        };
+
+        if (surroundingMethod is null)
+        {
+            return;
+        }
+
+        var isAsync = surroundingMethod.IsAsync || surroundingMethod.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
+        if (!isAsync && !surroundingMethod.ReturnType.IsTaskType())
+        {
+            return;
+        }
+
         if (!threadSleepSymbols.Any(symbol => invocation.TargetMethod.Equals(symbol, SymbolEqualityComparer.Default)))
         {
             return;
