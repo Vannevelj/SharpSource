@@ -30,20 +30,32 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
         {
             var taskWaitSymbols = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")?.GetMembers("Wait").OfType<IMethodSymbol>().ToArray();
 
-            compilationContext.RegisterSymbolStartAction(symbolContext =>
-            {
-                var method = (IMethodSymbol)symbolContext.Symbol;
-                var isAsync = method.IsAsync || method.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
-                if (isAsync || method.ReturnType.IsTaskType())
-                {
-                    symbolContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, taskWaitSymbols), OperationKind.Invocation);
-                }
-            }, SymbolKind.Method);
+            compilationContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, taskWaitSymbols), OperationKind.Invocation);
         });
     }
 
     private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? taskWaitSymbols)
     {
+        var surroundingMethodOperation = context.Operation.Ancestors().FirstOrDefault(a => a is ILocalFunctionOperation or IMethodBodyBaseOperation or IAnonymousFunctionOperation);
+        var surroundingMethod = surroundingMethodOperation switch
+        {
+            ILocalFunctionOperation localFunction => localFunction.Symbol,
+            IMethodBodyBaseOperation methodBody => methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol,
+            IAnonymousFunctionOperation anonFunction => anonFunction.Symbol,
+            _ => default,
+        };
+
+        if (surroundingMethod is null)
+        {
+            return;
+        }
+
+        var isAsync = surroundingMethod.IsAsync || surroundingMethod.Name == WellKnownMemberNames.TopLevelStatementsEntryPointMethodName;
+        if (!isAsync && !surroundingMethod.ReturnType.IsTaskType())
+        {
+            return;
+        }
+
         if (taskWaitSymbols is null || !taskWaitSymbols.Any(s => invocation.TargetMethod.Equals(s, SymbolEqualityComparer.Default)))
         {
             return;
