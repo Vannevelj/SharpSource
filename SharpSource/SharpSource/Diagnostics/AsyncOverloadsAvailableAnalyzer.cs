@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
@@ -35,7 +36,16 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
     {
-        if (context.ContainingSymbol is not IMethodSymbol surroundingMethod)
+        var surroundingMethodOperation = context.Operation.Ancestors().FirstOrDefault(a => a is ILocalFunctionOperation or IMethodBodyBaseOperation or IAnonymousFunctionOperation);
+        var surroundingMethod = surroundingMethodOperation switch
+        {
+            ILocalFunctionOperation localFunction => localFunction.Symbol,
+            IMethodBodyBaseOperation methodBody => methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol,
+            IAnonymousFunctionOperation anonFunction => anonFunction.Symbol,
+            _ => default,
+        };
+
+        if (surroundingMethod is null)
         {
             return;
         }
@@ -47,12 +57,6 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
 
         var invocation = (IInvocationOperation)context.Operation;
-
-        var isInsideSyncLambda = invocation.Ancestors().Any(a => a is IAnonymousFunctionOperation { Symbol.IsAsync: false });
-        if (isInsideSyncLambda)
-        {
-            return;
-        }
 
         var isInsideLockStatement = invocation.Ancestors().Any(a => a is ILockOperation);
         if (isInsideLockStatement)
