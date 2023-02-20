@@ -168,7 +168,6 @@ async Task MyMethod() {
     }
 
     [TestMethod]
-    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/268")]
     public async Task SynchronousTaskWait_AsyncLambda_AsAnonymousFunction()
     {
         var original = @"

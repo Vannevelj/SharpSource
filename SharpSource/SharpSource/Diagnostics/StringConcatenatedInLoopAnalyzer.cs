@@ -69,6 +69,11 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
                 }
             }
 
+            if (IsAdjacentToLoopEscape(assignment))
+            {
+                return;
+            }
+
             context.ReportDiagnostic(Diagnostic.Create(Rule, assignment.Syntax.GetLocation()));
         }, OperationKind.CompoundAssignment, OperationKind.SimpleAssignment);
     }
@@ -100,5 +105,17 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
         }
 
         return traverse(binary, targetSymbol);
+    }
+
+    private static bool IsAdjacentToLoopEscape(IOperation operation)
+    {
+        var statementContext = operation.Ancestors().OfType<IExpressionStatementOperation>().FirstOrDefault().Parent;
+        var nextOperation = statementContext?.ChildOperations.SkipWhile(op => op.DescendantsAndSelf().All(d => d != operation)).Skip(1).FirstOrDefault();
+        if (nextOperation is null)
+        {
+            return false;
+        }
+
+        return nextOperation is IReturnOperation or IBranchOperation { BranchKind: BranchKind.Break };
     }
 }

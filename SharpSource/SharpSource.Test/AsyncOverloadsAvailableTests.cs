@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Test.Helpers;
 
@@ -1060,5 +1061,56 @@ async void MyMethod(StringWriter writer)
     await writer?.WriteAsync("""");
 }";
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/321")]
+    public async Task AsyncOverloadsAvailable_WithOverload_InSyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        static void DoNestedThing() => Console.Error.WriteLine("""");
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/321")]
+    public async Task AsyncOverloadsAvailable_WithOverload_InAsyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        static async Task DoNestedThing() => {|#0:Console.Error.WriteLine("""")|};
+    }
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod()
+    {
+        static async Task DoNestedThing() => await Console.Error.WriteLineAsync("""");
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
     }
 }

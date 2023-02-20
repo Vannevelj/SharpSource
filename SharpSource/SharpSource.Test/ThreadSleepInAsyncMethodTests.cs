@@ -559,7 +559,6 @@ class MyClass
     }
 
     [TestMethod]
-    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/268")]
     public async Task ThreadSleepInAsyncMethod_AsyncLambda_AsAnonymousFunction()
     {
         var original = @"
