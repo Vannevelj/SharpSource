@@ -36,15 +36,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
     {
-        var surroundingMethodOperation = context.Operation.Ancestors().FirstOrDefault(a => a is ILocalFunctionOperation or IMethodBodyBaseOperation or IAnonymousFunctionOperation);
-        var surroundingMethod = surroundingMethodOperation switch
-        {
-            ILocalFunctionOperation localFunction => localFunction.Symbol,
-            IMethodBodyBaseOperation methodBody => methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol,
-            IAnonymousFunctionOperation anonFunction => anonFunction.Symbol,
-            _ => default,
-        };
-
+        var surroundingMethod = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
         {
             return;

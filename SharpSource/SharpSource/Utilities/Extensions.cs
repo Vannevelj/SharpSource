@@ -220,4 +220,18 @@ public static class Extensions
 
         return default;
     }
+
+    public static IMethodSymbol? GetSurroundingMethodContext(this IOperation operation)
+    {
+        var surroundingMethodOperation = operation.Ancestors().FirstOrDefault(a => a is ILocalFunctionOperation or IMethodBodyBaseOperation or IAnonymousFunctionOperation);
+        var surroundingMethod = surroundingMethodOperation switch
+        {
+            ILocalFunctionOperation localFunction => localFunction.Symbol,
+            IMethodBodyBaseOperation methodBody => methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol,
+            IAnonymousFunctionOperation anonFunction => anonFunction.Symbol,
+            _ => default,
+        };
+
+        return surroundingMethod;
+    }
 }
