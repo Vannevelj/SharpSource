@@ -29,12 +29,16 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var taskWaitSymbols = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")?.GetMembers("Wait").OfType<IMethodSymbol>().ToArray();
+            if (taskWaitSymbols is null)
+            {
+                return;
+            }
 
             compilationContext.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, taskWaitSymbols), OperationKind.Invocation);
         });
     }
 
-    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? taskWaitSymbols)
+    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[] taskWaitSymbols)
     {
         var surroundingMethod = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
@@ -48,7 +52,7 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (taskWaitSymbols is null || !taskWaitSymbols.Any(s => invocation.TargetMethod.Equals(s, SymbolEqualityComparer.Default)))
+        if (!taskWaitSymbols.Any(s => invocation.TargetMethod.Equals(s, SymbolEqualityComparer.Default)))
         {
             return;
         }

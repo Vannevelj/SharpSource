@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.22.1] - 2023-02-21
+- `ThreadSleepInAsyncMethod`: Fixed a `NullReferenceException` if symbols weren't loaded
+
 ## [1.22.0] - 2023-02-20
 - `StringConcatenatedInLoop`: No longer triggers if concatenation is immediately followed by a `return` or `break` clause
 - `AsyncOverloadsAvailable`: Doesn't trigger inside a synchronous local function

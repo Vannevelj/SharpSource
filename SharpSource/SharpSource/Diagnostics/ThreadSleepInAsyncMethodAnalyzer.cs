@@ -28,12 +28,16 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(context =>
         {
             var threadSleepSymbols = context.Compilation.GetTypeByMetadataName("System.Threading.Thread")?.GetMembers("Sleep").OfType<IMethodSymbol>().ToArray();
+            if (threadSleepSymbols is null)
+            {
+                return;
+            }
 
             context.RegisterOperationAction(context => Analyze(context, (IInvocationOperation)context.Operation, threadSleepSymbols), OperationKind.Invocation);
         });
     }
 
-    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[]? threadSleepSymbols)
+    private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[] threadSleepSymbols)
     {
         var surroundingMethod = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
