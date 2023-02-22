@@ -622,4 +622,28 @@ bool result = s1.Trim() == s2;";
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/324")]
+    public async Task ComparingStringsWithoutStringComparison_SameSymbol()
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+bool result = s1 == s1.ToUpper();";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ComparingStringsWithoutStringComparison_SameSymbol_Conditional()
+    {
+        var original = @$"
+using System;
+
+string s1 = string.Empty;
+bool result = s1.ToUpper() == s1?.ToUpper();";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
