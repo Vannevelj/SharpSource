@@ -121,7 +121,8 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
         IMemberReferenceOperation memberRef => memberRef.Member,
         IInstanceReferenceOperation instanceRef => instanceRef.Type,
         IInvocationOperation invocation => GetReferencedInstance(invocation.Instance),
-        IConditionalAccessInstanceOperation cond => GetReferencedInstance(cond.Ancestors().OfType<IConditionalAccessOperation>().FirstOrDefault().Operation),
+        IConditionalAccessInstanceOperation cond => GetReferencedInstance(cond.Ancestors().OfType<IConditionalAccessOperation>().LastOrDefault()),
+        IConditionalAccessOperation conditional => GetReferencedInstance(conditional.Operation),
         _ => default
     };
 }
