@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -19,7 +20,16 @@ public sealed class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyz
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS018-SwitchDoesNotHandleAllEnumOptions.md");
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public static DiagnosticDescriptor RuleWhenDefaultIsPresent => new(
+        DiagnosticId.SwitchDoesNotHandleAllEnumOptions,
+        "Add cases for missing enum member.",
+        "Missing enum member in switched cases.",
+        Categories.Correctness,
+        DiagnosticSeverity.Info,
+        true,
+        helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS018-SwitchDoesNotHandleAllEnumOptions.md");
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleWhenDefaultIsPresent);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -36,6 +46,8 @@ public sealed class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyz
             return;
         }
 
+        var hasDefaultClause = false;
+
         var labelSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
         foreach (var caseOperation in switchOperation.Cases)
         {
@@ -45,7 +57,11 @@ public sealed class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyz
                 {
                     labelSymbols.Add(enumReference.Field);
                 }
-                else if (caseClauseOperation.CaseKind != CaseKind.Default)
+                else if (caseClauseOperation.CaseKind == CaseKind.Default)
+                {
+                    hasDefaultClause = true;
+                }
+                else
                 {
                     return;
                 }
@@ -61,7 +77,7 @@ public sealed class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyz
 
             if (!labelSymbols.Contains(member))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, switchOperation.Value.Syntax.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(hasDefaultClause ? RuleWhenDefaultIsPresent : Rule, switchOperation.Value.Syntax.GetLocation()));
                 return;
             }
         }
