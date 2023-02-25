@@ -4,7 +4,7 @@
 
 ---
 
-Add cases for missing enum member. That way you won't miss new behaviour in the consuming API since it will be explicitly handled.
+Add cases for missing enum member. That way you won't miss new behaviour in the consuming API since it will be explicitly handled. If a `default` clause is present, this becomes an INFO diagnostic instead.
 
 ---
 

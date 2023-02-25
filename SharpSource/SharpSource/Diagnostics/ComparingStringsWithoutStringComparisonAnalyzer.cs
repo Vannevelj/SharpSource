@@ -65,45 +65,64 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
             _ => Array.Empty<IOperation>()
         };
 
-        foreach (var operand in operands)
+        var foundCapitalizations = operands.Select(o => StringCapitalizationFunction(o, capitalizationContexts)).ToArray();
+        if (foundCapitalizations.GroupBy(x => x.Instance, SymbolEqualityComparer.Default).Count() != operands.Length)
         {
-            var capitalizationContext = StringCapitalizationFunction(operand, capitalizationContexts);
-            if (capitalizationContext is { CapitalizationFunction: CapitalizationFunction.Ordinal or CapitalizationFunction.Invariant })
+            // referencing the same symbol in operands
+            return;
+        }
+
+        foreach (var capitalization in foundCapitalizations)
+        {
+            if (capitalization.CapitalizationContext is { CapitalizationFunction: CapitalizationFunction.Ordinal or CapitalizationFunction.Invariant })
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                properties.Add("comparison", capitalizationContext.CapitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
-                properties.Add("function", capitalizationContext.Function);
-                context.ReportDiagnostic(Diagnostic.Create(Rule, operand.Syntax.GetLocation(), properties.ToImmutable()));
+                properties.Add("comparison", capitalization.CapitalizationContext.CapitalizationFunction == CapitalizationFunction.Ordinal ? "ordinal" : "invariant");
+                properties.Add("function", capitalization.CapitalizationContext.Function);
+                context.ReportDiagnostic(Diagnostic.Create(Rule, capitalization.Operand.Syntax.GetLocation(), properties.ToImmutable()));
                 return;
             }
         }
     }
 
-    private static CapitalizationContext? StringCapitalizationFunction(IOperation operand, ImmutableArray<CapitalizationContext> capitalizationContexts)
+    private static (CapitalizationContext? CapitalizationContext, ISymbol? Instance, IOperation Operand) StringCapitalizationFunction(IOperation operand, ImmutableArray<CapitalizationContext> capitalizationContexts)
     {
-        static IInvocationOperation? getInvocation(IOperation op)
+        static (IInvocationOperation? Operation, ISymbol? Instance) getInvocation(IOperation op)
         {
             return op switch
             {
-                IInvocationOperation inv => inv,
+                IInvocationOperation inv => (inv, GetReferencedInstance(inv.Instance)),
                 IConditionalAccessOperation { WhenNotNull: IConditionalAccessOperation or IInvocationOperation } cond => getInvocation(cond.WhenNotNull),
-                _ => default
+                _ => (default, GetReferencedInstance(op))
             };
         }
 
-        var invocation = getInvocation(operand);
+        var (operation, instance) = getInvocation(operand);
 
-        if (invocation is { Arguments.Length: 0 })
+        if (operation is { Arguments.Length: 0 })
         {
             foreach (var capitalizationContext in capitalizationContexts)
             {
-                if (capitalizationContext.MethodSymbols.Any(s => s.Equals(invocation.TargetMethod, SymbolEqualityComparer.Default)))
+                if (capitalizationContext.MethodSymbols.Any(s => s.Equals(operation.TargetMethod, SymbolEqualityComparer.Default)))
                 {
-                    return capitalizationContext;
+                    return (capitalizationContext, instance, operand);
                 }
             }
         }
 
-        return default;
+        return (default, instance, operand);
     }
+
+    private static ISymbol? GetReferencedInstance(IOperation? operation) => operation switch
+    {
+        ILocalReferenceOperation localRef => localRef.Local,
+        IParameterReferenceOperation paramRef => paramRef.Parameter,
+        IFieldReferenceOperation fieldRef => fieldRef.Field,
+        IMemberReferenceOperation memberRef => memberRef.Member,
+        IInstanceReferenceOperation instanceRef => instanceRef.Type,
+        IInvocationOperation invocation => GetReferencedInstance(invocation.Instance),
+        IConditionalAccessInstanceOperation cond => GetReferencedInstance(cond.Ancestors().OfType<IConditionalAccessOperation>().LastOrDefault()),
+        IConditionalAccessOperation conditional => GetReferencedInstance(conditional.Operation),
+        _ => default
+    };
 }

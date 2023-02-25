@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Diagnostics;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptionsAnalyzer, SharpSource.Diagnostics.SwitchDoesNotHandleAllEnumOptionsCodeFix>;
 
 namespace SharpSource.Test;
@@ -59,7 +60,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -169,7 +170,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.RuleWhenDefaultIsPresent).WithSeverity(DiagnosticSeverity.Info).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -225,7 +226,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -283,7 +284,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -341,7 +342,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.RuleWhenDefaultIsPresent).WithSeverity(DiagnosticSeverity.Info).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -397,7 +398,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -459,7 +460,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -521,7 +522,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -577,7 +578,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -633,7 +634,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -693,7 +694,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -753,7 +754,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -807,7 +808,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -885,7 +886,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -939,7 +940,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 
     [TestMethod]
@@ -993,6 +994,6 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Missing enum member in switched cases."), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
     }
 }
