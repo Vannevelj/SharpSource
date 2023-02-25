@@ -393,21 +393,23 @@ string GetValue(string s) => s;";
         var original = @$"
 using System;
 
-bool result = {{|#0:T.Name.{call}()|}} == T.Name.{call}();
+bool result = {{|#0:T.Name.{call}()|}} == T.Name2.{call}();
 
 class T
 {{
     public static string Name {{ get; set; }}
+    public static string Name2 {{ get; set; }}
 }}";
 
         var result = @$"
 using System;
 
-bool result = string.Equals(T.Name, T.Name, StringComparison.{expectedStringComparison});
+bool result = string.Equals(T.Name, T.Name2, StringComparison.{expectedStringComparison});
 
 class T
 {{
     public static string Name {{ get; set; }}
+    public static string Name2 {{ get; set; }}
 }}";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);
@@ -425,8 +427,8 @@ using System;
 
 class Test
 {{
-    string _name;
-    bool IsValid() => {{|#0:this._name.{call}()|}} == this._name.{call}();
+    string _name, _name2;
+    bool IsValid() => {{|#0:this._name.{call}()|}} == this._name2.{call}();
 }}";
 
         var result = @$"
@@ -434,8 +436,8 @@ using System;
 
 class Test
 {{
-    string _name;
-    bool IsValid() => string.Equals(this._name, this._name, StringComparison.{expectedStringComparison});
+    string _name, _name2;
+    bool IsValid() => string.Equals(this._name, this._name2, StringComparison.{expectedStringComparison});
 }}";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A string is being compared through allocating a new string. Use a case-insensitive comparison instead."), result);

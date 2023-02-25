@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.22.2] - 2023-02-25
+- `ComparingStringsWithoutStringComparison`: Don't trigger when the same symbol is referenced in both operands
+
 ## [1.22.1] - 2023-02-21
 - `ThreadSleepInAsyncMethod`: Fixed a `NullReferenceException` if symbols weren't loaded
 
