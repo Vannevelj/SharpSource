@@ -234,4 +234,6 @@ public static class Extensions
 
         return surroundingMethod;
     }
+
+    public static bool IsInsideLockStatement(this IOperation operation) => operation.Ancestors().Any(a => a is ILockOperation);
 }
