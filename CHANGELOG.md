@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.23.0] - 2023-02-26
+- `PointlessCollectionToString`: `ImmutableDictionary` is also included
+
 ## [1.22.2] - 2023-02-25
 - `ComparingStringsWithoutStringComparison`: Don't trigger when the same symbol is referenced in both operands
 - `SwitchDoesNotHandleAllEnumOptions`: When a `default` clause is present, the analyzer will become an INFO diagnostic rather than a WARN

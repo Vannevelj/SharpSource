@@ -65,6 +65,7 @@ public class PointlessCollectionToStringAnalyzer : DiagnosticAnalyzer
                 "ImmutableList" or
                 "ImmutableQueue" or
                 "ImmutableSortedDictionary" or
+                "ImmutableDictionary" or
                 "ImmutableSortedSet" or
                 "ImmutableStack")
         {

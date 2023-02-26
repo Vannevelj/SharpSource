@@ -48,7 +48,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         });
     }
 
-    private void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> taskTypes)
+    private static void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> taskTypes)
     {
         var method = (IMethodSymbol)context.Symbol;
         if (method.DeclaredAccessibility != Accessibility.Public)
