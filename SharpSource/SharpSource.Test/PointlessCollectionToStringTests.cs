@@ -32,6 +32,7 @@ Console.Write({{|#0:collection.ToString()|}});
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
+    [TestMethod]
     [DataRow("ImmutableArray")]
     [DataRow("ImmutableList")]
     [DataRow("ImmutableHashSet")]
@@ -51,6 +52,7 @@ Console.Write({{|#0:collection.ToString()|}});
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage(".ToString() was called on a collection which results in impractical output"));
     }
 
+    [TestMethod]
     [DataRow("ImmutableSortedDictionary")]
     [DataRow("ImmutableDictionary")]
     public async Task PointlessCollectionToString_ImmutableDictionary(string collection)

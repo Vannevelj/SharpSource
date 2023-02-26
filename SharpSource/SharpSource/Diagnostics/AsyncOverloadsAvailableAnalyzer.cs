@@ -49,9 +49,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
 
         var invocation = (IInvocationOperation)context.Operation;
-
-        var isInsideLockStatement = invocation.Ancestors().Any(a => a is ILockOperation);
-        if (isInsideLockStatement)
+        if (invocation.IsInsideLockStatement())
         {
             return;
         }

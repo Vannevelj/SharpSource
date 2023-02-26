@@ -44,11 +44,19 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
                 compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask`1")
             );
 
-            compilationContext.RegisterSymbolAction(context => Analyze(context, testClassAttributeSymbols, testMethodAttributeSymbols, taskTypes), SymbolKind.Method);
+            var allowedAdditionalAttributes = ImmutableArray.Create(
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.ClassDataAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.InlineDataAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
+            );
+
+            compilationContext.RegisterSymbolAction(context => Analyze(context, testClassAttributeSymbols, testMethodAttributeSymbols, taskTypes, allowedAdditionalAttributes), SymbolKind.Method);
         });
     }
 
-    private void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> taskTypes)
+    private static void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> taskTypes, ImmutableArray<INamedTypeSymbol?> allowedAdditionalAttributes)
     {
         var method = (IMethodSymbol)context.Symbol;
         if (method.DeclaredAccessibility != Accessibility.Public)
@@ -71,8 +79,13 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         }
 
         // If it has different attributes then we won't bother with it either
-        if (method.GetAttributes().Any())
+        foreach (var attribute in method.GetAttributes())
         {
+            if (allowedAdditionalAttributes.Any(a => SymbolEqualityComparer.Default.Equals(a, attribute.AttributeClass)))
+            {
+                continue;
+            }
+
             return;
         }
 
@@ -89,7 +102,10 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
             // If they weren't, it means the entire class wasn't marked as a test which is not in the scope of this analyzer
             foreach (var member in method.ContainingType.GetMembers().OfType<IMethodSymbol>())
             {
-                if (member.GetAttributes().Any(a => testMethodAttributeSymbols.Any(testMethodAttribute => a.AttributeClass?.Equals(testMethodAttribute, SymbolEqualityComparer.Default) == true)))
+                var attributes = member.GetAttributes();
+                var hasAnotherTestMethodAttribute = attributes.Any(a => testMethodAttributeSymbols.Any(tma => SymbolEqualityComparer.Default.Equals(tma, a.AttributeClass)));
+                var hasAnotherTestRelatedAttribute = attributes.Any(a => allowedAdditionalAttributes.Any(aaa => SymbolEqualityComparer.Default.Equals(aaa, a.AttributeClass)));
+                if (hasAnotherTestMethodAttribute || hasAnotherTestRelatedAttribute)
                 {
                     isTestClass = true;
                     break;

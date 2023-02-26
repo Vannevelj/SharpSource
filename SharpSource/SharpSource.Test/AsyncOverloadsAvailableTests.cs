@@ -1113,4 +1113,20 @@ class MyClass
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
     }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_AsyncDisposable()
+    {
+        var original = @"
+using System.IO;
+
+{|#0:new FileStream("""", FileMode.Create).Dispose()|};";
+
+        var result = @"
+using System.IO;
+
+await new FileStream("""", FileMode.Create).DisposeAsync();";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for Stream.Dispose"), result);
+    }
 }

@@ -1,6 +1,11 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.23.0] - 2023-02-26
+- `DisposeAsyncDisposable`: An object implements `IAsyncDisposable` and can be disposed of asynchronously in the context it is used.
+- `PointlessCollectionToString`: `ImmutableDictionary` is also included
+- `TestMethodWithoutTestAttribute`: Reduced false negatives by extending the diagnostic to methods that have certain attributes (`Xunit.ClassData`, `Xunit.InlineData`, `Microsoft.DataRow`, `NUnit.TestCase`, `NUnit.TestCaseSource`)
+
 ## [1.22.2] - 2023-02-25
 - `ComparingStringsWithoutStringComparison`: Don't trigger when the same symbol is referenced in both operands
 - `SwitchDoesNotHandleAllEnumOptions`: When a `default` clause is present, the analyzer will become an INFO diagnostic rather than a WARN

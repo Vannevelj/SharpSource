@@ -183,6 +183,130 @@ class SomethingElseAttribute : Attribute { }
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_DataRow()
+    {
+        var original = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+class MyClass
+{
+    [DataRow(5)]
+    public void {|#0:MyMethod|}(int x)
+    {
+
+    }
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_InlineData()
+    {
+        var original = @"
+using System;
+using Xunit;
+
+class MyClass
+{
+    [InlineData(5)]
+    public void {|#0:MyMethod|}(int x)
+    {
+
+    }
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_ClassData()
+    {
+        var original = @"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Xunit;
+
+class MyClass
+{
+    [ClassData(typeof(CalculatorTestData))]
+    public void {|#0:CanAddTheoryClassData|}(int value1)
+    {
+
+    }
+
+    public class CalculatorTestData : IEnumerable<object[]>
+    {
+        public IEnumerator<object[]> GetEnumerator()
+        {
+            yield return new object[] { 1 };
+            yield return new object[] { -4 };
+            yield return new object[] { -2 };
+            yield return new object[] { int.MinValue };
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method CanAddTheoryClassData might be missing a test attribute"));
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_TestCase()
+    {
+        var original = @"
+using System;
+using NUnit.Framework;
+
+[TestFixture]
+class MyClass
+{
+    [TestCase(3)]
+    public void {|#0:MyMethod|}(int x)
+    {
+
+    }
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_TestCaseSource()
+    {
+        var original = @"
+using System;
+using System.Collections.Generic;
+using NUnit.Framework;
+
+[TestFixture]
+class MyClass
+{
+    private static IEnumerable<TestCaseData> DataSource()
+    {
+        yield return new TestCaseData(""3"");
+    }
+
+    [TestCaseSource(""DataSource"")]
+    public void {|#0:MyMethod|}(int x)
+    {
+
+    }
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+    }
+
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/22")]
     public async Task TestMethodWithoutTestAttribute_PrivateMethod()
     {
