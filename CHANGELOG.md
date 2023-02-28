@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.23.1] - 2023-02-28
+- `StringConcatenatedInLoop`: No longer triggers a warning if the string is retrieved through an indexer (e.g. `myList[i]`)
+
 ## [1.23.0] - 2023-02-26
 - `DisposeAsyncDisposable`: An object implements `IAsyncDisposable` and can be disposed of asynchronously in the context it is used.
 - `PointlessCollectionToString`: `ImmutableDictionary` is also included

@@ -342,7 +342,7 @@ while (true)
 var res = string.Empty;
 while (true)
 {
-    {|#0:res += ""test""|};
+    res += ""test"";
     return;
 }
 ";
@@ -357,8 +357,26 @@ while (true)
 var res = string.Empty;
 while (true)
 {
-    {|#0:res += ""test""|};
+    res += ""test"";
     break;
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/331")]
+    public async Task StringConcatenatedInLoop_Indexer()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+var res = string.Empty;
+
+var newList = new List<string>();
+for (int i = 0; i < 10; i++)
+{
+    newList[i] = newList[i] + "".txt"";
 }
 ";
 
