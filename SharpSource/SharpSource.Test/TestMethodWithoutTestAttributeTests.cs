@@ -136,7 +136,7 @@ namespace ConsoleApplication1
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/330")]
     public async Task TestMethodWithoutTestAttribute_TaskTReturn()
     {
         var original = @"
@@ -158,7 +158,7 @@ namespace ConsoleApplication1
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/330")]
     public async Task TestMethodWithoutTestAttribute_ValueTaskTReturn()
     {
         var original = @"
