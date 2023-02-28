@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.23.1] - 2023-02-28
 - `StringConcatenatedInLoop`: No longer triggers a warning if the string is retrieved through an indexer (e.g. `myList[i]`)
+- `DisposeAsyncDisposable`: Preserves leading and trailing trivia when the code fix is applied
 
 ## [1.23.0] - 2023-02-26
 - `DisposeAsyncDisposable`: An object implements `IAsyncDisposable` and can be disposed of asynchronously in the context it is used.

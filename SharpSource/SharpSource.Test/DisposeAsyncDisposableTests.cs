@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.DisposeAsyncDisposableAnalyzer, SharpSource.Diagnostics.DisposeAsyncDisposableCodeFix>;
 
 namespace SharpSource.Test;
@@ -281,5 +280,39 @@ lock(_lock)
 ";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/329")]
+    public async Task DisposeAsyncDisposable_PreservesTrivia()
+    {
+        var original = @"
+using System.IO;
+
+// Hello
+/*
+    multiline
+*/
+
+{|#0:using var stream =
+    new FileStream("""", FileMode.Create);|} // after
+
+
+";
+
+        var result = @"
+using System.IO;
+
+// Hello
+/*
+    multiline
+*/
+
+await using var stream =
+    new FileStream("""", FileMode.Create); // after
+
+
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("FileStream can be disposed of asynchronously"), result);
     }
 }
