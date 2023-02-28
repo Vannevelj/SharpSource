@@ -115,6 +115,28 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_ValueTaskReturn()
+    {
+        var original = @"
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace ConsoleApplication1
+{
+    [TestClass]
+    class MyClass
+    {
+        public async ValueTask {|#0:MyMethod|}()
+        {
+            await Task.Delay(0);
+        }
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/330")]
     public async Task TestMethodWithoutTestAttribute_TaskTReturn()
     {
         var original = @"
@@ -126,14 +148,36 @@ namespace ConsoleApplication1
     [TestClass]
     class MyClass
     {
-        public Task<int> {|#0:MyMethod|}()
+        public Task<int> MyMethod()
         {
             return Task.FromResult(5);
         }
     }
 }";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/330")]
+    public async Task TestMethodWithoutTestAttribute_ValueTaskTReturn()
+    {
+        var original = @"
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace ConsoleApplication1
+{
+    [TestClass]
+    class MyClass
+    {
+        public ValueTask<int> MyMethod()
+        {
+            return ValueTask.FromResult(5);
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]

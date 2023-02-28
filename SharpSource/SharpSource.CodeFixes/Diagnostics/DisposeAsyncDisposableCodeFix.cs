@@ -27,8 +27,8 @@ public class DisposeAsyncDisposableCodeFix : CodeFixProvider
 
         StatementSyntax? newStatement = statement switch
         {
-            LocalDeclarationStatementSyntax local => local.WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword)),
-            UsingStatementSyntax @using => @using.WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword)),
+            LocalDeclarationStatementSyntax local => local.WithoutTrivia().WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword)),
+            UsingStatementSyntax @using => @using.WithoutTrivia().WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword)),
             _ => default
         };
 
@@ -44,7 +44,7 @@ public class DisposeAsyncDisposableCodeFix : CodeFixProvider
 
     private static Task<Document> Modify(Document document, SyntaxNode root, SyntaxNode statement, StatementSyntax newStatement)
     {
-        var newRoot = root.ReplaceNode(statement, newStatement);
+        var newRoot = root.ReplaceNode(statement, newStatement.WithTriviaFrom(statement));
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

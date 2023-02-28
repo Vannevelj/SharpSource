@@ -81,7 +81,7 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
     private static ISymbol? GetSymbol(IOperation? operation) => operation switch
     {
         ILocalReferenceOperation localRef => localRef.Local,
-        IPropertyReferenceOperation propRef => GetSymbol(propRef.Instance),
+        IPropertyReferenceOperation { Property.IsIndexer: false } propRef => GetSymbol(propRef.Instance),
         IFieldReferenceOperation fieldRef => GetSymbol(fieldRef.Instance),
         _ => default
     };

@@ -39,9 +39,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
 
             var taskTypes = ImmutableArray.Create(
                 compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task"),
-                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1"),
-                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask"),
-                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask`1")
+                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask")
             );
 
             var allowedAdditionalAttributes = ImmutableArray.Create(

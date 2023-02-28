@@ -14,7 +14,7 @@ or add a reference yourself:
 
 ```xml
 <ItemGroup>
-    <PackageReference Include="SharpSource" Version="1.23.0" PrivateAssets="All" />
+    <PackageReference Include="SharpSource" Version="1.23.1" PrivateAssets="All" />
 </ItemGroup>
 ```
 
@@ -91,6 +91,7 @@ Detailed explanations of each analyzer can be found in the documentation: https:
 | SS056  | FormReadSynchronously |
 | SS057  | CollectionManipulatedDuringTraversal |
 | SS058  | StringConcatenatedInLoop |
+| SS059  | DisposeAsyncDisposable |
 
 ## Configuration
 Is a particular rule not to your liking? There are many ways to adjust their severity and even disable them altogether. For an overview of some of the options, check out [this document](https://docs.microsoft.com/en-gb/dotnet/fundamentals/code-analysis/suppress-warnings).
