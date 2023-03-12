@@ -72,7 +72,11 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
                 properties.Add("cancellationTokenName", cancellationTokenName);
                 properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
 
-                var shouldAddCancellationToken = cancellationTokenName != default && !currentInvocationPassesCancellationToken && newInvocationAcceptsCancellationToken;
+                var isInStaticLocalContext = surroundingMethod is ILocalFunctionOperation { Symbol.IsStatic: false };
+                var shouldAddCancellationToken = cancellationTokenName != default && 
+                                                 !currentInvocationPassesCancellationToken && 
+                                                 newInvocationAcceptsCancellationToken &&
+                                                 !isInStaticLocalContext;
                 properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
             }

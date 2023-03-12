@@ -1129,4 +1129,72 @@ await new FileStream("""", FileMode.Create).DisposeAsync();";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for Stream.Dispose"), result);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/335")]
+    public async Task AsyncOverloadsAvailable_WithCancellationToken_InStaticAsyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        static async Task DoNestedThing() => {|#0:Console.Error.WriteLine("""")|};
+    }
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        static async Task DoNestedThing() => await Console.Error.WriteLineAsync("""");
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/335")]
+    public async Task AsyncOverloadsAvailable_WithCancellationToken_InAsyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        async Task DoNestedThing() => {|#0:Console.Error.WriteLine("""")|};
+    }
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        async Task DoNestedThing() => await Console.Error.WriteLineAsync("""", ct);
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
+    }
 }
