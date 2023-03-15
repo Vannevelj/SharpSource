@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpSource.Test.Helpers;
 
@@ -244,6 +243,33 @@ namespace ConsoleApplication1
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DifferentParameters_CancellationTokenExistsOnOtherOverload()
+    {
+        var original = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task Method(CancellationToken ct)
+{
+    {|#0:System.Console.Error.WriteLine("""")|};
+}
+";
+
+        var result = @"
+using System.Threading;
+using System.Threading.Tasks;
+
+async Task Method(CancellationToken ct)
+{
+    await System.Console.Error.WriteLineAsync("""");
+}
+"
+        ;
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
     }
 
     [TestMethod]
@@ -1143,8 +1169,11 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken ct)
     {
-        static async Task DoNestedThing() => {|#0:Console.Error.WriteLine("""")|};
+        static async Task DoNestedThing() => {|#0:new MyClass().DoThing()|};
     }
+
+    Task DoThing() => Task.CompletedTask;
+    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
 }";
 
         var result = @"
@@ -1157,11 +1186,14 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken ct)
     {
-        static async Task DoNestedThing() => await Console.Error.WriteLineAsync("""");
+        static async Task DoNestedThing() => {|#0:new MyClass().DoThingAsync()|};
     }
+
+    Task DoThing() => Task.CompletedTask;
+    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/335")]
@@ -1177,7 +1209,47 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken ct)
     {
-        async Task DoNestedThing() => {|#0:Console.Error.WriteLine("""")|};
+        async Task DoNestedThing() => {|#0:new MyClass().DoThing()|};
+    }
+
+    Task DoThing() => Task.CompletedTask;
+    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        async Task DoNestedThing() => {|#0:new MyClass().DoThingAsync(ct)|};
+    }
+
+    Task DoThing() => Task.CompletedTask;
+    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_WithCancellationToken_OnOtherOverload()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        {|#0:Console.Error.WriteLine("""")|};
     }
 }";
 
@@ -1191,7 +1263,7 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken ct)
     {
-        async Task DoNestedThing() => await Console.Error.WriteLineAsync("""", ct);
+        await Console.Error.WriteLineAsync("""");
     }
 }";
 

@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
@@ -42,7 +40,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        // If the surrounding method is a global statement is it considered as `IsAsync: false` even though async calls work
+        // If the surrounding method is a global statement it is considered as `IsAsync: false` even though async calls work
         if (surroundingMethod is { IsAsync: false, Name: not WellKnownMemberNames.TopLevelStatementsEntryPointMethodName })
         {
             return;
@@ -79,6 +77,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
                                                  !isInStaticLocalContext;
                 properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
+                return;
             }
         }
     }
