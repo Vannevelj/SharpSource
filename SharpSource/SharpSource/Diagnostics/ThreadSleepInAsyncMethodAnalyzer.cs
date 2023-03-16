@@ -39,7 +39,7 @@ public class ThreadSleepInAsyncMethodAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[] threadSleepSymbols)
     {
-        var surroundingMethod = context.Operation.GetSurroundingMethodContext();
+        var (surroundingMethod, _) = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
         {
             return;

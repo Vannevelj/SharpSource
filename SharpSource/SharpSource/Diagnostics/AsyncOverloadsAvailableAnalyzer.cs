@@ -34,7 +34,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
     {
-        var surroundingMethod = context.Operation.GetSurroundingMethodContext();
+        var (surroundingMethod, surroundMethodOperation) = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
         {
             return;
@@ -57,12 +57,19 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
         var relevantOverloads = invocation.TargetMethod.ContainingType.GetMembers($"{invokedMethodName}Async").OfType<IMethodSymbol>();
 
+        var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethod.GetCancellationTokenFromParameters();
+        if (cancellationTokenName is null && surroundMethodOperation is ILocalFunctionOperation { Symbol.IsStatic: false })
+        {
+            // if it is a non-static local function, we can pass through the cancellation token that's in the surrounding method
+            var (outerMethodSymbol, _) = surroundMethodOperation.GetSurroundingMethodContext();
+            (cancellationTokenName, cancellationTokenIsNullable) = outerMethodSymbol.GetCancellationTokenFromParameters();
+        }
+
         foreach (var overload in relevantOverloads)
         {
-            if (IsIdenticalOverload(invocation.TargetMethod, overload, surroundingMethod))
+            if (IsIdenticalOverload(invocation.TargetMethod, overload, surroundingMethod, hasCancellationTokenInContext: cancellationTokenName != default))
             {
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-                var (cancellationTokenName, cancellationTokenIsNullable) = surroundingMethod.GetCancellationTokenFromParameters();
 
                 var currentInvocationPassesCancellationToken = invocation.PassesThroughCancellationToken(cancellationTokenSymbol);
                 var newInvocationAcceptsCancellationToken = overload.GetCancellationTokenFromParameters() != default;
@@ -70,11 +77,9 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
                 properties.Add("cancellationTokenName", cancellationTokenName);
                 properties.Add("cancellationTokenIsOptional", cancellationTokenIsNullable == true ? "true" : "false");
 
-                var isInStaticLocalContext = surroundingMethod is ILocalFunctionOperation { Symbol.IsStatic: false };
-                var shouldAddCancellationToken = cancellationTokenName != default && 
-                                                 !currentInvocationPassesCancellationToken && 
-                                                 newInvocationAcceptsCancellationToken &&
-                                                 !isInStaticLocalContext;
+                var shouldAddCancellationToken = cancellationTokenName != default &&
+                                                 !currentInvocationPassesCancellationToken &&
+                                                 newInvocationAcceptsCancellationToken;
                 properties.Add("shouldAddCancellationToken", shouldAddCancellationToken ? "true" : "false");
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{invokedTypeName}.{invokedMethodName}"));
                 return;
@@ -82,7 +87,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol surroundingMethodDeclaration)
+    private static bool IsIdenticalOverload(IMethodSymbol invokedMethod, IMethodSymbol overload, IMethodSymbol surroundingMethodDeclaration, bool hasCancellationTokenInContext)
     {
         /**
          * Three variables in play:
@@ -99,7 +104,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         var hasExactSameNumberOfParameters = invokedMethod.Parameters.Length == overload.Parameters.Length;
         var hasOneAdditionalParameter = invokedMethod.Parameters.Length == overload.Parameters.Length - 1;
         var hasOneAdditionalOptionalCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == true;
-        var hasOneAdditionalRequiredCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == false && surroundingMethodDeclaration.GetCancellationTokenFromParameters() != default;
+        var hasOneAdditionalRequiredCancellationTokenParameter = hasOneAdditionalParameter && overload.GetCancellationTokenFromParameters().IsNullable == false && hasCancellationTokenInContext;
 
         // We allow overloads to differ by providing a cancellationToken
         var isParameterCountOkay = hasExactSameNumberOfParameters || hasOneAdditionalOptionalCancellationTokenParameter || hasOneAdditionalRequiredCancellationTokenParameter;
@@ -116,15 +121,21 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
             }
         }
 
+        var isSurroundingMethod = overload.Equals(surroundingMethodDeclaration, SymbolEqualityComparer.Default);
+        if (isSurroundingMethod)
+        {
+            return false;
+        }
+
         var returnType = invokedMethod.ReturnType;
         var isVoidOverload = returnType.SpecialType == SpecialType.System_Void && overload.ReturnType.IsNonGenericTaskType();
-        var isGenericOverload =
+        var isGenericTaskOverload =
             returnType.SpecialType != SpecialType.System_Void &&
             overload.ReturnType.IsGenericTaskType(out var wrappedType) &&
             wrappedType != default &&
             ( wrappedType.Equals(returnType, SymbolEqualityComparer.Default) || wrappedType.TypeKind == TypeKind.TypeParameter );
-        var isSurroundingMethod = overload.Equals(surroundingMethodDeclaration, SymbolEqualityComparer.Default);
+        var isPlainTaskOverload = returnType.IsNonGenericTaskType() && overload.ReturnType.IsNonGenericTaskType();
 
-        return ( isVoidOverload || isGenericOverload ) && !isSurroundingMethod;
+        return isVoidOverload || isGenericTaskOverload || isPlainTaskOverload;
     }
 }

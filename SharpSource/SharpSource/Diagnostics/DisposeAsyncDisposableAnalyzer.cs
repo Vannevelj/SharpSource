@@ -52,7 +52,7 @@ public class DisposeAsyncDisposableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var surroundingContext = context.Operation.GetSurroundingMethodContext();
+        var (surroundingContext, _) = context.Operation.GetSurroundingMethodContext();
         if (surroundingContext is null or { IsAsync: false, Name: not WellKnownMemberNames.TopLevelStatementsEntryPointMethodName })
         {
             return;

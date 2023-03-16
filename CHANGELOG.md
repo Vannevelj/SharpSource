@@ -1,8 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.23.2] - 2023-03-12
+## [1.23.2] - 2023-03-16
 - `AsyncOverloadsAvailable`: Will no longer pass through the `CancellationToken` if it's inside a static local function
+- `AsyncOverloadsAvailable`: Will correctly identify overloads if the synchronous variant returns a `Task`-like type
 
 ## [1.23.1] - 2023-02-28
 - `StringConcatenatedInLoop`: No longer triggers a warning if the string is retrieved through an indexer (e.g. `myList[i]`)

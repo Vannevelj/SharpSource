@@ -1172,8 +1172,31 @@ class MyClass
         static async Task DoNestedThing() => {|#0:new MyClass().DoThing()|};
     }
 
-    Task DoThing() => Task.CompletedTask;
+    void DoThing() { }
     Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/335")]
+    public async Task AsyncOverloadsAvailable_WithoutCancellationToken_InStaticAsyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        static async Task DoNestedThing() => {|#0:new MyClass().DoThing()|};
+    }
+
+    void DoThing() { }
+    Task DoThingAsync() => Task.CompletedTask;
 }";
 
         var result = @"
@@ -1186,14 +1209,14 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken ct)
     {
-        static async Task DoNestedThing() => {|#0:new MyClass().DoThingAsync()|};
+        static async Task DoNestedThing() => await {|#0:new MyClass().DoThingAsync()|};
     }
 
-    Task DoThing() => Task.CompletedTask;
-    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
+    void DoThing() { }
+    Task DoThingAsync() => Task.CompletedTask;
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for StringWriter.Write"), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/335")]
@@ -1212,7 +1235,7 @@ class MyClass
         async Task DoNestedThing() => {|#0:new MyClass().DoThing()|};
     }
 
-    Task DoThing() => Task.CompletedTask;
+    void DoThing() { }
     Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
 }";
 
@@ -1226,10 +1249,10 @@ class MyClass
 {   
     async Task MyMethod(CancellationToken ct)
     {
-        async Task DoNestedThing() => {|#0:new MyClass().DoThingAsync(ct)|};
+        async Task DoNestedThing() => await new MyClass().DoThingAsync(ct);
     }
 
-    Task DoThing() => Task.CompletedTask;
+    void DoThing() { }
     Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
 }";
 
@@ -1268,5 +1291,45 @@ class MyClass
 }";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for TextWriter.WriteLine"), result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_WithTaskReturnTypesForBothOverloads()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        {|#0:new MyClass().DoThing()|};
+    }
+
+    Task DoThing() => Task.CompletedTask;
+    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
+}";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyClass
+{   
+    async Task MyMethod(CancellationToken ct)
+    {
+        await new MyClass().DoThingAsync(ct);
+    }
+
+    Task DoThing() => Task.CompletedTask;
+    Task DoThingAsync(CancellationToken ct) => Task.CompletedTask;
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
     }
 }

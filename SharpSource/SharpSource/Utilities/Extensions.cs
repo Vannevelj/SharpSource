@@ -221,18 +221,16 @@ public static class Extensions
         return default;
     }
 
-    public static IMethodSymbol? GetSurroundingMethodContext(this IOperation operation)
+    public static (IMethodSymbol? SurroundingMethodSymbol, IOperation SurroundingMethodOperation) GetSurroundingMethodContext(this IOperation operation)
     {
         var surroundingMethodOperation = operation.Ancestors().FirstOrDefault(a => a is ILocalFunctionOperation or IMethodBodyBaseOperation or IAnonymousFunctionOperation);
-        var surroundingMethod = surroundingMethodOperation switch
+        return surroundingMethodOperation switch
         {
-            ILocalFunctionOperation localFunction => localFunction.Symbol,
-            IMethodBodyBaseOperation methodBody => methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol,
-            IAnonymousFunctionOperation anonFunction => anonFunction.Symbol,
+            ILocalFunctionOperation localFunction => (localFunction.Symbol, localFunction),
+            IMethodBodyBaseOperation methodBody => (methodBody.SemanticModel?.GetDeclaredSymbol(methodBody.Syntax) as IMethodSymbol, methodBody),
+            IAnonymousFunctionOperation anonFunction => (anonFunction.Symbol, anonFunction),
             _ => default,
         };
-
-        return surroundingMethod;
     }
 
     public static bool IsInsideLockStatement(this IOperation operation) => operation.Ancestors().Any(a => a is ILockOperation);

@@ -40,7 +40,7 @@ public class SynchronousTaskWaitAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol[] taskWaitSymbols)
     {
-        var surroundingMethod = context.Operation.GetSurroundingMethodContext();
+        var (surroundingMethod, _) = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
         {
             return;
