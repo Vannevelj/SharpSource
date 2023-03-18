@@ -1,7 +1,7 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.23.2] - 2023-03-16
+## [1.23.2] - 2023-03-18
 - `AsyncOverloadsAvailable`: Will no longer pass through the `CancellationToken` if it's inside a static local function
 - `AsyncOverloadsAvailable`: Will correctly identify overloads if the synchronous variant returns a `Task`-like type
 
