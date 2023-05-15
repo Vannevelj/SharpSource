@@ -102,5 +102,5 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
         return true;
     }
 
-    private static bool PropertyIsMutable(IPropertySymbol property) => property.SetMethod != null;
+    private static bool PropertyIsMutable(IPropertySymbol property) => property is { SetMethod.IsInitOnly: false };
 }

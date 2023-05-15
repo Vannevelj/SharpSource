@@ -419,4 +419,21 @@ partial class ClassX
 
         await VerifyCS.VerifyAnalyzerAsync(file1, additionalFiles: new[] { file2 }, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.PropertyRule).WithMessage("GetHashCode() refers to mutable property Code"));
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/339")]
+    public async Task GetHashCodeRefersToMutableMember_InitProperty()
+    {
+        var original = @"
+public class Foo
+{
+    public string Boo { get; init; }
+
+    public override int GetHashCode()
+    {
+        return Boo.GetHashCode();
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
