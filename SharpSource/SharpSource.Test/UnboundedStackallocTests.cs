@@ -255,4 +255,31 @@ unsafe
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/345")]
+    public async Task UnboundedStackalloc_ConstPassedAsArgument()
+    {
+        var original = @"
+using System;
+
+const int StackBufferSize = 256;
+using var converter = new ValueUtf8Converter(stackalloc byte{|#0:[StackBufferSize]|});
+
+internal ref struct ValueUtf8Converter
+{
+    private Span<byte> _bytes;
+
+    public ValueUtf8Converter(Span<byte> initialBuffer)
+    {
+        _bytes = initialBuffer;
+    }
+
+    public void Dispose()
+    {
+        
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
