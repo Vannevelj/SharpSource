@@ -25,6 +25,14 @@ public static class Extensions
                 return true;
             }
 
+            foreach (var @interface in baseType.AllInterfaces)
+            {
+                if (@interface.Equals(candidateBaseType, SymbolEqualityComparer.Default))
+                {
+                    return true;
+                }    
+            }
+
             baseType = baseType.BaseType;
         }
 
@@ -216,6 +224,36 @@ public static class Extensions
         if (invocation.Arguments is { Length: > 0 } && invocation.Arguments[0].Value is IConversionOperation { Operand: IInvocationOperation precedingInvocation })
         {
             return precedingInvocation;
+        }
+
+        return default;
+    }
+
+    public static ITypeSymbol? GetTypeOfInstanceInInvocation(this IInvocationOperation invocation)
+    {
+        static ITypeSymbol? getSymbolFromOperation(IOperation? operand)
+        {
+            return operand switch
+            {
+                IFieldReferenceOperation field => field.Type,
+                IPropertyReferenceOperation prop => prop.Type,
+                IMethodReferenceOperation method => method.Type,
+                ILocalReferenceOperation local => local.Local.Type,
+                IParameterReferenceOperation param => param.Parameter.Type,
+                _ => default
+            };
+        }
+
+        var instance = getSymbolFromOperation(invocation.Instance);
+        if (instance != default)
+        {
+            return instance;
+        }
+
+        // Otherwise, it's a static call
+        if (invocation.Arguments is { Length: > 0 } && invocation.Arguments[0].Value is IConversionOperation { Operand: IMemberReferenceOperation or ILocalReferenceOperation or IParameterReferenceOperation } conv)
+        {
+            return getSymbolFromOperation(conv.Operand);
         }
 
         return default;

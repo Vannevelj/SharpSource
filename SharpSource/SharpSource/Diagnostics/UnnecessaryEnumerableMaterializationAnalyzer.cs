@@ -30,6 +30,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
         {
             var enumerableSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Linq.Enumerable");
             var listSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Collections.Generic.List`1");
+            var iQueryableSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Linq.IQueryable");
 
             // An array is used instead of a hash set since the number of elements is small. HashSet is likely to be slower for searching in this case.
             var materializingSymbols = enumerableSymbol?.GetAllMembers("ToList", "ToArray", "ToHashSet").ToArray();
@@ -43,14 +44,20 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             compilationContext.RegisterOperationAction(context =>
             {
                 var invocation = (IInvocationOperation)context.Operation;
-                var precedingInvocation = invocation.GetPrecedingInvocation()?.TargetMethod.OriginalDefinition;
-                var subsequentInvocation = invocation.TargetMethod.OriginalDefinition;
+                var precedingInvocation = invocation.GetPrecedingInvocation();
                 if (precedingInvocation is null)
                 {
                     return;
                 }
 
-                var precedingSymbol = materializingSymbols.FirstOrDefault(s => s.Equals(precedingInvocation, SymbolEqualityComparer.Default));
+                var precedingMethod = precedingInvocation.TargetMethod.OriginalDefinition;
+                var subsequentInvocation = invocation.TargetMethod.OriginalDefinition;
+                if (precedingMethod is null)
+                {
+                    return;
+                }
+
+                var precedingSymbol = materializingSymbols.FirstOrDefault(s => s.Equals(precedingMethod, SymbolEqualityComparer.Default));
                 if (precedingSymbol is null)
                 {
                     return;
@@ -62,6 +69,15 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
                     return;
                 }
 
+                if (iQueryableSymbol is not null)
+                {
+                    var objectBeingLinqed = precedingInvocation.GetTypeOfInstanceInInvocation();
+                    if (objectBeingLinqed is not null && objectBeingLinqed.InheritsFrom(iQueryableSymbol))
+                    {
+                        return;
+                    }
+                }
+                
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 properties.Add("operation", precedingSymbol.Name);
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{precedingSymbol.Name}"));
