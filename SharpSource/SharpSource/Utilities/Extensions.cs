@@ -30,7 +30,7 @@ public static class Extensions
                 if (@interface.Equals(candidateBaseType, SymbolEqualityComparer.Default))
                 {
                     return true;
-                }    
+                }
             }
 
             baseType = baseType.BaseType;

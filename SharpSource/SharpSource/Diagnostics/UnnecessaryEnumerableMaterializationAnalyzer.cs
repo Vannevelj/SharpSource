@@ -77,7 +77,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
                         return;
                     }
                 }
-                
+
                 var properties = ImmutableDictionary.CreateBuilder<string, string?>();
                 properties.Add("operation", precedingSymbol.Name);
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable(), $"{precedingSymbol.Name}"));
