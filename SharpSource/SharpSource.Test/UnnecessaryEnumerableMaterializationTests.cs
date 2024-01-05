@@ -286,4 +286,29 @@ files.OfType<string>().ToList().ForEach(x => System.Console.Write(x));";
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/342")]
+    public async Task UnnecessaryEnumerableMaterialization_IQueryable()
+    {
+        var original = @"
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections;
+using System.Collections.Generic;
+
+CustomCollection dingy = new();
+dingy.ToList().Where(x => true);
+
+public class CustomCollection : IEnumerable<int>, IQueryable<int>
+{
+    public Type ElementType => null;
+    public Expression Expression => null;
+    public IQueryProvider Provider => null;
+    public IEnumerator<int> GetEnumerator() => throw new NotImplementedException();
+    IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
