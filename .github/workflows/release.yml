@@ -159,7 +159,7 @@ jobs:
         name: README.md
         path: .
     - name: Publish extension to Marketplace
-      uses: cezarypiatek/VsixPublisherAction@0.2
+      uses: cezarypiatek/VsixPublisherAction@1.0
       with:
           extension-file: SharpSource.vsix
           publish-manifest-file: publishManifest.json
