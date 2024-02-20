@@ -24,7 +24,7 @@ public sealed class ParameterAssignedInConstructorAnalyzer : DiagnosticAnalyzer
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
         context.RegisterOperationBlockStartAction(context =>
         {
             if (context.OwningSymbol is IMethodSymbol { MethodKind: MethodKind.Constructor })
