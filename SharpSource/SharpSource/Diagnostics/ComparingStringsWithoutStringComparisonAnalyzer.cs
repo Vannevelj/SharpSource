@@ -34,7 +34,7 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var stringSymbol = compilationContext.Compilation.GetSpecialType(SpecialType.System_String);

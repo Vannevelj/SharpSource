@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -40,7 +41,14 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             TestState.AdditionalReferences.Add(typeof(Newtonsoft.Json.JsonSerializer).Assembly.Location);
 
             // Initialized explicitly so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
-            TestState.ReferenceAssemblies = ReferenceAssemblies.Net.Net60;
+            // Unfortunately MS stopped updating the utility library that abstracted this: https://github.com/dotnet/roslyn-sdk/issues/1047
+            //TestState.ReferenceAssemblies = ReferenceAssemblies.Net.Net80;
+            TestState.ReferenceAssemblies = new ReferenceAssemblies(
+                        "net8.0",
+                        new PackageIdentity(
+                            "Microsoft.NETCore.App.Ref",
+                            "8.0.0"),
+                        Path.Combine("ref", "net8.0"));
 
             TestState.OutputKind = OutputKind.WindowsApplication;
             TestState.AnalyzerConfigFiles.Add(("/.globalconfig", @"

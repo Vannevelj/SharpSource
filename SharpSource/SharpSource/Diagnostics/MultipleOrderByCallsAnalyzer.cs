@@ -24,7 +24,7 @@ public sealed class MultipleOrderByCallsAnalyzer : DiagnosticAnalyzer
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
         context.RegisterCompilationStartAction(context =>
         {
             var enumerableSymbol = context.Compilation.GetTypeByMetadataName("System.Linq.Enumerable");

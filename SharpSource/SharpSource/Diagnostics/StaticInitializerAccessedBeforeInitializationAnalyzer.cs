@@ -27,7 +27,7 @@ public sealed class StaticInitializerAccessedBeforeInitializationAnalyzer : Diag
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
         context.RegisterSymbolStartAction(context =>
         {
             var symbol = (INamedTypeSymbol)context.Symbol;

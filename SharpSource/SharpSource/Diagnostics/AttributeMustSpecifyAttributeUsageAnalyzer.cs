@@ -24,7 +24,7 @@ public sealed class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnaly
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
         context.RegisterCompilationStartAction(context =>
         {
             var attributeSymbol = context.Compilation.GetTypeByMetadataName("System.Attribute");

@@ -28,7 +28,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
         context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
     }
 
@@ -73,7 +73,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
         }
 
         // If the method definition doesn't contain any parameter to pass format arguments, we ignore it
-        if (!formatParameters.Any())
+        if (formatParameters.Count == 0)
         {
             return;
         }
@@ -190,7 +190,7 @@ public class StringDotFormatWithDifferentAmountOfArgumentsAnalyzer : DiagnosticA
             placeholders.Add(int.Parse(PlaceholderHelpers.GetPlaceholderIndex(placeholder.Value)));
         }
 
-        if (!placeholders.Any())
+        if (placeholders.Count == 0)
         {
             return;
         }
