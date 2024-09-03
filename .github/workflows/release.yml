@@ -71,15 +71,15 @@ jobs:
     needs: pack
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: sharpsource.nupkg
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: sharpsource.vsix
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: CHANGELOG.md
         path: .
@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download a single artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: sharpsource.nupkg
     - name: Push to NuGet
@@ -130,7 +130,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Download a single artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: sharpsource.nupkg
     - name: Push to Github
@@ -146,15 +146,15 @@ jobs:
     needs: pack
     runs-on: windows-latest
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: sharpsource.vsix
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: publishManifest.json
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: README.md
         path: .
