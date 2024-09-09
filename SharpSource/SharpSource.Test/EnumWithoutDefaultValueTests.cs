@@ -89,6 +89,19 @@ enum Test {{
     [TestMethod]
     [DataRow("None")]
     [DataRow("Unknown")]
+    public async Task EnumWithoutDefaultValue_RightName_NegativeValue(string memberName)
+    {
+        var original = $@"
+enum [|Test|] : short {{
+    {memberName} = -1
+}}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    [DataRow("None")]
+    [DataRow("Unknown")]
     public async Task EnumWithoutDefaultValue_RightName_WithDifferentType(string memberName)
     {
         var original = $@"

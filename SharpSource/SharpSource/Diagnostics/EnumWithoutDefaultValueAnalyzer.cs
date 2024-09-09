@@ -46,7 +46,7 @@ public sealed class EnumWithoutDefaultValueAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (!membersOfInterest.Any(m => m is IFieldSymbol f && Convert.ToUInt64(f.ConstantValue) == 0))
+        if (!membersOfInterest.Any(m => m is IFieldSymbol f && Convert.ToDouble(f.ConstantValue) == 0))
         {
             Report(symbol, context);
         }
