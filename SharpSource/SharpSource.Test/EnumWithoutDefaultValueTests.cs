@@ -85,4 +85,18 @@ enum Test {{
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    [DataRow("None")]
+    [DataRow("Unknown")]
+    public async Task EnumWithoutDefaultValue_RightName_WithDifferentType(string memberName)
+    {
+        var original = $@"
+enum Test : ushort {{
+   {memberName} = 0,
+
+}}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
