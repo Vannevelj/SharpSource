@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.24.1] - 2024-09-10
+- `EnumWithoutDefaultValue`: No longer crashes when using an enum that is not `int`, courtesy of @Genbox
+
 ## [1.24.0] - 2024-02-20
 - All analysers will no longer report diagnostics in generated code
 
