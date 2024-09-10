@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -100,16 +101,28 @@ enum [|Test|] : short {{
     }
 
     [TestMethod]
-    [DataRow("None")]
-    [DataRow("Unknown")]
-    public async Task EnumWithoutDefaultValue_RightName_WithDifferentType(string memberName)
+    [DynamicData(nameof(GetEnumTypes), DynamicDataSourceType.Method)]
+    public async Task EnumWithoutDefaultValue_RightName_WithDifferentType(string memberName, string dataType)
     {
         var original = $@"
-enum Test : ushort {{
-   {memberName} = 0,
-
+enum Test : {dataType} {{
+   {memberName} = 0
 }}";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    public static IEnumerable<object[]> GetEnumTypes()
+    {
+        var memberNames = new[] { "None", "Unknown" };
+        var dataTypes = new[] { "byte", "sbyte", "short", "ushort", "int", "uint", "long", "ulong" };
+
+        foreach (var memberName in memberNames)
+        {
+            foreach (var dataType in dataTypes)
+            {
+                yield return new object[] { memberName, dataType };
+            }
+        }
     }
 }
