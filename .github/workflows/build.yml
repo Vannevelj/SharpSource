@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
@@ -27,7 +27,7 @@ jobs:
           DeployExtension: False
 
       - name: Collect artifacts - VSIX
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: sharpsource.vsix
           path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.vsix
@@ -35,7 +35,7 @@ jobs:
           retention-days: 5
 
       - name: Collect artifacts - nugets
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: sharpsource.nupkg
           path: '**/SharpSource*.nupkg'

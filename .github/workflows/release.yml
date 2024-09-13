@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Get version from CHANGELOG.md
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
@@ -31,35 +31,35 @@ jobs:
       env:
         DeployExtension: False
     - name: Collect artifacts - Changelog
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: CHANGELOG.md
         path: ./CHANGELOG.md
         retention-days: 30
         if-no-files-found: error
     - name: Collect artifacts - README
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: README.md
         path: ./README.md
         retention-days: 30
         if-no-files-found: error
     - name: Collect artifacts - VSIX
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: sharpsource.vsix
         path: SharpSource\SharpSource.Vsix\bin\Release\net472\SharpSource.vsix
         if-no-files-found: error
         retention-days: 30
     - name: Collect artifacts - publishmanifest
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: publishManifest.json
         path: SharpSource\SharpSource.Vsix\publishManifest.json
         if-no-files-found: error
         retention-days: 30
     - name: Collect artifacts - nugets
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: sharpsource.nupkg
         path: '**/SharpSource*.nupkg'
@@ -71,15 +71,15 @@ jobs:
     needs: pack
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: sharpsource.nupkg
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: sharpsource.vsix
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: CHANGELOG.md
         path: .
@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download a single artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sharpsource.nupkg
     - name: Push to NuGet
@@ -130,7 +130,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Download a single artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sharpsource.nupkg
     - name: Push to Github
@@ -146,15 +146,15 @@ jobs:
     needs: pack
     runs-on: windows-latest
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: sharpsource.vsix
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: publishManifest.json
         path: .
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: README.md
         path: .
