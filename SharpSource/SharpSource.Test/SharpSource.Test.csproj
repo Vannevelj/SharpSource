@@ -19,9 +19,9 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeRefactoring.Testing.MSTest" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeRefactoring.Testing" />
   </ItemGroup>
 
   <ItemGroup>
