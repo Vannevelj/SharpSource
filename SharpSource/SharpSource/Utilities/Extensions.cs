@@ -240,6 +240,7 @@ public static class Extensions
                 IMethodReferenceOperation method => method.Type,
                 ILocalReferenceOperation local => local.Local.Type,
                 IParameterReferenceOperation param => param.Parameter.Type,
+                IObjectCreationOperation objectCreation => objectCreation.Type,
                 _ => default
             };
         }
@@ -251,9 +252,21 @@ public static class Extensions
         }
 
         // Otherwise, it's a static call
-        if (invocation.Arguments is { Length: > 0 } && invocation.Arguments[0].Value is IConversionOperation { Operand: IMemberReferenceOperation or ILocalReferenceOperation or IParameterReferenceOperation } conv)
+        if (invocation.Arguments is { Length: > 0 })
         {
-            return getSymbolFromOperation(conv.Operand);
+            var firstArgument = invocation.Arguments[0].Value;
+
+            // Regular static method
+            if (firstArgument is IConversionOperation { Operand: IMemberReferenceOperation or ILocalReferenceOperation or IParameterReferenceOperation or IObjectCreationOperation } conv)
+            {
+                return getSymbolFromOperation(conv.Operand);
+            }
+
+            // Object creation
+            if (firstArgument is IInvocationOperation inv)
+            {
+                return GetTypeOfInstanceInInvocation(inv);
+            }
         }
 
         return default;

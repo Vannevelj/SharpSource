@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
@@ -29,7 +30,12 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var concurrentDictionarySymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Collections.Concurrent.ConcurrentDictionary`2");
-            var countPropertySymbol = concurrentDictionarySymbol?.GetMembers("Count").OfType<IPropertySymbol>().FirstOrDefault();
+            if (concurrentDictionarySymbol is null)
+            {
+                return;
+            }
+
+            var countPropertySymbol = concurrentDictionarySymbol.GetMembers("Count").OfType<IPropertySymbol>().FirstOrDefault();
             if (countPropertySymbol is not null)
             {
                 compilationContext.RegisterOperationAction(context => AnalyzeCountPropertyReference(context, countPropertySymbol), OperationKind.PropertyReference);
@@ -39,13 +45,13 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
             var enumerableAnySymbol = enumerableSymbol?.GetMembers("Any").OfType<IMethodSymbol>().FirstOrDefault();
             if (enumerableAnySymbol is not null)
             {
-                compilationContext.RegisterOperationAction(context => AnalyzeAnyMethodReference(context, enumerableAnySymbol), OperationKind.Invocation);
+                compilationContext.RegisterOperationAction(context => AnalyzeAnyMethodReference(context, enumerableAnySymbol, concurrentDictionarySymbol), OperationKind.Invocation);
             }
 
             var enumerableCountSymbol = enumerableSymbol?.GetMembers("Count").OfType<IMethodSymbol>().FirstOrDefault();
             if (enumerableCountSymbol is not null)
             {
-                compilationContext.RegisterOperationAction(context => AnalyzeCountMethodReference(context, enumerableCountSymbol), OperationKind.Invocation);
+                compilationContext.RegisterOperationAction(context => AnalyzeCountMethodReference(context, enumerableCountSymbol, concurrentDictionarySymbol), OperationKind.Invocation);
             }
         });
     }
@@ -76,9 +82,15 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static void AnalyzeAnyMethodReference(OperationAnalysisContext context, IMethodSymbol anyMethod)
+    private static void AnalyzeAnyMethodReference(OperationAnalysisContext context, IMethodSymbol anyMethod, INamedTypeSymbol concurrentDictionary)
     {
         var invocation = (IInvocationOperation)context.Operation;
+
+        var instanceType = invocation.GetTypeOfInstanceInInvocation()?.OriginalDefinition;
+        if (!SymbolEqualityComparer.Default.Equals(instanceType, concurrentDictionary))
+        {
+            return;
+        }
 
         if (invocation.TargetMethod.OriginalDefinition.Equals(anyMethod, SymbolEqualityComparer.Default))
         {
@@ -90,9 +102,15 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static void AnalyzeCountMethodReference(OperationAnalysisContext context, IMethodSymbol countMethod)
+    private static void AnalyzeCountMethodReference(OperationAnalysisContext context, IMethodSymbol countMethod, INamedTypeSymbol concurrentDictionary)
     {
         var invocation = (IInvocationOperation)context.Operation;
+
+        var instanceType = invocation.GetTypeOfInstanceInInvocation()?.OriginalDefinition;
+        if (!SymbolEqualityComparer.Default.Equals(instanceType, concurrentDictionary))
+        {
+            return;
+        }
 
         if (invocation.TargetMethod.OriginalDefinition.Equals(countMethod, SymbolEqualityComparer.Default) &&
             invocation.Parent is IBinaryOperation binaryOperation)
