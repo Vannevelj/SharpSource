@@ -59,9 +59,19 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
         {
             var rightOperandConstant = binaryOperation.RightOperand.SemanticModel?.GetConstantValue(binaryOperation.RightOperand.Syntax);
             var leftOperandConstant = binaryOperation.LeftOperand.SemanticModel?.GetConstantValue(binaryOperation.LeftOperand.Syntax);
+            var isRightOperandZero = rightOperandConstant is { HasValue: true, Value: 0 };
             if (rightOperandConstant is { HasValue: true, Value: 0 } || leftOperandConstant is { HasValue: true, Value: 0 })
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, binaryOperation.Syntax.GetLocation()));
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                properties.Add("isBinaryCheck", "true");
+                properties.Add("binaryOperandOfInterest", isRightOperandZero ? "left" : "right");
+
+                var mustInvert =
+                    ( isRightOperandZero && binaryOperation.OperatorKind is BinaryOperatorKind.NotEquals or BinaryOperatorKind.GreaterThan ) ||
+                    ( !isRightOperandZero && binaryOperation.OperatorKind is BinaryOperatorKind.NotEquals or BinaryOperatorKind.LessThan );
+                properties.Add("mustInvert", mustInvert ? "true" : "false");
+
+                context.ReportDiagnostic(Diagnostic.Create(Rule, binaryOperation.Syntax.GetLocation(), properties.ToImmutable()));
             }
         }
     }
@@ -72,7 +82,11 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
 
         if (invocation.TargetMethod.OriginalDefinition.Equals(anyMethod, SymbolEqualityComparer.Default))
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+            var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+            properties.Add("isBinaryCheck", "false");
+            properties.Add("mustInvert", "true");
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), properties.ToImmutable()));
         }
     }
 
@@ -85,9 +99,19 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
         {
             var rightOperandConstant = binaryOperation.RightOperand.SemanticModel?.GetConstantValue(binaryOperation.RightOperand.Syntax);
             var leftOperandConstant = binaryOperation.LeftOperand.SemanticModel?.GetConstantValue(binaryOperation.LeftOperand.Syntax);
+            var isRightOperandZero = rightOperandConstant is { HasValue: true, Value: 0 };
             if (rightOperandConstant is { HasValue: true, Value: 0 } || leftOperandConstant is { HasValue: true, Value: 0 })
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, binaryOperation.Syntax.GetLocation()));
+                var properties = ImmutableDictionary.CreateBuilder<string, string?>();
+                properties.Add("isBinaryCheck", "true");
+                properties.Add("binaryOperandOfInterest", isRightOperandZero ? "left" : "right");
+
+                var mustInvert =
+                    ( isRightOperandZero && binaryOperation.OperatorKind is BinaryOperatorKind.NotEquals or BinaryOperatorKind.GreaterThan ) ||
+                    ( !isRightOperandZero && binaryOperation.OperatorKind is BinaryOperatorKind.NotEquals or BinaryOperatorKind.LessThan );
+                properties.Add("mustInvert", mustInvert ? "true" : "false");
+
+                context.ReportDiagnostic(Diagnostic.Create(Rule, binaryOperation.Syntax.GetLocation(), properties.ToImmutable()));
             }
         }
     }

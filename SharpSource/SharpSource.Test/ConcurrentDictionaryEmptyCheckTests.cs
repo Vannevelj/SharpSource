@@ -119,7 +119,29 @@ using System;
 using System.Collections.Concurrent;
 
 var dic = new ConcurrentDictionary<int, int>();
-var empty = dic.IsEmpty;
+var empty = !dic.IsEmpty;
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary"), result);
+    }
+
+    [TestMethod]
+    public async Task ConcurrentDictionaryEmptyCheck_Count_LessThan()
+    {
+        var original = @"
+using System;
+using System.Collections.Concurrent;
+
+var dic = new ConcurrentDictionary<int, int>();
+var empty = {|#0:0 < dic.Count|};
+";
+
+        var result = @"
+using System;
+using System.Collections.Concurrent;
+
+var dic = new ConcurrentDictionary<int, int>();
+var empty = !dic.IsEmpty;
 ";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary"), result);
@@ -206,7 +228,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 
 var dic = new ConcurrentDictionary<int, int>();
-var empty = {|#0:dic.Any()|};
+var notEmpty = {|#0:dic.Any()|};
 ";
 
         var result = @"
@@ -215,7 +237,37 @@ using System.Collections.Concurrent;
 using System.Linq;
 
 var dic = new ConcurrentDictionary<int, int>();
-var empty = dic.IsEmpty;
+var notEmpty = !dic.IsEmpty;
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary"), result);
+    }
+
+    [TestMethod]
+    public async Task ConcurrentDictionaryEmptyCheck_Count_AsChainedExpression()
+    {
+        var original = @"
+using System;
+using System.Collections.Concurrent;
+
+var empty = {|#0:new Wrapper().GetDic().Count == 0|};
+
+public class Wrapper
+{
+    public ConcurrentDictionary<int, int> GetDic() => new();
+}
+";
+
+        var result = @"
+using System;
+using System.Collections.Concurrent;
+
+var empty = new Wrapper().GetDic().IsEmpty;
+
+public class Wrapper
+{
+    public ConcurrentDictionary<int, int> GetDic() => new();
+}
 ";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary"), result);
