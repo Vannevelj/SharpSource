@@ -272,4 +272,75 @@ public class Wrapper
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary"), result);
     }
+
+    [TestMethod]
+    public async Task ConcurrentDictionaryEmptyCheck_NotAConcurrentDictionary()
+    {
+        var original = @"
+using System;
+using System.Collections.Generic;
+
+var dic = new Dictionary<int, int>();
+var empty = dic.Count == 0;
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ConcurrentDictionaryEmptyCheck_NotAConcurrentDictionary_LinqAny()
+    {
+        var original = @"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+var dic = new Dictionary<int, int>();
+var notEmpty = dic.Any();
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+
+    [TestMethod]
+    public async Task ConcurrentDictionaryEmptyCheck_NotAConcurrentDictionary_LinqCount()
+    {
+        var original = @"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+var dic = new Dictionary<int, int>();
+var notEmpty = dic.Count() > 0;
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task ConcurrentDictionaryEmptyCheck_AsParameter()
+    {
+        var original = @"
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+
+doThing({|#0:new ConcurrentDictionary<int, int>().Any()|});
+
+void doThing(bool doIt) { }
+";
+
+        var result = @"
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+
+doThing(!new ConcurrentDictionary<int, int>().IsEmpty);
+
+void doThing(bool doIt) { }
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary"), result);
+    }
 }
