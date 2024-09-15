@@ -31,36 +31,50 @@ public class ConcurrentDictionaryEmptyCheckCodeFix : CodeFixProvider
         {
             var binarySyntax = (BinaryExpressionSyntax)statement;
             var memberExpression = binaryOperandOfInterest == "left" ? binarySyntax.Left : binarySyntax.Right;
-            if (memberExpression is not MemberAccessExpressionSyntax memberAccessExpression)
+            switch (memberExpression)
             {
-                return;
+                case MemberAccessExpressionSyntax memberAccessExpression:
+                    {
+                        registerCodeFix(memberAccessExpression, nodeToReplace: binarySyntax);
+                        return;
+                    }
+                case InvocationExpressionSyntax invocationExpression when invocationExpression.Expression is MemberAccessExpressionSyntax memberAccessExpression:
+                    {
+                        registerCodeFix(memberAccessExpression, nodeToReplace: binarySyntax);
+                        return;
+                    }
+                default:
+                    return;
             }
-
-            context.RegisterCodeFix(CodeAction.Create(
-                "Is IsEmpty",
-                x => UseIsEmpty(context.Document, root, memberAccessExpression, nodeToReplace: binarySyntax, mustInvert),
-                ConcurrentDictionaryEmptyCheckAnalyzer.Rule.Id),
-                diagnostic);
         }
         else
         {
             var invocation = (InvocationExpressionSyntax)statement;
-            if (invocation.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
-            {
-                return;
-            }
+            registerCodeFix(invocation, nodeToReplace: invocation);
+        }
 
-            context.RegisterCodeFix(CodeAction.Create(
-                "Is IsEmpty",
-                x => UseIsEmpty(context.Document, root, memberAccessExpression, nodeToReplace: invocation, mustInvert),
-                ConcurrentDictionaryEmptyCheckAnalyzer.Rule.Id),
-                diagnostic);
+        void registerCodeFix(ExpressionSyntax expression, SyntaxNode nodeToReplace)
+        {
+            var expressionToUse = expression is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax } invocation
+                ? (MemberAccessExpressionSyntax) invocation.Expression
+                : expression is MemberAccessExpressionSyntax memberAccesExpression
+                    ? memberAccesExpression
+                    : null;
+
+            if (expressionToUse is not null)
+            {
+                context.RegisterCodeFix(CodeAction.Create(
+                    "Is IsEmpty",
+                    x => UseIsEmpty(context.Document, root, expressionToUse, nodeToReplace, mustInvert),
+                    ConcurrentDictionaryEmptyCheckAnalyzer.Rule.Id),
+                    diagnostic);
+            }
         }
     }
 
     private static Task<Document> UseIsEmpty(Document document, SyntaxNode root, MemberAccessExpressionSyntax memberAccessExpression, SyntaxNode nodeToReplace, bool mustInvert)
     {
-        var newExpression = (ExpressionSyntax) memberAccessExpression.WithName(SyntaxFactory.IdentifierName("IsEmpty"));
+        var newExpression = (ExpressionSyntax)memberAccessExpression.WithName(SyntaxFactory.IdentifierName("IsEmpty"));
         if (mustInvert)
         {
             newExpression = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, newExpression);
