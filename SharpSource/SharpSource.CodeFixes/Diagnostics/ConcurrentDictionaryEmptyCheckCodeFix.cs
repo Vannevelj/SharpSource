@@ -56,7 +56,7 @@ public class ConcurrentDictionaryEmptyCheckCodeFix : CodeFixProvider
         void registerCodeFix(ExpressionSyntax expression, SyntaxNode nodeToReplace)
         {
             var expressionToUse = expression is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax } invocation
-                ? (MemberAccessExpressionSyntax) invocation.Expression
+                ? (MemberAccessExpressionSyntax)invocation.Expression
                 : expression is MemberAccessExpressionSyntax memberAccesExpression
                     ? memberAccesExpression
                     : null;
