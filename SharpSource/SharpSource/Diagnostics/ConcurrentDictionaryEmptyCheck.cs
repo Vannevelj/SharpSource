@@ -12,7 +12,7 @@ public class ConcurrentDictionaryEmptyCheckAnalyzer : DiagnosticAnalyzer
 {
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.ConcurrentDictionaryEmptyCheck,
-        "something",
+        "A ConcurrentDictionary is checked for emptiness without using .IsEmpty",
         "Use ConcurrentDictionary.IsEmpty to check for emptiness without locking the entire dictionary",
         Categories.Performance,
         DiagnosticSeverity.Warning,

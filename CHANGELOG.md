@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.25.0] - 2024-09-15
+- `ConcurrentDictionaryEmptyCheck`: A `ConcurrentDictionary` is checked for emptiness without using `.IsEmpty`
+
 ## [1.24.1] - 2024-09-10
 - `EnumWithoutDefaultValue`: No longer crashes when using an enum that is not `int`, courtesy of @Genbox
 
@@ -23,7 +26,7 @@ https://keepachangelog.com/en/1.0.0/
 - `TestMethodWithoutTestAttribute`: Will no longer consider methods with `Task<T>` and `ValueTask<T>` return types as potential test methods
 
 ## [1.23.0] - 2023-02-26
-- `DisposeAsyncDisposable`: An object implements `IAsyncDisposable` and can be disposed of asynchronously in the context it is used.
+- `DisposeAsyncDisposable`: An object implements `IAsyncDisposable` and can be disposed of asynchronously in the context it is used
 - `PointlessCollectionToString`: `ImmutableDictionary` is also included
 - `TestMethodWithoutTestAttribute`: Reduced false negatives by extending the diagnostic to methods that have certain attributes (`Xunit.ClassData`, `Xunit.InlineData`, `Microsoft.DataRow`, `NUnit.TestCase`, `NUnit.TestCaseSource`)
 
