@@ -58,4 +58,5 @@ public static class DiagnosticId
     public const string CollectionManipulatedDuringTraversal = "SS057";
     public const string StringConcatenatedInLoop = "SS058";
     public const string DisposeAsyncDisposable = "SS059";
+    public const string ConcurrentDictionaryEmptyCheck = "SS060";
 }
