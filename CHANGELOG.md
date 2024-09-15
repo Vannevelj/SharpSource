@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.25.1] - 2024-09-15
+- Reverted an earlier dependency bump which caused the analyzers to become incompatible with Visual Studi
+
 ## [1.25.0] - 2024-09-15
 - `ConcurrentDictionaryEmptyCheck`: A `ConcurrentDictionary` is checked for emptiness without using `.IsEmpty`
 
