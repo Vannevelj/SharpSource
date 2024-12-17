@@ -23,6 +23,10 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         (typeof(Stack<>), "Contains"),
         (typeof(Enumerable), "Contains"),
         (typeof(IEnumerable), "Contains"),
+        (typeof(Enumerable), "Distinct"),
+        (typeof(IEnumerable), "Distinct"),
+        (typeof(Enumerable), "ToHashSet"),
+        (typeof(IEnumerable), "ToHashSet"),
         (typeof(Dictionary<,>), "Contains"),
         (typeof(Dictionary<,>), "Add"),
         (typeof(Dictionary<,>), "TryGetValue"),
@@ -73,8 +77,11 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
             _ => default
         };
 
-        var argumentType = argument?.Parameter?.Type;
-        if (argument == default || argumentType == default)
+        // Invocation of .Distinct() or .ToHashSet()
+        var extensionMethodInvocationWithoutArguments = GetExtensionMethodInvocationWithoutArgumentsOrDefault(context.Operation);
+
+        var argumentType = argument?.Parameter?.Type ?? extensionMethodInvocationWithoutArguments?.TargetMethod.TypeArguments.FirstOrDefault();
+        if ((argument == null && extensionMethodInvocationWithoutArguments == null) || argumentType == null)
         {
             return;
         }
@@ -118,7 +125,19 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         if (!implementsEquals || !implementsGetHashCode)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Rule, argument.Syntax.GetLocation(), argumentType.Name));
+            var syntaxNode = argument?.Syntax ?? extensionMethodInvocationWithoutArguments!.Syntax;
+            context.ReportDiagnostic(Diagnostic.Create(Rule, syntaxNode.GetLocation(), argumentType.Name));
         }
     }
+
+    private static IInvocationOperation? GetExtensionMethodInvocationWithoutArgumentsOrDefault(IOperation operation)
+        => operation is IInvocationOperation
+        {
+            TargetMethod.IsExtensionMethod: true,
+            TargetMethod.IsGenericMethod: true,
+            TargetMethod.TypeArguments.Length: 1,
+            Arguments.Length: 1 // `this` in extension method
+        } extensionInvocation
+            ? extensionInvocation
+            : default;
 }
