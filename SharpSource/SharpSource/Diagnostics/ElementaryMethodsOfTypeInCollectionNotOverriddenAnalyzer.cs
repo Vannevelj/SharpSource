@@ -131,8 +131,11 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
 
         if (!implementsEquals || !implementsGetHashCode)
         {
-            var syntaxNode = argument?.Syntax ?? extensionMethodInvocationWithoutArguments!.Syntax;
-            context.ReportDiagnostic(Diagnostic.Create(Rule, syntaxNode.GetLocation(), argumentType.Name));
+            var syntaxNode = argument?.Syntax ?? extensionMethodInvocationWithoutArguments?.Syntax;
+            if (syntaxNode != null)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, syntaxNode.GetLocation(), argumentType.Name));
+            }
         }
     }
 
