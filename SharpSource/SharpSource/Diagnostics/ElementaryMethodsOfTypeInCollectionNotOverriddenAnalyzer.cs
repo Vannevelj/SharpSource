@@ -80,8 +80,14 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
         // Invocation of .Distinct() or .ToHashSet()
         var extensionMethodInvocationWithoutArguments = GetExtensionMethodInvocationWithoutArgumentsOrDefault(context.Operation);
 
+        if (argument == null && extensionMethodInvocationWithoutArguments == null)
+        {
+            return;
+        }
+
         var argumentType = argument?.Parameter?.Type ?? extensionMethodInvocationWithoutArguments?.TargetMethod.TypeArguments.FirstOrDefault();
-        if ((argument == null && extensionMethodInvocationWithoutArguments == null) || argumentType == null)
+
+        if (argumentType == null)
         {
             return;
         }
