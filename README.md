@@ -14,7 +14,7 @@ or add a reference yourself:
 
 ```xml
 <ItemGroup>
-    <PackageReference Include="SharpSource" Version="1.25.2" PrivateAssets="All" />
+    <PackageReference Include="SharpSource" Version="1.26.0" PrivateAssets="All" />
 </ItemGroup>
 ```
 

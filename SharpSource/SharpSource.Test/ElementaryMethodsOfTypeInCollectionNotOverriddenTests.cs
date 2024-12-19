@@ -475,6 +475,8 @@ var s = list.Contains(default);";
     [DataRow("new List<MyCollectionItem>().Contains({|#0:new MyCollectionItem()|})")]
     [DataRow("new HashSet<MyCollectionItem>().Add({|#0:new MyCollectionItem()|})")]
     [DataRow("new Dictionary<MyCollectionItem, int>(); x.Add({|#0:new MyCollectionItem()|}, 5)")]
+    [DataRow("{|#0:new List<MyCollectionItem>().Distinct()|}")]
+    [DataRow("{|#0:new List<MyCollectionItem>().ToHashSet()|}")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_SupportedInvocations(string invocation)
     {
         var original = @$"

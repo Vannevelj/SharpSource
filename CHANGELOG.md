@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.26.0] - 2024-12-18
+- `ElementaryMethodsOfTypeInCollectionNotOverridden`: Include `.Distinct()` and `.ToHashSet()`, courtesy of @Advitalitum
+
 ## [1.25.2] - 2024-09-15
 - `ConcurrentDictionaryEmptyCheck`: Correctly constrain the LINQ methods to `ConcurrentDictionary`
 
