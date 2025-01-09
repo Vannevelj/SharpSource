@@ -1,7 +1,7 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.26.0] - 2025-01-09
+## [1.27.0] - 2025-01-09
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Dont exclude all `System` assembly types, exclude only stucts
 
 ## [1.26.0] - 2024-12-18
