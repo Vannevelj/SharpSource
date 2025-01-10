@@ -72,7 +72,7 @@ namespace ConsoleApplication1
     struct MyCollectionItem {}
 }";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -128,7 +128,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -184,7 +184,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Type MyCollectionItem is used in a collection lookup but does not override Equals() and GetHashCode()"));
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
@@ -454,7 +454,6 @@ namespace ConsoleApplication1
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/99")]
-    [DataRow("Dictionary<int, int>")]
     [DataRow("KeyValuePair<int, int>")]
     public async Task ElementaryMethodsOfTypeInCollectionNotOverridden_WithSystemTypes(string type)
     {

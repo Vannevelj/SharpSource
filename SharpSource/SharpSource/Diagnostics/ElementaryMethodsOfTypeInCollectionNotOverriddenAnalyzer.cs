@@ -96,7 +96,7 @@ public class ElementaryMethodsOfTypeInCollectionNotOverriddenAnalyzer : Diagnost
                                   or TypeKind.Interface
                                   or TypeKind.Enum
                                   or TypeKind.Array
-            || argumentType.IsDefinedInSystemAssembly())
+                                  or TypeKind.Struct)
         {
             return;
         }
