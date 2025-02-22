@@ -34,7 +34,9 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
 
             var testMethodAttributeSymbols = ImmutableArray.Create(
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute"),
-                compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute")
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
             );
 
             var taskTypes = ImmutableArray.Create(
@@ -45,9 +47,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
             var allowedAdditionalAttributes = ImmutableArray.Create(
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.ClassDataAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.InlineDataAttribute"),
-                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute"),
-                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"),
-                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute")
             );
 
             compilationContext.RegisterSymbolAction(context => Analyze(context, testClassAttributeSymbols, testMethodAttributeSymbols, taskTypes, allowedAdditionalAttributes), SymbolKind.Method);

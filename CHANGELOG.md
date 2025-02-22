@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.27.1] - 2025-02-22
+- `TestMethodWithoutTestAttribute`: Don't trigger when `NUnit.TestCase` or `NUnit.TestCaseSource` is present on a method
+
 ## [1.27.0] - 2025-01-09
 - `ElementaryMethodsOfTypeInCollectionNotOverridden`: Don't exclude all `System` assembly types, exclude only structs
 

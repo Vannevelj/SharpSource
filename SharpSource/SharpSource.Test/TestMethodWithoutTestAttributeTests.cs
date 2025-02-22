@@ -304,7 +304,7 @@ class MyClass
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_TestCase()
+    public async Task TestMethodWithoutTestAttribute_Nunit_TestCase()
     {
         var original = @"
 using System;
@@ -321,11 +321,11 @@ class MyClass
 }
 ";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutTestAttribute_OtherAttributeIsTestRelated_TestCaseSource()
+    public async Task TestMethodWithoutTestAttribute_NUnit_TestCaseSource()
     {
         var original = @"
 using System;
@@ -348,7 +348,27 @@ class MyClass
 }
 ";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_Nunit_WithoutTestFixture_TestCase()
+    {
+        var original = @"
+using System;
+using NUnit.Framework;
+
+class MyClass
+{
+    [TestCase(3)]
+    public void {|#0:MyMethod|}(int x)
+    {
+
+    }
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/22")]
