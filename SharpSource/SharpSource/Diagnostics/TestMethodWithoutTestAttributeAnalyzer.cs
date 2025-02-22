@@ -39,22 +39,17 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
                 compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
             );
 
-            var taskTypes = ImmutableArray.Create(
-                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task"),
-                compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask")
-            );
-
             var allowedAdditionalAttributes = ImmutableArray.Create(
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.ClassDataAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.InlineDataAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute")
             );
 
-            compilationContext.RegisterSymbolAction(context => Analyze(context, testClassAttributeSymbols, testMethodAttributeSymbols, taskTypes, allowedAdditionalAttributes), SymbolKind.Method);
+            compilationContext.RegisterSymbolAction(context => Analyze(context, testClassAttributeSymbols, testMethodAttributeSymbols, allowedAdditionalAttributes), SymbolKind.Method);
         });
     }
 
-    private static void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> taskTypes, ImmutableArray<INamedTypeSymbol?> allowedAdditionalAttributes)
+    private static void Analyze(SymbolAnalysisContext context, ImmutableArray<INamedTypeSymbol?> testClassAttributeSymbols, ImmutableArray<INamedTypeSymbol?> testMethodAttributeSymbols, ImmutableArray<INamedTypeSymbol?> allowedAdditionalAttributes)
     {
         var method = (IMethodSymbol)context.Symbol;
         if (method.DeclaredAccessibility != Accessibility.Public)
@@ -71,6 +66,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         // Check if we're in a unit-test context
         // For NUnit and MSTest we can see if the enclosing class has a [TestClass] or [TestFixture] attribute
         // For xUnit.NET we will have to see if there are other methods in the current class that contain a [Fact] attribute
+        // NUnit its [TestFixture] is optional so we also do the method-level analysis there
         if (method.ContainingType.TypeKind is not TypeKind.Class)
         {
             return;
@@ -87,7 +83,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (method.ReturnType is not { SpecialType: SpecialType.System_Void } && !taskTypes.Any(taskType => method.ReturnType.OriginalDefinition.Equals(taskType, SymbolEqualityComparer.Default)))
+        if (method.ReturnType is not { SpecialType: SpecialType.System_Void } && !method.ReturnType.IsNonGenericTaskType())
         {
             return;
         }
@@ -96,7 +92,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
         if (!isTestClass)
         {
             // Look at other methods in the class to see if they have a test attribute
-            // We do this only for xUnit.NET because the others should already have been caught with the previous test
+            // This is required for xUnit.NET and NUnit because the others should already have been caught with the previous test
             // If they weren't, it means the entire class wasn't marked as a test which is not in the scope of this analyzer
             foreach (var member in method.ContainingType.GetMembers().OfType<IMethodSymbol>())
             {
