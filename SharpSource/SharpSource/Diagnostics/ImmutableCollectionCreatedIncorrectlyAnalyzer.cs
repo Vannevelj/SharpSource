@@ -38,6 +38,20 @@ public class ImmutableCollectionCreatedIncorrectlyAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol immutableArrayType)
     {
-        // TODO: Implement analysis logic
+        var objectCreation = (IObjectCreationOperation)context.Operation;
+
+        if (objectCreation.Type is not INamedTypeSymbol namedType)
+        {
+            return;
+        }
+
+        var originalDefinition = namedType.OriginalDefinition;
+        if (!SymbolEqualityComparer.Default.Equals(originalDefinition, immutableArrayType))
+        {
+            return;
+        }
+
+        var typeArgument = namedType.TypeArguments.Length > 0 ? namedType.TypeArguments[0].ToDisplayString() : "T";
+        context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.Syntax.GetLocation(), typeArgument));
     }
 }
