@@ -59,7 +59,7 @@ public class ImmutableCollectionCreatedIncorrectlyCodeFix : CodeFixProvider
                 typeArguments));
 
         var argumentList = objectCreation.ArgumentList ?? SyntaxFactory.ArgumentList();
-        
+
         var invocation = SyntaxFactory.InvocationExpression(memberAccess, argumentList)
             .WithTriviaFrom(objectCreation);
 

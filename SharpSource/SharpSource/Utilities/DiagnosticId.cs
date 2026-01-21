@@ -1,4 +1,5 @@
 namespace SharpSource.Utilities;
+
 public static class DiagnosticId
 {
     public const string AsyncMethodWithVoidReturnType = "SS001";
