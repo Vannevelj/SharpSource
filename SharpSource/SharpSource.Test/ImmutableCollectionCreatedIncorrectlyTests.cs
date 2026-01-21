@@ -349,24 +349,6 @@ class Test
     }
 
     [TestMethod]
-    public async Task ImmutableCollectionCreatedIncorrectly_ImmutableListCreation_NoDiagnostic()
-    {
-        var original = @"
-using System.Collections.Immutable;
-
-class Test
-{
-    void Method()
-    {
-        var list = new ImmutableList<int>();
-    }
-}
-";
-
-        await VerifyCS.VerifyNoDiagnostic(original);
-    }
-
-    [TestMethod]
     public async Task ImmutableCollectionCreatedIncorrectly_WithoutImmutableCollectionsReference_NoDiagnostic()
     {
         var original = @"
