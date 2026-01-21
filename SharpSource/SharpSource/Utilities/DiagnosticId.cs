@@ -1,4 +1,5 @@
 namespace SharpSource.Utilities;
+
 public static class DiagnosticId
 {
     public const string AsyncMethodWithVoidReturnType = "SS001";
@@ -59,4 +60,5 @@ public static class DiagnosticId
     public const string StringConcatenatedInLoop = "SS058";
     public const string DisposeAsyncDisposable = "SS059";
     public const string ConcurrentDictionaryEmptyCheck = "SS060";
+    public const string ImmutableCollectionCreatedIncorrectly = "SS061";
 }
