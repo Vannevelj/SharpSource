@@ -425,8 +425,8 @@ class Test
 
         await VerifyCS.VerifyCodeFix(original, new[]
         {
-            VerifyCS.Diagnostic().WithLocation(0).WithMessage("ImmutableArray should be created using ImmutableArray.Create<int>() instead of new ImmutableArray<int>()"),
-            VerifyCS.Diagnostic().WithLocation(1).WithMessage("ImmutableArray should be created using ImmutableArray.Create<int>() instead of new ImmutableArray<int>()")
+            VerifyCS.Diagnostic(0).WithMessage("ImmutableArray should be created using ImmutableArray.Create<int>() instead of new ImmutableArray<int>()"),
+            VerifyCS.Diagnostic(1).WithMessage("ImmutableArray should be created using ImmutableArray.Create<int>() instead of new ImmutableArray<int>()")
         }, expected);
     }
 }
