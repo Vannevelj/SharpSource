@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -56,7 +55,7 @@ public class ActivityWasNotStoppedAnalyzer : DiagnosticAnalyzer
                     IsStartActivityMethod(invocation, activitySourceSymbol))
                 {
                     var isUsing = IsInUsingContext(invocation);
-                    
+
                     if (!isUsing)
                     {
                         var (localSymbol, isEscaped) = GetAssignmentTarget(invocation);
@@ -266,13 +265,10 @@ public class ActivityWasNotStoppedAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static ILocalReferenceOperation? ExtractLocalReference(IOperation? operation)
+    private static ILocalReferenceOperation? ExtractLocalReference(IOperation? operation) => operation switch
     {
-        return operation switch
-        {
-            ILocalReferenceOperation localRef => localRef,
-            IConversionOperation conversion => ExtractLocalReference(conversion.Operand),
-            _ => null
-        };
-    }
+        ILocalReferenceOperation localRef => localRef,
+        IConversionOperation conversion => ExtractLocalReference(conversion.Operand),
+        _ => null
+    };
 }
