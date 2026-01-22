@@ -298,7 +298,6 @@ enum Foo
     }
 
     [TestMethod]
-    [Ignore("We need to support binary expressions on top of literals. See https://github.com/Vannevelj/SharpSource/issues/271")]
     public async Task FlagsEnumValuesAreNotPowersOfTwo_BinaryExpressions()
     {
         var original = @"
@@ -311,12 +310,12 @@ enum Days
     Sunday = 1,
     Monday = 2,
     WorkweekStart = Monday,
-    Tuesday = 3,
+    Tuesday = {|#0:3|},
     Wednesday = 4,
-    Thursday = 5,
-    Friday = 6,
+    Thursday = {|#1:5|},
+    Friday = {|#2:6|},
     WorkweekEnd = Friday,
-    Saturday = 7,
+    Saturday = {|#3:7|},
     Weekend = Saturday | Sunday,
     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday
 }";
@@ -342,10 +341,10 @@ enum Days
 }";
 
         await VerifyCS.VerifyCodeFix(original, new[] {
-            VerifyCS.Diagnostic().WithMessage("Enum Days.Tuesday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
-            VerifyCS.Diagnostic().WithMessage("Enum Days.Thursday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
-            VerifyCS.Diagnostic().WithMessage("Enum Days.Friday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
-            VerifyCS.Diagnostic().WithMessage("Enum Days.Saturday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.")
+            VerifyCS.Diagnostic(0).WithMessage("Enum Days.Tuesday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
+            VerifyCS.Diagnostic(1).WithMessage("Enum Days.Thursday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
+            VerifyCS.Diagnostic(2).WithMessage("Enum Days.Friday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead."),
+            VerifyCS.Diagnostic(3).WithMessage("Enum Days.Saturday is marked as a [Flags] enum but contains a literal value that isn't a power of two. Change the value or use a bitwise OR expression instead.")
         }, result);
     }
 

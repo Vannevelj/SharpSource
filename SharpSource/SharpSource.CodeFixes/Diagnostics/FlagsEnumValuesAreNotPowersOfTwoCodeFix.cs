@@ -38,17 +38,18 @@ public class FlagsEnumValuesAreNotPowersOfTwoCodeFix : CodeFixProvider
             return;
         }
 
+
         var enumDeclaration = enumMember.FirstAncestorOrSelfOfType(SyntaxKind.EnumDeclaration);
         if (enumDeclaration == default)
         {
             return;
         }
 
+        // Only consider members that appear before the current member to avoid circular references
         var otherEnumMembers = enumDeclaration
             .DescendantNodes()
             .OfType<EnumMemberDeclarationSyntax>()
-            .Where(em => em.EqualsValue is { Value: LiteralExpressionSyntax })
-            .Except(new[] { enumMember })
+            .TakeWhile(em => em != enumMember)
             .ToList();
 
         // Make sure we don't recommend the same combination twice

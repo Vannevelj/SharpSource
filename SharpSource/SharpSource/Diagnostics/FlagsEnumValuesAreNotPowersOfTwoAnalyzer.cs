@@ -48,7 +48,26 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
 
         foreach (var member in enumMemberDeclarations)
         {
-            if (member?.EqualsValue?.Value is LiteralExpressionSyntax literal && !literal.IsKind(SyntaxKind.CharacterLiteralExpression))
+            if (member?.EqualsValue?.Value is not { } equalsValue)
+            {
+                continue;
+            }
+
+            // Skip character literals - they don't apply to flags enums in a meaningful way
+            if (equalsValue.IsKind(SyntaxKind.CharacterLiteralExpression))
+            {
+                continue;
+            }
+
+            // Skip binary OR expressions - these are valid flag combinations (e.g., Weekend = Saturday | Sunday)
+            // Also skip identifier references - these reference other enum members (e.g., WorkweekEnd = Friday)
+            if (equalsValue is BinaryExpressionSyntax || equalsValue is IdentifierNameSyntax)
+            {
+                continue;
+            }
+
+            // For literal values (including within shift expressions), check if they're powers of two
+            if (equalsValue is LiteralExpressionSyntax literal)
             {
                 var constantValue = context.SemanticModel.GetConstantValue(literal);
                 if (constantValue is { Value: null })
@@ -58,7 +77,7 @@ public class FlagsEnumValuesAreNotPowersOfTwoAnalyzer : DiagnosticAnalyzer
 
                 if (!IsPowerOfTwo(constantValue.Value))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, member.EqualsValue.Value.GetLocation(), enumName, member.Identifier.ValueText));
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, equalsValue.GetLocation(), enumName, member.Identifier.ValueText));
                 }
             }
         }
