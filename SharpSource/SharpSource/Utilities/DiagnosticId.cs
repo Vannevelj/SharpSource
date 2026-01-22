@@ -61,4 +61,5 @@ public static class DiagnosticId
     public const string DisposeAsyncDisposable = "SS059";
     public const string ConcurrentDictionaryEmptyCheck = "SS060";
     public const string ImmutableCollectionCreatedIncorrectly = "SS061";
+    public const string ActivityWasNotStopped = "SS062";
 }

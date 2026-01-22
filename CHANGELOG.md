@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [Unreleased]
+- `ActivityWasNotStopped`: An `Activity` was started but is not being stopped or disposed
+
 ## [1.28.1] - 2026-01-22
 - Fixed an ignored test `MultipleOrderByCalls_MultipleOrderByChained`
 
