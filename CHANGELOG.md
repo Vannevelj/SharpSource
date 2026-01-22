@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.30.0] - Unreleased
+- `ValueTaskAwaitedMultipleTimes`: A `ValueTask` was awaited multiple times, which leads to undefined behavior
+
 ## [1.29.0] - 2026-01-22
 - Fixed an ignored test `MultipleOrderByCalls_MultipleOrderByChained`
 - `ActivityWasNotStopped`: An `Activity` was started but is not being stopped or disposed

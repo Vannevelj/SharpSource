@@ -62,4 +62,5 @@ public static class DiagnosticId
     public const string ConcurrentDictionaryEmptyCheck = "SS060";
     public const string ImmutableCollectionCreatedIncorrectly = "SS061";
     public const string ActivityWasNotStopped = "SS062";
+    public const string ValueTaskAwaitedMultipleTimes = "SS063";
 }
