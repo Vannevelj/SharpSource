@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.29.0] - 2026-01-22
 - Fixed an ignored test `MultipleOrderByCalls_MultipleOrderByChained`
 - `ActivityWasNotStopped`: An `Activity` was started but is not being stopped or disposed
+- `FlagsEnumValuesAreNotPowersOfTwo`: Trigger on enums that use binary expressions in member values
 
 ## [1.28.0] - 2026-01-21
 - `ImmutableCollectionCreatedIncorrectly`: `ImmutableArray` is being created using 'new' instead of the `Create` method
