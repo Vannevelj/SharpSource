@@ -61,12 +61,13 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         => await VerifyCodeFix(source, new[] { expected }, fixedSource, codeActionIndex);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult[], string)"/>
-    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0, string[]? additionalFiles = null)
+    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0, string[]? additionalFiles = null, string? batchFixedSource = null)
     {
         var test = new Test
         {
             TestCode = source,
             FixedCode = fixedSource,
+            BatchFixedCode = batchFixedSource!,
             CodeActionIndex = codeActionIndex
         };
 

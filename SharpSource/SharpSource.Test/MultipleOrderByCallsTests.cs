@@ -54,7 +54,6 @@ record Data(int X, int Y);";
     }
 
     [TestMethod]
-    [Ignore("Fix all provider keeps complaining, see https://github.com/Vannevelj/SharpSource/issues/282")]
     public async Task MultipleOrderByCalls_MultipleOrderByChained()
     {
         var original = @"
@@ -62,7 +61,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 var data = new List<Data>();
-var ordered = {|#0:data.OrderBy(obj => obj.X).OrderBy(obj => obj.Y).OrderBy(obj => obj.Y)|};
+var ordered = data.OrderBy(obj => obj.X).OrderBy(obj => obj.Y).OrderBy(obj => obj.Y);
 record Data(int X, int Y);";
 
         var result = @"
@@ -73,10 +72,18 @@ var data = new List<Data>();
 var ordered = data.OrderBy(obj => obj.X).ThenBy(obj => obj.Y).OrderBy(obj => obj.Y);
 record Data(int X, int Y);";
 
+        var batchFixedResult = @"
+using System.Collections.Generic;
+using System.Linq;
+
+var data = new List<Data>();
+var ordered = data.OrderBy(obj => obj.X).ThenBy(obj => obj.Y).ThenBy(obj => obj.Y);
+record Data(int X, int Y);";
+
         await VerifyCS.VerifyCodeFix(original, new DiagnosticResult[] {
-            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Successive OrderBy() calls will maintain only the last specified sort order").WithSpan(6, 15, 6, 63),
-            VerifyCS.Diagnostic().WithNoLocation().WithMessage("Successive OrderBy() calls will maintain only the last specified sort order").WithSpan(6, 15, 6, 85)
-        }, result);
+            VerifyCS.Diagnostic().WithNoLocation().WithSpan(6, 15, 6, 63).WithMessage("Successive OrderBy() calls will maintain only the last specified sort order"),
+            VerifyCS.Diagnostic().WithNoLocation().WithSpan(6, 15, 6, 85).WithMessage("Successive OrderBy() calls will maintain only the last specified sort order")
+        }, result, batchFixedSource: batchFixedResult);
     }
 
     [TestMethod]
