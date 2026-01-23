@@ -4,6 +4,7 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.29.1] - 2026-01-23
 - `StringConcatenatedInLoop`: Now also catches interpolated strings
 - `StringPlaceholdersInWrongOrder`: Retains existing whitespace when applying the code fix
+- `LinqTraversalBeforeFilter`: Implemented a code fix to swap the traversal and filter calls
 
 ## [1.29.0] - 2026-01-22
 - Fixed an ignored test `MultipleOrderByCalls_MultipleOrderByChained`
