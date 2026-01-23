@@ -19,38 +19,68 @@ public static class Extensions
     /// <param name="unwrapSuppress">Turns <c>value!.ToString()</c> into <c>value</c> if set to <c>true</c>. Otherwise <c>value!</c></param>
     public static SyntaxNode RemoveInvocation(this SyntaxNode invocationOrConditionalAccess, Type type, string method, SemanticModel semanticModel, bool unwrapSuppress = false)
     {
-        static ExpressionSyntax updateName(ExpressionSyntax subExpression, ExpressionSyntax nextInvocation)
-        {
-            var nextInvocationName = nextInvocation switch
-            {
-                MemberAccessExpressionSyntax memberAccess => memberAccess.Name,
-                MemberBindingExpressionSyntax memberBinding => memberBinding.Name,
-                _ => throw new ArgumentException("Invalid invocation expression")
-            };
-
-
-            ExpressionSyntax newExpression = subExpression switch
-            {
-                MemberAccessExpressionSyntax memberAccess => memberAccess.WithName(nextInvocationName),
-                MemberBindingExpressionSyntax memberBinding => memberBinding.WithName(nextInvocationName),
-                _ => throw new ArgumentException("Invalid invocation expression")
-            };
-            return newExpression;
-        }
-
-        // s1?.ToLower()
+        // Handle conditional access chains like s1?.Trim()?.ToLower() or s1?.ToLower()
         if (invocationOrConditionalAccess is ConditionalAccessExpressionSyntax conditionalAccess)
         {
-            var fullInvocation = conditionalAccess.WhenNotNull.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Where(x => x.ArgumentList.Arguments.Count == 0).FirstOrDefault();
-            var firstInvocation = fullInvocation?.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-            if (firstInvocation == default || fullInvocation == default)
+            // Find the innermost invocation that matches our target method
+            var targetInvocation = conditionalAccess.DescendantNodesAndSelf()
+                .OfType<InvocationExpressionSyntax>()
+                .Where(x => x.ArgumentList.Arguments.Count == 0)
+                .FirstOrDefault(x => x.IsAnInvocationOf(type, method, semanticModel));
+
+            if (targetInvocation == default)
             {
                 return conditionalAccess.Expression;
             }
 
-            var subExpression = firstInvocation.Expression;
-            var nextInvocation = fullInvocation.Expression;
-            return conditionalAccess.WithWhenNotNull(fullInvocation.WithExpression(updateName(subExpression, nextInvocation)));
+            // Find the ConditionalAccessExpressionSyntax that directly contains this invocation
+            var containingConditional = targetInvocation.Ancestors()
+                .OfType<ConditionalAccessExpressionSyntax>()
+                .FirstOrDefault();
+
+            if (containingConditional == default)
+            {
+                return conditionalAccess.Expression;
+            }
+
+            // If the target invocation is directly in WhenNotNull (e.g., s1?.ToLower())
+            // we need to check if there's a chain before it
+            var whenNotNull = containingConditional.WhenNotNull;
+
+            // Check if the invocation is at the end of a member binding chain
+            // e.g., s1?.Trim()?.ToLower() where ToLower() is at the end
+            if (whenNotNull is InvocationExpressionSyntax invExpr &&
+                invExpr == targetInvocation &&
+                invExpr.Expression is MemberBindingExpressionSyntax)
+            {
+                // The entire WhenNotNull is just the target invocation with member binding
+                // So we remove this conditional access level entirely
+                if (containingConditional == conditionalAccess)
+                {
+                    return conditionalAccess.Expression;
+                }
+
+                // Find what remains after removing this conditional access
+                var newRoot = conditionalAccess.ReplaceNode(containingConditional, containingConditional.Expression);
+                return newRoot;
+            }
+
+            // For chains like s1?.Trim().ToLower() where it's member access (not binding)
+            // Or s1?.Trim()?.ToLower() where we found the inner one
+            var newExpression = targetInvocation.Expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
+                MemberBindingExpressionSyntax => null, // Handled above
+                _ => null
+            };
+
+            if (newExpression != null)
+            {
+                var newNode = conditionalAccess.ReplaceNode(targetInvocation, newExpression);
+                return newNode;
+            }
+
+            return conditionalAccess.Expression;
         }
 
         foreach (var nestedInvocation in invocationOrConditionalAccess.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Where(x => x.ArgumentList.Arguments.Count == 0))

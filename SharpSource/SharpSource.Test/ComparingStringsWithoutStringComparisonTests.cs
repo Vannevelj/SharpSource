@@ -83,7 +83,7 @@ bool result = string.Equals(s1, s2, StringComparison.{expectedStringComparison})
     }
 
     [TestMethod]
-    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/190")]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/190")]
     [DataRow("ToLower", "OrdinalIgnoreCase")]
     [DataRow("ToUpper", "OrdinalIgnoreCase")]
     [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
@@ -144,7 +144,7 @@ bool result = s1?.Trim().{call}().ToString() == s2?.Trim().{call}().ToString();"
     }
 
     [TestMethod]
-    [Ignore("See https://github.com/Vannevelj/SharpSource/issues/190")]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/190")]
     [DataRow("ToLower", "OrdinalIgnoreCase")]
     [DataRow("ToUpper", "OrdinalIgnoreCase")]
     [DataRow("ToLowerInvariant", "InvariantCultureIgnoreCase")]
