@@ -120,11 +120,21 @@ public class UnnecessaryToStringOnSpanAnalyzer : DiagnosticAnalyzer
     private static bool IsCompatibleOverload(IInvocationOperation currentInvocation, IMethodSymbol candidateOverload, int changedParameterIndex, INamedTypeSymbol? spanCharSymbol, INamedTypeSymbol? readOnlySpanCharSymbol)
     {
         var currentMethod = currentInvocation.TargetMethod;
+        var currentParamCount = currentMethod.Parameters.Length;
 
-        // Quick check: the candidate must have at least as many parameters as the index we're changing
-        if (candidateOverload.Parameters.Length <= changedParameterIndex)
+        // The candidate must have at least as many parameters as the current method
+        if (candidateOverload.Parameters.Length < currentParamCount)
         {
             return false;
+        }
+
+        // Any extra parameters in the candidate must be optional
+        for (var i = currentParamCount; i < candidateOverload.Parameters.Length; i++)
+        {
+            if (!candidateOverload.Parameters[i].IsOptional)
+            {
+                return false;
+            }
         }
 
         // The candidate must accept a Span<char> or ReadOnlySpan<char> at the changed parameter position
@@ -137,106 +147,20 @@ public class UnnecessaryToStringOnSpanAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // Check if we can map all current arguments to the candidate overload
-        var currentArgs = currentInvocation.Arguments;
-
-        // Count required parameters in the candidate
-        var requiredParamCount = candidateOverload.Parameters.Count(p => !p.IsOptional && !p.IsParams);
-
-        // We need at least as many arguments (with one change) as required parameters
-        // But we also need to not have too many
-        if (currentArgs.Length < requiredParamCount)
-        {
-            return false;
-        }
-
-        // Check each current argument (except the changed one) to see if it's compatible
-        for (var i = 0; i < currentArgs.Length; i++)
+        // Check that all other parameters have matching types
+        for (var i = 0; i < currentParamCount; i++)
         {
             if (i == changedParameterIndex)
             {
                 continue;
             }
 
-            // If the candidate doesn't have this parameter position, check for params
-            if (i >= candidateOverload.Parameters.Length)
-            {
-                var lastParam = candidateOverload.Parameters[candidateOverload.Parameters.Length - 1];
-                if (!lastParam.IsParams)
-                {
-                    return false;
-                }
-                // Params array - check element type
-                if (lastParam.Type is IArrayTypeSymbol arrayType)
-                {
-                    var argType = GetArgumentType(currentArgs[i]);
-                    if (argType is null || !IsTypeCompatible(argType, arrayType.ElementType))
-                    {
-                        return false;
-                    }
-                }
-                continue;
-            }
-
-            var candidateParam = candidateOverload.Parameters[i];
-            var argType2 = GetArgumentType(currentArgs[i]);
-
-            if (argType2 is null)
-            {
-                continue;
-            }
-
-            if (!IsTypeCompatible(argType2, candidateParam.Type))
+            if (!SymbolEqualityComparer.Default.Equals(currentMethod.Parameters[i].Type, candidateOverload.Parameters[i].Type))
             {
                 return false;
             }
         }
 
         return true;
-    }
-
-    private static ITypeSymbol? GetArgumentType(IArgumentOperation argument)
-    {
-        var value = argument.Value;
-        if (value is IConversionOperation conversion)
-        {
-            return conversion.Operand.Type;
-        }
-
-        return value.Type;
-    }
-
-    private static bool IsTypeCompatible(ITypeSymbol sourceType, ITypeSymbol targetType)
-    {
-        if (SymbolEqualityComparer.Default.Equals(sourceType, targetType))
-        {
-            return true;
-        }
-
-        // Check for implicit conversions
-        if (sourceType is INamedTypeSymbol sourceNamed && targetType is INamedTypeSymbol targetNamed)
-        {
-            // Check inheritance
-            var current = sourceNamed;
-            while (current is not null)
-            {
-                if (SymbolEqualityComparer.Default.Equals(current, targetNamed))
-                {
-                    return true;
-                }
-                current = current.BaseType;
-            }
-
-            // Check interfaces
-            foreach (var iface in sourceNamed.AllInterfaces)
-            {
-                if (SymbolEqualityComparer.Default.Equals(iface, targetNamed))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }
