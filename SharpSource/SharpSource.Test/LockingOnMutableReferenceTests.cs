@@ -160,4 +160,49 @@ partial class Test
 
         await VerifyCS.VerifyCodeFix(file1, new[] { VerifyCS.Diagnostic().WithMessage("A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned.") }, result, additionalFiles: new[] { file2 });
     }
+
+    [TestMethod]
+    public async Task LockingOnMutableReference_StaticField()
+    {
+        var original = @"
+class Test
+{
+    private static object _lock = new object();
+
+    void M()
+    {
+        lock({|#0:_lock|}) { }
+    }
+}";
+
+        var expected = @"
+class Test
+{
+    private static readonly object _lock = new object();
+
+    void M()
+    {
+        lock(_lock) { }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("A lock was obtained on _lock but the field is mutable. This can lead to deadlocks when a new value is assigned."), expected);
+    }
+
+    [TestMethod]
+    public async Task LockingOnMutableReference_StaticReadonlyField()
+    {
+        var original = @"
+class Test
+{
+    private static readonly object _lock = new object();
+
+    void M()
+    {
+        lock(_lock) { }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }

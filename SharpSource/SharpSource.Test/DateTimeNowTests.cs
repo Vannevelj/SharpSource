@@ -147,4 +147,66 @@ var date = nameof(DateTime.Now);";
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task DateTimeNow_InLinqQuery()
+    {
+        var original = @"
+using System;
+using System.Linq;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var dates = new[] { DateTime.UtcNow };
+            var filtered = dates.Where(d => d > {|#0:DateTime.Now|});
+        }
+    }
+}";
+
+        var result = @"
+using System;
+using System.Linq;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        void Method()
+        {
+            var dates = new[] { DateTime.UtcNow };
+            var filtered = dates.Where(d => d > DateTime.UtcNow);
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use DateTime.UtcNow to get a locale-independent value"), result);
+    }
+
+    [TestMethod]
+    public async Task DateTimeNow_InFieldInitializer()
+    {
+        var original = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        private DateTime _createdAt = {|#0:DateTime.Now|};
+    }
+}";
+
+        var result = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        private DateTime _createdAt = DateTime.UtcNow;
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use DateTime.UtcNow to get a locale-independent value"), result);
+    }
 }

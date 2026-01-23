@@ -54,4 +54,20 @@ try {
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task ThrowNull_ThrowsDefault()
+    {
+        var original = @"{|#0:throw default;|}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Throwing null will always result in a runtime exception"));
+    }
+
+    [TestMethod]
+    public async Task ThrowNull_ThrowsDefaultException()
+    {
+        var original = @"{|#0:throw default(System.Exception);|}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Throwing null will always result in a runtime exception"));
+    }
 }
