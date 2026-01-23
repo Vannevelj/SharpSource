@@ -33,50 +33,52 @@ public static class Extensions
                 return conditionalAccess.Expression;
             }
 
-            // Find the ConditionalAccessExpressionSyntax that directly contains this invocation
-            var containingConditional = targetInvocation.Ancestors()
-                .OfType<ConditionalAccessExpressionSyntax>()
-                .FirstOrDefault();
-
-            if (containingConditional == default)
+            // Check if the target invocation uses member binding (e.g., ?.ToArray())
+            if (targetInvocation.Expression is MemberBindingExpressionSyntax)
             {
+                // Find the ConditionalAccessExpressionSyntax that directly contains this invocation as its WhenNotNull
+                var containingConditional = targetInvocation.Ancestors()
+                    .OfType<ConditionalAccessExpressionSyntax>()
+                    .FirstOrDefault(ca => ca.WhenNotNull == targetInvocation);
+
+                if (containingConditional != null)
+                {
+                    // The target is directly in WhenNotNull - remove this conditional access level
+                    // e.g., for s1?.Trim()?.ToLower(), if ToLower is the target and it's the WhenNotNull of
+                    // the inner conditional, replace that inner conditional with just its Expression
+                    if (containingConditional == conditionalAccess)
+                    {
+                        // The target is the WhenNotNull of the outermost conditional access
+                        return conditionalAccess.Expression;
+                    }
+                    else
+                    {
+                        // The target is in a nested conditional access - replace the nested conditional with its Expression
+                        var newNode = conditionalAccess.ReplaceNode(containingConditional, containingConditional.Expression);
+                        return newNode;
+                    }
+                }
+
+                // If there's a chain after the target (e.g., values?.ToArray().ToList())
+                // we need to convert the member binding to member access on the expression
+                var parent = targetInvocation.Parent;
+                if (parent is MemberAccessExpressionSyntax memberAccess)
+                {
+                    // The target invocation is being accessed by something after it
+                    // e.g., in .ToArray().ToList(), ToArray() is accessed by .ToList
+                    // Replace ToArray() invocation with a member binding expression
+                    var newMemberBinding = SyntaxFactory.MemberBindingExpression(memberAccess.Name);
+                    var newWhenNotNull = conditionalAccess.WhenNotNull.ReplaceNode(memberAccess, newMemberBinding);
+                    return conditionalAccess.WithWhenNotNull(newWhenNotNull);
+                }
+
                 return conditionalAccess.Expression;
             }
 
-            // If the target invocation is directly in WhenNotNull (e.g., s1?.ToLower())
-            // we need to check if there's a chain before it
-            var whenNotNull = containingConditional.WhenNotNull;
-
-            // Check if the invocation is at the end of a member binding chain
-            // e.g., s1?.Trim()?.ToLower() where ToLower() is at the end
-            if (whenNotNull is InvocationExpressionSyntax invExpr &&
-                invExpr == targetInvocation &&
-                invExpr.Expression is MemberBindingExpressionSyntax)
+            // For chains like s1?.Trim().ToLower() where ToLower uses member access (not binding)
+            if (targetInvocation.Expression is MemberAccessExpressionSyntax targetMemberAccess)
             {
-                // The entire WhenNotNull is just the target invocation with member binding
-                // So we remove this conditional access level entirely
-                if (containingConditional == conditionalAccess)
-                {
-                    return conditionalAccess.Expression;
-                }
-
-                // Find what remains after removing this conditional access
-                var newRoot = conditionalAccess.ReplaceNode(containingConditional, containingConditional.Expression);
-                return newRoot;
-            }
-
-            // For chains like s1?.Trim().ToLower() where it's member access (not binding)
-            // Or s1?.Trim()?.ToLower() where we found the inner one
-            var newExpression = targetInvocation.Expression switch
-            {
-                MemberAccessExpressionSyntax memberAccess => memberAccess.Expression,
-                MemberBindingExpressionSyntax => null, // Handled above
-                _ => null
-            };
-
-            if (newExpression != null)
-            {
-                var newNode = conditionalAccess.ReplaceNode(targetInvocation, newExpression);
+                var newNode = conditionalAccess.ReplaceNode(targetInvocation, targetMemberAccess.Expression);
                 return newNode;
             }
 
