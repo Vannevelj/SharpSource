@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.LinqTraversalBeforeFilterAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
+using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.LinqTraversalBeforeFilterAnalyzer, SharpSource.Diagnostics.LinqTraversalBeforeFilterCodeFix>;
 
 namespace SharpSource.Test;
 
@@ -25,7 +25,14 @@ using System.Collections.Generic;
 var values = new [] {{ 32 }};
 {{|#0:values.{traversal}|}}.Where(x => true);";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"));
+        var result = $@"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new [] {{ 32 }};
+values.Where(x => true).{traversal};";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"), result);
     }
 
     [TestMethod]
@@ -72,10 +79,24 @@ class Test
 }}
 ";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, new[] {
+        var result = $@"
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new Test[] {{ new Test() }};
+values.Where(x => true).OrderBy(x => x.Values.Where(x => true).Reverse());
+
+class Test
+{{
+    public int[] Values => Array.Empty<int>();
+}}
+";
+
+        await VerifyCS.VerifyCodeFix(original, new[] {
             VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?").WithSpan(7, 1, 7, 57),
             VerifyCS.Diagnostic().WithNoLocation().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?").WithSpan(7, 21, 7, 39)
-        });
+        }, result);
     }
 
     [TestMethod]
@@ -102,6 +123,7 @@ var result = from v in values
 using System.Linq;
 using System.Collections.Generic;
 
+
 var values = new [] {{ 32 }};
 var result = from v in values
              where v > 5
@@ -111,4 +133,115 @@ var result = from v in values
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_CorrectOrder()
+    {
+        var original = @"
+using System.Linq;
+
+var values = new [] { 32 };
+values.Where(x => true).OrderBy(x => x);";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_WithIntermediateCall()
+    {
+        var original = @"
+using System.Linq;
+
+var values = new [] { 32 };
+values.OrderBy(x => x).Select(x => x * 2).Where(x => true);";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_WithSubsequentCalls()
+    {
+        var original = @"
+using System.Linq;
+
+var values = new [] { 32 };
+{|#0:values.OrderBy(x => x)|}.Where(x => true).ToList();";
+
+        var result = @"
+using System.Linq;
+
+var values = new [] { 32 };
+values.Where(x => true).OrderBy(x => x).ToList();";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"), result);
+    }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_AssignedToVariable()
+    {
+        var original = @"
+using System.Linq;
+
+var values = new [] { 32 };
+var result = {|#0:values.OrderBy(x => x)|}.Where(x => true);";
+
+        var result = @"
+using System.Linq;
+
+var values = new [] { 32 };
+var result = values.Where(x => true).OrderBy(x => x);";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"), result);
+    }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_AsMethodArgument()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new [] { 32 };
+Process({|#0:values.OrderBy(x => x)|}.Where(x => true));
+
+void Process(IEnumerable<int> items) { }";
+
+        var result = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new [] { 32 };
+Process(values.Where(x => true).OrderBy(x => x));
+
+void Process(IEnumerable<int> items) { }";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"), result);
+    }
+
+    [TestMethod]
+    public async Task LinqTraversalBeforeFilter_OnListType()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new List<int> { 32 };
+{|#0:values.OrderBy(x => x)|}.Where(x => true);";
+
+        var result = @"
+using System.Linq;
+using System.Collections.Generic;
+
+var values = new List<int> { 32 };
+values.Where(x => true).OrderBy(x => x);";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Unexpected collection traversal before Where() clause. Could the traversal be more efficient if filtering is performed first?"), result);
+    }
+
+
+
+
+
+
+
 }

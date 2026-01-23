@@ -35,6 +35,7 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
             {
                 ICompoundAssignmentOperation { OperatorKind: BinaryOperatorKind.Add } => true,
                 ISimpleAssignmentOperation { Value: IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } binary } => BinaryOperationConcatenatesSymbol(binary, assignedSymbol),
+                ISimpleAssignmentOperation { Value: IInterpolatedStringOperation interpolated } => InterpolatedStringConcatenatesSymbol(interpolated, assignedSymbol),
                 _ => false
             };
 
@@ -105,6 +106,28 @@ public class StringConcatenatedInLoopAnalyzer : DiagnosticAnalyzer
         }
 
         return traverse(binary, targetSymbol);
+    }
+
+    private static bool InterpolatedStringConcatenatesSymbol(IInterpolatedStringOperation interpolated, ISymbol? targetSymbol)
+    {
+        if (targetSymbol is null)
+        {
+            return false;
+        }
+
+        foreach (var part in interpolated.Parts)
+        {
+            if (part is IInterpolationOperation { Expression: var expression })
+            {
+                var symbol = GetSymbol(expression);
+                if (SymbolEqualityComparer.Default.Equals(symbol, targetSymbol))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static bool IsAdjacentToLoopEscape(IOperation operation)

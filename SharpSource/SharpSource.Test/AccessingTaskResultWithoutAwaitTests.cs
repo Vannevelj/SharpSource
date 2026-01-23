@@ -452,4 +452,75 @@ async Task DoThing(FileStream? file)
 
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."));
     }
+
+    [TestMethod]
+    public async Task AccessingTaskResultWithoutAwait_AsyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        void MyMethod()
+        {
+            async Task InnerAsync()
+            {
+                var number = {|#0:Other().Result|};
+            }
+        }
+
+        async Task<int> Other() => 5;
+    }
+}";
+
+        var result = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        void MyMethod()
+        {
+            async Task InnerAsync()
+            {
+                var number = await Other();
+            }
+        }
+
+        async Task<int> Other() => 5;
+    }
+}";
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."), result);
+    }
+
+    [TestMethod]
+    public async Task AccessingTaskResultWithoutAwait_SyncLocalFunction()
+    {
+        var original = @"
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        void MyMethod()
+        {
+            void InnerSync()
+            {
+                var number = {|#0:Other().Result|};
+            }
+        }
+
+        async Task<int> Other() => 5;
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Use await to get the result of a Task."));
+    }
 }

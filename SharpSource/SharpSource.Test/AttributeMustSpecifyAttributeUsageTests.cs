@@ -127,4 +127,46 @@ class DerivedAttribute : MyAttribute { }";
         await VerifyCS.VerifyNoDiagnostic(original);
 
     }
+
+    [TestMethod]
+    public async Task AttributeMustSpecifyAttributeUsage_AbstractAttribute()
+    {
+        var original = @"
+using System;
+
+abstract class {|#0:MyBaseAttribute|} : Attribute
+{
+}";
+
+        var result = @"
+using System;
+
+[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+abstract class MyBaseAttribute : Attribute
+{
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MyBaseAttribute should specify how the attribute can be used"), result);
+    }
+
+    [TestMethod]
+    public async Task AttributeMustSpecifyAttributeUsage_SealedAttribute()
+    {
+        var original = @"
+using System;
+
+sealed class {|#0:MySealedAttribute|} : Attribute
+{
+}";
+
+        var result = @"
+using System;
+
+[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+sealed class MySealedAttribute : Attribute
+{
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MySealedAttribute should specify how the attribute can be used"), result);
+    }
 }

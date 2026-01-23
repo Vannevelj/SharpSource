@@ -87,17 +87,19 @@ public class ComparingStringsWithoutStringComparisonAnalyzer : DiagnosticAnalyze
 
     private static (CapitalizationContext? CapitalizationContext, ISymbol? Instance, IOperation Operand) StringCapitalizationFunction(IOperation operand, ImmutableArray<CapitalizationContext> capitalizationContexts)
     {
-        static (IInvocationOperation? Operation, ISymbol? Instance) getInvocation(IOperation op)
+        static (IInvocationOperation? Operation, ISymbol? Instance) getInvocation(IOperation op, IOperation rootOp)
         {
             return op switch
             {
-                IInvocationOperation inv => (inv, GetReferencedInstance(inv.Instance)),
-                IConditionalAccessOperation { WhenNotNull: IConditionalAccessOperation or IInvocationOperation } cond => getInvocation(cond.WhenNotNull),
-                _ => (default, GetReferencedInstance(op))
+                // Direct invocation: s1.ToLower()
+                IInvocationOperation inv => (inv, GetReferencedInstance(rootOp)),
+                // Nested conditional access: s1?.Trim()?.ToLower() - recurse into WhenNotNull
+                IConditionalAccessOperation cond => getInvocation(cond.WhenNotNull, rootOp),
+                _ => (default, GetReferencedInstance(rootOp))
             };
         }
 
-        var (operation, instance) = getInvocation(operand);
+        var (operation, instance) = getInvocation(operand, operand);
 
         if (operation is { Arguments.Length: 0 })
         {

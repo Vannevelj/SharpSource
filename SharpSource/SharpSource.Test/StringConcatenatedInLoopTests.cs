@@ -382,4 +382,50 @@ for (int i = 0; i < 10; i++)
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_NestedLoop()
+    {
+        var original = @"
+var res = string.Empty;
+for (var i = 0; i < 5; i++)
+{
+    for (var j = 0; j < 5; j++)
+    {
+        {|#0:res += ""test""|};
+    }
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string was concatenated in a loop which introduces intermediate allocations. Consider using a StringBuilder or pre-allocated string instead."));
+    }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_InterpolatedString()
+    {
+        var original = @"
+var res = string.Empty;
+while (true)
+{
+    {|#0:res = $""{res}test""|};
+}
+";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("A string was concatenated in a loop which introduces intermediate allocations. Consider using a StringBuilder or pre-allocated string instead."));
+    }
+
+    [TestMethod]
+    public async Task StringConcatenatedInLoop_InterpolatedString_NoSelfReference()
+    {
+        var original = @"
+var res = string.Empty;
+var other = string.Empty;
+while (true)
+{
+    res = $""{other}test"";
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }

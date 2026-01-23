@@ -578,4 +578,32 @@ object[] arguments = new object[] { 1, 2, 3 };
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/298")]
+    public async Task StringPlaceholdersInWrongOrder_PreservesMultilineFormatting()
+    {
+        var original = @"
+using System.Globalization;
+
+var processArgs = {|#0:string.Format(
+    CultureInfo.InvariantCulture,
+    ""-dump_attachment:{1} {2} -i {0} -t 0 -f null null"",
+    ""inputPath"",
+    ""attachmentStreamIndex"",
+    ""outputPath"")|};
+";
+
+        var expected = @"
+using System.Globalization;
+
+var processArgs = string.Format(
+    CultureInfo.InvariantCulture,
+    ""-dump_attachment:{0} {1} -i {2} -t 0 -f null null"",
+    ""attachmentStreamIndex"",
+    ""outputPath"",
+    ""inputPath"");
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("string.Format() Placeholders are not in ascending order."), expected);
+    }
 }

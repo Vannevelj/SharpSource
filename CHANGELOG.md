@@ -1,6 +1,13 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.30.0] - 2026-01-23
+- `StringConcatenatedInLoop`: Now also catches interpolated strings
+- `StringPlaceholdersInWrongOrder`: Retains existing whitespace when applying the code fix
+- `LinqTraversalBeforeFilter`: Implemented a code fix to swap the traversal and filter calls
+- `ComparingStringsWithoutStringComparison`: Supports null-conditional access, e.g. `myString?.ToLower() == otherString?.ToLower()`
+- `UnnecessaryToStringOnSpan`: A `Span<char>` or `ReadOnlySpan<char>` was converted to a `string` using `.ToString()` when an overload accepting a `(ReadOnly)Span<char>` exists. Use that overload instead to avoid unnecessary allocations.
+
 ## [1.29.0] - 2026-01-22
 - Fixed an ignored test `MultipleOrderByCalls_MultipleOrderByChained`
 - `ActivityWasNotStopped`: An `Activity` was started but is not being stopped or disposed

@@ -259,4 +259,56 @@ namespace ConsoleApplication1
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task NewGuid_Constructor_InFieldInitializer()
+    {
+        var original = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        private Guid _id = {|#0:new Guid()|};
+    }
+}";
+
+        var result = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        private Guid _id = Guid.NewGuid();
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result);
+    }
+
+    [TestMethod]
+    public async Task NewGuid_Constructor_InPropertyInitializer()
+    {
+        var original = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        public Guid Id { get; set; } = {|#0:new Guid()|};
+    }
+}";
+
+        var result = @"
+using System;
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("An empty guid was created in an ambiguous manner"), result);
+    }
 }
