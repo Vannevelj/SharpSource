@@ -134,7 +134,9 @@ public class StringPlaceHoldersInWrongOrderCodeFix : CodeFixProvider
             }
         }
 
-        var newArguments = stringFormatInvocation.ArgumentList.WithArguments(SyntaxFactory.SeparatedList(args));
+        // Preserve the original separators (commas with trivia like newlines and indentation) from the argument list
+        var originalSeparators = stringFormatInvocation.ArgumentList.Arguments.GetSeparators().ToArray();
+        var newArguments = stringFormatInvocation.ArgumentList.WithArguments(SyntaxFactory.SeparatedList(args, originalSeparators));
         var newInvocation = stringFormatInvocation.WithArgumentList(newArguments);
         var newRoot = root.ReplaceNode(stringFormatInvocation, newInvocation);
         var newDocument = document.WithSyntaxRoot(newRoot);
