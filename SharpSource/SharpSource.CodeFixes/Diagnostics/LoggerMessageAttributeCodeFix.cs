@@ -147,7 +147,7 @@ public class LoggerMessageAttributeCodeFix : CodeFixProvider
         var formatArgsStart = invocationArgs.FindIndex(a =>
         {
             var paramName = a.NameColon?.Name.Identifier.Text;
-            return paramName == "args" || (a.Expression is not LiteralExpressionSyntax && !IsLogLevelExpression(a.Expression) && paramName != "message" && paramName != "eventId" && paramName != "exception");
+            return paramName == "args" || ( a.Expression is not LiteralExpressionSyntax && !IsLogLevelExpression(a.Expression) && paramName != "message" && paramName != "eventId" && paramName != "exception" );
         });
 
         if (formatArgsStart >= 0)

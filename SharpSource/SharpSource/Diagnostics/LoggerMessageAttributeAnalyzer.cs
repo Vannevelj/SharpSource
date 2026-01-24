@@ -94,7 +94,7 @@ public class LoggerMessageAttributeAnalyzer : DiagnosticAnalyzer
             {
                 // LogInformation -> Information, LogError -> Error, etc.
                 logLevel = methodName.Substring(3);
-            }            
+            }
         }
         else
         {
