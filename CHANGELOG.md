@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.31.0] - 2026-01-24
+- `LoggerMessageAttribute`: This analyzer suggests converting regular logging calls to the source-generated logging pattern.
+
 ## [1.30.0] - 2026-01-23
 - `StringConcatenatedInLoop`: Now also catches interpolated strings
 - `StringPlaceholdersInWrongOrder`: Retains existing whitespace when applying the code fix

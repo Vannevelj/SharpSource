@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using Microsoft.CodeAnalysis;
@@ -38,6 +39,7 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             TestState.AdditionalReferences.Add(typeof(NUnit.Framework.TestFixtureAttribute).Assembly.Location);
             TestState.AdditionalReferences.Add(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
             TestState.AdditionalReferences.Add(typeof(Newtonsoft.Json.JsonSerializer).Assembly.Location);
+            TestState.AdditionalReferences.Add(typeof(Microsoft.Extensions.Logging.LoggerMessageAttribute).Assembly.Location);
 
             // Initialized explicitly so the underlying test framework doesn't auto-inject all the netcoreapp3.1 references
             // Unfortunately MS stopped updating the utility library that abstracted this: https://github.com/dotnet/roslyn-sdk/issues/1047
@@ -60,6 +62,7 @@ end_of_line = lf
             => new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true).WithNullableContextOptions(NullableContextOptions);
 
         protected override bool IsCompilerDiagnosticIncluded(Diagnostic diagnostic, CompilerDiagnostics compilerDiagnostics)
-            => diagnostic.Id is not "CS5001" && base.IsCompilerDiagnosticIncluded(diagnostic, compilerDiagnostics);
+            // CS5001: Program does not contain a static 'Main' method suitable for an entry point
+            => diagnostic.Id is not "CS5001" && !DisabledDiagnostics.Contains(diagnostic.Id) && base.IsCompilerDiagnosticIncluded(diagnostic, compilerDiagnostics);
     }
 }
