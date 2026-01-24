@@ -64,6 +64,7 @@ Generally speaking you want to follow the following pattern:
 * Avoid exceptions at all costs. You want to religiously `null`-check everything because you must assume that code is most frequently in an invalid state during active development.
 * When asserting against a diagnostic you must use the special `{|#<num>` and `|}` tags to indicate where in the source code the squiggly lines are shown. The `<num>` is to be replaced with a 0-indexed numeral (0, 1, 2, 3) and represents the index of the diagnostic that is being reported.
 * When writing tests, give the test a descriptive name that captures the nuance of the scenario it's testing. Do not hesitate to use long names if it captures the intent better.
+* Make sure there are no return statements inside the `RegisterCodeFix` callback - it means the user would see a preview of the same document. Do all precondition checks before this point.
 
 ## How to run
 

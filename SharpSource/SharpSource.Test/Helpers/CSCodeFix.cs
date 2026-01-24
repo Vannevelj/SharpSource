@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -57,11 +58,11 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         => await VerifyCodeFix(source, DiagnosticResult.EmptyDiagnosticResults, fixedSource);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult, string)"/>
-    public static async Task VerifyCodeFix(string source, DiagnosticResult expected, string fixedSource, int codeActionIndex = 0)
-        => await VerifyCodeFix(source, new[] { expected }, fixedSource, codeActionIndex);
+    public static async Task VerifyCodeFix(string source, DiagnosticResult expected, string fixedSource, int codeActionIndex = 0, string[]? disabledDiagnostics = null)
+        => await VerifyCodeFix(source, [expected], fixedSource, codeActionIndex, additionalFiles: null, batchFixedSource: null, disabledDiagnostics);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult[], string)"/>
-    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0, string[]? additionalFiles = null, string? batchFixedSource = null)
+    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0, string[]? additionalFiles = null, string? batchFixedSource = null, string[]? disabledDiagnostics = null)
     {
         var test = new Test
         {
@@ -70,6 +71,11 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             BatchFixedCode = batchFixedSource!,
             CodeActionIndex = codeActionIndex
         };
+
+        if (disabledDiagnostics != null)
+        {
+            test.DisabledDiagnostics.AddRange(disabledDiagnostics);
+        }
 
         if (additionalFiles != null)
         {
