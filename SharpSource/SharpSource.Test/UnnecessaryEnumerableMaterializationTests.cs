@@ -213,7 +213,6 @@ values?.ToList();";
     }
 
     [TestMethod]
-    [Ignore("Need to find a way to handle the testing of a code fix when there are multiple issues, see https://github.com/Vannevelj/SharpSource/issues/288")]
     public async Task UnnecessaryEnumerableMaterialization_ConditionalAccess_Chained()
     {
         var original = @"
@@ -221,19 +220,39 @@ using System.Linq;
 using System.Collections.Generic;
 
 IEnumerable<string> values = new [] { ""test"" };
-values?.ToArray().ToList().AsEnumerable();";
+values?{|#0:.ToArray().ToList()|}.AsEnumerable();";
 
-        var expected = $@"
+        var expected = @"
 using System.Linq;
 using System.Collections.Generic;
 
-IEnumerable<string> values = new [] {{ ""test"" }};
+IEnumerable<string> values = new [] { ""test"" };
 values?.ToList().AsEnumerable();";
 
-        await VerifyCS.VerifyCodeFix(original, new[] {
-            VerifyCS.Diagnostic().WithNoLocation().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted").WithSpan(6, 8, 6, 27),
-            VerifyCS.Diagnostic().WithNoLocation().WithMessage("ToList is unnecessarily materializing the IEnumerable and can be omitted").WithSpan(6, 8, 6, 42)
-        }, expected);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted"), expected);
+    }
+
+    [TestMethod]
+    public async Task UnnecessaryEnumerableMaterialization_MultipleMaterializations_IncrementalFixes()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values.ToArray().Where(x => true).ToList().Where(x => true);";
+
+        var expected = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values.Where(x => true).Where(x => true);";
+
+        await VerifyCS.VerifyCodeFix(original, [
+            VerifyCS.DiagnosticWithoutLocation().WithSpan(6, 1, 6, 34).WithMessage("ToArray is unnecessarily materializing the IEnumerable and can be omitted"),
+            VerifyCS.DiagnosticWithoutLocation().WithSpan(6, 1, 6, 60).WithMessage("ToList is unnecessarily materializing the IEnumerable and can be omitted")
+        ], expected, numberOfIncrementalIterations: 2);
     }
 
     [TestMethod]

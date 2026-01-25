@@ -14,13 +14,19 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
     where TAnalyzer : DiagnosticAnalyzer, new()
     where TCodeFix : CodeFixProvider, new()
 {
-    /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic()"/>
-    public static DiagnosticResult Diagnostic(int location = 0)
-        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic().WithLocation(location);
+/// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic()"/>
+public static DiagnosticResult Diagnostic(int location = 0)
+    => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic().WithLocation(location);
 
-    /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(string)"/>
-    public static DiagnosticResult Diagnostic(string diagnosticId)
-        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(diagnosticId);
+/// <summary>
+/// Gets a <see cref="DiagnosticResult"/> without a predefined location.
+/// </summary>
+public static DiagnosticResult DiagnosticWithoutLocation()
+    => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic();
+
+/// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(string)"/>
+public static DiagnosticResult Diagnostic(string diagnosticId)
+    => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(diagnosticId);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(DiagnosticDescriptor)"/>
     public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor, int location = 0)
@@ -62,14 +68,23 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         => await VerifyCodeFix(source, [expected], fixedSource, codeActionIndex, additionalFiles: null, batchFixedSource: null, disabledDiagnostics);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult[], string)"/>
-    public static async Task VerifyCodeFix(string source, DiagnosticResult[] expected, string fixedSource, int codeActionIndex = 0, string[]? additionalFiles = null, string? batchFixedSource = null, string[]? disabledDiagnostics = null)
+    public static async Task VerifyCodeFix(
+        string source,
+        DiagnosticResult[] expected,
+        string fixedSource,
+        int codeActionIndex = 0,
+        string[]? additionalFiles = null,
+        string? batchFixedSource = null,
+        string[]? disabledDiagnostics = null,
+        int? numberOfIncrementalIterations = null)
     {
         var test = new Test
         {
             TestCode = source,
             FixedCode = fixedSource,
             BatchFixedCode = batchFixedSource!,
-            CodeActionIndex = codeActionIndex
+            CodeActionIndex = codeActionIndex,
+            NumberOfIncrementalIterations = numberOfIncrementalIterations
         };
 
         if (disabledDiagnostics != null)
