@@ -25,7 +25,6 @@ class MyController
     }
 
     [TestMethod]
-    [Ignore("Minimal Web API is not supported yet. See https://github.com/Vannevelj/SharpSource/issues/140")]
     [DataRow("[FromBody]")]
     [DataRow("[FromBodyAttribute]")]
     [DataRow("[Microsoft.AspNetCore.Mvc.FromBody]")]
@@ -35,14 +34,14 @@ class MyController
 using Microsoft.AspNetCore.Mvc;
 
 var app = new WebApplication();
-app.MapGet(""/"", ({attribute} string first, {attribute} string second, Service service) => {{ }});
+app.MapGet(""/"", {{|#0:({attribute} string first, {attribute} string second, Service service) => {{ }}|}});
 
 class WebApplication {{
     public void MapGet(string path, System.Action<string, string, Service> handler) {{ }}
 }}
 class Service {{ }}";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method DoThing specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead."));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method lambda expression specifies multiple [FromBody] parameters but only one is allowed. Specify a wrapper type or use [FromForm], [FromRoute], [FromHeader] and [FromQuery] instead."));
     }
 
     [TestMethod]

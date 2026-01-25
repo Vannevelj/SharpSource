@@ -482,7 +482,6 @@ void Method(bool b) {{ }}";
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/56")]
-    [Ignore("Code fix introduces a \r\n newline which fails the equality check because the test expects \n. Presumably fixed when https://github.com/Vannevelj/SharpSource/issues/274 is done")]
     public async Task ComparingStringsWithoutStringComparison_WithOtherUsingStatements()
     {
         var original = @"
@@ -493,8 +492,8 @@ string s2 = string.Empty;
 bool result = {|#0:s1.ToLower()|} == s2.ToLower();";
 
         var result = @$"
-using System.Text;
 using System;
+using System.Text;
 
 string s1 = string.Empty;
 string s2 = string.Empty;
