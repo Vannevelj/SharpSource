@@ -1,7 +1,7 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.31.1] - 2026-01-24
+## [1.31.1] - 2026-01-25
 - `MultipleFromBodyParameters`: Support Minimal Web APIs (lambda expressions)
 
 ## [1.31.0] - 2026-01-24
