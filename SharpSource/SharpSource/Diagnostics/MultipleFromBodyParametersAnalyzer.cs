@@ -1,6 +1,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SharpSource.Utilities;
 
@@ -30,12 +32,13 @@ public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
             var fromBodySymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.FromBodyAttribute");
             if (fromBodySymbol is not null)
             {
-                compilationContext.RegisterSymbolAction(context => Analyze(context, fromBodySymbol), SymbolKind.Method);
+                compilationContext.RegisterSymbolAction(context => AnalyzeMethod(context, fromBodySymbol), SymbolKind.Method);
+                compilationContext.RegisterSyntaxNodeAction(context => AnalyzeLambda(context, fromBodySymbol), SyntaxKind.ParenthesizedLambdaExpression);
             }
         });
     }
 
-    private static void Analyze(SymbolAnalysisContext context, INamedTypeSymbol fromBodySymbol)
+    private static void AnalyzeMethod(SymbolAnalysisContext context, INamedTypeSymbol fromBodySymbol)
     {
         var methodSymbol = (IMethodSymbol)context.Symbol;
         var attributesOnParameters = methodSymbol.Parameters
@@ -46,5 +49,31 @@ public class MultipleFromBodyParametersAnalyzer : DiagnosticAnalyzer
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodSymbol.Locations[0], methodSymbol.Name));
         }
+    }
+
+    private static void AnalyzeLambda(SyntaxNodeAnalysisContext context, INamedTypeSymbol fromBodySymbol)
+    {
+        var lambda = (ParenthesizedLambdaExpressionSyntax)context.Node;
+        var fromBodyCount = 0;
+
+        foreach (var parameter in lambda.ParameterList.Parameters)
+        {
+            foreach (var attributeList in parameter.AttributeLists)
+            {
+                foreach (var attribute in attributeList.Attributes)
+                {
+                    var attributeSymbol = context.SemanticModel.GetTypeInfo(attribute).Type;
+                    if (fromBodySymbol.Equals(attributeSymbol, SymbolEqualityComparer.Default))
+                    {
+                        fromBodyCount++;
+                        if (fromBodyCount > 1)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(Rule, lambda.GetLocation(), "lambda expression"));
+                            return;
+                        }
+                    }
+                }
+            }
+        }        
     }
 }
