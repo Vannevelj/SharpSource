@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.31.2] - 2026-03-13
+- `TestMethodWithoutPublicModifier`: `internal` methods with xUnit no longer trigger this
+
 ## [1.31.1] - 2026-01-25
 - `MultipleFromBodyParameters`: Support Minimal Web APIs (lambda expressions)
 

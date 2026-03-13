@@ -47,6 +47,9 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var hasXunitTestAttribute = false;
+        var hasTestAttribute = false;
+
         var attributes = method.GetAttributes();
         foreach (var attribute in attributes)
         {
@@ -55,12 +58,30 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
             {
                 if (testMethodAttributeSymbols.Any(symbol => attributeType.Equals(symbol, SymbolEqualityComparer.Default)))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
-                    return;
+                    hasTestAttribute = true;
+
+                    if (attributeType.ContainingNamespace.ToDisplayString() == "Xunit")
+                    {
+                        hasXunitTestAttribute = true;
+                    }
+
+                    break;
                 }
 
                 attributeType = attributeType.BaseType;
             }
         }
+
+        if (!hasTestAttribute)
+        {
+            return;
+        }
+
+        if (method.DeclaredAccessibility == Accessibility.Internal && hasXunitTestAttribute)
+        {
+            return;
+        }
+
+        context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
     }
 }
