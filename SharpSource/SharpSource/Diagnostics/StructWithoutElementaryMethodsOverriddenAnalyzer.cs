@@ -17,7 +17,7 @@ public class StructWithoutElementaryMethodsOverriddenAnalyzer : DiagnosticAnalyz
         "Implement Equals(), GetHashCode() and ToString() methods on struct {0}.",
         Categories.Performance,
         DiagnosticSeverity.Warning,
-        true,
+        false,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS017-StructWithoutElementaryMethodsOverridden.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

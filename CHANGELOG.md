@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.33.0] - 2026-03-14
+- `StructWithoutElementaryMethodsOverridden`: turned off by default
+
 ## [1.32.0] - 2026-03-14
 - `RedisResponseNotHandled`: Detect when Redis response objects are discarded without checking for errors
 - `ActivityWasNotStopped`: Fixed a false positive when the activity is directly returned from a method
