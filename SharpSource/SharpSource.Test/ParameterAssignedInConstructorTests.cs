@@ -99,6 +99,34 @@ class Test
     }
 
     [TestMethod]
+    public async Task ParameterAssignedInConstructor_Field_WithThisQualifier()
+    {
+        var original = @"
+class Test
+{
+    int _count;
+
+    Test(int count)
+    {
+        {|#0:count|} = this._count;
+    }
+}";
+
+        var result = @"
+class Test
+{
+    int _count;
+
+    Test(int count)
+    {
+        this._count = count;
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
+    }
+
+    [TestMethod]
     public async Task ParameterAssignedInConstructor_NoStatementsInBody()
     {
         var original = @"

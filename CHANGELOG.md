@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.32.0] - 2026-03-14
 - `DisposableFieldIsNotDisposed`: Disposable fields that belong to a type now trigger when they are not included in any reachable disposal path
+- `ParameterAssignedInConstructor`: Now also detects suspicious assignments from `this.`-qualified fields and properties
 - `TestMethodWithoutPublicModifier`: `internal` methods with xUnit no longer trigger this
 - `TestMethodWithoutTestAttribute`: NUnit classes can now be recognized through sibling `[Test]` methods even when `[TestFixture]` is omitted
 - `RecursiveOperatorOverload`: Fixed a false positive when a different overload is selected
