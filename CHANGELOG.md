@@ -2,6 +2,7 @@
 https://keepachangelog.com/en/1.0.0/
 
 ## [1.32.0] - 2026-03-14
+- `ActivityWasNotStopped`: Fixed a false positive when the activity is directly returned from a method
 - `DisposableFieldIsNotDisposed`: Disposable fields that belong to a type now trigger when they are not included in any reachable disposal path
 - `DisposeAsyncDisposable`: Detects asynchronously disposable concrete types even when the local is declared as an interface or base type
 - `SwitchDoesNotHandleAllEnumOptions`: Now analyzes `switch` expressions as well as `switch` statements

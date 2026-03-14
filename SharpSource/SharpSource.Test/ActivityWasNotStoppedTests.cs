@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ActivityWasNotStoppedAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
@@ -502,6 +502,43 @@ class Test
 }";
 
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Activity activity was started but is not being stopped or disposed"));
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/369")]
+    public async Task ActivityWasNotStopped_ActivityReturnedDirectlyFromMethod()
+    {
+        var original = @"
+#nullable enable
+using System.Diagnostics;
+
+class Test
+{
+    private static readonly ActivitySource Source = new(""Test"");
+
+    Activity? Method()
+    {
+        return Source.StartActivity(""test"");
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/369")]
+    public async Task ActivityWasNotStopped_ActivityReturnedDirectlyFromExpressionBodiedMethod()
+    {
+        var original = @"
+#nullable enable
+using System.Diagnostics;
+
+class Test
+{
+    private static readonly ActivitySource Source = new(""Test"");
+
+    Activity? Method() => Source.StartActivity(""test"");
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
     }
 
     [TestMethod]
