@@ -10,6 +10,8 @@ namespace SharpSource.Diagnostics;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class DisposeAsyncDisposableAnalyzer : DiagnosticAnalyzer
 {
+    public const string RewrittenTypePropertyName = nameof(RewrittenTypePropertyName);
+
     public static DiagnosticDescriptor Rule => new(
         DiagnosticId.DisposeAsyncDisposable,
         "An object implements IAsyncDisposable and can be disposed of asynchronously in the context it is used",
@@ -67,13 +69,55 @@ public class DisposeAsyncDisposableAnalyzer : DiagnosticAnalyzer
         {
             foreach (var declarator in declaration.Declarators)
             {
-                var type = declarator.Symbol.Type;
+                var declaredType = declarator.Symbol.Type;
+                var type = GetDisposedType(declarator) ?? declaredType;
                 if (type is not null && type.AllInterfaces.Any(i => i.Equals(asyncDisposable, SymbolEqualityComparer.Default)))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), type.Name));
+                    var properties = GetDiagnosticProperties(type, declaredType, declaration, asyncDisposable);
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), properties, type.Name));
                     return;
                 }
             }
         }
+    }
+
+    private static ImmutableDictionary<string, string?>? GetDiagnosticProperties(ITypeSymbol actualType, ITypeSymbol? declaredType, IVariableDeclarationOperation declaration, INamedTypeSymbol asyncDisposable)
+    {
+        if (declaredType is null || declaration.Declarators.Length != 1)
+        {
+            return null;
+        }
+
+        if (declaredType.AllInterfaces.Any(i => i.Equals(asyncDisposable, SymbolEqualityComparer.Default)))
+        {
+            return null;
+        }
+
+        if (SymbolEqualityComparer.Default.Equals(actualType, declaredType))
+        {
+            return null;
+        }
+
+        return ImmutableDictionary<string, string?>.Empty.Add(RewrittenTypePropertyName, actualType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+    }
+
+    private static ITypeSymbol? GetDisposedType(IVariableDeclaratorOperation declarator)
+    {
+        var initializer = declarator
+            .ChildOperations
+            .OfType<IVariableInitializerOperation>()
+            .FirstOrDefault();
+
+        return UnwrapType(initializer?.Value);
+    }
+
+    private static ITypeSymbol? UnwrapType(IOperation? operation)
+    {
+        while (operation is IConversionOperation conversion)
+        {
+            operation = conversion.Operand;
+        }
+
+        return operation?.Type;
     }
 }
