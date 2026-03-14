@@ -1002,4 +1002,3 @@ class Test
             VerifyCS.Diagnostic().WithMessage("The response of SearchAsync was not checked for errors. Redis does not throw exceptions on failed commands when using batches/transactions, use the response object to check for errors"));
     }
 }
-
