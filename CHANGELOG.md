@@ -1,10 +1,10 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
-## [1.31.2] - 2026-03-13
+## [1.32.0] - 2026-03-13
+- `DisposableFieldIsNotDisposed`: Disposable fields that belong to a type now trigger when they are not included in any reachable disposal path
 - `TestMethodWithoutPublicModifier`: `internal` methods with xUnit no longer trigger this
 - `RecursiveOperatorOverload`: Fixed a false positive when a different overload is selected
-- `SwitchDoesNotHandleAllEnumOptions`: Correctly simplifies when `global using` statements are present
 
 ## [1.31.1] - 2026-01-25
 - `MultipleFromBodyParameters`: Support Minimal Web APIs (lambda expressions)
