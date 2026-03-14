@@ -31,7 +31,10 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute"),
-                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute")
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataTestMethodAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
             );
 
             compilationContext.RegisterSymbolAction(context => Analyze(context, testMethodAttributeSymbols), SymbolKind.Method);

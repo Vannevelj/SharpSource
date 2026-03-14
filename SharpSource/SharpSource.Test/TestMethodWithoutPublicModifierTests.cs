@@ -203,6 +203,44 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestCaseAttribute()
+    {
+        var original = @"
+using NUnit.Framework;
+
+namespace ConsoleApplication1
+{
+    [TestFixture]
+    public class MyClass
+    {
+        [TestCase(1)]
+        internal void {|#0:Method|}(int value)
+        {
+
+        }
+    }
+}";
+
+        var result = @"
+using NUnit.Framework;
+
+namespace ConsoleApplication1
+{
+    [TestFixture]
+    public class MyClass
+    {
+        [TestCase(1)]
+        public void Method(int value)
+        {
+
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
+    }
+
+    [TestMethod]
     public async Task TestMethodWithoutPublicModifier_WithPrivateModifierAndFactAttribute()
     {
         var original = @"

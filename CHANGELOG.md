@@ -8,6 +8,7 @@ https://keepachangelog.com/en/1.0.0/
 - `SwitchIsMissingDefaultLabel`: Now analyzes `switch` expressions and requires a discard arm as the default case
 - `ParameterAssignedInConstructor`: Now also detects suspicious assignments from `this.`-qualified fields and properties
 - `TestMethodWithoutPublicModifier`: `internal` methods with xUnit no longer trigger this
+- `TestMethodWithoutPublicModifier`: Parameterized test attributes such as `NUnit.TestCase` and `MSTest.DataTestMethod` are now recognized
 - `TestMethodWithoutTestAttribute`: NUnit classes can now be recognized through sibling `[Test]` methods even when `[TestFixture]` is omitted
 - `RecursiveOperatorOverload`: Fixed a false positive when a different overload is selected
 
