@@ -88,7 +88,7 @@ public sealed class DisposableFieldIsNotDisposedAnalyzer : DiagnosticAnalyzer
 
         foreach (var operationBlock in context.OperationBlocks)
         {
-            VisitOperation(operationBlock, referencedFields, referencedProperties, invokedMethods, containingType);
+            VisitOperation(operationBlock, referencedFields, referencedProperties, invokedMethods, containingType, method);
             RegisterLocalFunctions(operationBlock, methodData, containingType);
         }
 
@@ -318,14 +318,17 @@ public sealed class DisposableFieldIsNotDisposedAnalyzer : DiagnosticAnalyzer
         HashSet<IFieldSymbol> referencedFields,
         HashSet<IPropertySymbol> referencedProperties,
         HashSet<IMethodSymbol> invokedMethods,
-        INamedTypeSymbol containingType)
+        INamedTypeSymbol containingType,
+        IMethodSymbol containingMethod)
     {
         if (operation is ILocalFunctionOperation)
         {
             return;
         }
 
-        if (operation is IFieldReferenceOperation fieldReference && IsTrackableField(fieldReference.Field))
+        if (operation is IFieldReferenceOperation fieldReference &&
+            IsTrackableField(fieldReference.Field) &&
+            ( IsDisposedFieldReference(fieldReference) || containingMethod.MethodKind is MethodKind.PropertyGet or MethodKind.PropertySet ))
         {
             referencedFields.Add(fieldReference.Field.OriginalDefinition);
         }
@@ -350,7 +353,7 @@ public sealed class DisposableFieldIsNotDisposedAnalyzer : DiagnosticAnalyzer
 
         foreach (var child in operation.ChildOperations)
         {
-            VisitOperation(child, referencedFields, referencedProperties, invokedMethods, containingType);
+            VisitOperation(child, referencedFields, referencedProperties, invokedMethods, containingType, containingMethod);
         }
     }
 
@@ -378,6 +381,11 @@ public sealed class DisposableFieldIsNotDisposedAnalyzer : DiagnosticAnalyzer
                SymbolEqualityComparer.Default.Equals(method.ContainingType, containingType) ||
                method.ContainingType.TypeKind == TypeKind.Interface ) );
 
+    private static bool IsDisposedFieldReference(IFieldReferenceOperation fieldReference)
+        => fieldReference.Parent is IInvocationOperation invocation &&
+           invocation.Instance == fieldReference &&
+           invocation.TargetMethod.Name is "Dispose" or "DisposeAsync";
+
     private static void RegisterLocalFunctions(
         IOperation operation,
         ConcurrentDictionary<IMethodSymbol, MethodAnalysisResult> methodData,
@@ -393,7 +401,7 @@ public sealed class DisposableFieldIsNotDisposedAnalyzer : DiagnosticAnalyzer
 
                 foreach (var localChild in localFunction.ChildOperations)
                 {
-                    VisitOperation(localChild, referencedFields, referencedProperties, invokedMethods, containingType);
+                    VisitOperation(localChild, referencedFields, referencedProperties, invokedMethods, containingType, localFunction.Symbol);
                     RegisterLocalFunctions(localChild, methodData, containingType);
                 }
 

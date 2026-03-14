@@ -151,6 +151,26 @@ class Test : IDisposable
     }
 
     [TestMethod]
+    public async Task DisposableFieldIsNotDisposed_FieldReferencedButNotDisposed()
+    {
+        var original = @"
+using System;
+using System.IO;
+
+class Test : IDisposable
+{
+    private readonly MemoryStream {|#0:_stream|} = new();
+
+    public void Dispose()
+    {
+        _stream.Position = 0;
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Disposable field _stream in type Test is not disposed"));
+    }
+
+    [TestMethod]
     public async Task DisposableFieldIsNotDisposed_DisposeAsyncDoesNotReferenceField()
     {
         var original = @"
