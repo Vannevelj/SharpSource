@@ -77,6 +77,51 @@ public class TestMethodWithoutPublicModifierTests
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/368")]
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
+    {
+        var original = @"
+using System;
+using Xunit;
+
+namespace ConsoleApplication1
+{
+    public class MyClass
+    {
+        [Fact]
+        internal void Method()
+        {
+
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/368")]
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTheoryAttribute()
+    {
+        var original = @"
+using System;
+using Xunit;
+
+namespace ConsoleApplication1
+{
+    public class MyClass
+    {
+        [Theory]
+        [InlineData(1)]
+        internal void Method(int value)
+        {
+
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
     [TestMethod]
     public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestAttribute()
     {
@@ -158,7 +203,45 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
-    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndFactAttribute()
+    public async Task TestMethodWithoutPublicModifier_WithInternalModifierAndTestCaseAttribute()
+    {
+        var original = @"
+using NUnit.Framework;
+
+namespace ConsoleApplication1
+{
+    [TestFixture]
+    public class MyClass
+    {
+        [TestCase(1)]
+        internal void {|#0:Method|}(int value)
+        {
+
+        }
+    }
+}";
+
+        var result = @"
+using NUnit.Framework;
+
+namespace ConsoleApplication1
+{
+    [TestFixture]
+    public class MyClass
+    {
+        [TestCase(1)]
+        public void Method(int value)
+        {
+
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Test method \"Method\" is not public."), result);
+    }
+
+    [TestMethod]
+    public async Task TestMethodWithoutPublicModifier_WithPrivateModifierAndFactAttribute()
     {
         var original = @"
 using System;
@@ -169,7 +252,7 @@ namespace ConsoleApplication1
     public class MyClass
     {
         [Fact]
-        internal void {|#0:Method|}()
+        private void {|#0:Method|}()
         {
 
         }

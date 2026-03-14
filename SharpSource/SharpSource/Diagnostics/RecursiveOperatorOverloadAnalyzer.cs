@@ -42,21 +42,15 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var operatorUsages = body.DescendantTokens().Where(x => x.IsKind(definedToken.Kind())).ToArray();
-
-        if (operatorUsages.Length == 0)
+        var currentOperatorSymbol = context.SemanticModel.GetDeclaredSymbol(operatorDeclaration);
+        if (currentOperatorSymbol == null)
         {
             return;
         }
 
         var enclosingTypeNode = operatorDeclaration.GetEnclosingTypeNode();
-        if (enclosingTypeNode == null)
-        {
-            return;
-        }
-
-        var enclosingSymbol = context.SemanticModel.GetDeclaredSymbol(enclosingTypeNode);
-        if (enclosingSymbol == null)
+        var enclosingSymbol = enclosingTypeNode != null ? context.SemanticModel.GetDeclaredSymbol(enclosingTypeNode) : null;
+        if (enclosingSymbol is null)
         {
             return;
         }
@@ -69,36 +63,20 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        foreach (var usage in operatorUsages)
+        foreach (var expression in body.DescendantNodesAndSelf().OfType<ExpressionSyntax>())
         {
-            var surroundingNode = body.FindNode(usage.FullSpan);
-            if (surroundingNode == null)
-            {
-                continue;
-            }
-
-            if (surroundingNode is not ExpressionSyntax expression)
-            {
-                continue;
-            }
-
             switch (expression)
             {
                 case BinaryExpressionSyntax binaryExpression:
-                    var hasWarned = checkOperatorToken(binaryExpression.OperatorToken, binaryExpression.Left);
-                    if (!hasWarned)
-                    {
-                        checkOperatorToken(binaryExpression.OperatorToken, binaryExpression.Right);
-                    }
-
+                    checkOperatorExpression(binaryExpression, binaryExpression.OperatorToken);
                     break;
 
                 case PrefixUnaryExpressionSyntax prefixUnaryExpression:
-                    checkOperatorToken(prefixUnaryExpression.OperatorToken, prefixUnaryExpression.Operand);
+                    checkOperatorExpression(prefixUnaryExpression, prefixUnaryExpression.OperatorToken);
                     break;
 
                 case PostfixUnaryExpressionSyntax postfixUnaryExpression:
-                    checkOperatorToken(postfixUnaryExpression.OperatorToken, postfixUnaryExpression.Operand);
+                    checkOperatorExpression(postfixUnaryExpression, postfixUnaryExpression.OperatorToken);
                     break;
 
                 default:
@@ -106,20 +84,15 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        bool checkOperatorToken(SyntaxToken token, ExpressionSyntax expression)
+        bool checkOperatorExpression(ExpressionSyntax expression, SyntaxToken token)
         {
-            if (!token.IsKind(definedToken.Kind()))
+            var invokedOperatorSymbol = context.SemanticModel.GetSymbolInfo(expression).Symbol;
+            if (invokedOperatorSymbol == null)
             {
                 return false;
             }
 
-            var usedType = context.SemanticModel.GetTypeInfo(expression).Type;
-            if (usedType == null)
-            {
-                return false;
-            }
-
-            if (!usedType.Equals(enclosingSymbol, SymbolEqualityComparer.Default))
+            if (!invokedOperatorSymbol.Equals(currentOperatorSymbol, SymbolEqualityComparer.Default))
             {
                 return false;
             }
@@ -140,7 +113,7 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
                 var ifConditions = operatorDeclaration.Body.DescendantNodes().OfType<IfStatementSyntax>().ToArray();
                 foreach (var ifCondition in ifConditions)
                 {
-                    checkOperatorToken(definedToken, ifCondition.Condition);
+                    checkOperatorCondition(ifCondition.Condition);
                 }
             }
             else if (operatorDeclaration.ExpressionBody != default)
@@ -148,7 +121,27 @@ public class RecursiveOperatorOverloadAnalyzer : DiagnosticAnalyzer
                 var conditionalExpressions = operatorDeclaration.ExpressionBody.Expression.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().ToArray();
                 foreach (var conditionalExpression in conditionalExpressions)
                 {
-                    checkOperatorToken(definedToken, conditionalExpression.Condition);
+                    checkOperatorCondition(conditionalExpression.Condition);
+                }
+            }
+
+            void checkOperatorCondition(ExpressionSyntax expression)
+            {
+                var usedType = context.SemanticModel.GetTypeInfo(expression).Type;
+                if (usedType == null)
+                {
+                    return;
+                }
+
+                if (!usedType.Equals(enclosingSymbol, SymbolEqualityComparer.Default))
+                {
+                    return;
+                }
+
+                if (!tokensFlagged.Contains(definedToken))
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, definedToken.GetLocation()));
+                    tokensFlagged.Add(definedToken);
                 }
             }
         }

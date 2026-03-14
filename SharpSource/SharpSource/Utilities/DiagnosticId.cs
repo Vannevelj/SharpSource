@@ -65,4 +65,6 @@ public static class DiagnosticId
     public const string ValueTaskAwaitedMultipleTimes = "SS063";
     public const string UnnecessaryToStringOnSpan = "SS064";
     public const string LoggerMessageAttribute = "SS065";
+    public const string DisposableFieldIsNotDisposed = "SS066";
+    public const string RedisResponseNotHandled = "SS067";
 }

@@ -35,6 +35,7 @@ public class TestMethodWithoutTestAttributeAnalyzer : DiagnosticAnalyzer
             var testMethodAttributeSymbols = ImmutableArray.Create(
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
             );

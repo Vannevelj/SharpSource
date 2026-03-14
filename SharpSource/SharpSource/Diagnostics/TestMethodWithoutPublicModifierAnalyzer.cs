@@ -31,7 +31,10 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"),
                 compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute"),
-                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute")
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataTestMethodAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"),
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute")
             );
 
             compilationContext.RegisterSymbolAction(context => Analyze(context, testMethodAttributeSymbols), SymbolKind.Method);
@@ -47,6 +50,9 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var hasXunitTestAttribute = false;
+        var hasTestAttribute = false;
+
         var attributes = method.GetAttributes();
         foreach (var attribute in attributes)
         {
@@ -55,12 +61,30 @@ public sealed class TestMethodWithoutPublicModifierAnalyzer : DiagnosticAnalyzer
             {
                 if (testMethodAttributeSymbols.Any(symbol => attributeType.Equals(symbol, SymbolEqualityComparer.Default)))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
-                    return;
+                    hasTestAttribute = true;
+
+                    if (attributeType.ContainingNamespace.ToDisplayString() == "Xunit")
+                    {
+                        hasXunitTestAttribute = true;
+                    }
+
+                    break;
                 }
 
                 attributeType = attributeType.BaseType;
             }
         }
+
+        if (!hasTestAttribute)
+        {
+            return;
+        }
+
+        if (method.DeclaredAccessibility == Accessibility.Internal && hasXunitTestAttribute)
+        {
+            return;
+        }
+
+        context.ReportDiagnostic(Diagnostic.Create(Rule, method.Locations[0], method.Name));
     }
 }

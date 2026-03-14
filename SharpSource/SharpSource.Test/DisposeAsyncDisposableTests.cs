@@ -266,6 +266,34 @@ await using (var stream2 = new FileStream("""", FileMode.Create))
     }
 
     [TestMethod]
+    public async Task DisposeAsyncDisposable_DeclaredAsIDisposable()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+async Task Method()
+{
+    {|#0:using IDisposable stream = new FileStream("""", FileMode.Create);|}
+}
+";
+
+        var result = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+async Task Method()
+{
+    await using FileStream stream = new FileStream("""", FileMode.Create);
+}
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("FileStream can be disposed of asynchronously"), result);
+    }
+
+    [TestMethod]
     public async Task DisposeAsyncDisposable_Lock()
     {
         var original = @"

@@ -24,11 +24,12 @@ public class DisposeAsyncDisposableCodeFix : CodeFixProvider
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
         var statement = root.FindNode(diagnosticSpan, getInnermostNodeForTie: true);
+        diagnostic.Properties.TryGetValue(DisposeAsyncDisposableAnalyzer.RewrittenTypePropertyName, out var rewrittenTypeName);
 
-        StatementSyntax? newStatement = statement switch
+        var newStatement = statement switch
         {
-            LocalDeclarationStatementSyntax local => local.WithoutTrivia().WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword)),
-            UsingStatementSyntax @using => @using.WithoutTrivia().WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword)),
+            LocalDeclarationStatementSyntax local => RewriteLocalDeclaration(local, rewrittenTypeName),
+            UsingStatementSyntax @using => RewriteUsingStatement(@using, rewrittenTypeName),
             _ => default
         };
 
@@ -46,5 +47,35 @@ public class DisposeAsyncDisposableCodeFix : CodeFixProvider
     {
         var newRoot = root.ReplaceNode(statement, newStatement.WithTriviaFrom(statement));
         return Task.FromResult(document.WithSyntaxRoot(newRoot));
+    }
+
+    private static StatementSyntax RewriteLocalDeclaration(LocalDeclarationStatementSyntax local, string? rewrittenTypeName)
+        => local
+            .WithoutTrivia()
+            .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
+            .WithDeclaration(RewriteDeclaration(local.Declaration, rewrittenTypeName));
+
+    private static StatementSyntax RewriteUsingStatement(UsingStatementSyntax @using, string? rewrittenTypeName)
+        => @using
+            .WithoutTrivia()
+            .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
+            .WithDeclaration(@using.Declaration is null ? null : RewriteDeclaration(@using.Declaration, rewrittenTypeName));
+
+    private static VariableDeclarationSyntax RewriteDeclaration(VariableDeclarationSyntax declaration, string? rewrittenTypeName)
+    {
+        var rewrittenType = GetRewrittenTypeSyntax(declaration, rewrittenTypeName);
+        return rewrittenType is null ? declaration : declaration.WithType(rewrittenType);
+    }
+
+    private static TypeSyntax? GetRewrittenTypeSyntax(VariableDeclarationSyntax declaration, string? rewrittenTypeName)
+    {
+        if (declaration.Type.IsVar || declaration.Variables.Count != 1 || string.IsNullOrWhiteSpace(rewrittenTypeName))
+        {
+            return default;
+        }
+
+        return SyntaxFactory.ParseTypeName(rewrittenTypeName!)
+            .WithTrailingTrivia(SyntaxFactory.Space)
+            .WithAdditionalAnnotations(Simplifier.Annotation);
     }
 }

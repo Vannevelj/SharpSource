@@ -102,6 +102,32 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_LocalFunctionThrow()
+    {
+        var original = @"
+using System;
+
+class MyClass
+{
+    int MyProp
+    {
+        get
+        {
+            void ThrowCore()
+            {
+                {|#0:throw new ArgumentException();|}
+            }
+
+            ThrowCore();
+            return 5;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(ExceptionThrownFromProhibitedContextAnalyzer.PropertyGetterRule).WithMessage("An exception is thrown from the getter of property MyProp"));
+    }
+
+    [TestMethod]
     public async Task ExceptionThrownFromProhibitedContext_PropertyGetter_Setter()
     {
         var original = @"

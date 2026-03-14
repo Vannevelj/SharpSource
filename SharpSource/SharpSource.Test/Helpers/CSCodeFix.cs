@@ -24,10 +24,6 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
     public static DiagnosticResult DiagnosticWithoutLocation()
         => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic();
 
-    /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(string)"/>
-    public static DiagnosticResult Diagnostic(string diagnosticId)
-        => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(diagnosticId);
-
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.Diagnostic(DiagnosticDescriptor)"/>
     public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor, int location = 0)
         => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(descriptor).WithLocation(location);
@@ -53,15 +49,14 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         await test.RunAsync(CancellationToken.None);
     }
 
-    public static async Task VerifyNoDiagnostic(string source)
-        => await VerifyCodeFix(source, source);
+    public static async Task VerifyNoDiagnostic(string source, string[]? additionalFiles = null)
+        => await VerifyCodeFix(source, DiagnosticResult.EmptyDiagnosticResults, source, additionalFiles: additionalFiles);
 
     public static async Task VerifyDiagnosticWithoutFix(string source, params DiagnosticResult[] expected)
         => await VerifyCodeFix(source, expected, source);
 
-    /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, string)"/>
-    public static async Task VerifyCodeFix(string source, string fixedSource)
-        => await VerifyCodeFix(source, DiagnosticResult.EmptyDiagnosticResults, fixedSource);
+    public static async Task VerifyDiagnosticWithoutFix(string source, DiagnosticResult expected, string[]? additionalFiles = null)
+        => await VerifyCodeFix(source, [expected], source, additionalFiles: additionalFiles);
 
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult, string)"/>
     public static async Task VerifyCodeFix(string source, DiagnosticResult expected, string fixedSource, int codeActionIndex = 0, string[]? disabledDiagnostics = null)

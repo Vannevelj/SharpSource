@@ -185,6 +185,12 @@ public class ActivityWasNotStoppedAnalyzer : DiagnosticAnalyzer
             }
         }
 
+        // Handle direct return: return source.StartActivity(...)
+        if (parent is IReturnOperation or IConversionOperation { Parent: IReturnOperation })
+        {
+            return (null, true);
+        }
+
         return (null, false);
     }
 

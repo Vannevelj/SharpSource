@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using SharpSource.Utilities;
@@ -42,7 +41,7 @@ public sealed class ParameterAssignedInConstructorAnalyzer : DiagnosticAnalyzer
                         return;
                     }
 
-                    if (assignment.Value.Syntax is not IdentifierNameSyntax)
+                    if (assignment.Value is not IMemberReferenceOperation { Member: IFieldSymbol or IPropertySymbol })
                     {
                         return;
                     }
