@@ -69,6 +69,30 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task TestMethodWithoutTestAttribute_NUnit_WithoutTestFixture_ButSiblingTestMethod()
+    {
+        var original = @"
+using NUnit.Framework;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {
+        public void {|#0:MyMethod|}()
+        {
+        }
+
+        [Test]
+        public void MyOtherMethod()
+        {
+        }
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Method MyMethod might be missing a test attribute"));
+    }
+
+    [TestMethod]
     public async Task TestMethodWithoutTestAttribute_XUnit_OtherMethodWithAttribute()
     {
         var original = @"
