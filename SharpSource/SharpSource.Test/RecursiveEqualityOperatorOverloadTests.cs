@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using SharpSource.Test.Helpers;
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.RecursiveOperatorOverloadAnalyzer, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
 namespace SharpSource.Test;
@@ -81,7 +81,7 @@ namespace ConsoleApplication1
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/341")]
     public async Task RecursiveEqualityOperatorOverload_WithDifferentOverload()
     {
         var original = @"
