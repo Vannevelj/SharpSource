@@ -582,6 +582,122 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NoRedundantQualifierIfGlobalUsingSystemDirectiveExists()
+    {
+        var original = @"
+global using System;
+
+namespace ConsoleApplication1
+{
+    enum MyEnum
+    {
+        Fizz, Buzz, FizzBuzz
+    }
+
+    class MyClass
+    {
+        void Method()
+        {
+            var e = MyEnum.Fizz;
+            switch ({|#0:e|})
+            {
+                case MyEnum.Fizz:
+                case MyEnum.Buzz:
+                    break;
+            }
+        }
+    }
+}";
+
+        var result = @"
+global using System;
+
+namespace ConsoleApplication1
+{
+    enum MyEnum
+    {
+        Fizz, Buzz, FizzBuzz
+    }
+
+    class MyClass
+    {
+        void Method()
+        {
+            var e = MyEnum.Fizz;
+            switch (e)
+            {
+                case MyEnum.FizzBuzz:
+                    throw new NotImplementedException();
+                case MyEnum.Fizz:
+                case MyEnum.Buzz:
+                    break;
+            }
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases."), result);
+    }
+
+    [TestMethod]
+    public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_NoRedundantQualifierIfGlobalUsingSystemDirectiveExistsInAnotherFile()
+    {
+        var original = @"
+namespace ConsoleApplication1
+{
+    enum MyEnum
+    {
+        Fizz, Buzz, FizzBuzz
+    }
+
+    class MyClass
+    {
+        void Method()
+        {
+            var e = MyEnum.Fizz;
+            switch ({|#0:e|})
+            {
+                case MyEnum.Fizz:
+                case MyEnum.Buzz:
+                    break;
+            }
+        }
+    }
+}";
+
+        var result = @"
+namespace ConsoleApplication1
+{
+    enum MyEnum
+    {
+        Fizz, Buzz, FizzBuzz
+    }
+
+    class MyClass
+    {
+        void Method()
+        {
+            var e = MyEnum.Fizz;
+            switch (e)
+            {
+                case MyEnum.FizzBuzz:
+                    throw new NotImplementedException();
+                case MyEnum.Fizz:
+                case MyEnum.Buzz:
+                    break;
+            }
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(
+            original,
+            [VerifyCS.Diagnostic(SwitchDoesNotHandleAllEnumOptionsAnalyzer.Rule).WithMessage("Missing enum member in switched cases.")],
+            result,
+            additionalFiles: ["global using System;"]);
+    }
+
+    [TestMethod]
     public async Task SwitchDoesNotHandleAllEnumOptions_MissingEnumStatement_UsingAliasForSystem()
     {
         var original = @"
