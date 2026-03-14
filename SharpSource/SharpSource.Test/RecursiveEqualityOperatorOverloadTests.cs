@@ -82,6 +82,30 @@ namespace ConsoleApplication1
     }
 
     [TestMethod]
+    public async Task RecursiveEqualityOperatorOverload_WithDifferentOverload()
+    {
+        var original = @"
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ConsoleApplication1
+{
+    file record Range(int Lower, int Upper)
+    {
+        public static IEnumerable<Range> operator -(Range minuend, Range subtrahend)
+        {
+            yield return minuend;
+        }
+
+        public static IEnumerable<Range> operator -(IEnumerable<Range> minuends, Range subtrahend)
+            => minuends.SelectMany(minuend => minuend - subtrahend);
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
     public async Task RecursiveEqualityOperatorOverload_WithDifferentOperator()
     {
         var original = @"
