@@ -21,5 +21,8 @@
     <PackageVersion Include="NUnit" Version="4.2.2" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="xunit" Version="2.9.0" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="9.3.2" />
+    <PackageVersion Include="NEST" Version="7.17.5" />
+    <PackageVersion Include="OpenSearch.Client" Version="1.8.0" />
   </ItemGroup>
 </Project>
