@@ -4,6 +4,8 @@ https://keepachangelog.com/en/1.0.0/
 ## [1.32.0] - 2026-03-14
 - `DisposableFieldIsNotDisposed`: Disposable fields that belong to a type now trigger when they are not included in any reachable disposal path
 - `DisposeAsyncDisposable`: Detects asynchronously disposable concrete types even when the local is declared as an interface or base type
+- `SwitchDoesNotHandleAllEnumOptions`: Now analyzes `switch` expressions as well as `switch` statements
+- `SwitchIsMissingDefaultLabel`: Now analyzes `switch` expressions and requires a discard arm as the default case
 - `ParameterAssignedInConstructor`: Now also detects suspicious assignments from `this.`-qualified fields and properties
 - `TestMethodWithoutPublicModifier`: `internal` methods with xUnit no longer trigger this
 - `TestMethodWithoutTestAttribute`: NUnit classes can now be recognized through sibling `[Test]` methods even when `[TestFixture]` is omitted

@@ -25,14 +25,29 @@ public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
-        context.RegisterOperationAction(context =>
-        {
-            var surroundingSwitch = (ISwitchOperation)context.Operation;
+        context.RegisterOperationAction(AnalyzeSwitchOperation, OperationKind.Switch, OperationKind.SwitchExpression);
+    }
 
-            if (!surroundingSwitch.Cases.SelectMany(c => c.Clauses).OfType<IDefaultCaseClauseOperation>().Any())
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, surroundingSwitch.Value.Syntax.GetLocation()));
-            }
-        }, OperationKind.Switch);
+    private static void AnalyzeSwitchOperation(OperationAnalysisContext context)
+    {
+        var (value, hasDefault) = context.Operation switch
+        {
+            ISwitchOperation surroundingSwitch =>
+                (
+                    surroundingSwitch.Value,
+                    surroundingSwitch.Cases.SelectMany(c => c.Clauses).OfType<IDefaultCaseClauseOperation>().Any()
+                ),
+            ISwitchExpressionOperation switchExpression =>
+                (
+                    switchExpression.Value,
+                    switchExpression.Arms.Any(arm => arm.Pattern is IDiscardPatternOperation)
+                ),
+            _ => default
+        };
+
+        if (value is not null && !hasDefault)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Rule, value.Syntax.GetLocation()));
+        }
     }
 }

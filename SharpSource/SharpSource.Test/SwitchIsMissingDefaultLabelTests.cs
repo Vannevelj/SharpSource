@@ -448,4 +448,28 @@ enum Test { A, B }";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
     }
+
+    [TestMethod]
+    public async Task SwitchIsMissingDefaultLabel_SwitchExpression_WithoutDiscardArm()
+    {
+        var original = @"
+namespace ConsoleApplication1
+{
+    enum MyEnum
+    {
+        Fizz, Buzz, FizzBuzz
+    }
+
+    class MyClass
+    {
+        int Method(MyEnum e) => {|#0:e|} switch
+        {
+            MyEnum.Fizz => 1,
+            MyEnum.Buzz => 2
+        };
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."));
+    }
 }
