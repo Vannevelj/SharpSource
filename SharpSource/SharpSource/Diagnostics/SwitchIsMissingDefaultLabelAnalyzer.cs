@@ -15,7 +15,7 @@ public class SwitchIsMissingDefaultLabelAnalyzer : DiagnosticAnalyzer
         "Switch should have default label.",
         "Switch should have default label.",
         Categories.Correctness,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS019-SwitchIsMissingDefaultLabel.md");
 

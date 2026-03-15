@@ -5,6 +5,9 @@ https://keepachangelog.com/en/1.0.0/
 - `StructWithoutElementaryMethodsOverridden`: Turned off by default
 - `DivideIntegerByInteger`: Set to `Info` by default
 - `HttpClientInstantiatedDirectly`: No longer triggers in test classes (xUnit, NUnit, MSTest)
+- `DateTimeNow`: Set to `Info` by default
+- `SwitchIsMissingDefaultLabel`: Set to `Info` by default
+- `SwitchDoesNotHandleAllEnumOptions`: Set to `Info` by default
 
 ## [1.32.0] - 2026-03-14
 - `RedisResponseNotHandled`: Detect when Redis response objects are discarded without checking for errors

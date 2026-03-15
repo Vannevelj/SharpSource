@@ -16,7 +16,7 @@ public sealed class SwitchDoesNotHandleAllEnumOptionsAnalyzer : DiagnosticAnalyz
         "Add cases for missing enum member.",
         "Missing enum member in switched cases.",
         Categories.Correctness,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS018-SwitchDoesNotHandleAllEnumOptions.md");
 
