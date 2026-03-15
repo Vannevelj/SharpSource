@@ -15,7 +15,7 @@ public class DateTimeNowAnalyzer : DiagnosticAnalyzer
         "DateTime.Now was referenced",
         "Use DateTime.UtcNow to get a locale-independent value",
         Categories.Correctness,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS002-DateTimeNow.md");
 
