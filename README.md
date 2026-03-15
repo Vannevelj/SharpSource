@@ -100,6 +100,7 @@ Detailed explanations of each analyzer can be found in the documentation: https:
 | SS065  | LoggerMessageAttribute | Use the `[LoggerMessage]` attribute for high-performance logging instead of extension methods. |
 | SS066  | DisposableFieldIsNotDisposed | Disposable fields owned by a type should be included in its disposal path to avoid resource leaks. |
 | SS067  | RedisResponseNotHandled | Redis responses must be checked for errors since these clients do not throw exceptions. |
+| SS068  | TimeSpanConstructedWithTicks | `TimeSpan` single-parameter constructor creates ticks (100ns), not seconds. Use `TimeSpan.FromTickets()` to avoid confusion. |
 
 ## Configuration
 Is a particular rule not to your liking? There are many ways to adjust their severity and even disable them altogether. For an overview of some of the options, check out [this document](https://docs.microsoft.com/en-gb/dotnet/fundamentals/code-analysis/suppress-warnings).
