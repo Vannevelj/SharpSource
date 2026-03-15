@@ -506,6 +506,41 @@ public class MyClass
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/381")]
+    public async Task TestMethodWithoutTestAttribute_PropertyAccessor()
+    {
+        var original = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class MyClass
+{
+    public static int DefaultOptions { get; set; } = 5;
+
+    [TestMethod]
+    public void MyTest() { }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/381")]
+    public async Task TestMethodWithoutTestAttribute_PropertyAccessor_XUnit()
+    {
+        var original = @"
+using Xunit;
+
+public class MyClass
+{
+    public string Name { get; set; }
+
+    [Fact]
+    public void MyTest() { }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
     [TestMethod]
     public async Task TestMethodWithoutTestAttribute_DisposeVirtual()
     {

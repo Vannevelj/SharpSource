@@ -29,10 +29,21 @@ public class HttpClientInstantiatedDirectlyAnalyzer : DiagnosticAnalyzer
         {
             var httpClientSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Net.Http.HttpClient");
             var httpClientFactorySymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Net.Http.IHttpClientFactory");
-            if (httpClientSymbol is not null && httpClientFactorySymbol is not null)
+            if (httpClientSymbol is null || httpClientFactorySymbol is null)
             {
-                compilationContext.RegisterOperationAction(context => AnalyzeCreation(context, httpClientSymbol), OperationKind.ObjectCreation);
+                return;
             }
+
+            var isTestProject =
+                compilationContext.Compilation.GetTypeByMetadataName("Xunit.FactAttribute") is not null ||
+                compilationContext.Compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute") is not null ||
+                compilationContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute") is not null;
+            if (isTestProject)
+            {
+                return;
+            }
+
+            compilationContext.RegisterOperationAction(context => AnalyzeCreation(context, httpClientSymbol), OperationKind.ObjectCreation);
         });
     }
 

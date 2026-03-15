@@ -27,6 +27,28 @@ await using var stream = new FileStream("""", FileMode.Create);
     }
 
     [TestMethod]
+    public async Task DisposeAsyncDisposable_GlobalStatement_Async()
+    {
+        var original = @"
+using System.IO;
+using System.Threading.Tasks;
+
+{|#0:using var stream = new FileStream("""", FileMode.Create);|}
+await Task.Delay(0);
+";
+
+        var result = @"
+using System.IO;
+using System.Threading.Tasks;
+
+await using var stream = new FileStream("""", FileMode.Create);
+await Task.Delay(0);
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("FileStream can be disposed of asynchronously"), result);
+    }
+
+    [TestMethod]
     public async Task DisposeAsyncDisposable_InMethod()
     {
         var original = @"
@@ -310,35 +332,175 @@ lock(_lock)
         await VerifyCS.VerifyNoDiagnostic(original);
     }
 
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/393")]
+    public async Task DisposeAsyncDisposable_SyncVoidMethodInClass()
+    {
+        var original = @"
+using System.IO;
+
+class MyClass
+{
+    public void ProcessFile(string path)
+    {
+        using var stream = new MemoryStream();
+    }
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/393")]
+    public async Task DisposeAsyncDisposable_SyncVoidMethodInClass_UsingStatement()
+    {
+        var original = @"
+using System.IO;
+
+class MyClass
+{
+    public string RenderView()
+    {
+        using (var output = new StringWriter())
+        {
+            return output.ToString();
+        }
+    }
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/393")]
+    public async Task DisposeAsyncDisposable_AsyncMethodInClass()
+    {
+        var original = @"
+using System.IO;
+using System.Threading.Tasks;
+
+class MyClass
+{
+    public async Task ProcessFileAsync()
+    {
+        {|#0:using var stream = new MemoryStream();|}
+    }
+}
+";
+
+        var result = @"
+using System.IO;
+using System.Threading.Tasks;
+
+class MyClass
+{
+    public async Task ProcessFileAsync()
+    {
+        await using var stream = new MemoryStream();
+    }
+}
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MemoryStream can be disposed of asynchronously"), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/393")]
+    public async Task DisposeAsyncDisposable_SyncMethodInClass_Constructor()
+    {
+        var original = @"
+using System.IO;
+
+class MyClass
+{
+    public MyClass()
+    {
+        using var stream = new MemoryStream();
+    }
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/393")]
+    public async Task DisposeAsyncDisposable_SyncMethodInClass_PropertyGetter()
+    {
+        var original = @"
+using System.IO;
+
+class MyClass
+{
+    public string Value
+    {
+        get
+        {
+            using var writer = new StringWriter();
+            return writer.ToString();
+        }
+    }
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/393")]
+    public async Task DisposeAsyncDisposable_SyncLambdaInsideAsyncMethod()
+    {
+        var original = @"
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+class MyClass
+{
+    public async Task ProcessAsync()
+    {
+        Action action = () =>
+        {
+            using var stream = new MemoryStream();
+        };
+        action();
+        await Task.CompletedTask;
+    }
+}
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/329")]
     public async Task DisposeAsyncDisposable_PreservesTrivia()
     {
         var original = @"
 using System.IO;
+using System.Threading.Tasks;
 
-// Hello
-/*
-    multiline
-*/
+async Task Method()
+{
+    // Hello
+    /*
+        multiline
+    */
 
-{|#0:using var stream =
-    new FileStream("""", FileMode.Create);|} // after
-
-
+    {|#0:using var stream =
+        new FileStream("""", FileMode.Create);|} // after
+}
 ";
 
         var result = @"
 using System.IO;
+using System.Threading.Tasks;
 
-// Hello
-/*
-    multiline
-*/
+async Task Method()
+{
+    // Hello
+    /*
+        multiline
+    */
 
-await using var stream =
-    new FileStream("""", FileMode.Create); // after
-
-
+    await using var stream =
+        new FileStream("""", FileMode.Create); // after
+}
 ";
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("FileStream can be disposed of asynchronously"), result);

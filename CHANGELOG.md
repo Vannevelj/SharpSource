@@ -1,6 +1,19 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.33.0] - 2026-03-14
+- `TimeSpanConstructedWithTicks`: Detect `new TimeSpan(value)` with a single argument, which creates ticks (100ns) instead of seconds
+- `UnboundedStackalloc`: No longer triggers when the `stackalloc` is inside a ternary expression with a heap allocation fallback
+- `StructWithoutElementaryMethodsOverridden`: Turned off by default
+- `DivideIntegerByInteger`: Set to `Info` by default
+- `HttpClientInstantiatedDirectly`: No longer triggers in test classes (xUnit, NUnit, MSTest)
+- `DateTimeNow`: Set to `Info` by default
+- `SwitchIsMissingDefaultLabel`: Set to `Info` by default
+- `SwitchDoesNotHandleAllEnumOptions`: Set to `Info` by default
+- `AttributeMustSpecifyAttributeUsage`: No longer triggers on `abstract` attribute base classes
+- `DisposeAsyncDisposable`: No longer triggers when the containing method is not async
+- `TestMethodWithoutTestAttribute`: No longer flags property accessors as potential test methods
+
 ## [1.32.0] - 2026-03-14
 - `RedisResponseNotHandled`: Detect when Redis response objects are discarded without checking for errors
 - `ActivityWasNotStopped`: Fixed a false positive when the activity is directly returned from a method

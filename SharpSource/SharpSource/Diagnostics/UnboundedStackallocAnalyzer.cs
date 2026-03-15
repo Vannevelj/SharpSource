@@ -51,6 +51,19 @@ public class UnboundedStackallocAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        var conditionalExpression = stackallocExpression.FirstAncestorOrSelf<ConditionalExpressionSyntax>();
+        if (conditionalExpression is not null)
+        {
+            var otherArm = conditionalExpression.WhenTrue.Contains(stackallocExpression)
+                ? conditionalExpression.WhenFalse
+                : conditionalExpression.WhenTrue;
+
+            if (otherArm.DescendantNodesAndSelf().OfType<ArrayCreationExpressionSyntax>().Any())
+            {
+                return;
+            }
+        }
+
         var parentContext = stackallocExpression.FirstAncestorOrSelfOfType(
             SyntaxKind.MethodDeclaration,
             SyntaxKind.LocalFunctionStatement,

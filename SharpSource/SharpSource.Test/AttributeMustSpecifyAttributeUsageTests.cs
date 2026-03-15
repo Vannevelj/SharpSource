@@ -128,25 +128,64 @@ class DerivedAttribute : MyAttribute { }";
 
     }
 
-    [TestMethod]
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/386")]
     public async Task AttributeMustSpecifyAttributeUsage_AbstractAttribute()
     {
         var original = @"
 using System;
 
-abstract class {|#0:MyBaseAttribute|} : Attribute
+abstract class MyBaseAttribute : Attribute
+{
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/386")]
+    public async Task AttributeMustSpecifyAttributeUsage_AbstractAttribute_WithDerivedConcreteType()
+    {
+        var original = @"
+using System;
+
+abstract class MyBaseAttribute : Attribute
+{
+}
+
+[AttributeUsage(AttributeTargets.Class)]
+class {|#0:MyConcreteAttribute|} : MyBaseAttribute
+{
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/386")]
+    public async Task AttributeMustSpecifyAttributeUsage_AbstractAttribute_DerivedWithoutAttributeUsage()
+    {
+        var original = @"
+using System;
+
+abstract class MyBaseAttribute : Attribute
+{
+}
+
+class {|#0:MyConcreteAttribute|} : MyBaseAttribute
 {
 }";
 
         var result = @"
 using System;
 
-[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
 abstract class MyBaseAttribute : Attribute
+{
+}
+
+[AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+class MyConcreteAttribute : MyBaseAttribute
 {
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MyBaseAttribute should specify how the attribute can be used"), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("MyConcreteAttribute should specify how the attribute can be used"), result);
     }
 
     [TestMethod]

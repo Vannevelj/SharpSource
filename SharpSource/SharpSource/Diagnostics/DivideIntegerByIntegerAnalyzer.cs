@@ -21,7 +21,7 @@ public sealed class DivideIntegerByIntegerAnalyzer : DiagnosticAnalyzer
         "The operands of a divisive expression are both integers and result in an implicit rounding.",
         "The operands in the divisive expression {0} are both integers and result in an implicit rounding.",
         Categories.Correctness,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         true,
         helpLinkUri: "https://github.com/Vannevelj/SharpSource/blob/master/docs/SS003-DivideIntegerByInteger.md");
 

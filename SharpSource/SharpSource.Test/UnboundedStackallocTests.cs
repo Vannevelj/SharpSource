@@ -282,4 +282,44 @@ internal ref struct ValueUtf8Converter
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/382")]
+    public async Task UnboundedStackalloc_TernaryWithHeapFallback_StackallocInWhenFalse()
+    {
+        var original = @"
+using System;
+
+byte[] bytes = new byte[64];
+Span<char> result = bytes.Length > 16 ?
+    new char[bytes.Length * 2] :
+    stackalloc char[bytes.Length * 2];";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/382")]
+    public async Task UnboundedStackalloc_TernaryWithHeapFallback_StackallocInWhenTrue()
+    {
+        var original = @"
+using System;
+
+string prefix = ""test"";
+var buffer = prefix.Length < 1024 ? stackalloc char[prefix.Length + 1] : new char[prefix.Length + 1];";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/382")]
+    public async Task UnboundedStackalloc_TernaryWithHeapFallback_HeapAllocationWithAsSpan()
+    {
+        var original = @"
+using System;
+
+byte[] bytes = new byte[64];
+Span<char> result = bytes.Length > 16 ?
+    new char[bytes.Length * 2].AsSpan() :
+    stackalloc char[bytes.Length * 2];";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }
