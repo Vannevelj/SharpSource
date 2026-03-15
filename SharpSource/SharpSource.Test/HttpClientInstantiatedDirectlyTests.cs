@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,6 +9,12 @@ namespace SharpSource.Test;
 [TestClass]
 public class HttpClientInstantiatedDirectlyTests
 {
+    private static readonly Type[] TestFrameworkTypes = [
+        typeof(Xunit.FactAttribute),
+        typeof(NUnit.Framework.TestFixtureAttribute),
+        typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute),
+    ];
+
     [TestMethod]
     public async Task HttpClientInstantiatedDirectly_Constructor()
     {
@@ -16,7 +23,7 @@ using System.Net.Http;
 
 var g = {|#0:new HttpClient()|};";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"), referencesToRemove: TestFrameworkTypes);
     }
 
     [TestMethod]
@@ -27,7 +34,7 @@ using System.Net.Http;
 
 HttpClient g = {|#0:new()|};";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"), referencesToRemove: TestFrameworkTypes);
     }
 
     [TestMethod]
@@ -36,7 +43,7 @@ HttpClient g = {|#0:new()|};";
         var original = @"
 var g = {|#0:new System.Net.Http.HttpClient()|};";
 
-        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"));
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("HttpClient was instantiated directly. Use IHttpClientFactory instead"), referencesToRemove: TestFrameworkTypes);
     }
 
     [TestMethod]
@@ -66,6 +73,23 @@ class MyClass
 {
     void Method(HttpClient client)
     {
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task HttpClientInstantiatedDirectly_InTestProject()
+    {
+        var original = @"
+using System.Net.Http;
+
+class MyClass
+{
+    void Method()
+    {
+        var client = new HttpClient();
     }
 }";
 

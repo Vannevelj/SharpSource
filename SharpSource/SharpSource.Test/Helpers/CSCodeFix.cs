@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -58,6 +59,29 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
     public static async Task VerifyDiagnosticWithoutFix(string source, DiagnosticResult expected, string[]? additionalFiles = null)
         => await VerifyCodeFix(source, [expected], source, additionalFiles: additionalFiles);
 
+    public static async Task VerifyDiagnosticWithoutFix(string source, DiagnosticResult expected, Type[] referencesToRemove)
+    {
+        var test = new Test
+        {
+            TestCode = source,
+            FixedCode = source,
+        };
+
+        RemoveReferences(test, referencesToRemove);
+        test.ExpectedDiagnostics.Add(expected);
+        await test.RunAsync(CancellationToken.None);
+    }
+
+    private static void RemoveReferences(Test test, Type[] referencesToRemove)
+    {
+        var assemblyLocations = referencesToRemove.Select(t => t.Assembly.Location).ToHashSet();
+        var toRemove = test.TestState.AdditionalReferences.Where(r => r.Display is not null && assemblyLocations.Contains(r.Display)).ToList();
+        foreach (var reference in toRemove)
+        {
+            test.TestState.AdditionalReferences.Remove(reference);
+        }
+    }
+
     /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyCodeFixAsync(string, DiagnosticResult, string)"/>
     public static async Task VerifyCodeFix(string source, DiagnosticResult expected, string fixedSource, int codeActionIndex = 0, string[]? disabledDiagnostics = null)
         => await VerifyCodeFix(source, [expected], fixedSource, codeActionIndex, additionalFiles: null, batchFixedSource: null, disabledDiagnostics);
@@ -79,7 +103,7 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
             FixedCode = fixedSource,
             BatchFixedCode = batchFixedSource!,
             CodeActionIndex = codeActionIndex,
-            NumberOfIncrementalIterations = numberOfIncrementalIterations
+            NumberOfIncrementalIterations = numberOfIncrementalIterations,
         };
 
         if (disabledDiagnostics != null)
