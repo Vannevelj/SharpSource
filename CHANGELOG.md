@@ -8,6 +8,7 @@ https://keepachangelog.com/en/1.0.0/
 - `DateTimeNow`: Set to `Info` by default
 - `SwitchIsMissingDefaultLabel`: Set to `Info` by default
 - `SwitchDoesNotHandleAllEnumOptions`: Set to `Info` by default
+- `AttributeMustSpecifyAttributeUsage`: No longer triggers on `abstract` attribute base classes
 
 ## [1.32.0] - 2026-03-14
 - `RedisResponseNotHandled`: Detect when Redis response objects are discarded without checking for errors

@@ -44,6 +44,11 @@ public sealed class AttributeMustSpecifyAttributeUsageAnalyzer : DiagnosticAnaly
             return;
         }
 
+        if (classSymbol.IsAbstract)
+        {
+            return;
+        }
+
         var hasAttributeUsage = HasAttributeUsageAttribute(classSymbol, attributeSymbol, attributeUsageAttributeSymbol);
         if (!hasAttributeUsage)
         {
