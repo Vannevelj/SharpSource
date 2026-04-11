@@ -33,7 +33,9 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
             var iQueryableSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Linq.IQueryable");
 
             // An array is used instead of a hash set since the number of elements is small. HashSet is likely to be slower for searching in this case.
-            var materializingSymbols = enumerableSymbol?.GetAllMembers("ToList", "ToArray", "ToHashSet").ToArray();
+            var materializingSymbols = enumerableSymbol?.GetAllMembers("ToList", "ToArray").ToArray();
+            // Semantic materializations change the data (e.g. deduplication) and should not be flagged as unnecessary preceding calls, but are valid subsequent operations
+            var semanticMaterializingSymbols = enumerableSymbol?.GetAllMembers("ToHashSet").ToArray();
             var deferredExecutionSymbols =
                 enumerableSymbol?.GetAllMembers(
                 "Select", "SelectMany", "Take", "Skip", "TakeWhile", "SkipWhile", "SkipLast", "Where", "GroupBy", "GroupJoin", "OrderBy", "OrderByDescending", "Union",
@@ -63,7 +65,7 @@ public class UnnecessaryEnumerableMaterializationAnalyzer : DiagnosticAnalyzer
                     return;
                 }
 
-                var subsequentSymbol = deferredExecutionSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default)) ?? materializingSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default));
+                var subsequentSymbol = deferredExecutionSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default)) ?? materializingSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default)) ?? semanticMaterializingSymbols.FirstOrDefault(s => s.Equals(subsequentInvocation, SymbolEqualityComparer.Default));
                 if (subsequentSymbol is null)
                 {
                     return;

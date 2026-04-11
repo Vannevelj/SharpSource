@@ -12,7 +12,7 @@ namespace SharpSource.Diagnostics;
 public class LinqTraversalBeforeFilterAnalyzer : DiagnosticAnalyzer
 {
     private static readonly HashSet<string> TraversalOperations = new(){
-        "OrderBy", "OrderByDescending", "Chunk", "Reverse", "Take", "TakeLast", "TakeWhile"
+        "OrderBy", "OrderByDescending", "Chunk"
     };
 
     public static DiagnosticDescriptor Rule => new(
