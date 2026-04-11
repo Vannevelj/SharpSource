@@ -3,6 +3,7 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [1.33.1] - 2026-04-11
 - `UnnecessaryEnumerableMaterialization`: No longer flags `ToHashSet()` as an unnecessary materialization since it performs deduplication
+- `LinqTraversalBeforeFilter`: No longer flags `Reverse()`, `Take()`, `TakeLast()`, or `TakeWhile()` before `Where()` since reordering would change semantics
 
 ## [1.33.0] - 2026-03-15
 - `TimeSpanConstructedWithTicks`: Detect `new TimeSpan(value)` with a single argument, which creates ticks (100ns) instead of seconds
