@@ -15,8 +15,7 @@ public class UnnecessaryEnumerableMaterializationTests
         var materializingOperations = new string[]
         {
 "ToList",
-"ToArray",
-"ToHashSet"
+"ToArray"
         };
 
         var deferredExecutionOperations = new string[]
@@ -80,7 +79,6 @@ values.{deferred};
 
     [TestMethod]
     [DataRow("ToArray")]
-    [DataRow("ToHashSet")]
     [DataRow("ToList")]
     public async Task UnnecessaryEnumerableMaterialization_MultipleMaterialization_FollowByDeferredExecutionAsync(string materialization)
     {
@@ -169,7 +167,6 @@ values.Where(x => true).Skip(1).Reverse();
 
     [TestMethod]
     [DataRow("ToArray")]
-    [DataRow("ToHashSet")]
     [DataRow("ToList")]
     public async Task UnnecessaryEnumerableMaterialization_MultipleDeferred_MaterializationAsync(string materialization)
     {
@@ -329,5 +326,41 @@ public class CustomCollection : IEnumerable<int>, IQueryable<int>
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/390")]
+    public async Task UnnecessaryEnumerableMaterialization_ToHashSet_NotFlagged_BecauseOfDeduplication()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values.ToHashSet().OrderBy(x => x);
+";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/390")]
+    public async Task UnnecessaryEnumerableMaterialization_ToList_BeforeToHashSet_StillFlagged()
+    {
+        var original = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+{|#0:values.ToList().ToHashSet()|};
+";
+
+        var expected = @"
+using System.Linq;
+using System.Collections.Generic;
+
+IEnumerable<string> values = new [] { ""test"" };
+values.ToHashSet();
+";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("ToList is unnecessarily materializing the IEnumerable and can be omitted"), expected);
     }
 }
