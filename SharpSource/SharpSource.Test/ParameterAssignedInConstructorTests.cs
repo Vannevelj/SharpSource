@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SharpSource.Test.Helpers;
 
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ParameterAssignedInConstructorAnalyzer, SharpSource.Diagnostics.ParameterAssignedInConstructorCodeFix>;
 
@@ -399,5 +400,86 @@ class Test
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
+    public async Task ParameterAssignedInConstructor_NormalizationBeforeFieldAssignment_NoDiagnostic()
+    {
+        var original = @"
+using System;
+class DirectSoundOut
+{
+    private static readonly Guid DefaultDevice = Guid.NewGuid();
+    private Guid _device;
+
+    public DirectSoundOut(Guid device)
+    {
+        if (device == Guid.Empty)
+        {
+            device = DefaultDevice;
+        }
+        _device = device;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
+    public async Task ParameterAssignedInConstructor_NormalizationWithNullCheck_NoDiagnostic()
+    {
+        var original = @"
+class GUIStyle
+{
+    private static GUIStyle _error;
+    private GUIStyle _source;
+
+    public GUIStyle(GUIStyle other)
+    {
+        if (other == null)
+        {
+            other = _error;
+        }
+        _source = other;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
+    public async Task ParameterAssignedInConstructor_AssignedFromFieldWithoutStoringToField_Diagnostic()
+    {
+        var original = @"
+using System;
+class DirectSoundOut
+{
+    private static Guid DefaultDevice;
+
+    public DirectSoundOut(Guid device)
+    {
+        if (device == Guid.Empty)
+        {
+            {|#0:device|} = DefaultDevice;
+        }
+    }
+}";
+
+        var result = @"
+using System;
+class DirectSoundOut
+{
+    private static Guid DefaultDevice;
+
+    public DirectSoundOut(Guid device)
+    {
+        if (device == Guid.Empty)
+        {
+            DefaultDevice = device;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter device in constructor of DirectSoundOut"), result);
     }
 }
