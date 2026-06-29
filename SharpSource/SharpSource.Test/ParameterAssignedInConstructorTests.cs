@@ -432,7 +432,6 @@ class DirectSoundOut
 class GUIStyle
 {
     private static GUIStyle _error;
-    private GUIStyle _source;
 
     public GUIStyle(GUIStyle other)
     {
@@ -440,7 +439,6 @@ class GUIStyle
         {
             other = _error;
         }
-        _source = other;
     }
 }";
 
@@ -448,38 +446,30 @@ class GUIStyle
     }
 
     [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
-    public async Task ParameterAssignedInConstructor_AssignedFromFieldWithoutStoringToField_Diagnostic()
+    public async Task ParameterAssignedInConstructor_AssignedFromFieldWithoutComparison_Diagnostic()
     {
         var original = @"
-using System;
-class DirectSoundOut
+class Test
 {
-    private static Guid DefaultDevice;
+    int _count;
 
-    public DirectSoundOut(Guid device)
+    Test(int count)
     {
-        if (device == Guid.Empty)
-        {
-            {|#0:device|} = DefaultDevice;
-        }
+        {|#0:count|} = _count;
     }
 }";
 
         var result = @"
-using System;
-class DirectSoundOut
+class Test
 {
-    private static Guid DefaultDevice;
+    int _count;
 
-    public DirectSoundOut(Guid device)
+    Test(int count)
     {
-        if (device == Guid.Empty)
-        {
-            DefaultDevice = device;
-        }
+        _count = count;
     }
 }";
 
-        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter device in constructor of DirectSoundOut"), result);
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
     }
 }

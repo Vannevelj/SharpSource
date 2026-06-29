@@ -67,31 +67,43 @@ public sealed class ParameterAssignedInConstructorAnalyzer : DiagnosticAnalyzer
                     return;
                 }
 
-                // Collect parameters that are later stored into fields/properties (normalization pattern)
-                var parametersStoredInMembers = new HashSet<IParameterSymbol>(SymbolEqualityComparer.Default);
+                // If a parameter appears in a comparison anywhere in the constructor body it is likely
+                // being validated/normalized before use, so the reassignment is intentional.
+                var parametersUsedInComparisons = new HashSet<IParameterSymbol>(SymbolEqualityComparer.Default);
                 foreach (var block in context.OperationBlocks)
                 {
                     foreach (var operation in block.Descendants())
                     {
-                        if (operation is ISimpleAssignmentOperation
-                            {
-                                Target: IMemberReferenceOperation { Member: IFieldSymbol or IPropertySymbol },
-                                Value: IParameterReferenceOperation storedParam
-                            })
+                        if (operation is IBinaryOperation binaryOp)
                         {
-                            parametersStoredInMembers.Add(storedParam.Parameter);
+                            AddParameterFromOperand(binaryOp.LeftOperand, parametersUsedInComparisons);
+                            AddParameterFromOperand(binaryOp.RightOperand, parametersUsedInComparisons);
                         }
                     }
                 }
 
                 foreach (var (paramRef, _) in suspiciousAssignments)
                 {
-                    if (!parametersStoredInMembers.Contains(paramRef.Parameter))
+                    if (!parametersUsedInComparisons.Contains(paramRef.Parameter))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(Rule, paramRef.Syntax.GetLocation(), paramRef.Parameter.Name, paramRef.Parameter.ContainingType.Name));
                     }
                 }
             });
         });
+    }
+
+    private static void AddParameterFromOperand(IOperation operand, HashSet<IParameterSymbol> result)
+    {
+        // Unwrap implicit conversions (e.g. nullable context wraps reference-type operands)
+        while (operand is IConversionOperation { IsImplicit: true } conv)
+        {
+            operand = conv.Operand;
+        }
+
+        if (operand is IParameterReferenceOperation paramRef)
+        {
+            result.Add(paramRef.Parameter);
+        }
     }
 }
