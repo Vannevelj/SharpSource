@@ -472,4 +472,149 @@ namespace ConsoleApplication1
 
         await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."));
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/378")]
+    public async Task SwitchIsMissingDefaultLabel_BoolSwitch_BothBranchesCovered_NoDiagnostic()
+    {
+        var original = @"
+class Test
+{
+    void Method(bool b)
+    {
+        switch (b)
+        {
+            case true:
+                break;
+            case false:
+                break;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/378")]
+    public async Task SwitchIsMissingDefaultLabel_BoolSwitch_OnlyOneBranch_Diagnostic()
+    {
+        var original = @"
+using System;
+class Test
+{
+    void Method(bool b)
+    {
+        switch ({|#0:b|})
+        {
+            case true:
+                break;
+        }
+    }
+}";
+
+        var result = @"
+using System;
+class Test
+{
+    void Method(bool b)
+    {
+        switch (b)
+        {
+            case true:
+                break;
+            default:
+                throw new ArgumentException(""Unsupported value"");
+        }
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Switch should have default label."), result);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/378")]
+    public async Task SwitchIsMissingDefaultLabel_BoolSwitchExpression_BothBranchesCovered_NoDiagnostic()
+    {
+        var original = @"
+class Test
+{
+    int Method(bool b) => b switch
+    {
+        true => 1,
+        false => 0
+    };
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/378")]
+    public async Task SwitchIsMissingDefaultLabel_PatternMatching_TypePatterns_NoDiagnostic()
+    {
+        var original = @"
+class Base { }
+class Derived1 : Base { }
+class Derived2 : Base { }
+
+class Test
+{
+    void Method(Base b)
+    {
+        switch (b)
+        {
+            case Derived1 d1:
+                break;
+            case Derived2 d2:
+                break;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/378")]
+    public async Task SwitchIsMissingDefaultLabel_PatternMatching_TypePatternWithoutVariable_NoDiagnostic()
+    {
+        var original = @"
+class Base { }
+class Derived1 : Base { }
+class Derived2 : Base { }
+
+class Test
+{
+    string Method(Base b)
+    {
+        switch (b)
+        {
+            case Derived1:
+                return ""one"";
+            case Derived2:
+                return ""two"";
+        }
+        return ""other"";
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/378")]
+    public async Task SwitchIsMissingDefaultLabel_PatternMatching_MixedConstantAndTypePattern_NoDiagnostic()
+    {
+        var original = @"
+class Test
+{
+    void Method(object o)
+    {
+        switch (o)
+        {
+            case null:
+                break;
+            case string s:
+                break;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }

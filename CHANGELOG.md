@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.33.3] - 2026-07-03
+- `SwitchIsMissingDefaultLabel`: No longer flags `bool` switches where both `true` and `false` are covered, or pattern-matching switches on type hierarchies
+
 ## [1.33.2] - 2026-06-29
 - `GetHashCodeRefersToMutableMember`: No longer flags `readonly` fields of type `System.Tuple<...>` since `Tuple` is an immutable reference type
 - `CollectionManipulatedDuringTraversal`: No longer flags modifications inside `for`/`foreach` loops when the modification is immediately followed by a `return` or `break` statement
