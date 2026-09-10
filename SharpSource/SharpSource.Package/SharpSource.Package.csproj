@@ -11,11 +11,10 @@
     <PackageId>SharpSource</PackageId>
     <PackageVersion>1.33.3</PackageVersion>
     <Authors>Jeroen Vannevel</Authors>
-    <PackageLicenseUrl>https://github.com/Vannevelj/SharpSource/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Vannevelj/SharpSource</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Vannevelj/SharpSource</RepositoryUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>Protect your code from runtime issues through static analysis</Description>
     <PackageReleaseNotes>For a full overview of the changes, visit https://github.com/vannevelj/sharpsource/releases</PackageReleaseNotes>
     <Copyright>Copyright</Copyright>
