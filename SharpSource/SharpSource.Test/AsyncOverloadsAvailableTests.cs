@@ -1332,4 +1332,210 @@ class MyClass
 
         await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for MyClass.DoThing"), result);
     }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DbContextAdd_NoFalsePositive()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public abstract class DbContext
+    {
+        public void Add<T>(T entity) { }
+        public Task AddAsync<T>(T entity) => Task.CompletedTask;
+    }
+}
+
+class MyContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+class MyEntity { }
+
+class MyClass
+{
+    async Task MyMethod()
+    {
+        new MyContext().Add(new MyEntity());
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DbContextAddRange_NoFalsePositive()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public abstract class DbContext
+    {
+        public void AddRange(params object[] entities) { }
+        public Task AddRangeAsync(params object[] entities) => Task.CompletedTask;
+    }
+}
+
+class MyContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+class MyEntity { }
+
+class MyClass
+{
+    async Task MyMethod()
+    {
+        new MyContext().AddRange(new MyEntity());
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DbSetAdd_NoFalsePositive()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public abstract class DbSet<T> where T : class
+    {
+        public virtual void Add(T entity) { }
+        public virtual Task AddAsync(T entity) => Task.CompletedTask;
+    }
+}
+
+class MyEntity { }
+
+class MyClass
+{
+    async Task MyMethod(Microsoft.EntityFrameworkCore.DbSet<MyEntity> dbSet)
+    {
+        dbSet.Add(new MyEntity());
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DbSetAddRange_NoFalsePositive()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public abstract class DbSet<T> where T : class
+    {
+        public virtual void AddRange(params T[] entities) { }
+        public virtual Task AddRangeAsync(params T[] entities) => Task.CompletedTask;
+    }
+}
+
+class MyEntity { }
+
+class MyClass
+{
+    async Task MyMethod(Microsoft.EntityFrameworkCore.DbSet<MyEntity> dbSet)
+    {
+        dbSet.AddRange(new MyEntity());
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_DbContextSaveChanges_StillTriggered()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public abstract class DbContext
+    {
+        public int SaveChanges() => 0;
+        public Task<int> SaveChangesAsync() => Task.FromResult(0);
+    }
+}
+
+class MyContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+class MyClass
+{
+    async Task MyMethod()
+    {
+        {|#0:new MyContext().SaveChanges()|};
+    }
+}";
+
+        var result = @"
+using System.Threading.Tasks;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public abstract class DbContext
+    {
+        public int SaveChanges() => 0;
+        public Task<int> SaveChangesAsync() => Task.FromResult(0);
+    }
+}
+
+class MyContext : Microsoft.EntityFrameworkCore.DbContext { }
+
+class MyClass
+{
+    async Task MyMethod()
+    {
+        await new MyContext().SaveChangesAsync();
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for DbContext.SaveChanges"), result);
+    }
+
+    [TestMethod]
+    public async Task AsyncOverloadsAvailable_NonEfCoreTypeWithAddMethod_StillTriggered()
+    {
+        var original = @"
+using System.Threading.Tasks;
+
+class Repository
+{
+    public void Add(object entity) { }
+    public Task AddAsync(object entity) => Task.CompletedTask;
+}
+
+class MyClass
+{
+    async Task MyMethod()
+    {
+        {|#0:new Repository().Add(new object())|};
+    }
+}";
+
+        var result = @"
+using System.Threading.Tasks;
+
+class Repository
+{
+    public void Add(object entity) { }
+    public Task AddAsync(object entity) => Task.CompletedTask;
+}
+
+class MyClass
+{
+    async Task MyMethod()
+    {
+        await new Repository().AddAsync(new object());
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Async overload available for Repository.Add"), result);
+    }
 }

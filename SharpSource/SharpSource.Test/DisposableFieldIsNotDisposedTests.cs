@@ -366,4 +366,84 @@ class Test : ITest
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [TestMethod]
+    public async Task DisposableFieldIsNotDisposed_NullConditionalDispose_DoesNotTrigger()
+    {
+        var original = @"
+#nullable enable
+using System;
+using System.IO;
+
+class Test : IDisposable
+{
+    private MemoryStream? _stream = new();
+
+    public void Dispose()
+    {
+        _stream?.Dispose();
+        _stream = null;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task DisposableFieldIsNotDisposed_NullConditionalDispose_ThroughDisposeBool_DoesNotTrigger()
+    {
+        var original = @"
+#nullable enable
+using System;
+using System.IO;
+
+class Test : IDisposable
+{
+    private MemoryStream? _stream;
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _stream?.Dispose();
+            _stream = null;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [TestMethod]
+    public async Task DisposableFieldIsNotDisposed_NullConditionalDisposeAsync_DoesNotTrigger()
+    {
+        var original = @"
+#nullable enable
+using System;
+using System.Threading.Tasks;
+
+class AsyncDisposable : IAsyncDisposable
+{
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+}
+
+class Test : IAsyncDisposable
+{
+    private AsyncDisposable? _resource = new();
+
+    public async ValueTask DisposeAsync()
+    {
+        await (_resource?.DisposeAsync() ?? ValueTask.CompletedTask);
+        _resource = null;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
 }

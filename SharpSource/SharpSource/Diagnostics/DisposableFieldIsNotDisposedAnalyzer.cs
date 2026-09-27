@@ -382,9 +382,25 @@ public sealed class DisposableFieldIsNotDisposedAnalyzer : DiagnosticAnalyzer
                method.ContainingType.TypeKind == TypeKind.Interface ) );
 
     private static bool IsDisposedFieldReference(IFieldReferenceOperation fieldReference)
-        => fieldReference.Parent is IInvocationOperation invocation &&
-           invocation.Instance == fieldReference &&
-           invocation.TargetMethod.Name is "Dispose" or "DisposeAsync";
+    {
+        // Direct call: _field.Dispose()
+        if (fieldReference.Parent is IInvocationOperation invocation &&
+            invocation.Instance == fieldReference &&
+            invocation.TargetMethod.Name is "Dispose" or "DisposeAsync")
+        {
+            return true;
+        }
+
+        // Null-conditional call: _field?.Dispose()
+        if (fieldReference.Parent is IConditionalAccessOperation conditionalAccess &&
+            conditionalAccess.WhenNotNull is IInvocationOperation conditionalInvocation &&
+            conditionalInvocation.TargetMethod.Name is "Dispose" or "DisposeAsync")
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     private static void RegisterLocalFunctions(
         IOperation operation,

@@ -28,11 +28,13 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(compilationContext =>
         {
             var cancellationTokenSymbol = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
-            compilationContext.RegisterOperationAction((context) => Analyze(context, cancellationTokenSymbol), OperationKind.Invocation);
+            var dbContextSymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.EntityFrameworkCore.DbContext");
+            var dbSetSymbol = compilationContext.Compilation.GetTypeByMetadataName("Microsoft.EntityFrameworkCore.DbSet`1");
+            compilationContext.RegisterOperationAction((context) => Analyze(context, cancellationTokenSymbol, dbContextSymbol, dbSetSymbol), OperationKind.Invocation);
         });
     }
 
-    private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol)
+    private static void Analyze(OperationAnalysisContext context, INamedTypeSymbol? cancellationTokenSymbol, INamedTypeSymbol? dbContextSymbol, INamedTypeSymbol? dbSetSymbol)
     {
         var (surroundingMethod, surroundMethodOperation) = context.Operation.GetSurroundingMethodContext();
         if (surroundingMethod is null)
@@ -54,6 +56,11 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
         var invokedMethodName = invocation.TargetMethod.Name;
         var invokedTypeName = invocation.TargetMethod.ContainingType.Name;
+
+        if (IsEfCoreAddMethod(invokedMethodName, invocation.TargetMethod.ContainingType, dbContextSymbol, dbSetSymbol))
+        {
+            return;
+        }
 
         var relevantOverloads = invocation.TargetMethod.ContainingType.GetMembers($"{invokedMethodName}Async").OfType<IMethodSymbol>();
 
@@ -137,5 +144,25 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
         var isPlainTaskOverload = returnType.IsNonGenericTaskType() && overload.ReturnType.IsNonGenericTaskType();
 
         return isVoidOverload || isGenericTaskOverload || isPlainTaskOverload;
+    }
+
+    private static bool IsEfCoreAddMethod(string methodName, ITypeSymbol containingType, INamedTypeSymbol? dbContextSymbol, INamedTypeSymbol? dbSetSymbol)
+    {
+        if (methodName is not ( "Add" or "AddRange" ))
+        {
+            return false;
+        }
+
+        if (dbContextSymbol != null && containingType.InheritsFrom(dbContextSymbol))
+        {
+            return true;
+        }
+
+        if (dbSetSymbol != null && containingType.OriginalDefinition.Equals(dbSetSymbol, SymbolEqualityComparer.Default))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
