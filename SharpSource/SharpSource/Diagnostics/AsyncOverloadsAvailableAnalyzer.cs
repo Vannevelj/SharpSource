@@ -148,7 +148,7 @@ public class AsyncOverloadsAvailableAnalyzer : DiagnosticAnalyzer
 
     private static bool IsEfCoreAddMethod(string methodName, ITypeSymbol containingType, INamedTypeSymbol? dbContextSymbol, INamedTypeSymbol? dbSetSymbol)
     {
-        if (methodName is not ("Add" or "AddRange"))
+        if (methodName is not ( "Add" or "AddRange" ))
         {
             return false;
         }
