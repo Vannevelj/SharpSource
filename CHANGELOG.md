@@ -1,6 +1,9 @@
 # CHANGELOG
 https://keepachangelog.com/en/1.0.0/
 
+## [1.33.4] - 2026-09-27
+- `DisposableFieldIsNotDisposed`: No longer flags fields that are disposed using the null-conditional operator (`_field?.Dispose()`)
+
 ## [1.33.3] - 2026-07-03
 - `SwitchIsMissingDefaultLabel`: No longer flags `bool` switches where both `true` and `false` are covered, or pattern-matching switches on type hierarchies
 
