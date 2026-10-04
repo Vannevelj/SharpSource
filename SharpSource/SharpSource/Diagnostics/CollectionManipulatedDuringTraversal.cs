@@ -87,10 +87,37 @@ public class CollectionManipulatedDuringTraversal : DiagnosticAnalyzer
                 var invokedSymbol = GetReferencedSymbol(invocation.Instance);
                 if (collectionBeingIteratedOn.Equals(invokedSymbol, SymbolEqualityComparer.Default) && instanceOfIteration.Equals(GetReferencedInstance(invocation.Instance), SymbolEqualityComparer.Default))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+                    if (!IsImmediatelyFollowedByReturnOrBreak(invocation))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+                    }
                 }
             }
         }
+    }
+
+    private static bool IsImmediatelyFollowedByReturnOrBreak(IInvocationOperation invocation)
+    {
+        if (invocation.Parent is not IExpressionStatementOperation expressionStatement)
+        {
+            return false;
+        }
+
+        if (expressionStatement.Parent is not IBlockOperation block)
+        {
+            return false;
+        }
+
+        var ops = block.Operations;
+        for (var i = 0; i < ops.Length - 1; i++)
+        {
+            if (ops[i] == expressionStatement)
+            {
+                return ops[i + 1] is IReturnOperation or IBranchOperation { BranchKind: BranchKind.Break };
+            }
+        }
+
+        return false;
     }
 
     private static ISymbol? GetReferencedSymbol(IOperation? operation) => operation switch

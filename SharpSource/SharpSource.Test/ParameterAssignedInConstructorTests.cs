@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SharpSource.Test.Helpers;
 
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.ParameterAssignedInConstructorAnalyzer, SharpSource.Diagnostics.ParameterAssignedInConstructorCodeFix>;
 
@@ -399,5 +400,76 @@ class Test
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
+    public async Task ParameterAssignedInConstructor_NormalizationBeforeFieldAssignment_NoDiagnostic()
+    {
+        var original = @"
+using System;
+class DirectSoundOut
+{
+    private static readonly Guid DefaultDevice = Guid.NewGuid();
+    private Guid _device;
+
+    public DirectSoundOut(Guid device)
+    {
+        if (device == Guid.Empty)
+        {
+            device = DefaultDevice;
+        }
+        _device = device;
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
+    public async Task ParameterAssignedInConstructor_NormalizationWithNullCheck_NoDiagnostic()
+    {
+        var original = @"
+class GUIStyle
+{
+    private static GUIStyle _error;
+
+    public GUIStyle(GUIStyle other)
+    {
+        if (other == null)
+        {
+            other = _error;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/389")]
+    public async Task ParameterAssignedInConstructor_AssignedFromFieldWithoutComparison_Diagnostic()
+    {
+        var original = @"
+class Test
+{
+    int _count;
+
+    Test(int count)
+    {
+        {|#0:count|} = _count;
+    }
+}";
+
+        var result = @"
+class Test
+{
+    int _count;
+
+    Test(int count)
+    {
+        _count = count;
+    }
+}";
+
+        await VerifyCS.VerifyCodeFix(original, VerifyCS.Diagnostic().WithMessage("Suspicious assignment of parameter count in constructor of Test"), result);
     }
 }

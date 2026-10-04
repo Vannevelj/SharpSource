@@ -27,3 +27,12 @@ async void MyMethod()
     await new StringWriter().WriteAsync("");
 }
 ```
+
+## Known Exclusions
+
+The following methods are intentionally excluded because [Microsoft documents](https://learn.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbcontext.addasync) that the synchronous version is preferred in the general case:
+
+- `DbContext.Add` / `DbContext.AddRange`
+- `DbSet<T>.Add` / `DbSet<T>.AddRange`
+
+The async variants (`AddAsync` / `AddRangeAsync`) exist only to support special value generators such as `SqlServerValueGenerationStrategy.SequenceHiLo`.

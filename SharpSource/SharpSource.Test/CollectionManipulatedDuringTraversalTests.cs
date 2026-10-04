@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SharpSource.Test.Helpers;
 
 using VerifyCS = SharpSource.Test.CSharpCodeFixVerifier<SharpSource.Diagnostics.CollectionManipulatedDuringTraversal, Microsoft.CodeAnalysis.Testing.EmptyCodeFixProvider>;
 
@@ -526,5 +527,88 @@ void Method(List<int> items)
 }";
 
         await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/383")]
+    public async Task CollectionManipulatedDuringTraversal_ForLoop_RemoveAtFollowedByReturn_NoDiagnostic()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+void Method(List<int> items, int target)
+{
+    for (var i = 0; i < items.Count; i++)
+    {
+        if (items[i] == target)
+        {
+            items.RemoveAt(i);
+            return;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/383")]
+    public async Task CollectionManipulatedDuringTraversal_ForLoop_RemoveAtFollowedByBreak_NoDiagnostic()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+void Method(List<int> items, int target)
+{
+    for (var i = 0; i < items.Count; i++)
+    {
+        if (items[i] == target)
+        {
+            items.RemoveAt(i);
+            break;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/383")]
+    public async Task CollectionManipulatedDuringTraversal_ForEachLoop_RemoveAtFollowedByReturn_NoDiagnostic()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+void Method(List<int> items, int target)
+{
+    foreach (var item in items)
+    {
+        if (item == target)
+        {
+            items.Remove(item);
+            return;
+        }
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/383")]
+    public async Task CollectionManipulatedDuringTraversal_ForLoop_RemoveAtWithoutReturn_Diagnostic()
+    {
+        var original = @"
+using System.Collections.Generic;
+
+void Method(List<int> items, int target)
+{
+    for (var i = 0; i < items.Count; i++)
+    {
+        if (items[i] == target)
+        {
+            {|#0:items.RemoveAt(i)|};
+        }
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic().WithMessage("Attempted to manipulate a collection while traversing. Ensure modifications don't affect the original collection."));
     }
 }

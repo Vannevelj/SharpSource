@@ -436,4 +436,40 @@ public class Foo
 
         await VerifyCS.VerifyNoDiagnostic(original);
     }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/406")]
+    public async Task GetHashCodeRefersToMutableMember_ReadonlyTupleField_NoDiagnostic()
+    {
+        var original = @"
+using System;
+namespace ConsoleApplication1
+{
+    public class Foo
+    {
+        private readonly Tuple<DateTime, Guid> _tuple;
+
+        public override int GetHashCode() => _tuple.GetHashCode();
+    }
+}";
+
+        await VerifyCS.VerifyNoDiagnostic(original);
+    }
+
+    [BugVerificationTest(IssueUrl = "https://github.com/Vannevelj/SharpSource/issues/406")]
+    public async Task GetHashCodeRefersToMutableMember_NonReadonlyTupleField_Diagnostic()
+    {
+        var original = @"
+using System;
+namespace ConsoleApplication1
+{
+    public class Foo
+    {
+        private Tuple<DateTime, Guid> _tuple;
+
+        public override int GetHashCode() => {|#0:_tuple|}.GetHashCode();
+    }
+}";
+
+        await VerifyCS.VerifyDiagnosticWithoutFix(original, VerifyCS.Diagnostic(GetHashCodeRefersToMutableMemberAnalyzer.FieldRule).WithMessage("GetHashCode() refers to mutable field _tuple"));
+    }
 }

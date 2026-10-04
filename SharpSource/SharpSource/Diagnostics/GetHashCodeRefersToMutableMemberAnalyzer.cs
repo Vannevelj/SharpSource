@@ -94,12 +94,26 @@ public class GetHashCodeRefersToMutableMemberAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        if (field.IsReadOnly && ( field.Type.IsValueType || field.Type.SpecialType == SpecialType.System_String ) && !field.IsStatic)
+        if (field.IsReadOnly && !field.IsStatic)
         {
-            return false;
+            if (field.Type.IsValueType || field.Type.SpecialType == SpecialType.System_String)
+            {
+                return false;
+            }
+
+            if (IsImmutableReferenceType(field.Type))
+            {
+                return false;
+            }
         }
 
         return true;
+    }
+
+    private static bool IsImmutableReferenceType(ITypeSymbol type)
+    {
+        var ns = type.ContainingNamespace;
+        return ns?.Name == "System" && ns.ContainingNamespace?.IsGlobalNamespace == true && type.Name == "Tuple";
     }
 
     private static bool PropertyIsMutable(IPropertySymbol property) => property is { SetMethod.IsInitOnly: false };
